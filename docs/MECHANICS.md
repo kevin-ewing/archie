@@ -69,7 +69,7 @@ Altitude is shown by:
 ### 3.4 Aircraft sprite
 - **Pixel-art sprite drawn rotated** (crisp rotated pixels, like the ground). No pre-drawn heading set is needed.
 - **Nine bank frames**, from hard left through level to hard right, so the roll-in looks smooth. Wings foreshorten as the plane tips, the raised wing catches the light, and the lowered wing darkens.
-- A **cast shadow** falls away from the plane (down-sun, scaled by altitude), drawn as a soft silhouette at its exact position, so it glides with no shimmer. Over trees and hedges it eases in closer to the plane. It's drawn **on the ground's own pixel grid**, and it **bends over raised ground**: trees and hedges catch it sooner, so over a wood the shadow jumps closer to the plane. (Flanders is flat; hills and relief come with the Somme.)
+- A **cast shadow** falls away from the plane (down-sun, scaled by altitude), drawn as a soft silhouette at its exact position, so it glides with no shimmer. It's drawn **on the ground's own pixel grid**, in a few bands along the fuselage: each band eases toward the ground height under *it*, so only the part of the shadow actually over a tree or hedge lifts closer to the plane, not the whole silhouette. (Flanders is flat; hills and relief come with the Somme.)
 
 ### 3.4b How a turn looks (camera choreography)
 1. **Input:** the player moves the mouse or finger sideways.
@@ -85,7 +85,9 @@ Altitude is shown by:
 
 ### 3.4d Clouds
 - **Semi-transparent, wispy pixel-art clouds** above the plane, rotated with the ground (same camera). Six faint alpha levels, dithered, so edges fray into scattered pixels; shapes are warped and streaked along the wind.
-- **Parallax:** clouds are closer to the camera, so they slide past **2× faster** than the ground. Their pixels stay the **same size** as the ground's and the plane's (one pixel size across the whole game).
+- **Two decks.** A **low deck** (layer 6) hangs just above the plane and casts a shadow. A **high deck** (layer 8, with the Archie bursts) sits above everything, drawn thinner and fainter, drifts slower still, and casts no shadow (too high and thin to block the sun usefully).
+- **Clouds hang in place over the landscape:** they move with the ground (no parallax), only creeping with a faint wind, and the plane flies through them. Their pixels stay the same size as everything else. The low deck sits low enough that its shadow falls near its own cloud rather than off-screen.
+- **Flying through cloud** is where the motion is: when the plane is inside the low deck, a second field of wisps streaks past close to the camera (3× ground speed), fading in with the cloud's density.
 - Clouds also drift slowly with the wind, so they rush past you while flying through them.
 
 ### 3.5 The wing problem (signature mechanic)
@@ -117,7 +119,7 @@ There are **no hand-built levels**. The sector is generated from a seed.
    - **Crops and wildflowers of a Flanders May** (from period accounts of Flemish farming: colza, flax, clover, grain, dairy meadows):
      - Fields of young wheat, ploughed earth, rough grass, meadow, pasture, flax, red clover and colza (yellow in flower).
      - Wildflowers: poppies and cornflowers in the crop margins; buttercups, ox-eye daisies and poppy patches in meadows; clover in pasture; white hawthorn ("may") blossom on hedges; cow parsley along margins; bluebell carpets in some woods.
-     - **Flowers are rare finds.** Each kind blooms only in its own scattered regions, roughly 3 km across and kilometres apart, so a whole day's flying turns up just a few poppy fields, bluebell woods or yellow colza.
+     - **Flowers are rare finds.** Each kind blooms only in its own scattered regions, roughly 3 km across and kilometres apart, so a whole day's flying turns up a handful of poppy fields, bluebell woods or yellow colza. Hawthorn and cow parsley are rarer and sparser still.
      - Seasons are not modelled yet (it's always May).
    - **Within-biome mix:** a soft, dithered light/dark patchiness (damp and dry patches) runs across everything, so no field or wood is one flat tone.
    - Still to come: marsh, gentle relief, a river or canal system.
@@ -144,13 +146,13 @@ Cheap effects with high impact, all within the palette and performance budget:
 
 ### 3.7b Sun, shadows and the light of the hour (built)
 - **A real sun.** Its position is computed for Ypres (50.85°N) and the campaign date (from 10 May 1915) in local solar time. Morning shadows fall west, noon shadows north, evening shadows east. They're long when the sun is low and fade out as it sets.
-- **Everything casts, softly:** shadows have soft, dithered edges that widen as they lengthen, and they change gradually, re-baked every degree of sun movement and cross-faded in over 1.5 s. Trees and hedges throw shadows across the fields, crowns are lit on their sunny side and dark on the other (re-baked every few degrees of sun movement), clouds cast drifting shadows on the ground, and the plane's shadow follows the sun.
+- **Everything casts, softly:** shadows have soft, dithered edges that widen as they lengthen, and they change gradually, re-baked every degree of sun movement and cross-faded in over 1.5 s. Trees and hedges throw shadows across the fields, crowns are lit on their sunny side and dark on the other (re-baked every few degrees of sun movement), the low cloud deck casts shadows that lie on the ground and **move with the ground**, falling h · cot(sun elevation) down-sun of their clouds and drifting with the wind (the high deck is too thin and high to bother). Under a cloud's shadow the light is diffuse, so tree and hedge shadows, highlights, water glints and the plane's shadow all disappear there. The plane's shadow follows the sun. **The plane's and the clouds' shadows fade as the sun drops** (full from ~52° elevation, gone below ~20°), so they're really only visible around midday; the landscape's own shadows stay as strong at any hour.
 - **The light of the hour** is a stylised, semi-transparent overlay: banded and dithered pixel colour, with a tint that's stronger away from the sun, a glow pouring in from the sun's side, and light shafts at sunset.
-  - Golden hour warms, sunset blazes, dusk cools to violet, and **night is a flat, dark blue filter** (no vignette), the same every night.
+  - **Sunrise and sunset are deliberately over the top:** a strong multiply of gold and orange toward the sun and rose / magenta away from it, a bright glow, bold light shafts, and nine dithered bands. Every palette's warm end is pinks, oranges and golds. Golden hour warms, sunset blazes, dusk cools to violet, and **night is a flat, dark blue filter** (no vignette), the same every night.
   - **The colourful hours last longer:** golden light starts with the sun ~22° up and the colour runs until it's ~10° below the horizon. The clock also slows by up to 70% around sunrise and sunset.
-  - **Every dawn and dusk is different:** each draws one of seven curated palettes (Ember, Rose Ash, Blood Orange, Lavender, Brass, Gas Green, Peach & Slate) and a "beauty" from the seed. Most evenings are modest, a few are spectacular, and about one in five is a grey, overcast nothing.
-- **Water glints in sunlight:** sparse glint points flash briefly, as a bright pixel or a tiny four-point star, but only in the sun's **glitter patch**, the stretch of water angled toward the sun (under you at noon, out toward the horizon at sunset). None at night, dimmed under cloud shadow.
-- **Clock:** 05:00 → 22:00 passes in about 12 real minutes. For now each visit **starts at a random hour** of the 24. Development aids: hold **]** to run time 40× faster, or start at a given hour with `?time=19.5`.
+  - **Every dawn and dusk is different:** each draws one of seven palettes (Ember, Rose Ash, Blood Orange, Candy Floss, Brass, Marigold, Peach & Plum) and an intensity from the seed. All are dramatic, some outrageous; about one in ten is softer.
+- **Water glints in sunlight:** sparse glint points flash for about half a second each (every ~6 s), as a bright pixel or a tiny four-point star, but only in the sun's **glitter patch**, the stretch of water angled toward the sun (under you at noon, out toward the horizon at sunset). None at night, dimmed under cloud shadow.
+- **Clock:** 05:00 → 22:00 passes in about 12 real minutes. A **FAST TIME** debug toggle (bottom-left, above the gauges; on by default for now) makes it 3× faster. For now each visit **starts at a random hour** of the 24. Development aids: hold **]** to run time 40× faster, or start at a given hour with `?time=19.5`.
 
 ### 3.8 Day cycle & sunset
 Each sortie is one flying day from **mid-morning to dusk**, compressed to **10–15 minutes** of real time.
@@ -187,7 +189,7 @@ Desktop and mobile are **equal first-class targets**. Every action must work wit
 | Head for home | H | Compass button |
 | Pause | Esc / P | Pause button; also auto-pause when the app loses focus |
 
-**Steering model:** input sets a **bank target**, not a heading. The plane rolls toward that bank at a limited roll rate, and the bank sets the turn rate. A sluggish, stable BE.2c: a full circle takes about **21 seconds** at full bank, and the roll-in is gentle. (Faster turning made the rotating world nauseating.)
+**Steering model:** input sets a **bank target**, not a heading. The plane rolls toward that bank at a limited roll rate, and the bank sets the turn rate. A sluggish, stable BE.2c: a full circle takes about **42 seconds** at full bank, and the roll-in is gentle. (Faster turning made the rotating world nauseating.)
 
 **Mobile layout rules:** portrait *and* landscape supported. The game fills the screen in both; the view simply shows more of the world along the long axis. The HUD sits in thumb-reach corners, there are no hover-only interactions, and minimum touch targets are 44 px.
 
@@ -518,7 +520,7 @@ If the player struggles, the day repeats as "another day of the same orders" wit
   - **Running hot** (heat past 70% on full power): the RPM and TEMP red zones blink, their labels flash red, the dials shake, needles twitch, and the exhaust trails light grey smoke.
   - **Overheated** (locked to cruise): all of that, harder. The bezels flash red, the prop misfires (the blur keeps collapsing), and thick dark smoke trails behind.
 - **Source:** a 1917 RFC cadet's lecture notes list the dashboard as rev indicator, airspeed indicator, altimeter, petrol-tank pressure gauge (kept up with a hand pump), petrol gauge, clinometer, transmitting thermometer, compass and watch. (Australian War Memorial, notebook of J. S. L. Ross.)
-- **Pocket watch** (built), top centre, with **AM / PM** beside it and a **digital readout** (e.g. `7:29`) under it, above the date: white enamel face, blued-steel hands, brass case and bow, and a red mark on the rim at **sunset**, the time to be heading home. The date sits beneath it on a small plate (e.g. `10 MAY 1915`).
+- **Pocket watch** (built), **top-left**, its own module (`ui/clock.ts`), with a small brass **AM / PM** tag just off the case at half past ten and a **digital readout** (e.g. `7:29`) under it, above the date: white enamel face, blued-steel hands, brass case and bow, and a red mark on the rim at **sunset**, the time to be heading home. The date sits beneath it on a small plate (e.g. `10 MAY 1915`).
 - **Still to add:** altimeter (with altitude bands), the aerial status lamp. Possibly airspeed, the petrol-pressure hand pump (a nice period chore), and a clinometer.
 - **Morse tape** strip along the bottom showing what you're sending, letter by letter.
 - **Overlays:** map (M), clock-code disc (Tab), message radial.

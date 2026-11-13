@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { clockText } from './hud.ts';
+import { clockText } from './clock.ts';
 
 test('12-hour clock text with AM / PM', () => {
   assert.deepEqual(clockText(0.25), { clock: '12:15', ampm: 'AM' });

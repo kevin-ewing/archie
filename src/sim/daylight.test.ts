@@ -41,3 +41,10 @@ test('the clock slows around sunset, so the colourful hours last longer in real 
   assert.ok(evening > midday * 1.8, `sunset hours take longer (${evening.toFixed(0)}s vs ${midday.toFixed(0)}s)`);
   assert.ok(sunNow(createClock(12)).elevation > 0);
 });
+
+test('shadows are full around midday and fade out as the sun drops', () => {
+  const s = (h: number) => sunAt(130, h).shadowStrength;
+  assert.ok(s(12) > 0.99 && s(10.5) > 0.9, 'midday: full');
+  assert.ok(s(16) < 0.8 && s(16) > 0.3, 'afternoon: fading');
+  assert.equal(s(18.5), 0, 'low evening sun: gone');
+});

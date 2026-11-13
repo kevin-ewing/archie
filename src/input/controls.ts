@@ -102,11 +102,17 @@ export function createControls(pointerTarget: EventTarget, keyTarget: EventTarge
     keys.add(code);
   });
   keyTarget.addEventListener('keyup', (e) => keys.delete((e as KeyboardEvent).code));
-  keyTarget.addEventListener('blur', () => {
+  // When the page stops being active (window loses focus, tab hidden) nothing is steering any more:
+  // drop every held input so the plane levels off and flies straight.
+  const letGo = () => {
     keys.clear();
+    steer = 0;
     boost = false;
     mouseDown = false;
-  });
+    touchId = null;
+  };
+  keyTarget.addEventListener('blur', letGo);
+  globalThis.document?.addEventListener('visibilitychange', () => globalThis.document.hidden && letGo());
 
   return {
     requestToggleHold: () => (toggleHold = true),

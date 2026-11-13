@@ -8,7 +8,7 @@ import { CHUNK, HEIGHT_STEPS } from './ground.ts';
 export const SHADE = {
   maxHeight: 17, // tallest thing that can cast (tree tops)
   cast: 100, // alpha of a cast shadow (0–255); the scene scales it by sun strength
-  dark: 60, // alpha of the shaded side of a crown
+  dark: 26, // alpha of the shaded side of a crown (kept light: the cast shadows now do most of the shading)
   lit: [255, 238, 200, 54] as const, // warm light on the sun-facing side
   relief: 0.09, // how far from flat a slope must face (toward / away) to be lit / shaded
   penumbra: 0.07, // shadow softness: the soft edge widens by this much per px from the thing casting it

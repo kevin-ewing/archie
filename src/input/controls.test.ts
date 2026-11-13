@@ -63,3 +63,41 @@ test('reports one-off actions once: T toggles Hold, a click or a key grabs the c
   c.requestToggleHold();
   assert.equal(c.read().toggleHold, true, 'the HUD button asks the same way');
 });
+
+test('losing focus lets go of everything: no steering, no boost, no press', () => {
+  const p = new EventTarget();
+  const k = new EventTarget();
+  const c = createControls(p, k, () => 1000);
+  const send = (target: EventTarget, type: string, props: object = {}) => target.dispatchEvent(Object.assign(new Event(type), props));
+
+  send(p, 'pointerdown', { pointerType: 'mouse', pointerId: 1, button: 0, clientX: 900 });
+  send(p, 'pointermove', { pointerType: 'mouse', pointerId: 1, clientX: 900 });
+  send(k, 'keydown', { code: 'KeyD' });
+  const held = c.read();
+  assert.ok(held.steer > 0 && held.boost && held.pressing);
+  send(k, 'blur');
+  const after = c.read();
+  assert.ok(after.steer === 0 && !after.boost && !after.pressing, 'plane levels off when the page is not active');
+});
+
+test('the edge of the screen turns equally sharply on a phone and a wide laptop', () => {
+  const send = (target: EventTarget, type: string, { timeStamp, ...props }: { timeStamp?: number; [k: string]: unknown }) => {
+    const e = Object.assign(new Event(type), props);
+    if (timeStamp !== undefined) Object.defineProperty(e, 'timeStamp', { value: timeStamp });
+    target.dispatchEvent(e);
+  };
+  for (const width of [390, 1440, 2560]) {
+    const p = new EventTarget();
+    const c = createControls(p, new EventTarget(), () => width);
+    send(p, 'pointermove', { pointerType: 'mouse', pointerId: 1, clientX: width, button: 0 });
+    assert.equal(c.read().steer, 1, `mouse at the right edge is hard right (${width} px wide)`);
+    send(p, 'pointermove', { pointerType: 'mouse', pointerId: 1, clientX: 0, button: 0 });
+    assert.equal(c.read().steer, -1, `mouse at the left edge is hard left (${width} px wide)`);
+    // A finger landing at the centre and dragging to the edge reaches full bank too.
+    const t = new EventTarget();
+    const ct = createControls(t, new EventTarget(), () => width);
+    send(t, 'pointerdown', { pointerType: 'touch', pointerId: 2, clientX: width / 2, button: 0, timeStamp: 10 });
+    send(t, 'pointermove', { pointerType: 'touch', pointerId: 2, clientX: width, button: 0, timeStamp: 20 });
+    assert.equal(ct.read().steer, 1, `touch dragged to the edge is hard right (${width} px wide)`);
+  }
+});

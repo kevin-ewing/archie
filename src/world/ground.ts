@@ -21,9 +21,9 @@ const FLOOR = { deep: rgb(0x1f2c19), litter: rgb(0x2a3720) };
 const SCRUB = [rgb(0x3b4a26), rgb(0x46552c), rgb(0x2f3d20)] as const;
 /** Tree species, as [rim, canopy, crown, lit] tones: oak (most), a paler poplar/birch, a dark elm. */
 const SPECIES: readonly (readonly [RGB, RGB, RGB, RGB])[] = [
-  [rgb(0x1f2c19), rgb(0x31442a), rgb(0x40573a), rgb(0x4e6843)],
-  [rgb(0x2a3a1f), rgb(0x45593a), rgb(0x566e45), rgb(0x6a8252)],
-  [rgb(0x18231a), rgb(0x263826), rgb(0x324a31), rgb(0x3d5a3a)],
+  [rgb(0x33452d), rgb(0x35482e), rgb(0x40573a), rgb(0x4e6843)],
+  [rgb(0x46593a), rgb(0x4a5e3d), rgb(0x566e45), rgb(0x6a8252)],
+  [rgb(0x293a27), rgb(0x293c28), rgb(0x324a31), rgb(0x3d5a3a)],
 ];
 const HEDGE = [rgb(0x2c3a1b), rgb(0x3a4a23)] as const;
 export const DIRT = { dry: rgb(0x7d6a49), worn: rgb(0x6c5a3d), rut: rgb(0x574732) };

@@ -1,10 +1,10 @@
-// The plane's cast shadow. A flat-ish plane's shadow on flat ground is its silhouette, shifted down-sun
-// by altitude × the sun's shadow length; so it's drawn as a pre-made soft silhouette sprite at that
-// exact (sub-pixel) spot, gliding smoothly with no per-frame rasterising (which used to shimmer and cost
-// ~250k ray tests a frame). Over raised ground (trees, hedges) the shadow lands closer to the plane: the
-// height under it is sampled and eased, so it slides in and out rather than snapping.
+// The plane's cast shadow. On flat ground it's the plane's silhouette, shifted down-sun by altitude × the
+// sun's shadow length. Over raised ground (trees, hedges) it lands closer to the plane, and that's
+// worked out for every pixel of the silhouette on its own (see projectShadow): each pixel samples the
+// ground height where *it* lands and eases toward it, so the shadow drapes over crowns and hedges, and
+// only the part that is actually over something lifts.
 
-import { SPRITE_H, SPRITE_W } from './plane.ts';
+import { SPRITE_W, SPRITE_H } from './plane.ts';
 
 export const ALTITUDE = 70; // plane height above the ground, world px
 export const SHADOW_EASE = 0.25; // seconds for the shadow to settle onto a new ground height
@@ -15,16 +15,72 @@ export function shadowCentre(px: number, py: number, sun: { x: number; y: number
   return { x: px + sun.x * drop, y: py + sun.y * drop };
 }
 
-/** Ground height under the shadow: the highest of a few samples across it (crowns catch it first). */
-export function heightUnder(heightAt: (x: number, y: number) => number, x: number, y: number): number {
-  const r = 6;
-  let h = 0;
-  for (const [dx, dy] of [[0, 0], [-r, 0], [r, 0], [0, -r], [0, r]]) h = Math.max(h, heightAt(Math.round(x + dx), Math.round(y + dy)));
-  return h;
-}
-
 /** Ease the remembered ground height toward a new sample. */
 export const easeHeight = (current: number, target: number, dt: number) => current + (target - current) * (1 - Math.exp(-dt / SHADOW_EASE));
+
+/**
+ * Casts a silhouette (alpha, iw×ih, centred on the plane and turned to `heading`) onto the ground, one
+ * pixel at a time, into `out` (RGBA, bw×bh, the silhouette's flat-ground spot at its centre). A pixel
+ * whose ground is `h` high lands `h` × the shadow vector closer to the plane. `heights` remembers each
+ * pixel's eased ground height between frames. Pixels that spread apart are filled in so there are no gaps.
+ */
+export function projectShadow(a: {
+  alpha: Uint8ClampedArray;
+  iw: number;
+  ih: number;
+  plane: { x: number; y: number; heading: number };
+  shadow: { x: number; y: number }; // sun shadow vector per unit of height
+  heightAt: (x: number, y: number) => number;
+  heights: Float32Array; // iw×ih
+  dt: number;
+  out: Uint8ClampedArray;
+  bw: number;
+  bh: number;
+}): void {
+  const { alpha, iw, ih, plane, shadow, heights, out, bw, bh } = a;
+  const cos = Math.cos(plane.heading);
+  const sin = Math.sin(plane.heading);
+  const ox = (bw - iw) / 2; // where the silhouette's top-left sits in the output
+  const oy = (bh - ih) / 2;
+  const put = (x: number, y: number, v: number) => {
+    if (x < 0 || y < 0 || x >= bw || y >= bh) return;
+    const j = (y * bw + x) * 4 + 3;
+    if (v > out[j]) out[j] = v;
+  };
+  const upY = new Int32Array(iw); // where the pixel above landed (for filling vertical gaps)
+  const upOk = new Uint8Array(iw);
+  for (let y = 0; y < ih; y++) {
+    let lx = 0;
+    let lOk = false;
+    for (let x = 0; x < iw; x++) {
+      const v = alpha[y * iw + x];
+      if (!v) {
+        lOk = false;
+        upOk[x] = 0;
+        continue;
+      }
+      // This pixel's spot on the ground if the ground were flat, then the height actually under it.
+      const u = x - iw / 2 + 0.5;
+      const w = y - ih / 2 + 0.5;
+      const fx = plane.x + u * cos - w * sin + shadow.x * ALTITUDE;
+      const fy = plane.y + u * sin + w * cos + shadow.y * ALTITUDE;
+      const i = y * iw + x;
+      const h = (heights[i] = easeHeight(heights[i], a.heightAt(Math.round(fx), Math.round(fy)), a.dt));
+      // Closer to the plane by h × shadow; into the silhouette's own (unrotated) frame.
+      const sx = -shadow.x * h;
+      const sy = -shadow.y * h;
+      const dx = Math.round(x + ox + sx * cos + sy * sin);
+      const dy = Math.round(y + oy - sx * sin + sy * cos);
+      put(dx, dy, v);
+      if (lOk) for (let k = Math.min(lx, dx) + 1; k < Math.max(lx, dx); k++) put(k, dy, v);
+      if (upOk[x]) for (let k = Math.min(upY[x], dy) + 1; k < Math.max(upY[x], dy); k++) put(dx, k, v);
+      lx = dx;
+      lOk = true;
+      upY[x] = dy;
+      upOk[x] = 1;
+    }
+  }
+}
 
 /**
  * Soft silhouettes from a mask (SPRITE_W×SPRITE_H, 1 = solid): solid core plus a dithered fringe of

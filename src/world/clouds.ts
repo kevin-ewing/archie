@@ -29,10 +29,11 @@ export function cloudLevel(seed: number, x: number, y: number): number {
 }
 
 /**
- * A cloud-shadow tile: the same clouds, in the same cloud space, as a dark silhouette. The scene draws
- * it with the cloud layer's own transform, shifted down-sun, so each shadow is exactly its cloud's shape.
+ * A cloud-shadow tile, in *ground* space: the cloud field's shapes, as dark silhouettes. The scene lays
+ * it on the ground (so shadows move with the ground, not with the slow cloud layer), shifted down-sun
+ * by the cloud height × cot(sun elevation) and drifting with the wind.
  */
-export const CLOUD_SHADOW_ALPHA = [0, 40, 70, 100, 125, 145, 160];
+export const CLOUD_SHADOW_ALPHA = [0, 60, 110, 160, 200, 230, 250];
 export function cloudShadowChunk(seed: number, cx: number, cy: number): Uint8ClampedArray<ArrayBuffer> {
   const out = new Uint8ClampedArray(CHUNK * CHUNK * 4); // black, alpha by cloud density
   for (let y = 0, i = 0; y < CHUNK; y++) {

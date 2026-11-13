@@ -9,7 +9,7 @@ const fly = (p: ReturnType<typeof createPlane>, steer: number, boost: boolean, s
 test('steering right banks, turns clockwise and moves east', () => {
   const p = createPlane();
   fly(p, 1, false, 2);
-  assert.ok(p.bank > 0.99 && p.heading > 0.3, 'banked and turned right');
+  assert.ok(p.bank > 0.99 && p.heading > 0.15, 'banked and turned right');
   assert.ok(p.x > 0, 'moved east');
   fly(p, 0, false, 2);
   assert.ok(Math.abs(p.bank) < 1e-9, 'levels off when input centres');

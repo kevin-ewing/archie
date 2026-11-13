@@ -20,7 +20,7 @@ export const FLIGHT = {
   full: 62,
   accel: 10, // speed change, px/s²
   rollRate: 1.2, // bank units per second (gentle roll-in; fast rolls + fast world rotation felt queasy)
-  maxTurn: 0.3, // rad/s at full bank (full circle ≈ 21 s)
+  maxTurn: 0.15, // rad/s at full bank (full circle ≈ 42 s)
   heatUp: 0.12, // per second at full power (≈ 8 s to overheat from cold)
   coolDown: 0.05, // per second at cruise
   recoverAt: 0.4, // full power returns once heat falls this far

@@ -1,0 +1,3 @@
+- generic [active] [ref=f49e1]:
+  - generic "Archie game view" [ref=f49e2]
+  - button "Hands offT" [pressed] [ref=f49e3] [cursor=pointer]

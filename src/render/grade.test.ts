@@ -4,7 +4,7 @@ import { gradeFor, OVERCAST, skyFor } from './grade.ts';
 import { DAYLIGHT, sunAt, sunsetHour } from '../sim/daylight.ts';
 
 const D = DAYLIGHT.startDayOfYear;
-const sky = { palette: skyFor(1915, 0, true).palette, beauty: 1 };
+const sky = { ...skyFor(1915, 0, true), beauty: 1 };
 
 test('plain daylight draws nothing; sunset glows; night is darker than dusk', () => {
   assert.equal(gradeFor(sunAt(D, 13), sky).active, false);
@@ -24,4 +24,48 @@ test('skies vary: deterministic per day, some evenings dull, some spectacular', 
   assert.ok(days.some((s) => s.palette === OVERCAST), 'some grey evenings');
   assert.ok(days.some((s) => s.beauty > 1.1), 'some blazing ones');
   assert.ok(new Set(days.map((s) => s.palette.name)).size >= 5, 'many palettes in rotation');
+});
+
+test('clouds blaze at sunset, go blue the moment the rays stop, and the night is only a little darker than dusk', () => {
+  const at = (el: number, morning = false) => {
+    // The hour on this day when the sun is at `el` degrees, found by scanning.
+    const off = (h: number) => Math.abs((sunAt(D, h).elevation * 180) / Math.PI - el);
+    let best = morning ? 0 : 12;
+    for (let h = best; h < (morning ? 12 : 24); h += 0.005) if (off(h) < off(best)) best = h;
+    return sunAt(D, best);
+  };
+  const noon = gradeFor(sunAt(D, 12), sky);
+  const sunset = gradeFor(at(1), sky);
+  const dusk = gradeFor(at(-6), sky);
+  const night = gradeFor(at(-30), sky);
+  assert.equal(noon.cloud.amount, 0, 'midday clouds stay white');
+  assert.ok(sunset.cloud.amount > 0.35 && sunset.cloud.near[0] > sunset.cloud.near[2], 'sunset clouds are warm, and tinted more than at any other hour');
+  assert.ok(sunset.rays > 0 && dusk.rays === 0 && dusk.glowAlpha === 0, 'no rays or glow once the sun is well down');
+  assert.ok(dusk.near[2] > dusk.near[0], 'dusk is blue');
+  assert.ok(night.cloud.near[2] <= night.cloud.near[0] + 10, 'night clouds are tinted neutral/warm, not blue (the night filter is already blue)');
+  assert.ok(night.tintAlpha > dusk.tintAlpha && night.tintAlpha - dusk.tintAlpha < 0.25, 'night is only slightly darker than dusk');
+  const set = sunsetHour(D);
+  const minutes = (m: number) => gradeFor(sunAt(D, set + m / 60), sky);
+  assert.ok(minutes(0).rays > 0 && minutes(10).rays > 0 && minutes(-10).rays > 0 && minutes(-25).rays > 0, 'rays at sunset, and well before it');
+  assert.ok(minutes(21).rays === 0 && minutes(21).glowAlpha === 0, 'no rays or glow more than 20 minutes after sunset');
+  const predawn = gradeFor(at(-6, true), sky);
+  assert.ok(predawn.near[2] > predawn.near[0] && predawn.rays === 0, 'before sunrise the sky is blue, with no rays yet');
+});
+
+test('the light shafts change colour as the sun sinks, from the palette glow toward its ray colour', () => {
+  const high = gradeFor(sunAt(D, sunsetHour(D) - 1.5), sky).glow;
+  const low = gradeFor(sunAt(D, sunsetHour(D) + 0.3), sky).glow;
+  assert.notDeepEqual(high.map(Math.round), low.map(Math.round));
+  assert.deepEqual(low.map(Math.round), sky.rayEnd.map(Math.round), 'ends on the ray colour once the sun is on the horizon');
+});
+
+test('it is already pretty dark just after the sun sets, and still dark just before it rises', () => {
+  const set = sunsetHour(D);
+  const rise = 24 - set;
+  const day = gradeFor(sunAt(D, 14), sky).tintAlpha;
+  const after = gradeFor(sunAt(D, set + 10 / 60), sky);
+  const before = gradeFor(sunAt(D, rise - 10 / 60), sky);
+  assert.ok(after.tintAlpha > 0.5 && after.near[2] > after.near[0], 'ten minutes after sunset: dark and blue');
+  assert.ok(before.tintAlpha > 0.5 && before.near[2] > before.near[0], 'ten minutes before sunrise: dark and blue');
+  assert.ok(day === 0);
 });

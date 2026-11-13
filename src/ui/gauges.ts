@@ -5,7 +5,7 @@
 import { createPx, disc, line, plot, polar, text, textWidth, type Px, type RGBA } from '../core/pixels.ts';
 import { needleAngle } from './instruments.ts';
 
-const C = {
+export const C = {
   brass: [0xb0, 0x8d, 0x4a, 255],
   brassLit: [0xd8, 0xb8, 0x72, 255],
   brassDark: [0x6e, 0x55, 0x2b, 255],
@@ -118,52 +118,14 @@ export function createCompass(r: number): Instrument {
   });
 }
 
-/**
- * Pocket watch (pilots strapped one in, or carried their own): white enamel face, blued-steel hands, a
- * brass case with its bow (ring) on top, and a red mark on the rim at sunset, the time to be heading home.
- * `draw(hours)` sets the hands; `sunset` (solar hours) places the mark.
- */
-export function createWatch(r: number): Instrument & { sunset: number } {
-  const size = 2 * r + 1;
-  const BOW = 4; // rows above the case for the bow
-  const px = createPx(size, size + BOW);
+/** A line of pixel text as a small canvas, optionally on a padded plate. */
+export function label(s: string, ink: RGBA, pad = 0, plate?: RGBA): HTMLCanvasElement {
+  const px = createPx(textWidth(s) + 2 * pad, 5 + 2 * pad);
+  if (plate) px.data.forEach((_, i) => (px.data[i] = plate[i % 4]));
+  text(px, pad, pad, s, ink);
   const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size + BOW;
-  const ctx = canvas.getContext('2d')!;
-  const img = new ImageData(px.data, size, size + BOW);
-  const c = r;
-  const cy = r + BOW;
-  const enamel: RGBA = [0xe9, 0xe2, 0xcd, 255];
-  const steel: RGBA = [0x1d, 0x2a, 0x4a, 255];
-  const tickInk: RGBA = [0x3a, 0x36, 0x30, 255];
-  const watch = {
-    canvas,
-    size,
-    sunset: 19.5,
-    draw(hours: number) {
-      px.data.fill(0);
-      // Bow: a small brass ring above the case, and its stem.
-      disc(px, c, 2, 2, (_, __, d) => (d > 1 ? C.brass : null));
-      plot(px, c, BOW, C.brassDark);
-      disc(px, c, cy, r, (dx, dy, d) => (d > r - 2 ? (dx + dy < -2 ? C.brassLit : dx + dy > 2 ? C.brassDark : C.brass) : enamel));
-      const angle = (h: number) => ((h % 12) / 12) * 2 * Math.PI;
-      for (let hr = 0; hr < 12; hr++) {
-        const a = angle(hr);
-        const o = polar(c, cy, r - 3, a);
-        const i = polar(c, cy, r - (hr % 3 === 0 ? 5 : 4), a);
-        line(px, i.x, i.y, o.x, o.y, tickInk);
-      }
-      const mark = polar(c, cy, r - 1, angle(watch.sunset)); // on the case rim
-      plot(px, mark.x, mark.y, C.red);
-      const minute = polar(c, cy, r - 4, (hours % 1) * 2 * Math.PI);
-      const hour = polar(c, cy, r - 7, angle(hours));
-      line(px, c, cy, minute.x, minute.y, steel);
-      line(px, c, cy, hour.x, hour.y, steel);
-      line(px, c + 1, cy, hour.x + 1, hour.y, steel); // the hour hand is the stubbier, thicker one
-      plot(px, c, cy, C.brassDark);
-      ctx.putImageData(img, 0, 0);
-    },
-  };
-  return watch;
+  canvas.width = px.w;
+  canvas.height = px.h;
+  canvas.getContext('2d')!.putImageData(new ImageData(px.data, px.w, px.h), 0, 0);
+  return canvas;
 }

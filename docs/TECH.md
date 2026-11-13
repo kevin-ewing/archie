@@ -87,15 +87,16 @@ src/
     tilegen.ts         Web Worker pool for tile generation, with a main-thread fallback
     camera.ts          heading-up camera with lag; position follows the plane (critically damped)
     plane.ts           procedural pixel sprite: bank frames + silhouettes + prop strips
-    shadow.ts          plane shadow: projected position, eased ground height, soft silhouettes (pure)
+    shadow.ts          plane shadow: projected position per fuselage band, eased ground height, soft silhouettes (pure)
     smoke.ts           exhaust smoke puffs from a struggling engine
     grade.ts           light of the hour: palettes, per-day skies, banded tint + glow overlays
     sparkle.ts         sunlight twinkling on water (glint points from the ground tiles)
-    scene.ts           draws the world: ground → sunlight → cloud shadows → plane shadow → smoke → plane → clouds → grade
+    scene.ts           draws the world: ground → sunlight (+ plane shadow, cloud shadows) → smoke → plane → low clouds → wisps → high clouds → grade
   ui/                  the instrument board, kept apart from the world renderer
     instruments.ts     what each dial reads (pure) + needle lag, tremble, compass swing
     gauges.ts          pixel-art dials, the liquid compass and the pocket watch (each paints its own small canvas)
-    hud.ts             layout and breakpoints only: which instruments, where
+    hud.ts             instrument board layout and breakpoints only
+    clock.ts           the pocket watch, digital readout and date (top-left)
 ```
 
 **Still to come** (created when needed): `world/state.ts` (evolving sector), `world/gen/*` (front, sites, scars), `sim/artillery.ts`, `sim/wireless.ts`, `sim/panels.ts`, `sim/hazards.ts`, `sim/daylight.ts`, `story/*`, `content/*`, `audio/synth.ts`, `save/save.ts`, `render/palette.ts`.
@@ -110,11 +111,11 @@ Each system owns its state, exposes a small surface, and guarantees a few things
 |---|---|---|---|
 | **Noise** `core/noise.ts` | Seeded hash, value noise, fBm, cellular, Bayer dither | Same seed → same numbers, everywhere ✔ | Add a noise function here; never use `Math.random` for world content |
 | **Ground** `world/ground.ts` | Colour + height of any world pixel; tiles with heights | Deterministic per seed ✔; landscape mix in sane bands ✔; **trees are always whole** ✔; pure, no DOM | New biome: decide it in `groundAt` (order = priority: trees, water, wood floor, copse, farmland); new crop: add to `CROPS` + `cropPixel` |
-| **Clouds** `world/clouds.ts` | Cloud alpha levels per pixel | Coverage in band ✔; same pixel size as ground | Weather = vary `COVER` / levels by day |
+| **Clouds** `world/clouds.ts` | Cloud alpha levels per pixel; driven by scene into a low (shadow-casting) and a high (shadow-less) deck | Coverage in band ✔; same pixel size as ground | Weather = vary `COVER` / levels by day |
 | **Tile pipeline** `render/tilegen.ts`, `render/tiles.ts` | Generate off-thread, cache, compose one image per layer | Never blocks the main thread on workers; **falls back to main-thread generation** if workers fail; failed tiles retried after 1 s; cache capped at ~2× the view (memory-safe on phones); prefetch ring | New layer = `createTileLayer(request, CHUNK)` + a `generateTile` case |
 | **Flight** `sim/flight.ts` | Bank, heading, speed, engine heat, fuel | Bank/turn/level-off ✔; full power heats, locks out, recovers ✔; burns more fuel ✔ | Tune `FLIGHT`; new systems (altitude, damage) add fields + an update step |
 | **Camera** `render/camera.ts` | Heading-up rotation with lag; position follows the plane | **Ground scroll never slows when accelerating** ✔; plane swings out in turns, settles home ✔; offset capped | Tune `CAMERA` |
-| **Shadow** `render/shadow.ts` | Sun-ray cast shadow onto ground heights | Falls down-sun at altitude, closer on high ground ✔ | Altitude bands: pass `altitude`; sun movement: vary `SUN` |
+| **Shadow** `render/shadow.ts` | Sun-ray cast shadow onto ground heights, in `SHADOW_SLICES` bands along the fuselage | Falls down-sun at altitude, closer on high ground ✔; only the band actually over a tree lifts, not the whole shadow ✔ | Altitude bands: pass `altitude`; sun movement: vary `SUN`; more/fewer bands: `SHADOW_SLICES` |
 | **Controls** `input/controls.ts` | Mouse / touch / keyboard → raw `PilotInput` (stick, power, one-off actions) | Mouse & touch mapping, wide centre dead band, double-tap-hold ✔; one-off actions reported exactly once ✔; resets on blur | New action: add to `PilotInput` + a key + a touch gesture or HUD button |
 | **Flight aids** `sim/aids.ts` | What the plane does when not hand-flown: Hold | Starts in Hold ✔; engaged mid-turn at full power: rolls out, cruise, holds the roll-out heading ✔; holds across ±180° ✔; a click / tap that takes the stick opens the throttle while held, a steer key doesn't ✔ | New aid = a new `AidMode` and its branch in `applyAids` |
 | **Smoke** `render/smoke.ts` | Exhaust puffs by engine warning | None when fine, light when hot, dark when overheated; all fade ✔; capped | Battle damage smoke can reuse it |
@@ -122,7 +123,7 @@ Each system owns its state, exposes a small surface, and guarantees a few things
 | **Instruments** `ui/` | Readings → needles → dials → board layout, in separate files | Cruise revs; warm engine reads mid-scale; revs rise at full power and sag when hot; warning stage before lockout; temperature reaches the red; compass lags, swings past, settles ✔ | New instrument: a reading in `instruments.ts`, a dial in `gauges.ts`, a slot in `hud.ts` |
 | **Daylight** `sim/daylight.ts` | Clock; sun azimuth / elevation; shadow vector; sun strength; sunset hour | Morning shadows west, noon north, evening east; no sun at night; May sunset ~19:30 solar; midnight rollover ✔ | Change date / latitude in `DAYLIGHT`; the story calendar drives `day` |
 | **Sunlight** `world/shading.ts` + scene | Cast shadows and relief per tile, re-baked every ~3° of sun (stale tiles shown until fresh ones arrive) | Tree shadows fall down-sun and flip morning → evening; crowns lit on the sun side; lower sun → longer shadows ✔ | Tune `SHADE`; new tall things just need heights |
-| **Cloud shadows** | Ground-space tiles of cloud density, placed by sun direction + wind (never re-baked) | Same pixel grid as the ground | Weather can scale `CLOUD_SHADOW_ALPHA` |
+| **Cloud shadows** | Ground-space tiles of the *low* deck's density only, placed by sun direction + wind (never re-baked); `CLOUD_HEIGHT` kept modest so the shadow stays near its cloud rather than drifting off-screen | Same pixel grid as the ground | Weather can scale `CLOUD_SHADOW_ALPHA`; the high deck never gets a shadow tile |
 | **Grade** `render/grade.ts` | Palettes, per-day sky (palette + beauty), multiply tint + screen glow with bands, dither, shafts, vignette | Nothing drawn in plain daylight; sunset glows; night darkest; skies deterministic per day, some dull, some blazing ✔ | Add a palette to `PALETTES`; tune phase weights in `gradeFor` |
 | **Loop** `core/loop.ts` | Fixed 60 Hz sim + interpolated rendering | `blend` handles angles and flags ✔; survives exceptions; clamps long pauses | — |
 
@@ -174,7 +175,7 @@ Measured live with `?debug` (Chrome, MacBook, 1024×768 window @2×), on the mai
 What keeps it cheap:
 - **Tile composites are cached.** They're tile-aligned and only redrawn when the tiles under them change (a new tile arrives, a fade is running, or the view crosses a tile edge).
 - **The plane shadow is a sprite**, not a per-pixel cast (it used to be ~250k ray tests a frame, and it shimmered).
-- **The light overlay** is computed with lookup tables (~4.7 ms for 960×600 in Node), and only repainted when the light or sun direction actually changes (about 1°).
+- **The light overlay** is painted once, sun-aligned, and just **rotated** each frame (so turning is smooth, with no repaint steps). It's only repainted when the light itself changes.
 - **Tile generation and sunlight baking** run in workers.
 
 Biggest remaining cost: the sunlight layer's cross-fades (~0.4–0.8 ms), since a fade keeps that composite redrawing.

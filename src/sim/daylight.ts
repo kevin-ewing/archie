@@ -41,7 +41,11 @@ export type Sun = {
   shadow: { x: number; y: number };
   /** Direct sunlight, 0 (night / sun on the horizon) … 1 (well up). */
   strength: number;
+  /** How visible cast shadows are, 0 … 1: they fade out as the sun drops, so only midday shadows are crisp. */
+  shadowStrength: number;
   evening: boolean; // after solar noon
+  /** Game minutes from the sun's rising (morning) or setting (evening): negative before, positive after. */
+  horizonMinutes: number;
 };
 
 const RAD = Math.PI / 180;
@@ -65,7 +69,9 @@ export function sunAt(dayOfYearN: number, hours: number, latitude = DAYLIGHT.lat
     toward,
     shadow: { x: -toward.x * len, y: -toward.y * len },
     strength: smooth(elevation / (8 * RAD)),
+    shadowStrength: smooth((elevation - 12 * RAD) / (36 * RAD)), // none below 12°, full from 48° (May noon here is ~57°)
     evening: hours > 12,
+    horizonMinutes: (hours - (hours > 12 ? sunsetHour(dayOfYearN, latitude) : 24 - sunsetHour(dayOfYearN, latitude))) * 60,
   };
 }
 
