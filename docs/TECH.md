@@ -12,9 +12,9 @@
 | Language | **TypeScript** | Types catch mistakes across modules. Compiles away to plain JS, with zero runtime cost. |
 | Build / dev server | **Vite** (dev dependency only) | Instant reload, a tiny production bundle, deploys as static files anywhere. |
 | Rendering | **Canvas 2D**, native | Plenty for a full-screen pixel buffer at ~2 CSS px per pixel. No library needed. |
-| Audio | **Web Audio API**, native | All-synth soundtrack and effects (see `MECHANICS.md` §12.5). |
+| Audio | **Web Audio API + Tone.js** | Native engine synthesis plus lightweight continuous music voices and effects (see `MECHANICS.md` §12.5). |
 | Saves | **localStorage**, native | Small JSON, versioned. |
-| Runtime dependencies | **None** | Smallest download, nothing to break. |
+| Runtime dependencies | **Tone.js only** | Music synthesis; rendering and game systems stay native. |
 
 **Why not p5.js:** p5 is a convenience layer *over* Canvas 2D. It adds about 1 MB of library, its own draw loop and per-call overhead, and helpers we won't use. Calling Canvas 2D directly is the same drawing API with nothing in between, so it's at least as fast and much smaller. (TypeScript and Vite aren't renderers. They're the language and the build tool; the speed comes from using raw Canvas.)
 
@@ -27,7 +27,7 @@
 Because the camera **rotates** (heading-up, `MECHANICS.md` §3.4b), game pixels are not always aligned to the screen. Every frame is drawn straight onto the device-resolution canvas with a transform where **1 unit = 1 game pixel**, and **image smoothing off**. Each game pixel then appears as a crisp square (rotated when the world is rotated), sampled nearest-neighbour, never blurred.
 
 Rules (implemented in `src/render/display.ts`):
-1. **Fixed pixel size:** **1.75 CSS px** (target) per game pixel on regular screens, **0.9 CSS px** on compact screens (short side < 600 CSS px, i.e. phones), so phones see more. Both are constants (`PIXEL_SIZE`, `COMPACT_BREAKPOINT`).
+1. **Fixed pixel size:** **1.75 CSS px** (target) per game pixel on regular screens, **1.2 CSS px** on compact screens (short side < 600 CSS px, i.e. phones), so phones remain readable while still seeing more. Both are constants (`PIXEL_SIZE`, `COMPACT_BREAKPOINT`).
 2. **Whole device pixels:** `scale = round(pixelSize × dpr)`, minimum 1. When the world isn't rotated, every game pixel is exactly N×N physical pixels. Pixel size can be off by up to half a device pixel from the target so the target is only hit approximately: on 1× and 2× screens it lands on 2 CSS px, at 125% on 1.6. **Pixel size moves in steps** (e.g. 1.5 → 2 CSS px on Retina); in-between sizes would make pixels uneven widths.
 3. **The canvas backing store is the exact device-pixel size of the window.** Its CSS size is `devicePx / dpr`, so the browser never resamples the canvas.
 4. **World graphics are bitmaps.** Ground, clouds, the plane and its shadow are pixel-art canvases drawn with `drawImage` (nearest-neighbour). **Never fill vector shapes under rotation**: Canvas antialiases shape edges, which blurs them.
@@ -39,8 +39,8 @@ Rules (implemented in `src/render/display.ts`):
 | 1080p monitor (1920×1080 @1×) | 960×540 | 2 CSS px |
 | Retina MacBook (1440×900 @2×) | 720×450 | 2 CSS px |
 | Windows 125% (1536×864) | 960×540 | 1.6 CSS px |
-| iPhone portrait (390×844 @3×) | 390×844 | 1 CSS px |
-| Android portrait (412×915 @2.625×) | 541×1201 | 0.76 CSS px |
+| iPhone portrait (390×844 @3×) | 293×633 | 1.33 CSS px |
+| Android portrait (412×915 @2.625×) | ~361×801 | 1.14 CSS px |
 
 **Design consequences:**
 - **Visible area varies a lot by screen.** Sprites are the same size everywhere, so **gameplay must work in the smallest view** (~390 game px across on a portrait phone). Ranges (spotting distance, Archie range) are defined in world units, never screen units.

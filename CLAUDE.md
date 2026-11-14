@@ -12,7 +12,7 @@ Kevin wants clean modules, and Ponytail wants no speculative code. Both hold:
 - **One module per real responsibility** (display, loop, flight, terrain gen…). Split when a file does two jobs, not before.
 - **Modules talk through plain data and small functions.** No class hierarchies, DI containers, event buses or "managers" until two real callers need one.
 - **No empty folders or placeholder files.** A module is created when the first feature needs it.
-- **Zero runtime dependencies.** Dev-only: TypeScript and Vite.
+- **Keep runtime dependencies exceptional.** Tone.js is the sole runtime dependency; do not add another when the platform or existing code covers it.
 
 ## Hard rules
 - Pixels must stay crisp: never draw the game scaled with smoothing on (see `src/render/display.ts`).

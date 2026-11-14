@@ -1,6 +1,0 @@
-- generic [active] [ref=f4e1]:
-  - generic "Archie game view" [ref=f4e2]
-  - status "Preparing flight"
-  - slider "Engine volume" [ref=f4e5] [cursor=pointer]: "30"
-  - button "Hold steady" [disabled] [ref=f4e6]:
-    - generic [ref=f4e8]: T
