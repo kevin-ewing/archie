@@ -230,7 +230,9 @@ const show = () => {
   loading?.classList.add('settling');
   const settleMs = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900;
   setTimeout(() => {
+    loading?.classList.add('ready-to-launch'); // the whole white screen works as soon as settling ends
     setTimeout(() => {
+      if (!loading?.classList.contains('ready-to-launch')) return;
       loading?.classList.add('awaiting-launch');
       launchButton?.focus();
     }, 1000);
@@ -238,8 +240,8 @@ const show = () => {
 };
 
 loading?.addEventListener('click', () => {
-  if (!loading?.classList.contains('awaiting-launch')) return;
-  loading.classList.remove('awaiting-launch');
+  if (!loading?.classList.contains('ready-to-launch')) return;
+  loading.classList.remove('ready-to-launch', 'awaiting-launch');
   audio.start();
   unlockAudio();
   setPhase('handoff'); // audio and flight begin together; steering waits for the reveal

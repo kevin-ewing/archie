@@ -268,7 +268,7 @@ export function createAudio(initialVolume = DEFAULT_ENGINE_VOLUME, initialMusicV
       build();
       await startWorklet();
       if (context?.state === 'suspended') await context.resume();
-      if (started) start();
+      if (started && !musicStarted) start(); // repeated gesture unlocks must not strike chord one again
     },
     start,
     updateEngine(next) {

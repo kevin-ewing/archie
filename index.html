@@ -38,7 +38,7 @@
       #launch { position: absolute; left: 50%; bottom: calc(100% + 30px); width: 48px; height: 52px; padding: 0; border: 0; color: #14130f; background: transparent; opacity: 0; pointer-events: none; transform: translateX(-50%); transition: opacity 0.25s, color 0.12s; cursor: pointer; }
       #launch svg { width: 33px; height: 45px; fill: currentColor; filter: drop-shadow(-1.5px -1.5px 0 #b8b7b1) drop-shadow(1.5px 1.5px 0 #fff); }
       #launch:hover, #launch:focus-visible { color: #66645d; outline: none; }
-      #loading.awaiting-launch { pointer-events: auto; }
+      #loading.ready-to-launch { pointer-events: auto; }
       #loading.awaiting-launch #launch { opacity: 1; pointer-events: auto; }
       @media (prefers-reduced-motion: reduce) { #loading, #loading-flight, #loading-text, #launch { transition: none; } }
       #debug { position: fixed; right: 8px; top: 8px; margin: 0; padding: 6px 8px; font: 11px/1.35 ui-monospace, Menlo, monospace; color: #e8e2cf; background: rgb(20 19 15 / 0.75); pointer-events: none; white-space: pre; }
