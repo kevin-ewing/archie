@@ -13,6 +13,9 @@ import { createInstruments, updateInstruments } from './ui/instruments.ts';
 import { cloudChunk } from './world/clouds.ts';
 import { CHUNK, groundChunk, HEIGHT_STEPS } from './world/ground.ts';
 import { shadeTile } from './world/shading.ts';
+import { generateTile } from './world/generate.ts';
+import { frontPoint, frontsNear } from './world/military.ts';
+import { structuresNear } from './world/structures.ts';
 
 type Timing = { median: number; p95: number };
 type Baseline = { version: 1; node: string; results: Record<string, Timing> };
@@ -44,6 +47,14 @@ bench('noise', 'noise / cellular × 50k', 9, (run) => {
 });
 
 bench('ground', 'ground tile 128²', 7, (run) => groundChunk(1915, run + 20, -11).rgba[run]);
+// Ground tiles with the world's additions stamped in: one across the trenches, one over a farmstead.
+const front = frontsNear(1915, -40000, -40000, 40000, 40000)[0];
+const frontAt = frontPoint(1915, front, 0, -front.nml - 40);
+const frontTile = { cx: Math.floor(frontAt.x / CHUNK), cy: Math.floor(frontAt.y / CHUNK) };
+const farmSite = structuresNear(1915, -6000, -6000, 6000, 6000).find((s) => s.kind === 'farm')!;
+const farmTile = { cx: Math.floor(farmSite.x / CHUNK), cy: Math.floor(farmSite.y / CHUNK) };
+bench('groundFront', 'ground tile at the front', 7, (run) => generateTile({ kind: 'ground', seed: 1915, cx: frontTile.cx, cy: frontTile.cy + run, features: { structures: true, military: true } }).rgba[run]);
+bench('groundFarm', 'ground tile with a farm', 7, (run) => generateTile({ kind: 'ground', seed: 1915, cx: farmTile.cx, cy: farmTile.cy }).rgba[run + 1]);
 bench('clouds', 'cloud tile 128²', 7, (run) => cloudChunk(1915, run + 20, -11)[run]);
 
 const heights = new Uint8Array(9 * CHUNK * CHUNK);

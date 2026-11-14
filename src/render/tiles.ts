@@ -2,8 +2,8 @@
 // the scene then draws rotated. (Drawing many adjacent tiles rotated would leave hairline seams: Canvas
 // antialiases image edges.) Ground tiles also keep their heights, for shadows.
 //
-// Layers whose content depends on something that changes (the sun, for the shading layer) pass a
-// `version`: tiles from an older version keep being drawn while their replacement is generated, so
+// Layers whose content depends on something that changes (the sun for the shading layer; toggles and
+// damage for the ground) pass a `version`, per tile: tiles from an older version keep being drawn while their replacement is generated, so
 // there's never a gap; with `fadeMs`, the new version cross-fades in over the old, so changes are gradual.
 
 import { HEIGHT_STEPS, type TileData } from '../world/ground.ts';
@@ -23,6 +23,8 @@ export type TileLayer = {
   heights: (cx: number, cy: number) => Uint8Array | undefined;
   /** A cached ground tile's sparkle points (tile-local pixel indexes), if it's ready. */
   glints: (cx: number, cy: number) => Uint32Array | undefined;
+  /** True if the tile is cached and up to date with its version. */
+  isCurrent: (cx: number, cy: number) => boolean;
 };
 
 const RETRY_MS = 1000; // after a failed tile, wait this long before asking again
@@ -33,7 +35,7 @@ export function createTileLayer(
   /** Generate a tile; return null if it can't be made yet (e.g. its inputs aren't ready) to try again later. */
   request: (cx: number, cy: number) => Promise<TileData> | null,
   tile: number,
-  opts: { maxInFlight?: number; version?: () => string; fadeMs?: number } = {},
+  opts: { maxInFlight?: number; version?: (cx: number, cy: number) => string; fadeMs?: number } = {},
 ): TileLayer {
   const maxInFlight = opts.maxInFlight ?? 32;
   const version = opts.version ?? (() => '');
@@ -50,7 +52,7 @@ export function createTileLayer(
   function fetch(key: string, cx: number, cy: number) {
     if (pending.has(key) || pending.size >= maxInFlight) return;
     if (performance.now() - (failedAt.get(key) ?? -Infinity) < RETRY_MS) return;
-    const v = version();
+    const v = version(cx, cy);
     const job = request(cx, cy);
     if (!job) return;
     pending.add(key);
@@ -96,7 +98,7 @@ export function createTileLayer(
     if (e) {
       cache.delete(key); // refresh LRU position
       cache.set(key, e);
-      if (e.version !== version()) fetch(key, cx, cy); // stale: keep drawing it, refresh in the background
+      if (e.version !== version(cx, cy)) fetch(key, cx, cy); // stale: keep drawing it, refresh in the background
       return e;
     }
     fetch(key, cx, cy);
@@ -165,5 +167,6 @@ export function createTileLayer(
     },
     heights: (cx, cy) => cache.get(`${cx},${cy}`)?.heights,
     glints: (cx, cy) => cache.get(`${cx},${cy}`)?.glints,
+    isCurrent: (cx, cy) => cache.get(`${cx},${cy}`)?.version === version(cx, cy),
   };
 }

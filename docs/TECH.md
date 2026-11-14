@@ -64,6 +64,8 @@ Modules are created **when the first feature needs them**. **Built so far** (rou
 ```
 src/
   main.ts              wiring only: create everything, run the loop
+  perf.ts              `npm run benchmark`: repeatable subsystem benchmarks (Node)
+  frontmap.ts          `npm run frontmap`: internal tool, maps of the front at the start (or a wide area) and its trenches over the land (Node)
   core/
     loop.ts            fixed-timestep loop + `blend` (render interpolation)
     noise.ts           seeded hash + value noise + fBm (all randomness goes through this)
@@ -72,8 +74,12 @@ src/
   world/
     ground.ts          ground colour per world pixel, from noise (pure; no DOM)
     clouds.ts          cloud pixels from noise (pure; no DOM)
-    generate.ts        one entry point for generating any tile (used by worker and fallback)
+    generate.ts        one entry point for generating any tile; composes ground + stamps (damage → structures → front)
     shading.ts         sunlight per tile from heights: cast shadows + relief lighting (pure)
+    structures.ts      farms, post mills, chapels, ruins: placement + per-pixel stamps (pure)
+    military.ts        the front: trenches, wire, craters, batteries (pure)
+    lights.ts          lamplight around sunset: where the lamps are, on/off times, flicker (pure)
+    damage.ts          live damage marks (store, per-tile versions) + crater/scorch stamps
     worker.ts          Web Worker entry: generates tiles off the main thread
   sim/
     flight.ts          bank, turn, speed, engine full power / heat / fuel
@@ -91,6 +97,7 @@ src/
     smoke.ts           exhaust smoke puffs from a struggling engine
     grade.ts           light of the hour: palettes, per-day skies, banded tint + glow overlays
     sparkle.ts         sunlight twinkling on water (glint points from the ground tiles)
+    lamps.ts           lamplight around sunset: one flickering glow bitmap per lit window, added over the grade
     scene.ts           draws the world: ground → sunlight (+ plane shadow, cloud shadows) → smoke → plane → low clouds → wisps → high clouds → grade
   ui/                  the instrument board, kept apart from the world renderer
     instruments.ts     what each dial reads (pure) + needle lag, tremble, compass swing
@@ -99,7 +106,7 @@ src/
     clock.ts           the pocket watch, digital readout and date (top-left)
 ```
 
-**Still to come** (created when needed): `world/state.ts` (evolving sector), `world/gen/*` (front, sites, scars), `sim/artillery.ts`, `sim/wireless.ts`, `sim/panels.ts`, `sim/hazards.ts`, `sim/daylight.ts`, `story/*`, `content/*`, `save/save.ts`, `render/palette.ts`.
+**Still to come** (created when needed): `world/state.ts` (evolving sector), `sim/artillery.ts`, `sim/wireless.ts`, `sim/panels.ts`, `sim/hazards.ts`, `sim/daylight.ts`, `story/*`, `content/*`, `save/save.ts`, `render/palette.ts`.
 
 **Data flow:** `input → controls → sim (pure state updates) → camera → render (reads state)`. Nothing in `sim/` or `world/` imports from `render/`. Story reads sim events and writes story state. Audio reads sim state.
 
@@ -126,6 +133,7 @@ Each system owns its state, exposes a small surface, and guarantees a few things
 | **Sunlight** `world/shading.ts` + scene | Cast shadows and relief per tile, re-baked every ~3° of sun (stale tiles shown until fresh ones arrive) | Tree shadows fall down-sun and flip morning → evening; crowns lit on the sun side; lower sun → longer shadows ✔ | Tune `SHADE`; new tall things just need heights |
 | **Cloud shadows** | Ground-space tiles of the *low* deck's density only, placed by sun direction + wind (never re-baked); `CLOUD_HEIGHT` kept modest so the shadow stays near its cloud rather than drifting off-screen | Same pixel grid as the ground | Weather can scale `CLOUD_SHADOW_ALPHA`; the high deck never gets a shadow tile |
 | **Grade** `render/grade.ts` | Palettes, per-day sky (palette + beauty), multiply tint + screen glow with bands, dither, shafts, vignette | Nothing drawn in plain daylight; sunset glows; night darkest; skies deterministic per day, some dull, some blazing ✔ | Add a palette to `PALETTES`; tune phase weights in `gradeFor` |
+| **World additions** `world/structures.ts`, `military.ts`, `damage.ts` | Stamped into ground tiles in the worker, in priority order damage → structures → front → tracks → landscape | Deterministic per seed (same when you return) ✔; scattered fronts at many angles ✔; the front masked off water (texture-sampled per tile) ✔; fronts never overlap (one per territory) ✔; a front never crosses or comes back near itself ✔; maze of trenches around each line, batteries behind ✔; many building kinds and farm plans, only on open land, never in trenches or gun lines, ruined near fronts ✔; sloped roofs, paving apron then shared `dirtAt` dirt round buildings, linked tracks ✔; whole craters stacked by z (no clipping) ✔; **every stamp returns a valid colour anywhere** (fuzz check) ✔; damage persists, bumps only the touched tiles ✔. Per tile: front cells precomputed (`cellularField`), front coordinates found on an 8-px grid and interpolated (`frontField`), each front's curve built once | New structure: a builder in `structures.ts`; new military feature: a branch in `militaryAt`; new damage kind: a case in `damageAt` |
 | **Loop** `core/loop.ts` | Fixed 60 Hz sim + interpolated rendering | `blend` handles angles and flags ✔; survives exceptions; clamps long pauses | — |
 
 **Hard edges handled:**
@@ -187,6 +195,20 @@ Biggest remaining cost: the sunlight layer's cross-fades (~0.4–0.8 ms), since 
 - **`npm run check`**: TypeScript type-check plus small runnable checks (`*.test.ts`) using Node's built-in test runner. No test framework.
 - Following Ponytail, each piece of non-trivial logic (scaling maths, RNG, clock-code snapping, world generation guarantees) gets **one** small check that fails if the logic breaks.
 - World generation checks run many seeds and assert the guarantees in `MECHANICS.md` §3.6 (target reachable, landmark nearby, etc.).
+
+### 7b. Front map (internal auditing tool)
+
+`npm run frontmap` renders five colour maps of the fronts and their trenches over the lakes and woods, for auditing, planning and tweaking. They're always at **production front frequency** (density 2.5, as `createScene` uses outside development). It calls the game's own code (`tileStamp` in `world/generate.ts`, so the water / deep-wood mask and tree cover apply; `frontsNear`, `frontField` and `territoryAt` in `world/military.ts`; `landAt` in `world/ground.ts`), with the same per-tile features the game requests, so it shows exactly what the game generates.
+
+- **What it maps:** by default, **just the front at the plane's start** (`FRONTS.atStart` puts one there for now), framed tightly round the part of it inside its territory, at the finest scale (8–128 world px per image px) that fits a 2,500 px image. About 2–6 s a map. With `--size`, a wide square round the start instead (many fronts; also the fallback when there's no front at the start); that takes minutes.
+- **Output:** `debug/1.png` … `debug/5.png`, five random seeds (git-ignored). Each run first moves the previous run's maps to `debug/backup/`, replacing the run before that, so one regeneration can be undone and a second throws them away. It prints each map's seed, size and scale, and the start front's length.
+- **Key:** black = open land; dark blue = water (lakes and shores); dark green = woods and copses; grey = a front's zone (within `FRONTS.reach` of its line, the only place works appear), tinted blue or green where it lies over water or woods; light grey = no-man's land; white = anything the front stamps; a small red cross = the world origin (the plane's start).
+- **Options** (after `--`):
+  - `--seeds=1,2,3,4,5`: pin the seeds (up to five).
+  - `--full`: the whole front (wire, craters, batteries, camps…). The default is trenches only, as the game currently draws.
+  - `--style=traversed`: another trench style (default `hasty`).
+  - `--size=320000`: map a wide square of this many world px round the start (scale 128, 2,500 px), instead of just the start's front. `--scale` (world px per output px; must divide 128) and `--step` (sample spacing inside an output px) override the automatic choice.
+- **Sampling:** land is sampled once, at each output px's centre (so very small copses and ponds can be missed); an output px is white if any front sample in it is stamped, so thin trenches still show; a feature thinner than `--step` can slip between samples (lower `--step` to check). Tiles far from the start front's line show only the land, for speed.
 
 ---
 

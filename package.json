@@ -13,6 +13,7 @@
     "benchmark:check": "node --experimental-strip-types src/perf.ts --check",
     "benchmark:record": "node --experimental-strip-types src/perf.ts --record",
     "benchmark:update": "node --experimental-strip-types src/perf.ts --update",
+    "frontmap": "node --experimental-strip-types src/frontmap.ts",
     "verify": "npm run check && npm run benchmark:check && npm run build"
   },
   "devDependencies": {

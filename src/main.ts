@@ -10,13 +10,14 @@ import { PROP, propWidth } from './render/plane.ts';
 import { createScene, drawScene } from './render/scene.ts';
 import { applyAids, createAids } from './sim/aids.ts';
 import { advanceClock, createClock, DAYLIGHT, dayOfYear, sunNow, sunsetHour } from './sim/daylight.ts';
-import { createPlane, updatePlane } from './sim/flight.ts';
+import { createPlane, FLIGHT, updatePlane } from './sim/flight.ts';
 import { createClockFace, drawClock } from './ui/clock.ts';
 import { label } from './ui/gauges.ts';
 import { createHud, drawHud } from './ui/hud.ts';
 import { createToggles, drawButtonPlate, drawToggles, drawVolumePlate, toggleAt } from './ui/toggles.ts';
 import { createInstruments, engineWarning, updateInstruments } from './ui/instruments.ts';
 import { createSmoke, updateSmoke } from './render/smoke.ts';
+import { TRENCH_STYLES, type TrenchStyle } from './world/military.ts';
 
 export const IS_DEV = import.meta.env.DEV;
 
@@ -27,23 +28,30 @@ function numberFromUrl(name: string, ok: (n: number) => boolean): number | undef
   return ok(n) ? n : undefined;
 }
 const SEED = numberFromUrl('seed', (n) => Number.isInteger(n) && n >= 0 && n < 2 ** 31) ?? Math.floor(Math.random() * 2 ** 31); // which world: random each run unless `?seed=` pins it
-// Solar time to start at: `?time=19.5`, or a random hour of the 24 (drawn through the seeded hash,
-// fed with the session's start time, so each visit differs).
+// Solar time to start at: `?time=19.5`, else 7:00 in development (for now) or, in production, a random
+// time before sunset (drawn through the seeded hash, fed with the session's start time, so each visit differs).
 const randomStart = hash(SEED, Math.floor(Date.now() / 1000), 77);
 const START_HOUR =
   numberFromUrl('time', (n) => n >= 0 && n < 24) ??
-  (IS_DEV ? randomStart * 24 : sunsetHour(DAYLIGHT.startDayOfYear) - (1.75 + randomStart * 0.5)); // production: 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
+  (IS_DEV ? 7 : sunsetHour(DAYLIGHT.startDayOfYear) - (1.75 + randomStart * 0.5)); // development (for now): always 7:00 am; production: 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
 
-// Development aids. Debug toggles (bottom-left, above the gauges): FAST TIME runs the clock 3× (on for now).
-// Hold ] to run it 40× faster still (to see sunsets without waiting).
-const toggles = createToggles([{ id: 'fastTime', text: 'FAST TIME', on: IS_DEV }]);
+// Development aids. Debug toggles (bottom-left, above the gauges): FAST TIME runs the clock 3× (on for now);
+// BUILDINGS and FRONT switch the farms / the military works on and off (the visible ground tiles regenerate
+// over a second or so; flying costs nothing either way). Hold ] to run the clock 40× faster still.
+const toggles = createToggles([
+  { id: 'fastPlane', text: 'FAST PLANE', on: IS_DEV }, // twice the speed, to cover ground faster (bottom of the stack: under FAST TIME)
+  { id: 'fastTime', text: 'FAST TIME', on: IS_DEV },
+  { id: 'structures', text: 'BUILDINGS', on: false }, // off while the front is worked on
+  { id: 'military', text: 'FRONT', on: true },
+]);
+const toggleOn = (id: string) => toggles.items.find((t) => t.id === id)?.on ?? true;
 const FAST_TIME = 3;
 const FAST_FORWARD = 40;
 let forward = false;
 window.addEventListener('keydown', (e) => e.code === 'BracketRight' && (forward = true));
 window.addEventListener('keyup', (e) => e.code === 'BracketRight' && (forward = false));
 window.addEventListener('blur', () => (forward = false));
-const timeSpeed = () => (IS_DEV ? (forward ? FAST_FORWARD : toggles.items[0].on ? FAST_TIME : 1) : 1);
+const timeSpeed = () => (IS_DEV ? (forward ? FAST_FORWARD : toggleOn('fastTime') ? FAST_TIME : 1) : 1);
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const CAMPAIGN_START = new Date(1915, 4, 10); // 10 May 1915; matches DAYLIGHT.startDayOfYear
@@ -149,14 +157,31 @@ holdButton?.addEventListener('click', (e) => {
   controls.requestToggleHold();
   if (e.detail > 0) holdButton.blur(); // a mouse/touch click mustn't leave focus here, or Space would toggle it
 });
-const plane = createPlane();
+// FAST PLANE (development only): twice the cruise and full-power speeds while it's on.
+const BASE_SPEED = { cruise: FLIGHT.cruise, full: FLIGHT.full };
+const applyFastPlane = () => {
+  const k = IS_DEV && toggleOn('fastPlane') ? 2 : 1;
+  FLIGHT.cruise = BASE_SPEED.cruise * k;
+  FLIGHT.full = BASE_SPEED.full * k;
+};
+applyFastPlane();
+// Start on a random heading (from the seed, so `?seed=` repeats it), not lined up with the world's pixels.
+const plane = createPlane(0, 0, hash(SEED, 41, 7) * 2 * Math.PI);
 const cam = createCamera(plane);
 const aids = createAids(plane, IS_DEV ? 'hold' : 'off');
 // Previous sim tick, for smooth rendering between ticks on high-refresh screens.
 const prevPlane = { ...plane };
 const prevCam = { ...cam };
 const STEP = 1 / 60;
-const scene = createScene(SEED);
+const scene = createScene(SEED, IS_DEV ? 10 : 2.5); // farms 2.5× the base rate in play; development packs them 4× closer still
+// The front is being built one part at a time: for now only its trench lines, in one style (being
+// worked on: hasty; `?trench=traversed` shows the original).
+const trenchParam = new URLSearchParams(location.search).get('trench');
+const TRENCH_STYLE: TrenchStyle = (TRENCH_STYLES as readonly string[]).includes(trenchParam ?? '') ? (trenchParam as TrenchStyle) : 'hasty';
+scene.features.onlyTrenches = true;
+scene.features.frontLine = IS_DEV; // development: the front's own line in red, to see where it runs
+scene.features.trenchStyle = TRENCH_STYLE;
+console.log(`Trench style: ${TRENCH_STYLE} (pin one with ?trench=${TRENCH_STYLES.join('|')})`);
 const loading = document.getElementById('loading');
 const loadingPlane = document.getElementById('loading-plane');
 const loadingText = document.getElementById('loading-text');
@@ -248,9 +273,45 @@ const drawLoading = () => {
   loadingFrame = requestAnimationFrame(drawLoading);
 };
 drawLoading();
+// "Game mode": fullscreen, the screen kept awake, Esc and friends captured, landscape on phones. Browsers
+// can't ask the OS for its own game mode; these are the closest things a page can do. All need a user
+// gesture (the launch click) and every one is optional, so failures are ignored.
+let wakeLock: WakeLockSentinel | undefined;
+const keepAwake = () => void navigator.wakeLock?.request('screen').then((l) => (wakeLock = l), () => {});
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && wakeLock?.released) keepAwake(); // the browser drops the lock whenever the tab is hidden
+});
+const enterGameMode = () => {
+  keepAwake();
+  document.documentElement.requestFullscreen?.({ navigationUI: 'hide' }).then(
+    () => {
+      void (navigator as any).keyboard?.lock?.(['Escape']).catch(() => {}); // Chromium: hold Esc to leave fullscreen
+      void (screen.orientation as any)?.lock?.('landscape').catch(() => {}); // Android
+    },
+    () => {},
+  );
+};
+/** Take off: the loading screen fades, audio starts, steering unlocks once it has cleared. */
+const launch = () => {
+  if (!loading?.isConnected) return;
+  if (navigator.userActivation?.isActive) enterGameMode(); // not in dev's automatic launch: there's no click to allow it
+  loading.classList.remove('ready-to-launch', 'awaiting-launch');
+  audio.start();
+  unlockAudio();
+  setPhase('handoff'); // audio and flight begin together; steering waits for the reveal
+  cancelAnimationFrame(loadingFrame);
+  loading.classList.add('done');
+  loading.setAttribute('aria-hidden', 'true');
+  const fadeMs = 900;
+  setTimeout(() => {
+    loading.remove();
+    setPhase('playing');
+  }, fadeMs);
+};
 const show = () => {
   shown = true;
   window.removeEventListener('resize', sizeLoading);
+  if (IS_DEV) return launch(); // development goes straight in once everything has loaded
   loading?.classList.add('settling');
   const settleMs = 900;
   setTimeout(() => {
@@ -264,19 +325,7 @@ const show = () => {
 };
 
 loading?.addEventListener('click', () => {
-  if (!loading?.classList.contains('ready-to-launch')) return;
-  loading.classList.remove('ready-to-launch', 'awaiting-launch');
-  audio.start();
-  unlockAudio();
-  setPhase('handoff'); // audio and flight begin together; steering waits for the reveal
-  cancelAnimationFrame(loadingFrame);
-  loading.classList.add('done');
-  loading.setAttribute('aria-hidden', 'true');
-  const fadeMs = 900;
-  setTimeout(() => {
-    loading.remove();
-    setPhase('playing');
-  }, fadeMs);
+  if (loading.classList.contains('ready-to-launch')) launch();
 });
 
 startLoop(
@@ -288,6 +337,7 @@ startLoop(
     Object.assign(prevPlane, plane);
     Object.assign(prevCam, cam);
     t += dt;
+    applyFastPlane();
     updatePlane(plane, applyAids(aids, plane, controls.read()), dt);
     const holding = String(aids.mode === 'hold');
     if (holdButton && holdButton.getAttribute('aria-pressed') !== holding) holdButton.setAttribute('aria-pressed', holding);
@@ -306,13 +356,15 @@ startLoop(
     const view = display.view();
     const warning = engineWarning(plane);
     const sun = sunNow(clock);
+    scene.features.structures = toggleOn('structures');
+    scene.features.military = toggleOn('military');
     const complete = drawScene(display.ctx, view, scene, p, c, { t: t - STEP * (1 - alpha), smoke, warning, sun, day: clock.day, prof });
     drawHud(display.ctx, view, hud, instruments, warning, t);
     drawToggles(display.ctx, view, toggles, IS_DEV);
-    const fastTime = toggles.rects[0];
+    const fastTime = toggles.rects[0]; // the bottom toggle (now FAST PLANE): the other plates are placed from it
     if (fastTime) {
       const px = view.uiScale / (window.devicePixelRatio || 1);
-      const firstRow = IS_DEV ? 1 : 0;
+      const firstRow = IS_DEV ? toggles.items.length : 0;
       placeVolume(audioControl, volumeFace, volumeSlider, 'ENGINE', firstRow, fastTime, px);
       placeVolume(musicControl, musicFace, musicSlider, 'MUSIC', firstRow + 1, fastTime, px);
       if (holdButton instanceof HTMLButtonElement && holdFace instanceof HTMLCanvasElement) {

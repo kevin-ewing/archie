@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { gradeFor, OVERCAST, skyFor } from './grade.ts';
+import { gradeFor, gradePixels, OVERCAST, skyFor } from './grade.ts';
 import { DAYLIGHT, sunAt, sunsetHour } from '../sim/daylight.ts';
 
 const D = DAYLIGHT.startDayOfYear;
@@ -74,4 +74,16 @@ test('it is already pretty dark just after the sun sets, and still dark just bef
   assert.equal(fullAfter.night, 1, 'full night arrives well before an hour after sunset');
   assert.equal(fullBefore.night, 1, 'full night holds until well within an hour of sunrise');
   assert.ok(day === 0);
+});
+
+test('the fast row-copying paint matches the full per-pixel computation', () => {
+  for (const h of [sunsetHour(D) - 0.1, sunsetHour(D) - 1, 23.5]) {
+    const g = gradeFor(sunAt(D, h), sky);
+    for (const dir of [{ x: 1, y: 0 }, { x: -1, y: 0 }]) {
+      const fast = gradePixels(301, 211, g, dir, undefined, 190);
+      const full = gradePixels(301, 211, g, dir, undefined, 190, false);
+      assert.deepEqual(fast.tint, full.tint);
+      assert.deepEqual(fast.glow, full.glow);
+    }
+  }
 });

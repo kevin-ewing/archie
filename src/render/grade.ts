@@ -178,6 +178,7 @@ export function gradePixels(
   dir: { x: number; y: number },
   out?: { tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> }, // reused, to spare the GC
   radius = Math.hypot(w, h) / 2, // distance from the centre at which the gradient reaches its ends
+  copyRows = true, // reuse repeated rows when the sun is along ±x (off only to check it against the full computation)
 ) {
   const tint = out?.tint.length === w * h * 4 ? out.tint : new Uint8ClampedArray(w * h * 4);
   const glow = out?.glow.length === w * h * 4 ? out.glow : new Uint8ClampedArray(w * h * 4);
@@ -201,13 +202,28 @@ export function gradePixels(
   const shafts = glowing ? Uint8Array.from({ length: 2 * U + 1 }, (_, i) => shaftLevel(i - U)) : new Uint8Array(0);
   const dfx = (dir.x / R) * 0.5 * BANDS; // band position per px in x
   const duX = -dir.y; // across-sun position per px in x
+  // Sun along ±x (how the game paints it): a row depends only on y & 3 (the dither) and its shaft level,
+  // so it repeats the row 4 above whenever that row had the same shaft level. Copy it instead of recomputing.
+  const rowsRepeat = copyRows && dir.y === 0;
+  const bands4 = rowsRepeat ? new Uint8Array(4 * w) : undefined; // the bands of the first 4 rows (one per dither row)
   for (let y = 0, i = 0; y < h; y++) {
     let f = (((0 - cx) * dir.x + (y - cy) * dir.y) / R) * 0.5 * BANDS + 0.5 * BANDS;
     let u = (0 - cx) * -dir.y + (y - cy) * dir.x + U;
+    if (bands4 && y >= 4) {
+      const above = i - 4 * w;
+      T.copyWithin(i, above, above + w);
+      const s = glowing ? shafts[u | 0] : 0;
+      if (!glowing) G.fill(0, i, i + w);
+      else if (s === shafts[(u - 4 * dir.x) | 0]) G.copyWithin(i, above, above + w); // most rows: shafts are ~28 px wide
+      else for (let x = 0, b = (y & 3) * w; x < w; x++) G[i + x] = glowPack[bands4[b + x] * SHAFT_LEVELS + s]; // new shaft level, same bands
+      i += w;
+      continue;
+    }
     const row = (y & 3) << 2;
     for (let x = 0; x < w; x++, i++, f += dfx, u += duX) {
       let band = (f + DITHER[row | (x & 3)]) | 0;
       band = band < 0 ? 0 : band >= BANDS ? BANDS - 1 : band;
+      if (bands4) bands4[y * w + x] = band;
       T[i] = tintPack[band];
       G[i] = glowing ? glowPack[band * SHAFT_LEVELS + shafts[u | 0]] : 0;
     }
@@ -221,7 +237,7 @@ function repaint(layer: GradeLayer, size: number, g: Grade, radius: number) {
   const px = gradePixels(size, size, g, { x: 1, y: 0 }, layer.px, radius);
   layer.px = px;
   layer.tint.getContext('2d')!.putImageData(new ImageData(px.tint, size, size), 0, 0);
-  layer.glow.getContext('2d')!.putImageData(new ImageData(px.glow, size, size), 0, 0);
+  if (g.glowAlpha > 0.004) layer.glow.getContext('2d')!.putImageData(new ImageData(px.glow, size, size), 0, 0); // else drawGrade doesn't draw it
 }
 
 /**

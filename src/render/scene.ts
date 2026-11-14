@@ -1,6 +1,7 @@
 // Draws the world for one frame, with a heading-up rotating camera, in this order:
 //   ground → direct sunlight (tree shadows, highlights, glints, plane shadow; erased under cloud shade)
 //   → cloud shadows → smoke → plane → low clouds → fly-through wisps → high clouds (no shadow) → light grade
+//   → around sunset, lamplight (over the grade so it stays warm; clouds and the plane cut out of it)
 // (The instrument board is drawn on top separately; see ui/hud.ts.)
 
 import { BASE as GROUND_BASE, CHUNK } from '../world/ground.ts';
@@ -12,12 +13,16 @@ import { hash } from '../core/noise.ts';
 import type { Profiler } from '../core/profile.ts';
 import { createGradeLayer, drawGrade, gradeFor, skyFor, type GradeLayer } from './grade.ts';
 import { bankFrame, createPlaneSprites, PROP, propWidth, SPRITE_H, type PlaneSprites } from './plane.ts';
-import { projectShadow, shadowCentre, softSilhouette } from './shadow.ts';
+import { projectShadow, SHADOW_SCALE, shadowCentre, softSilhouette } from './shadow.ts';
 import { createSparkleSprites, drawSparkle, type SparkleSprites } from './sparkle.ts';
 import { createSmokeSprites, drawSmoke, type Smoke, type SmokeSprites } from './smoke.ts';
 import { createTileGen } from './tilegen.ts';
 import { cloudLevel } from '../world/clouds.ts';
 import { createTileLayer, type TileLayer } from './tiles.ts';
+import { createDamage, damageVersion, marksFor, type Damage } from '../world/damage.ts';
+import type { Features } from '../world/generate.ts';
+import { LIGHTS } from '../world/lights.ts';
+import { createLampSprite, drawLamps } from './lamps.ts';
 
 const HOME_Y = 0.72; // plane's home spot, as a fraction of screen height (more ground visible ahead)
 // Clouds hang in place over the landscape: they move with the ground (parallax 1), only creeping with a
@@ -40,6 +45,8 @@ const RAD = Math.PI / 180;
 
 export type Scene = {
   seed: number;
+  features: Features; // which additions are stamped into the ground (development toggles)
+  damage: Damage; // live damage marks, stamped into the tiles they touch
   ground: TileLayer;
   sunlight: TileLayer; // cast shadows + relief, re-baked as the sun moves
   cloudShadows: TileLayer;
@@ -56,6 +63,8 @@ export type Scene = {
   shadowGround: Float32Array; // eased ground height under each pixel of the plane's shadow
   shadowBuf: { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; data: ImageData }; // plane-aligned scratch for the projected shadow
   light: { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D }; // direct-sunlight buffer (screen size)
+  lamp: HTMLCanvasElement; // one lamp's glow (see render/lamps.ts)
+  lightBuf: { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D }; // lights minus clouds and plane (screen size)
   lastT: number;
   sun: Sun | null; // the sun this frame (the sunlight layer reads it when it asks for tiles)
 };
@@ -64,13 +73,31 @@ export type Scene = {
 const sunVersion = (s: Sun | null) => (s && s.elevation > 0.5 * RAD ? `${Math.round(s.azimuth / (0.5 * RAD))}:${Math.round(s.elevation / (0.25 * RAD))}` : 'down');
 const SUNLIGHT_FADE_MS = 1500;
 
-export function createScene(seed: number): Scene {
+/** `density`: development only, packs farms and the front closer (see DEV in world/military.ts). */
+export function createScene(seed: number, density = 1): Scene {
   const gen = createTileGen();
   const planeSprites = createPlaneSprites();
+  // A ground tile's version: the feature toggles plus that tile's damage count. A change regenerates
+  // just the tiles affected (old ones stay on screen until the new ones arrive).
+  const groundVersion = (cx: number, cy: number) => (scene.features.structures ? 1 : 0) + (scene.features.military ? 2 : 0) + 4 * damageVersion(scene.damage, cx, cy);
   const scene: Scene = {
     seed,
-    ground: createTileLayer((cx, cy) => gen({ kind: 'ground', seed, cx, cy }), CHUNK),
-    sunlight: createTileLayer((cx, cy) => sunlightRequest(cx, cy), CHUNK, { version: () => sunVersion(scene.sun), fadeMs: SUNLIGHT_FADE_MS }),
+    features: { structures: false, military: true, density },
+    damage: createDamage(),
+    ground: createTileLayer(
+      (cx, cy) => gen({ kind: 'ground', seed, cx, cy, features: { ...scene.features }, damage: marksFor(scene.damage, cx, cy) }),
+      CHUNK,
+      { version: (cx, cy) => String(groundVersion(cx, cy)), fadeMs: 400 }, // toggles and new damage fade in
+    ),
+    // Sunlight depends on the sun and on the heights of the tile and its neighbours (shadows cross edges).
+    sunlight: createTileLayer((cx, cy) => sunlightRequest(cx, cy), CHUNK, {
+      version: (cx, cy) => {
+        let g = 0;
+        for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) g = g * 31 + groundVersion(cx + i, cy + j);
+        return `${sunVersion(scene.sun)}|${g}`;
+      },
+      fadeMs: SUNLIGHT_FADE_MS,
+    }),
     cloudShadows: createTileLayer((cx, cy) => gen({ kind: 'cloudShadow', seed, cx, cy }), CHUNK),
     clouds: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed, cx, cy }), CHUNK),
     wisps: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed: seed + 5, cx, cy }), CHUNK),
@@ -84,7 +111,7 @@ export function createScene(seed: number): Scene {
     sprites: planeSprites,
     smoke: createSmokeSprites(),
     sparkle: createSparkleSprites(),
-    shadows: [1, 2].map((blur) => planeSprites.masks.map((m) => toCanvas(softSilhouette(m, blur)))),
+    shadows: [1, 2].map((blur) => planeSprites.masks.map((m) => toCanvas(softSilhouette(m, blur, SHADOW_SCALE)))), // smaller: see SHADOW_SCALE
     shadowGround: new Float32Array(64 * 64), // indexed by silhouette pixel (the silhouettes are well under 64 px)
     shadowBuf: (() => {
       const canvas = document.createElement('canvas');
@@ -92,6 +119,11 @@ export function createScene(seed: number): Scene {
       return { canvas, ctx, data: new ImageData(1, 1) };
     })(),
     light: (() => {
+      const canvas = document.createElement('canvas');
+      return { canvas, ctx: canvas.getContext('2d')! };
+    })(),
+    lamp: createLampSprite(),
+    lightBuf: (() => {
       const canvas = document.createElement('canvas');
       return { canvas, ctx: canvas.getContext('2d')! };
     })(),
@@ -106,7 +138,7 @@ export function createScene(seed: number): Scene {
     for (let j = 0; j < 3; j++) {
       for (let i = 0; i < 3; i++) {
         const h = scene.ground.heights(cx + i - 1, cy + j - 1);
-        if (!h) return null; // try again once the ground is ready
+        if (!h || !scene.ground.isCurrent(cx + i - 1, cy + j - 1)) return null; // try again once the ground is ready
         for (let row = 0; row < CHUNK; row++) heights.set(h.subarray(row * CHUNK, row * CHUNK + CHUNK), (j * CHUNK + row) * 3 * CHUNK + i * CHUNK);
       }
     }
@@ -324,6 +356,32 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   // Light of the hour, over everything in the world.
   drawGrade(ctx, view, scene.grade, grade, toward);
   f.prof.mark('grade');
+
+  // Lamplight, from just before sunset until a while after, each flame flickering. Added over the grade so
+  // the dusk doesn't dull it, but under the clouds and the plane: those are cut out of it first.
+  const m = sun.horizonMinutes;
+  if (sun.evening && m >= LIGHTS.from && m < LIGHTS.to && scene.features.structures) {
+    const B = scene.lightBuf;
+    if (B.canvas.width !== view.devW || B.canvas.height !== view.devH) {
+      B.canvas.width = view.devW;
+      B.canvas.height = view.devH;
+      B.ctx.imageSmoothingEnabled = false;
+    }
+    const bc = B.ctx;
+    bc.setTransform(1, 0, 0, 1, 0, 0);
+    bc.clearRect(0, 0, view.devW, view.devH);
+    worldTransform(bc, scale, ax, ay, cam.angle, c.x, c.y);
+    drawLamps(bc, scene.lamp, scene.seed, gx, gy, side, m, t, scene.features.density ?? 1, scene.features.military);
+    bc.globalCompositeOperation = 'destination-out';
+    drawSprite(bc, scale, scene.sprites.frames[frame], ax + off.x, ay + off.y, plane.heading - cam.angle);
+    bc.setTransform(1, 0, 0, 1, 0, 0);
+    bc.drawImage(CB.canvas, 0, 0);
+    bc.globalCompositeOperation = 'source-over';
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'lighter'; // light adds to the dusk
+    ctx.drawImage(B.canvas, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+  }
 
   return ground.complete && lightingComplete && wispsComplete && clouds.complete && high.complete;
 }

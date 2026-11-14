@@ -6,3 +6,4 @@ dist/
 output/playwright/
 playwright-report/
 test-results/
+debug/

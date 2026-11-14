@@ -54,3 +54,14 @@ test('soft silhouette: solid inside, a soft fringe at the edge, nothing far away
   assert.ok(a(7 + pad, 12 + pad) > 0 && a(7 + pad, 12 + pad) < 255, 'fringe');
   assert.equal(a(0, 0), 0);
 });
+
+test('the shadow silhouette can be drawn smaller (perspective), same bitmap size, centred', () => {
+  const mask = new Uint8Array(SPRITE_W * SPRITE_H).fill(1);
+  const count = (s: ReturnType<typeof softSilhouette>) => s.rgba.filter((v, i) => i % 4 === 3 && v === 255).length;
+  const full = softSilhouette(mask, 1);
+  const small = softSilhouette(mask, 1, 0.8);
+  assert.equal(small.w, full.w);
+  const ratio = count(small) / count(full);
+  assert.ok(ratio > 0.55 && ratio < 0.75, `area shrinks by about 0.8² (${ratio.toFixed(2)})`);
+  assert.equal(small.rgba[((small.h >> 1) * small.w + (small.w >> 1)) * 4 + 3], 255, 'still centred');
+});

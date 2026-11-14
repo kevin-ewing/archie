@@ -7,6 +7,13 @@
 import { SPRITE_W, SPRITE_H } from './plane.ts';
 
 export const ALTITUDE = 70; // plane height above the ground, world px
+/**
+ * The shadow is drawn a little smaller than the plane: perspective. Sunlight is parallel, so the real
+ * shadow is plane-sized; but the eye looking down is some way above the plane, and the ground is ALTITUDE
+ * further off, so it looks smaller by eye / (eye + ALTITUDE). 0.7 ⇔ an eye ~160 px above the plane.
+ * Built into the silhouette bitmap (still 1 texel = 1 game pixel), never by scaling a drawImage.
+ */
+export const SHADOW_SCALE = 0.7;
 export const SHADOW_EASE = 0.25; // seconds for the shadow to settle onto a new ground height
 
 /** Where the shadow's centre falls, for a plane at (px, py), a sun shadow vector, and the ground height there. */
@@ -84,14 +91,16 @@ export function projectShadow(a: {
 
 /**
  * Soft silhouettes from a mask (SPRITE_W×SPRITE_H, 1 = solid): solid core plus a dithered fringe of
- * `blur` px, in a few alpha levels (pixel style). Returns RGBA with a transparent border (drawn rotated).
+ * `blur` px, in a few alpha levels (pixel style), shrunk about the centre by `scale` (resampled into the
+ * same-size bitmap). Returns RGBA with a transparent border (drawn rotated).
  */
-export function softSilhouette(mask: Uint8Array, blur: number): { w: number; h: number; rgba: Uint8ClampedArray<ArrayBuffer> } {
+export function softSilhouette(mask: Uint8Array, blur: number, scale = 1): { w: number; h: number; rgba: Uint8ClampedArray<ArrayBuffer> } {
   const pad = blur + 1;
   const w = SPRITE_W + 2 * pad;
   const h = SPRITE_H + 2 * pad;
   const rgba = new Uint8ClampedArray(w * h * 4);
-  const solid = (x: number, y: number) => x >= 0 && y >= 0 && x < SPRITE_W && y < SPRITE_H && mask[y * SPRITE_W + x] === 1;
+  const at = (x: number, y: number) => x >= 0 && y >= 0 && x < SPRITE_W && y < SPRITE_H && mask[y * SPRITE_W + x] === 1;
+  const solid = (x: number, y: number) => at(Math.floor(SPRITE_W / 2 + (x + 0.5 - SPRITE_W / 2) / scale), Math.floor(SPRITE_H / 2 + (y + 0.5 - SPRITE_H / 2) / scale));
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       let n = 0;

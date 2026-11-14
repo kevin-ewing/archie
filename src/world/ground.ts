@@ -25,7 +25,8 @@ const SPECIES: readonly (readonly [RGB, RGB, RGB, RGB])[] = [
   [rgb(0x46593a), rgb(0x4a5e3d), rgb(0x566e45), rgb(0x6a8252)],
   [rgb(0x293a27), rgb(0x293c28), rgb(0x324a31), rgb(0x3d5a3a)],
 ];
-const HEDGE = [rgb(0x2c3a1b), rgb(0x3a4a23)] as const;
+/** Hedgerows: dark (old blackthorn, holly) or light green (young hawthorn, hazel), in long runs of each. */
+const HEDGE = { dark: [rgb(0x2c3a1b), rgb(0x3a4a23)], light: [rgb(0x40532a), rgb(0x506534)] } as const;
 export const DIRT = { dry: rgb(0x7d6a49), worn: rgb(0x6c5a3d), rut: rgb(0x574732) };
 
 // Wildflowers of a Flanders May (pre-herbicide fields were full of them): poppies and cornflowers among
@@ -55,7 +56,7 @@ function bloom(seed: number, x: number, y: number, kind: number, rarity = 0.75):
 }
 
 type Pattern = 'furrows' | 'rows' | 'hay' | 'grass' | 'flowerheads';
-type Crop = { name: string; a: RGB; b: RGB; weight: number; pattern: Pattern; weeds?: boolean; flowers?: 'meadow' | 'pasture' };
+type Crop = { name: string; a: RGB; b: RGB; weight: number; pattern: Pattern; weeds?: boolean; flowers?: 'meadow' | 'pasture'; hay?: boolean }; // hay: mown for hay (some carry hay cocks)
 /**
  * Field crops of 1910s Flanders: small mixed farms growing grain, colza (rapeseed, in yellow flower in May),
  * flax, red clover for fodder, with meadows and pasture for the dairy cows.
@@ -63,8 +64,8 @@ type Crop = { name: string; a: RGB; b: RGB; weight: number; pattern: Pattern; we
 const CROPS: readonly Crop[] = [
   { name: 'ploughed', a: rgb(0x6a5538), b: rgb(0x584530), weight: 1.6, pattern: 'furrows' },
   { name: 'young wheat', a: rgb(0x5b6734), b: rgb(0x4e5a2d), weight: 2, pattern: 'rows', weeds: true },
-  { name: 'meadow', a: rgb(0x6c763e), b: rgb(0x7f8449), weight: 2, pattern: 'grass', flowers: 'meadow' },
-  { name: 'rough grass', a: rgb(0x8c7f52), b: rgb(0x7b6f47), weight: 1, pattern: 'hay' },
+  { name: 'meadow', a: rgb(0x6c763e), b: rgb(0x7f8449), weight: 2, pattern: 'grass', flowers: 'meadow', hay: true },
+  { name: 'rough grass', a: rgb(0x8c7f52), b: rgb(0x7b6f47), weight: 1, pattern: 'hay', hay: true },
   { name: 'pasture', a: rgb(0x4f5a2e), b: rgb(0x5d6936), weight: 2, pattern: 'grass', flowers: 'pasture' },
   { name: 'colza in flower', a: rgb(0xc4b03a), b: rgb(0xa99a36), weight: 0.25, pattern: 'rows', weeds: true },
   { name: 'red clover', a: rgb(0x5a6a38), b: rgb(0xa86e80), weight: 0.2, pattern: 'flowerheads' },
@@ -90,9 +91,10 @@ const stretch = (v: number, k: number) => Math.min(1, Math.max(0, (v - 0.5) * k 
 const stripe = (s: number, w: number) => ((Math.floor(s / w) % 2) + 2) % 2 === 0;
 const smooth = (v: number) => (v <= 0 ? 0 : v >= 1 ? 1 : v * v * (3 - 2 * v));
 
-const wetness = (seed: number, x: number, y: number) => stretch(fbm(seed + 10, x / 900, y / 900, 4), 1.7);
+// Lakes cover ~2.5% of the land and woods ~18% (the stretch factors set that: 1.7 and 2 gave ~6% and ~26%).
+const wetness = (seed: number, x: number, y: number) => stretch(fbm(seed + 10, x / 900, y / 900, 4), 1.39);
 /** 0 = open country … 1 = deep forest, ramping over a wide band so woods fade out rather than stop. */
-const woodDensity = (seed: number, x: number, y: number) => smooth((stretch(fbm(seed + 20, x / 700, y / 700, 4), 2) - 0.68) / 0.13);
+const woodDensity = (seed: number, x: number, y: number) => smooth((stretch(fbm(seed + 20, x / 700, y / 700, 4), 1.41) - 0.68) / 0.13);
 /** Glades: small clearings inside woods. > GLADE is open; trees thin out on the approach. */
 const gladeValue = (seed: number, x: number, y: number) => stretch(fbm(seed + 23, x / 120, y / 120, 3), 2.2);
 const GLADE = 0.88;
@@ -101,7 +103,9 @@ function fieldCell(seed: number, x: number, y: number) {
   // A large warp bends the borders; a small one makes neighbouring fields interlock raggedly.
   const wx = x + (valueNoise(seed + 30, x / 220, y / 220) - 0.5) * 110 + (valueNoise(seed + 43, x / 7, y / 7) - 0.5) * 10;
   const wy = y + (valueNoise(seed + 31, x / 220, y / 220) - 0.5) * 110 + (valueNoise(seed + 44, x / 7, y / 7) - 0.5) * 10;
-  return cellular(seed + 32, wx, wy, FIELD_SIZE);
+  const cell = cellular(seed + 32, wx, wy, FIELD_SIZE);
+  // Each field's own point (in warped space): anything decided once for a whole field is sampled there.
+  return { ...cell, sx: wx - cell.dx, sy: wy - cell.dy, sx2: wx - cell.dx2, sy2: wy - cell.dy2 };
 }
 
 // --- Trees ---------------------------------------------------------------------------------------
@@ -229,7 +233,16 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
   if (border < 4 && hedged) {
     // Hawthorn hedges in white "may" blossom, in sprays along their length.
     if (valueNoise(seed + 63, x / 7, y / 7) > 0.72 && hash(seed + 64, x, y) > 1 - 0.2 * bloom(seed, x, y, BLOOM.hawthorn, 0.86)) return [FLOWER.hawthorn, HEIGHT.hedge];
-    return [HEDGE[valueNoise(seed + 38, x / 2.5, y / 2.5) + d * 0.3 > 0.75 ? 1 : 0], HEIGHT.hedge];
+    // Light or dark per whole hedge: one choice for each pair of fields it divides (so a hedge changes
+    // only at a field corner), weighted by a very large-scale region so neighbouring hedges mostly match.
+    const lo = Math.floor(Math.min(cell.id, cell.id2) * 1e6);
+    const hi = Math.floor(Math.max(cell.id, cell.id2) * 1e6);
+    const lightShare = stretch(valueNoise(seed + 34, x / 600, y / 600), 3); // 0 … 1: dark country … light country
+    const light = hash(seed + 35, lo, hi) < lightShare;
+    // Speckled: small clusters of the other tone (a few bushes of another kind) mixed through each hedge.
+    const other = valueNoise(seed + 36, x / 1.6, y / 1.6) + (d - 0.5) * 0.35 > 0.72;
+    const tones = light !== other ? HEDGE.light : HEDGE.dark;
+    return [tones[valueNoise(seed + 38, x / 2.5, y / 2.5) + d * 0.3 > 0.75 ? 1 : 0], HEIGHT.hedge];
   }
   const dirtW = Math.max(0, (valueNoise(seed + 39, x / 60, y / 60) - 0.45) * 26) + (valueNoise(seed + 45, x / 5, y / 5) - 0.5) * 4;
   const worn = border < dirtW + 10 && valueNoise(seed + 46, x / 12, y / 12) + (d - 0.5) * 0.1 > 0.86;
@@ -242,6 +255,11 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
     return [t > 1.05 ? DIRT.rut : t > 0.6 ? DIRT.worn : DIRT.dry, 0];
   }
 
+  // Haymaking: some meadows are being mown, the hay raked into cocks in loose rows across the field
+  // (first cut in late May–June [VERIFY]; loose hay, no bales).
+  const cock = own.hay ? haycockAt(seed, cell.id, x, y) : null;
+  if (cock) return cock;
+
   // Arable weeds: poppies and cornflowers along the edges of the crop fields.
   if (own.weeds && border < dirtW + 18 && valueNoise(seed + 66, x / 14, y / 14) > 0.5) {
     const h = hash(seed + 67, x, y);
@@ -251,7 +269,32 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
 
   // Where two fields meet with no dirt between them, their crops intermingle across a frayed, dithered band.
   const mix = border / 14 + (valueNoise(seed + 50, x / 5, y / 5) - 0.5) * 0.6 + (d - 0.5) * 0.5;
-  return [cropPixel(seed, mix < 0.5 ? cell.id2 : cell.id, x, y, d), 0];
+  return [mix < 0.5 ? cropPixel(seed, cell.id2, x, y, d, cell.sx2, cell.sy2) : cropPixel(seed, cell.id, x, y, d, cell.sx, cell.sy), 0];
+}
+
+/**
+ * A hay cock in a field being mown, or null. Cocks stand in loose rows (COCK apart, jittered, with gaps),
+ * only in some meadows (`MOWN` of them) and only over the part mown so far, and each is whole: it's kept only if its centre is well inside the same
+ * field and clear of woods, so none is cut by a border, a margin or scrub.
+ */
+const COCK = { x: 16, y: 21 }; // apart along and between the rows
+const MOWN = 0.15;
+export const HAY = { light: rgb(0xb7a05a), dark: rgb(0x9a844a), swath: rgb(0x8a8550) };
+function haycockAt(seed: number, id: number, x: number, y: number): [RGB, number] | null {
+  if (hash(seed + 80, Math.floor(id * 1e6), 1) > MOWN) return null;
+  const i = Math.floor(x / COCK.x);
+  const j = Math.floor(y / COCK.y);
+  const cx = (i + 0.25 + 0.5 * hash(seed + 81, i, j)) * COCK.x;
+  const cy = (j + 0.4 + 0.2 * hash(seed + 82, i, j)) * COCK.y;
+  const r = Math.hypot(x - cx, y - cy);
+  const size = 1.8 + hash(seed + 83, i, j) * 0.8;
+  if (r > size + 1.5 || hash(seed + 84, i, j) < 0.85) return null; // only a few: most of the hay is still to be cut
+  if (valueNoise(seed + 85, cx / 110, cy / 110) < 0.45) return null; // only the part mown so far
+  const at = fieldCell(seed, Math.round(cx), Math.round(cy));
+  // Well inside the field (clear of margins, worn patches and hedges) and away from woods' frayed scrub.
+  if (at.id !== id || at.f2 - at.f1 < 34 || woodDensity(seed, cx, cy) > 0 || copseValue(seed, cx, cy) > 0.9) return null;
+  if (r > size) return bayer(x, y) < 0.5 ? [HAY.swath, 0] : null; // raked-up stalks round its foot
+  return [r < size * 0.5 ? HAY.light : HAY.dark, 1 + 2.5 * (1 - r / size)];
 }
 
 /**
@@ -272,8 +315,8 @@ function flowers(seed: number, x: number, y: number, kind: 'meadow' | 'pasture')
   return null;
 }
 
-/** One pixel of the crop belonging to the field with this id. */
-function cropPixel(seed: number, id: number, x: number, y: number, d: number): RGB {
+/** One pixel of the crop belonging to the field with this id, whose own point is (sx, sy). */
+function cropPixel(seed: number, id: number, x: number, y: number, d: number, sx: number, sy: number): RGB {
   const crop = cropOf(id);
   const { a, b } = crop;
   const dir = Math.floor(hash(seed + 34, Math.floor(id * 1e6), 0) * 4);
@@ -281,8 +324,8 @@ function cropPixel(seed: number, id: number, x: number, y: number, d: number): R
   switch (crop.pattern) {
     case 'furrows':
       return stripe(s, 3) ? a : b;
-    case 'rows': // colza only shows yellow where it's in flower; elsewhere it's still green
-      if (crop === COLZA && bloom(seed, x, y, BLOOM.colza) < 0.3) return stripe(s, 3) ? CROPS[1].a : CROPS[1].b;
+    case 'rows': // colza only shows yellow where it's in flower, else it's still green; decided once per field (at its own point), so a field is never split
+      if (crop === COLZA && bloom(seed, sx, sy, BLOOM.colza) < 0.3) return stripe(s, 3) ? CROPS[1].a : CROPS[1].b;
       return stripe(s, 3) ? a : b;
     case 'hay':
       return stripe(s, 5) && hash(seed + 35, x, y) > 0.25 ? b : a;
@@ -291,6 +334,55 @@ function cropPixel(seed: number, id: number, x: number, y: number, d: number): R
     case 'grass':
       return (crop.flowers && flowers(seed, x, y, crop.flowers)) || (valueNoise(seed + 37, x / 3, y / 3) + d * 0.5 > 0.95 ? b : a);
   }
+}
+
+/**
+ * Worn earth with the look of the field margins (three dirt shades with ruts), for anywhere the ground
+ * has been trodden or dug: around farms, along tracks, the spoil beside trenches. `density` 0 … 1 sets
+ * how much of it is bare: returns null (let the grass or crop show through, as tufts and speckles) more
+ * often as density falls, so worn ground frays naturally into the fields.
+ */
+export function dirtAt(seed: number, x: number, y: number, density: number): RGB | null {
+  const d = bayer(x, y);
+  if (density + (valueNoise(seed + 47, x / 3, y / 3) - 0.5) * 0.55 + (d - 0.5) * 0.45 < 0.55) return null;
+  const t = valueNoise(seed + 42, x / 2.5, y / 2.5) + d * 0.35;
+  return t > 1.05 ? DIRT.rut : t > 0.6 ? DIRT.worn : DIRT.dry;
+}
+
+/** What kind of land a point is, for placing things on it (farms want open farmland). */
+export function landAt(seed: number, x: number, y: number): 'water' | 'wood' | 'open' {
+  if (isWater(seed, x, y)) return 'water';
+  if (woodDensity(seed, x, y) > 0.1 || copseChance(seed, x, y) > 0 || treeAt(seed, x, y)) return 'wood';
+  return 'open';
+}
+
+const isWater = (seed: number, x: number, y: number): boolean => wetness(seed, x, y) > LAKE - SHORE_W - 0.02;
+
+/**
+ * Where the front's works may not go, for a tile [x0, x1) × [y0, y1): water (lakes and their shores).
+ * Texture-driven and cheap: wetness is sampled on a world-aligned 8-px grid (about 300 samples a tile,
+ * the same at every tile edge) and interpolated, instead of per pixel. (Woods don't stop the front: its
+ * works run through them, under the tree crowns; see world/generate.ts.)
+ */
+export function noDigMask(seed: number, x0: number, y0: number, x1: number, y1: number): (x: number, y: number) => boolean {
+  const G = 8;
+  const i0 = Math.floor(x0 / G);
+  const j0 = Math.floor(y0 / G);
+  const ni = Math.floor((x1 - 1) / G) + 2 - i0;
+  const nj = Math.floor((y1 - 1) / G) + 2 - j0;
+  const wet = new Float32Array(ni * nj);
+  for (let j = 0; j < nj; j++) for (let i = 0; i < ni; i++) wet[j * ni + i] = wetness(seed, (i0 + i) * G, (j0 + j) * G);
+  const WET = LAKE - SHORE_W - 0.02;
+  return (x, y) => {
+    const fx = x / G - i0;
+    const fy = y / G - j0;
+    const i = Math.min(ni - 2, Math.max(0, Math.floor(fx)));
+    const j = Math.min(nj - 2, Math.max(0, Math.floor(fy)));
+    const tx = fx - i;
+    const ty = fy - j;
+    const k = j * ni + i;
+    return (wet[k] * (1 - tx) + wet[k + 1] * tx) * (1 - ty) + (wet[k + ni] * (1 - tx) + wet[k + ni + 1] * tx) * ty > WET;
+  };
 }
 
 export const groundColor = (seed: number, x: number, y: number): RGB => groundAt(seed, x, y)[0];
@@ -304,7 +396,7 @@ export function groundShade(seed: number, x: number, y: number): -1 | 0 | 1 {
   const v = stretch(fbm(seed + 90, x / 140, y / 140, 3), 2) + (valueNoise(seed + 91, x / 7, y / 7) - 0.5) * 0.15 + (bayer(x, y) - 0.5) * 0.12;
   return v < 0.3 ? -1 : v > 0.7 ? 1 : 0;
 }
-const SHADE = { [-1]: 0.92, 0: 1, 1: 1.06 } as const;
+const SHADE = [0.92, 1, 1.06]; // by groundShade + 1 (an array: a {-1: …} object key is a slow string lookup)
 
 /**
  * One generated tile: RGBA pixels, plus (ground only) heights ×HEIGHT_STEPS for shadows, and `glints`:
@@ -316,8 +408,14 @@ export type TileData = { rgba: Uint8ClampedArray<ArrayBuffer>; heights?: Uint8Ar
 export const GLINT = 0.0007;
 export const HEIGHT_STEPS = 8;
 
-/** CHUNK×CHUNK world pixels starting at (cx·CHUNK, cy·CHUNK). */
-export function groundChunk(seed: number, cx: number, cy: number): TileData {
+/** Something stamped over the ground at a pixel (colour, height), or null to let the ground show. */
+export type GroundStamp = (x: number, y: number) => readonly [RGB, number] | null;
+
+/**
+ * CHUNK×CHUNK world pixels starting at (cx·CHUNK, cy·CHUNK). `stamp` lays buildings, trenches and damage
+ * over the landscape (see world/generate.ts); where it covers a pixel, the ground there isn't computed.
+ */
+export function groundChunk(seed: number, cx: number, cy: number, stamp?: GroundStamp): TileData {
   const rgba = new Uint8ClampedArray(CHUNK * CHUNK * 4);
   const heights = new Uint8Array(CHUNK * CHUNK);
   const glints: number[] = [];
@@ -325,10 +423,11 @@ export function groundChunk(seed: number, cx: number, cy: number): TileData {
     for (let x = 0; x < CHUNK; x++, i++) {
       const wx = cx * CHUNK + x;
       const wy = cy * CHUNK + y;
-      const [c, h] = groundAt(seed, wx, wy);
+      const stamped = stamp?.(wx, wy);
+      const [c, h] = stamped ?? groundAt(seed, wx, wy);
       const [r, g, b] = c;
-      if ((c === WATER.deep || c === WATER.shallow) && hash(seed + 12, wx, wy) < GLINT) glints.push(i);
-      const k = SHADE[groundShade(seed, wx, wy)];
+      if (!stamped && (c === WATER.deep || c === WATER.shallow) && hash(seed + 12, wx, wy) < GLINT) glints.push(i);
+      const k = SHADE[groundShade(seed, wx, wy) + 1];
       rgba[i * 4] = r * k;
       rgba[i * 4 + 1] = g * k;
       rgba[i * 4 + 2] = b * k;

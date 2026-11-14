@@ -36,4 +36,12 @@ npm run verify            # tests, performance regression check, and production 
 
 The regression check reports every subsystem's before/after timing and fails when both its median and p95 have slowed by more than 50%. Only update the baseline after examining and accepting the change.
 
+Front map (internal tool for auditing and tweaking the fronts; options in [technical design](docs/TECH.md) §7b):
+
+```sh
+npm run frontmap                      # debug/1.png … 5.png: five seeds, the front at the plane's start and its trenches
+npm run frontmap -- --seeds=1,2,3,4,5 # pin the seeds (the previous run is kept in debug/backup/)
+npm run frontmap -- --size=320000     # a wide area of many fronts instead (slow: minutes)
+```
+
 The fuller design lives in [the story bible](docs/STORY.md), [mechanics](docs/MECHANICS.md), and [technical design](docs/TECH.md).

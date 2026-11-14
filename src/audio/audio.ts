@@ -2,7 +2,14 @@
 // Browsers require a user gesture before playback, so `unlock` creates/resumes the graph on demand.
 
 import { PATIENT_AWE, type Progression } from './music.ts';
-import * as Tone from 'tone';
+// Tone.js is imported class by class, never through its index: the index creates a default AudioContext as
+// soon as it loads (before any user gesture: Chrome's autoplay warning, plus a second, unused context).
+// These modules don't; the one context we make in build(), after a gesture, is handed to Tone.
+import { setContext } from 'tone/build/esm/core/Global.js';
+import { Filter } from 'tone/build/esm/component/filter/Filter.js';
+import { Chorus } from 'tone/build/esm/effect/Chorus.js';
+import { Reverb } from 'tone/build/esm/effect/Reverb.js';
+import { MonoSynth } from 'tone/build/esm/instrument/MonoSynth.js';
 
 export type EngineAudio = { rpm: number; rough: number; bank: number; heat: number; boosting: boolean; overheated: boolean };
 
@@ -71,7 +78,7 @@ export function createAudio(initialVolume = DEFAULT_ENGINE_VOLUME, initialMusicV
   let master: GainNode | null = null;
   let musicMaster: GainNode | null = null;
   let startupGain: GainNode | null = null;
-  let musicVoices: Tone.MonoSynth[] = [];
+  let musicVoices: MonoSynth[] = [];
   let musicStarted = false;
   let musicChord = 0;
   let nextMusicChordAt = 0;
@@ -158,20 +165,20 @@ export function createAudio(initialVolume = DEFAULT_ENGINE_VOLUME, initialMusicV
   const build = () => {
     if (context) return;
     context = new AudioContext({ latencyHint: 'interactive' });
-    Tone.setContext(context);
+    setContext(context);
     master = new GainNode(context, { gain: volumeGain(volume) });
     musicMaster = new GainNode(context, { gain: volumeGain(musicVolume) });
     startupGain = new GainNode(context, { gain: 0 });
     const limiter = new DynamicsCompressorNode(context, { threshold: -12, knee: 14, ratio: 5, attack: 0.008, release: 0.22 });
     limiter.connect(startupGain).connect(context.destination);
     musicMaster.connect(limiter);
-    const musicFilter = new Tone.Filter({ type: 'lowpass', frequency: 1200, rolloff: -12, Q: 0.35 });
-    const chorus = new Tone.Chorus({ frequency: 0.1, delayTime: 4.5, depth: 0.18, spread: 150, wet: 0.12 }).start();
-    const reverb = new Tone.Reverb({ decay: 5.8, preDelay: 0.09, wet: 0.22 });
+    const musicFilter = new Filter({ type: 'lowpass', frequency: 1200, rolloff: -12, Q: 0.35 });
+    const chorus = new Chorus({ frequency: 0.1, delayTime: 4.5, depth: 0.18, spread: 150, wet: 0.12 }).start();
+    const reverb = new Reverb({ decay: 5.8, preDelay: 0.09, wet: 0.22 });
     musicFilter.chain(chorus, reverb);
     reverb.connect(musicMaster);
     musicVoices = progression.chords[0].midi.map((_, i) =>
-      new Tone.MonoSynth({
+      new MonoSynth({
         volume: MUSIC_LEVELS[i],
         portamento: 0,
         oscillator: { type: 'fatsawtooth', count: 2, spread: i === 0 ? 5 : 9 },
@@ -264,6 +271,9 @@ export function createAudio(initialVolume = DEFAULT_ENGINE_VOLUME, initialMusicV
 
   return {
     async unlock() {
+      // Only after a real user gesture: an AudioContext made before one can't start (Chrome warns). Called
+      // early (e.g. development's automatic launch), this waits; the first click or key calls it again.
+      if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
       build();
       await startWorklet();
       if (context?.state === 'suspended') await context.resume();
