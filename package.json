@@ -8,7 +8,12 @@
     "build": "tsc && vite build --base=./",
     "preview": "vite preview",
     "check": "tsc && node --experimental-strip-types --test \"src/**/*.test.ts\"",
-    "perf": "node --experimental-strip-types src/perf.ts"
+    "perf": "npm run benchmark",
+    "benchmark": "node --experimental-strip-types src/perf.ts",
+    "benchmark:check": "node --experimental-strip-types src/perf.ts --check",
+    "benchmark:record": "node --experimental-strip-types src/perf.ts --record",
+    "benchmark:update": "node --experimental-strip-types src/perf.ts --update",
+    "verify": "npm run check && npm run benchmark:check && npm run build"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

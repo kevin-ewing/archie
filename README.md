@@ -24,4 +24,16 @@ npm run check
 npm run build
 ```
 
+Performance checks:
+
+```sh
+npm run benchmark         # show median and p95 subsystem timings
+npm run benchmark:check   # compare with the checked-in baseline
+npm run benchmark:record  # append a dated run to benchmarks/history.jsonl
+npm run benchmark:update  # accept a deliberate performance change
+npm run verify            # tests, performance regression check, and production build
+```
+
+The regression check reports every subsystem's before/after timing and fails when both its median and p95 have slowed by more than 50%. Only update the baseline after examining and accepting the change.
+
 The fuller design lives in [the story bible](docs/STORY.md), [mechanics](docs/MECHANICS.md), and [technical design](docs/TECH.md).

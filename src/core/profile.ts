@@ -1,4 +1,4 @@
-// A tiny frame profiler for development: `?debug` in the URL shows fps and where each frame's time goes.
+// A tiny frame profiler: development enables it automatically; `?debug` enables it in production.
 // Off by default, and then free (every call is a no-op).
 
 export type Profiler = { start: () => void; mark: (name: string) => void; end: () => void };

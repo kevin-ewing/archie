@@ -1,5 +1,6 @@
 import { blend, startLoop } from './core/loop.ts';
 import { createAudio } from './audio/audio.ts';
+import { progressionFor } from './audio/music.ts';
 import { hash } from './core/noise.ts';
 import { createProfiler } from './core/profile.ts';
 import { createControls } from './input/controls.ts';
@@ -55,7 +56,8 @@ const canvas = document.getElementById('game');
 if (!(canvas instanceof HTMLCanvasElement)) throw new Error('Missing #game canvas.');
 
 const display = createDisplay(canvas);
-const audio = createAudio();
+const progression = progressionFor(IS_DEV);
+const audio = createAudio(undefined, undefined, progression);
 const audioControl = document.getElementById('audio-control');
 const volumeFace = document.getElementById('engine-volume-label');
 const volumeSlider = document.getElementById('engine-volume');
@@ -202,12 +204,34 @@ const hud = createHud();
 const clockFace = createClockFace();
 const smoke = createSmoke();
 const clock = createClock(START_HOUR);
-// `?debug`: fps and per-stage frame times, top-right.
+// Development always shows the full diagnostic panel; `?debug` exposes performance timings in a production build.
 const debugPanel = document.getElementById('debug');
-const prof = createProfiler(new URLSearchParams(location.search).has('debug'), (text) => {
+const debugSong = `song      ${progression.id}`;
+const debugRequested = new URLSearchParams(location.search).has('debug');
+const debugDetails = () => {
+  const view = display.view();
+  const sun = sunNow(clock);
+  const heading = ((plane.heading * 180) / Math.PI + 360) % 360;
+  return [
+    ...(IS_DEV ? [debugSong] : []),
+    `seed      ${SEED}`,
+    `phase     ${phase}${document.hidden ? ' (hidden)' : ''}`,
+    `date      ${dateText(clock.day)}  ${clock.hours.toFixed(2)} h  x${timeSpeed()}`,
+    `viewport  ${innerWidth}x${innerHeight} css  ${view.devW}x${view.devH} device  dpr ${devicePixelRatio || 1}`,
+    `render    ${view.w.toFixed(0)}x${view.h.toFixed(0)} game px  scale ${view.scale}  ${view.compact ? 'compact' : 'regular'}`,
+    `flight    ${plane.speed.toFixed(1)} px/s  hdg ${heading.toFixed(1)}°  bank ${plane.bank.toFixed(2)}`,
+    `engine    heat ${(plane.heat * 100).toFixed(0)}%  fuel ${(plane.fuel * 100).toFixed(0)}%  ${plane.overheated ? 'OVERHEATED' : plane.boosting ? 'BOOST' : 'CRUISE'}`,
+    `sun       elev ${((sun.elevation * 180) / Math.PI).toFixed(1)}°  light ${(sun.strength * 100).toFixed(0)}%  shadows ${(sun.shadowStrength * 100).toFixed(0)}%`,
+  ].join('\n');
+};
+if (IS_DEV && debugPanel) {
+  debugPanel.hidden = false;
+  debugPanel.textContent = `${debugDetails()}\ncollecting frame timings…`;
+}
+const prof = createProfiler(IS_DEV || debugRequested, (text) => {
   if (!debugPanel) return;
   debugPanel.hidden = false;
-  debugPanel.textContent = text;
+  debugPanel.textContent = `${debugDetails()}\n${text}`;
 });
 
 let t = 0;

@@ -21,7 +21,7 @@ test('a game pixel is a whole number of device pixels, about the same physical s
     assert.ok(Math.abs(v.scale / dpr - target) <= 0.5 / dpr + 1e-9, `${name}: pixel size`);
   }
   assert.deepEqual(fitView(1440, 900, 2), { scale: 4, compact: false, devW: 2880, devH: 1800, w: 720, h: 450 });
-  assert.deepEqual(fitView(390, 844, 3), { scale: 4, compact: true, devW: 1170, devH: 2532, w: 292.5, h: 633 });
+  assert.deepEqual(fitView(390, 844, 3), { scale: 5, compact: true, devW: 1170, devH: 2532, w: 234, h: 506.4 });
 });
 
 test('a collapsed (0-size) window still gives a drawable canvas', () => {

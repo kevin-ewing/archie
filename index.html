@@ -30,8 +30,8 @@
       #game { position: absolute; left: 0; top: 0; image-rendering: pixelated; touch-action: none; cursor: default; }
       #loading { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: white; opacity: 1; transition: opacity 0.8s; pointer-events: none; }
       #loading.done { opacity: 0; }
-      #loading-flight { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: top 0.9s ease-in-out; }
-      #loading.settling #loading-flight { top: 72%; }
+      #loading-flight { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: transform 0.9s ease-in-out; }
+      #loading.settling #loading-flight { transform: translate(-50%, calc(-50% + 22vh)); }
       #loading-plane, #loading-text { display: block; image-rendering: pixelated; }
       #loading-text { position: absolute; left: 50%; bottom: calc(100% + 18px); transform: translateX(-50%); opacity: 1; transition: opacity 0.9s ease-in-out; }
       #loading.settling #loading-text { opacity: 0; }

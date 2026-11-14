@@ -1,7 +1,7 @@
 // Game audio: one lazy Web Audio graph with a master bus and one bus per sound family.
 // Browsers require a user gesture before playback, so `unlock` creates/resumes the graph on demand.
 
-import { PATIENT_AWE } from './music.ts';
+import { PATIENT_AWE, type Progression } from './music.ts';
 import * as Tone from 'tone';
 
 export type EngineAudio = { rpm: number; rough: number; bank: number; heat: number; boosting: boolean; overheated: boolean };
@@ -18,7 +18,6 @@ export type GameAudio = {
 export const DEFAULT_ENGINE_VOLUME = 0.4;
 export const DEFAULT_MUSIC_VOLUME = 0.4;
 export const STARTUP_FADE_SECONDS = 1.8;
-const MUSIC_BPM = 40;
 export const MUSIC_GLIDE_SECONDS = 0.28;
 
 const frequency = (midi: number) => 440 * 2 ** ((midi - 69) / 12);
@@ -67,7 +66,7 @@ export function backfireLevel(heat: number, overheated: boolean): number {
 
 export const volumeGain = (volume: number) => clamp(volume) ** 2;
 
-export function createAudio(initialVolume = DEFAULT_ENGINE_VOLUME, initialMusicVolume = DEFAULT_MUSIC_VOLUME): GameAudio {
+export function createAudio(initialVolume = DEFAULT_ENGINE_VOLUME, initialMusicVolume = DEFAULT_MUSIC_VOLUME, progression: Progression = PATIENT_AWE): GameAudio {
   let context: AudioContext | null = null;
   let master: GainNode | null = null;
   let musicMaster: GainNode | null = null;
@@ -103,7 +102,7 @@ export function createAudio(initialVolume = DEFAULT_ENGINE_VOLUME, initialMusicV
 
   const advanceMusic = () => {
     if (!started || !context || !musicVoices.length || paused || context.currentTime < nextMusicChordAt) return;
-    const chord = PATIENT_AWE.chords[musicChord];
+    const chord = progression.chords[musicChord];
     const now = context.currentTime;
     musicVoices.forEach((voice, i) => {
       const hz = frequency(chord.midi[i]);
@@ -111,8 +110,8 @@ export function createAudio(initialVolume = DEFAULT_ENGINE_VOLUME, initialMusicV
       else voice.triggerAttack(hz, now, 0.32);
     });
     musicStarted = true;
-    musicChord = (musicChord + 1) % PATIENT_AWE.chords.length;
-    nextMusicChordAt = now + (chord.beats * 60) / MUSIC_BPM;
+    musicChord = (musicChord + 1) % progression.chords.length;
+    nextMusicChordAt = now + (chord.beats * 60) / progression.bpm;
   };
 
   const apply = () => {
@@ -171,7 +170,7 @@ export function createAudio(initialVolume = DEFAULT_ENGINE_VOLUME, initialMusicV
     const reverb = new Tone.Reverb({ decay: 5.8, preDelay: 0.09, wet: 0.22 });
     musicFilter.chain(chorus, reverb);
     reverb.connect(musicMaster);
-    musicVoices = PATIENT_AWE.chords[0].midi.map((_, i) =>
+    musicVoices = progression.chords[0].midi.map((_, i) =>
       new Tone.MonoSynth({
         volume: MUSIC_LEVELS[i],
         portamento: 0,

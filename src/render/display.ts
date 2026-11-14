@@ -3,7 +3,7 @@
 // game pixel and smoothing off, so pixels stay crisp squares even when the world is rotated.
 
 /** Size of one game pixel, in CSS pixels. Compact screens (phones) use smaller pixels to see more. */
-export const PIXEL_SIZE = { regular: 1.75, compact: 1.2 };
+export const PIXEL_SIZE = { regular: 1.75, compact: 1.5 };
 /** Screens whose short side is below this many CSS pixels count as compact. */
 export const COMPACT_BREAKPOINT = 600;
 
