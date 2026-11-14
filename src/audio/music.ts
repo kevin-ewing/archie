@@ -12,13 +12,36 @@ export type Progression = {
   chords: readonly Chord[];
 };
 
-const chord = (symbol: string, notes: readonly number[], midi: readonly number[], beats = 2): Chord => ({ symbol, notes, midi, beats });
+const noteSets = new Map<string, readonly number[]>();
+const midiVoicings = new Map<string, readonly number[]>();
+const intern = (pool: Map<string, readonly number[]>, values: readonly number[]) => {
+  const key = values.join(',');
+  const stored = pool.get(key);
+  if (stored) return stored;
+  pool.set(key, values);
+  return values;
+};
+const chord = (symbol: string, notes: readonly number[], midi: readonly number[], beats = 2): Chord => ({
+  symbol,
+  notes: intern(noteSets, notes),
+  midi: intern(midiVoicings, midi),
+  beats,
+});
 const arranged = (voicings: Record<string, readonly [readonly number[], readonly number[]]>, sequence: readonly (string | readonly [string, number])[]): Chord[] =>
   sequence.map((entry) => {
     const [symbol, beats] = typeof entry === 'string' ? [entry, 2] : entry;
     const [notes, midi] = voicings[symbol];
-    return chord(symbol, notes, midi, beats);
+    return chord(symbol.split('@', 1)[0], notes, midi, beats);
   });
+
+const PATIENT_VOICINGS = {
+  Bbadd9: [[10, 2, 5, 0], [46, 53, 62, 70, 72]], Fsus4: [[5, 10, 0], [41, 53, 60, 70, 72]], F: [[5, 9, 0], [41, 53, 60, 69, 72]],
+  Gm7: [[7, 10, 2, 5], [43, 53, 62, 67, 70]], Ebmaj9: [[3, 7, 10, 2, 5], [39, 53, 62, 67, 70]], Bb: [[10, 2, 5], [34, 53, 62, 65, 70]],
+  Dm7: [[2, 5, 9, 0], [38, 53, 60, 62, 69]], Ebadd9: [[3, 7, 10, 5], [39, 53, 63, 67, 70]], Cm7: [[0, 3, 7, 10], [36, 60, 63, 67, 70]],
+  Gm9: [[7, 10, 2, 5, 9], [43, 53, 62, 69, 70]], Ebmaj7: [[3, 7, 10, 2], [39, 55, 58, 62, 67]], F7sus4: [[5, 10, 0, 3], [41, 58, 60, 63, 72]],
+  'Gm9@2': [[7, 10, 2, 5, 9], [43, 53, 58, 62, 69]], 'D7#9': [[2, 6, 9, 0, 5], [38, 53, 60, 66, 69]], Ebm6: [[3, 6, 10, 0], [39, 58, 60, 63, 66]],
+  Cm9: [[0, 3, 7, 10, 2], [36, 51, 62, 67, 70]], 'Bb6/9': [[10, 2, 5, 7, 0], [46, 53, 62, 67, 72]],
+} as const;
 
 export const PATIENT_AWE: Progression = {
   id: 'patient-awe',
@@ -27,35 +50,15 @@ export const PATIENT_AWE: Progression = {
   use: 'Quiet reflection and wonder, with room for melancholy.',
   meter: [4, 4],
   loop: true,
-  chords: [
-    chord('Bbadd9', [10, 2, 5, 0], [46, 53, 62, 70, 72], 4),
-    chord('Fsus4', [5, 10, 0], [41, 53, 60, 70, 72]),
-    chord('F', [5, 9, 0], [41, 53, 60, 69, 72]),
-    chord('Gm7', [7, 10, 2, 5], [43, 53, 62, 67, 70], 4),
-    chord('Ebmaj9', [3, 7, 10, 2, 5], [39, 53, 62, 67, 70], 4),
-    chord('Bb', [10, 2, 5], [34, 53, 62, 65, 70]),
-    chord('Dm7', [2, 5, 9, 0], [38, 53, 60, 62, 69]),
-    chord('Ebadd9', [3, 7, 10, 5], [39, 53, 63, 67, 70]),
-    chord('Cm7', [0, 3, 7, 10], [36, 60, 63, 67, 70]),
-    chord('Gm9', [7, 10, 2, 5, 9], [43, 53, 62, 69, 70]),
-    chord('F', [5, 9, 0], [41, 53, 60, 69, 72]),
-    chord('Ebmaj7', [3, 7, 10, 2], [39, 55, 58, 62, 67]),
-    chord('F7sus4', [5, 10, 0, 3], [41, 58, 60, 63, 72]),
-    chord('Bbadd9', [10, 2, 5, 0], [46, 53, 62, 70, 72]),
-    chord('F', [5, 9, 0], [41, 53, 60, 69, 72]),
-    chord('Gm7', [7, 10, 2, 5], [43, 53, 62, 67, 70]),
-    chord('Dm7', [2, 5, 9, 0], [38, 53, 60, 62, 69]),
-    chord('Ebmaj9', [3, 7, 10, 2, 5], [39, 53, 62, 67, 70]),
-    chord('F', [5, 9, 0], [41, 53, 60, 69, 72]),
-    chord('Gm9', [7, 10, 2, 5, 9], [43, 53, 58, 62, 69]),
-    chord('D7#9', [2, 6, 9, 0, 5], [38, 53, 60, 66, 69]),
-    chord('Ebmaj7', [3, 7, 10, 2], [39, 55, 58, 62, 67]),
-    chord('Ebm6', [3, 6, 10, 0], [39, 58, 60, 63, 66]),
-    chord('Cm9', [0, 3, 7, 10, 2], [36, 51, 62, 67, 70]),
-    chord('F7sus4', [5, 10, 0, 3], [41, 58, 60, 63, 72]),
-    chord('Bb6/9', [10, 2, 5, 7, 0], [46, 53, 62, 67, 72], 3),
-  ],
+  chords: arranged(PATIENT_VOICINGS, [['Bbadd9', 4], 'Fsus4', 'F', ['Gm7', 4], ['Ebmaj9', 4], 'Bb', 'Dm7', 'Ebadd9', 'Cm7', 'Gm9', 'F', 'Ebmaj7', 'F7sus4', 'Bbadd9', 'F', 'Gm7', 'Dm7', 'Ebmaj9', 'F', 'Gm9@2', 'D7#9', 'Ebmaj7', 'Ebm6', 'Cm9', 'F7sus4', ['Bb6/9', 3]]),
 };
+
+const RESOLUTE_VOICINGS = {
+  G: [[7, 11, 2], [43, 55, 62, 67, 71]], Gmaj7: [[7, 11, 2, 6], [43, 55, 62, 66, 71]], G7: [[7, 11, 2, 5], [43, 55, 62, 65, 71]],
+  C: [[0, 4, 7], [48, 55, 60, 64, 72]], Cm: [[0, 3, 7], [48, 55, 60, 63, 72]], Em7: [[4, 7, 11, 2], [40, 55, 59, 64, 74]],
+  A7: [[9, 1, 4, 7], [45, 57, 64, 67, 73]], Am7: [[9, 0, 4, 7], [45, 57, 64, 67, 72]], D7: [[2, 6, 9, 0], [50, 57, 62, 66, 72]],
+  Cm6: [[0, 3, 7, 9], [48, 55, 63, 69, 72]],
+} as const;
 
 export const RESOLUTE_DUTY: Progression = {
   id: 'resolute-duty',
@@ -64,30 +67,14 @@ export const RESOLUTE_DUTY: Progression = {
   use: 'Mission beginnings, briefing completion, or calm transitions into uncertain responsibility; purposeful without sounding heroic or ominous.',
   meter: [4, 4],
   loop: true,
-  chords: [
-    chord('G', [7, 11, 2], [43, 55, 62, 67, 71], 4),
-    chord('Gmaj7', [7, 11, 2, 6], [43, 55, 62, 66, 71], 4),
-    chord('G7', [7, 11, 2, 5], [43, 55, 62, 65, 71], 4),
-    chord('C', [0, 4, 7], [48, 55, 60, 64, 72], 4),
-    chord('Cm', [0, 3, 7], [48, 55, 60, 63, 72], 4),
-    chord('G', [7, 11, 2], [43, 55, 62, 67, 71], 4),
-    chord('Em7', [4, 7, 11, 2], [40, 55, 59, 64, 74], 4),
-    chord('A7', [9, 1, 4, 7], [45, 57, 64, 67, 73], 4),
-    chord('Am7', [9, 0, 4, 7], [45, 57, 64, 67, 72]),
-    chord('D7', [2, 6, 9, 0], [50, 57, 62, 66, 72]),
-    chord('G', [7, 11, 2], [43, 55, 62, 67, 71]),
-    chord('Gmaj7', [7, 11, 2, 6], [43, 55, 62, 66, 71]),
-    chord('G7', [7, 11, 2, 5], [43, 55, 62, 65, 71]),
-    chord('C', [0, 4, 7], [48, 55, 60, 64, 72]),
-    chord('Cm6', [0, 3, 7, 9], [48, 55, 63, 69, 72]),
-    chord('G', [7, 11, 2], [43, 55, 62, 67, 71]),
-    chord('Em7', [4, 7, 11, 2], [40, 55, 59, 64, 74]),
-    chord('A7', [9, 1, 4, 7], [45, 57, 64, 67, 73]),
-    chord('Am7', [9, 0, 4, 7], [45, 57, 64, 67, 72]),
-    chord('D7', [2, 6, 9, 0], [50, 57, 62, 66, 72]),
-    chord('G', [7, 11, 2], [43, 55, 62, 67, 71], 8),
-  ],
+  chords: arranged(RESOLUTE_VOICINGS, [['G', 4], ['Gmaj7', 4], ['G7', 4], ['C', 4], ['Cm', 4], ['G', 4], ['Em7', 4], ['A7', 4], 'Am7', 'D7', 'G', 'Gmaj7', 'G7', 'C', 'Cm6', 'G', 'Em7', 'A7', 'Am7', 'D7', ['G', 8]]),
 };
+
+const OMINOUS_VOICINGS = {
+  Em: [[4, 7, 11], [40, 52, 55, 64, 71]], B7: [[11, 3, 6, 9], [35, 54, 57, 63, 71]], Am: [[9, 0, 4], [45, 52, 57, 64, 72]],
+  Em9: [[4, 7, 11, 2, 6], [40, 55, 62, 66, 71]], 'B7(b9)': [[11, 3, 6, 9, 0], [35, 57, 63, 66, 72]], Am9: [[9, 0, 4, 7, 11], [45, 55, 60, 64, 71]],
+  C7: [[0, 4, 7, 10], [36, 55, 64, 70, 72]], Am6: [[9, 0, 4, 6], [45, 54, 64, 69, 72]], 'D#dim7': [[3, 6, 9, 0], [39, 54, 63, 69, 72]],
+} as const;
 
 export const OMINOUS_VIGIL: Progression = {
   id: 'ominous-vigil',
@@ -96,45 +83,17 @@ export const OMINOUS_VIGIL: Progression = {
   use: 'Approaching danger, hostile uncertainty, or a tense watch before contact; prepared for the unexpected, with anger held under control.',
   meter: [4, 4],
   loop: true,
-  chords: [
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-    chord('B7', [11, 3, 6, 9], [35, 54, 57, 63, 71], 4),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-    chord('Am', [9, 0, 4], [45, 52, 57, 64, 72], 4),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-    chord('B7', [11, 3, 6, 9], [35, 54, 57, 63, 71], 4),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71]),
-    chord('B7', [11, 3, 6, 9], [35, 54, 57, 63, 71]),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-    chord('Am', [9, 0, 4], [45, 52, 57, 64, 72], 4),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-    chord('B7', [11, 3, 6, 9], [35, 54, 57, 63, 71], 4),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-    chord('Am', [9, 0, 4], [45, 52, 57, 64, 72], 4),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-    chord('B7', [11, 3, 6, 9], [35, 54, 57, 63, 71], 4),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-    chord('Em9', [4, 7, 11, 2, 6], [40, 55, 62, 66, 71], 4),
-    chord('B7(b9)', [11, 3, 6, 9, 0], [35, 57, 63, 66, 72], 4),
-    chord('Em9', [4, 7, 11, 2, 6], [40, 55, 62, 66, 71], 4),
-    chord('Am9', [9, 0, 4, 7, 11], [45, 55, 60, 64, 71], 4),
-    chord('Em9', [4, 7, 11, 2, 6], [40, 55, 62, 66, 71], 4),
-    chord('B7(b9)', [11, 3, 6, 9, 0], [35, 57, 63, 66, 72], 4),
-    chord('Em9', [4, 7, 11, 2, 6], [40, 55, 62, 66, 71]),
-    chord('B7(b9)', [11, 3, 6, 9, 0], [35, 57, 63, 66, 72]),
-    chord('Em9', [4, 7, 11, 2, 6], [40, 55, 62, 66, 71], 4),
-    chord('Am9', [9, 0, 4, 7, 11], [45, 55, 60, 64, 71], 4),
-    chord('Em9', [4, 7, 11, 2, 6], [40, 55, 62, 66, 71], 4),
-    chord('C7', [0, 4, 7, 10], [36, 55, 64, 70, 72]),
-    chord('B7', [11, 3, 6, 9], [35, 54, 57, 63, 71]),
-    chord('Em9', [4, 7, 11, 2, 6], [40, 55, 62, 66, 71], 4),
-    chord('Am6', [9, 0, 4, 6], [45, 54, 64, 69, 72]),
-    chord('D#dim7', [3, 6, 9, 0], [39, 54, 63, 69, 72]),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-    chord('B7(b9)', [11, 3, 6, 9, 0], [35, 57, 63, 66, 72]),
-    chord('Em', [4, 7, 11], [40, 52, 55, 64, 71], 4),
-  ],
+  chords: arranged(OMINOUS_VOICINGS, [['Em', 4], ['B7', 4], ['Em', 4], ['Am', 4], ['Em', 4], ['B7', 4], 'Em', 'B7', ['Em', 4], ['Am', 4], ['Em', 4], ['B7', 4], ['Em', 4], ['Am', 4], ['Em', 4], ['B7', 4], ['Em', 4], ['Em9', 4], ['B7(b9)', 4], ['Em9', 4], ['Am9', 4], ['Em9', 4], ['B7(b9)', 4], 'Em9', 'B7(b9)', ['Em9', 4], ['Am9', 4], ['Em9', 4], 'C7', 'B7', ['Em9', 4], 'Am6', 'D#dim7', ['Em', 4], 'B7(b9)', ['Em', 4]]),
 };
+
+const WEARY_VOICINGS = {
+  C: [[0, 4, 7], [48, 60, 67, 72, 76]], G: [[7, 11, 2], [43, 59, 62, 67, 74]], Am: [[9, 0, 4], [45, 57, 60, 69, 76]], F: [[5, 9, 0], [41, 60, 69, 72, 77]],
+  Cmaj7: [[0, 4, 7, 11], [36, 60, 67, 71, 76]], Gsus4: [[7, 0, 2], [43, 60, 62, 67, 74]], Am7: [[9, 0, 4, 7], [45, 57, 60, 67, 76]],
+  Fmaj7: [[5, 9, 0, 4], [41, 57, 60, 65, 76]], Cm: [[0, 3, 7], [36, 55, 60, 67, 75]], Gm: [[7, 10, 2], [43, 55, 58, 67, 74]],
+  Ab: [[8, 0, 3], [44, 56, 60, 68, 75]], Fm: [[5, 8, 0], [41, 60, 65, 68, 77]], Cm9: [[0, 3, 7, 10, 2], [36, 58, 62, 67, 75]],
+  Gm7: [[7, 10, 2, 5], [43, 58, 62, 67, 77]], Abmaj7: [[8, 0, 3, 7], [44, 56, 60, 67, 75]], Fm6: [[5, 8, 0, 2], [41, 56, 60, 65, 74]],
+  G7sus4: [[7, 0, 2, 5], [43, 60, 62, 65, 74]], Cadd9: [[0, 4, 7, 2], [48, 60, 67, 74, 76]],
+} as const;
 
 export const WEARY_STILLNESS: Progression = {
   id: 'weary-stillness',
@@ -143,51 +102,7 @@ export const WEARY_STILLNESS: Progression = {
   use: 'Late flights, empty landscapes, aftermath, or apparent safety that still feels faintly wrong; calm shaped by exhaustion rather than comfort.',
   meter: [4, 4],
   loop: true,
-  chords: [
-    chord('C', [0, 4, 7], [48, 60, 67, 72, 76], 4),
-    chord('G', [7, 11, 2], [43, 59, 62, 67, 74], 4),
-    chord('Am', [9, 0, 4], [45, 57, 60, 69, 76], 4),
-    chord('F', [5, 9, 0], [41, 60, 69, 72, 77], 4),
-    chord('Cmaj7', [0, 4, 7, 11], [36, 60, 67, 71, 76], 4),
-    chord('Gsus4', [7, 0, 2], [43, 60, 62, 67, 74]),
-    chord('G', [7, 11, 2], [43, 59, 62, 67, 74]),
-    chord('Am7', [9, 0, 4, 7], [45, 57, 60, 67, 76], 4),
-    chord('Fmaj7', [5, 9, 0, 4], [41, 57, 60, 65, 76], 4),
-    chord('Cm', [0, 3, 7], [36, 55, 60, 67, 75], 4),
-    chord('Gm', [7, 10, 2], [43, 55, 58, 67, 74], 4),
-    chord('Ab', [8, 0, 3], [44, 56, 60, 68, 75], 4),
-    chord('Fm', [5, 8, 0], [41, 60, 65, 68, 77], 4),
-    chord('Cm9', [0, 3, 7, 10, 2], [36, 58, 62, 67, 75], 4),
-    chord('Gm7', [7, 10, 2, 5], [43, 58, 62, 67, 77], 4),
-    chord('Abmaj7', [8, 0, 3, 7], [44, 56, 60, 67, 75], 4),
-    chord('Fm6', [5, 8, 0, 2], [41, 56, 60, 65, 74], 4),
-    chord('C', [0, 4, 7], [48, 60, 67, 72, 76]),
-    chord('Cm', [0, 3, 7], [36, 55, 60, 67, 75]),
-    chord('G', [7, 11, 2], [43, 59, 62, 67, 74]),
-    chord('Gm', [7, 10, 2], [43, 55, 58, 67, 74]),
-    chord('Am', [9, 0, 4], [45, 57, 60, 69, 76]),
-    chord('Ab', [8, 0, 3], [44, 56, 60, 68, 75]),
-    chord('F', [5, 9, 0], [41, 60, 69, 72, 77]),
-    chord('Fm', [5, 8, 0], [41, 60, 65, 68, 77]),
-    chord('C', [0, 4, 7], [48, 60, 67, 72, 76]),
-    chord('Cm', [0, 3, 7], [36, 55, 60, 67, 75]),
-    chord('G', [7, 11, 2], [43, 59, 62, 67, 74]),
-    chord('Gm', [7, 10, 2], [43, 55, 58, 67, 74]),
-    chord('Am', [9, 0, 4], [45, 57, 60, 69, 76]),
-    chord('Ab', [8, 0, 3], [44, 56, 60, 68, 75]),
-    chord('F', [5, 9, 0], [41, 60, 69, 72, 77]),
-    chord('Fm', [5, 8, 0], [41, 60, 65, 68, 77]),
-    chord('Cm9', [0, 3, 7, 10, 2], [36, 58, 62, 67, 75], 4),
-    chord('Abmaj7', [8, 0, 3, 7], [44, 56, 60, 67, 75], 4),
-    chord('Fm6', [5, 8, 0, 2], [41, 56, 60, 65, 74], 4),
-    chord('Gsus4', [7, 0, 2], [43, 60, 62, 67, 74]),
-    chord('G', [7, 11, 2], [43, 59, 62, 67, 74]),
-    chord('Am7', [9, 0, 4, 7], [45, 57, 60, 67, 76]),
-    chord('Fmaj7', [5, 9, 0, 4], [41, 57, 60, 65, 76]),
-    chord('Fm6', [5, 8, 0, 2], [41, 56, 60, 65, 74]),
-    chord('G7sus4', [7, 0, 2, 5], [43, 60, 62, 65, 74]),
-    chord('Cadd9', [0, 4, 7, 2], [48, 60, 67, 74, 76], 4),
-  ],
+  chords: arranged(WEARY_VOICINGS, [['C', 4], ['G', 4], ['Am', 4], ['F', 4], ['Cmaj7', 4], 'Gsus4', 'G', ['Am7', 4], ['Fmaj7', 4], ['Cm', 4], ['Gm', 4], ['Ab', 4], ['Fm', 4], ['Cm9', 4], ['Gm7', 4], ['Abmaj7', 4], ['Fm6', 4], 'C', 'Cm', 'G', 'Gm', 'Am', 'Ab', 'F', 'Fm', 'C', 'Cm', 'G', 'Gm', 'Am', 'Ab', 'F', 'Fm', ['Cm9', 4], ['Abmaj7', 4], ['Fm6', 4], 'Gsus4', 'G', 'Am7', 'Fmaj7', 'Fm6', 'G7sus4', ['Cadd9', 4]]),
 };
 
 const UPRIGHT_VOICINGS = {
@@ -329,6 +244,10 @@ export const SMALL_VICTORY: Progression = {
 };
 
 export const PROGRESSIONS = [PATIENT_AWE, RESOLUTE_DUTY, OMINOUS_VIGIL, WEARY_STILLNESS, UPRIGHT_CHALLENGE, PENSIVE_LONGING, ETHEREAL_FATIGUE, QUIRKY_PATIENCE, BATTLE_GRIT, MONUMENTAL_AFTERMATH, WISTFUL_UNCERTAINTY, FORMAL_BEGINNING, SMALL_VICTORY] as const;
+
+// Construction is complete: progression chords retain the shared arrays, while the lookup maps can go.
+noteSets.clear();
+midiVoicings.clear();
 
 export const progressionFor = (development: boolean, random = Math.random()): Progression =>
   development ? PROGRESSIONS[Math.floor(random * PROGRESSIONS.length)] : PATIENT_AWE;

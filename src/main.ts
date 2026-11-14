@@ -252,7 +252,7 @@ const show = () => {
   shown = true;
   window.removeEventListener('resize', sizeLoading);
   loading?.classList.add('settling');
-  const settleMs = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900;
+  const settleMs = 900;
   setTimeout(() => {
     loading?.classList.add('ready-to-launch'); // the whole white screen works as soon as settling ends
     setTimeout(() => {
@@ -272,7 +272,7 @@ loading?.addEventListener('click', () => {
   cancelAnimationFrame(loadingFrame);
   loading.classList.add('done');
   loading.setAttribute('aria-hidden', 'true');
-  const fadeMs = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900;
+  const fadeMs = 900;
   setTimeout(() => {
     loading.remove();
     setPhase('playing');

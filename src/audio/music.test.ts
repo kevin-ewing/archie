@@ -98,3 +98,11 @@ test('small victory keeps its modest success arc and prepared dominant return', 
   assert.ok(SMALL_VICTORY.chords.every((chord) => chord.midi.length === 5 && chord.midi.every((midi) => chord.notes.includes(midi % 12))));
   assert.equal(SMALL_VICTORY.chords.at(-1)!.symbol, 'Dmadd9');
 });
+
+test('identical chord data is stored once across the soundtrack library', () => {
+  const firstG = RESOLUTE_DUTY.chords[0];
+  const repeatedG = RESOLUTE_DUTY.chords[5];
+  assert.equal(firstG.notes, repeatedG.notes);
+  assert.equal(firstG.midi, repeatedG.midi);
+  assert.equal(PATIENT_AWE.chords[2].midi, PATIENT_AWE.chords[10].midi);
+});
