@@ -32,7 +32,7 @@ const SEED = numberFromUrl('seed', (n) => Number.isInteger(n) && n >= 0 && n < 2
 const randomStart = hash(SEED, Math.floor(Date.now() / 1000), 77);
 const START_HOUR =
   numberFromUrl('time', (n) => n >= 0 && n < 24) ??
-  (IS_DEV ? randomStart * 24 : sunsetHour(DAYLIGHT.startDayOfYear) - (0.25 + randomStart * 0.75)); // production: 15–60 minutes before sunset
+  (IS_DEV ? randomStart * 24 : sunsetHour(DAYLIGHT.startDayOfYear) - (1.75 + randomStart * 0.5)); // production: 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
 
 // Development aids. Debug toggles (bottom-left, above the gauges): FAST TIME runs the clock 3× (on for now).
 // Hold ] to run it 40× faster still (to see sunsets without waiting).
