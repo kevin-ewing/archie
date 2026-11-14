@@ -74,8 +74,8 @@ function plate(t: Toggle): HTMLCanvasElement {
 }
 
 export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggles, visible = true): void {
-  ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
-  const bottom = Math.floor(view.h) - (view.compact ? 40 : 12);
+  ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
+  const bottom = Math.floor(view.uiH) - (view.compact ? 40 : 12);
   const x = view.compact ? 14 : 10;
   let y = bottom - GAUGES_TOP - 4 - HEIGHT;
   tg.rects = tg.items.map((t) => {
@@ -91,7 +91,7 @@ export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggl
 
 /** The toggle under a screen point (CSS px), as of the last draw. */
 export function toggleAt(tg: Toggles, view: View, clientX: number, clientY: number): Toggle | null {
-  const k = view.devW / window.innerWidth / view.scale; // CSS px → game px
+  const k = view.devW / window.innerWidth / view.uiScale; // CSS px → UI px
   const gx = clientX * k;
   const gy = clientY * k;
   const i = tg.rects.findIndex((r) => gx >= r.x && gx < r.x + r.w && gy >= r.y && gy < r.y + r.h);

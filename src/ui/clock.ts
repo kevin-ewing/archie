@@ -28,7 +28,7 @@ export const createClockFace = (): ClockFace => ({ watch: createWatch(14), digit
 
 /** Draw in the top-left corner, on whole game pixels. Phones get extra margin (notch, rounded corners). */
 export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: ClockFace, time: TimeOfDay): void {
-  ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
+  ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
   face.watch.sunset = time.sunset;
   face.watch.draw(time.hours, 0);
   face.digital = cached(face.digital, clockText(time.hours).clock);

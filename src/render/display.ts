@@ -6,24 +6,38 @@
 export const PIXEL_SIZE = { regular: 1.75, compact: 1.5 };
 /** Screens whose short side is below this many CSS pixels count as compact. */
 export const COMPACT_BREAKPOINT = 600;
+export const MOBILE_SCALE = { scene: 1.25, ui: 1.3 };
+export type MobilePlatform = 'ios' | 'android' | 'other';
+
+export function mobilePlatform(userAgent: string, platform = '', maxTouchPoints = 0): MobilePlatform | null {
+  if (/iPhone|iPad|iPod/i.test(userAgent) || (platform === 'MacIntel' && maxTouchPoints > 1)) return 'ios';
+  if (/Android/i.test(userAgent)) return 'android';
+  return /Mobi|Mobile|Tablet/i.test(userAgent) ? 'other' : null;
+}
 
 export type View = {
   scale: number; // whole device pixels per game pixel
+  uiScale: number; // independently enlarged mobile HUD, also kept on whole device pixels
   compact: boolean;
+  mobile: MobilePlatform | null;
   devW: number; // canvas size in device pixels
   devH: number;
   w: number; // visible size in game pixels (may be fractional)
   h: number;
+  uiW: number;
+  uiH: number;
 };
 
-export function fitView(viewW: number, viewH: number, dpr: number): View {
+export function fitView(viewW: number, viewH: number, dpr: number, mobile: MobilePlatform | null = null): View {
   const compact = Math.min(viewW, viewH) < COMPACT_BREAKPOINT;
-  const scale = Math.max(1, Math.round((compact ? PIXEL_SIZE.compact : PIXEL_SIZE.regular) * dpr));
+  const baseScale = Math.max(1, Math.round((compact ? PIXEL_SIZE.compact : PIXEL_SIZE.regular) * dpr));
+  const scale = mobile ? Math.round(baseScale * MOBILE_SCALE.scene) : baseScale;
+  const uiScale = mobile ? Math.round(baseScale * MOBILE_SCALE.ui) : baseScale;
   // Never 0: a collapsed window (devtools, minimise, mid-drag) reports a 0 size, and drawing from a
   // 0-size canvas throws, which would kill the game loop.
   const devW = Math.max(1, Math.round(viewW * dpr));
   const devH = Math.max(1, Math.round(viewH * dpr));
-  return { scale, compact, devW, devH, w: devW / scale, h: devH / scale };
+  return { scale, uiScale, compact, mobile, devW, devH, w: devW / scale, h: devH / scale, uiW: devW / uiScale, uiH: devH / uiScale };
 }
 
 export type Display = { ctx: CanvasRenderingContext2D; view: () => View };
@@ -31,11 +45,12 @@ export type Display = { ctx: CanvasRenderingContext2D; view: () => View };
 export function createDisplay(canvas: HTMLCanvasElement): Display {
   const ctx = canvas.getContext('2d', { alpha: false });
   if (!ctx) throw new Error('Canvas 2D is not supported in this browser.');
-  let view = fitView(1, 1, 1);
+  const mobile = mobilePlatform(navigator.userAgent, navigator.platform, navigator.maxTouchPoints);
+  let view = fitView(1, 1, 1, mobile);
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
-    view = fitView(window.innerWidth, window.innerHeight, dpr);
+    view = fitView(window.innerWidth, window.innerHeight, dpr, mobile);
     canvas.width = view.devW;
     canvas.height = view.devH;
     // CSS size maps 1:1 onto device pixels, so the browser never resamples the canvas.

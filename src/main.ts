@@ -218,7 +218,7 @@ const debugDetails = () => {
     `phase     ${phase}${document.hidden ? ' (hidden)' : ''}`,
     `date      ${dateText(clock.day)}  ${clock.hours.toFixed(2)} h  x${timeSpeed()}`,
     `viewport  ${innerWidth}x${innerHeight} css  ${view.devW}x${view.devH} device  dpr ${devicePixelRatio || 1}`,
-    `render    ${view.w.toFixed(0)}x${view.h.toFixed(0)} game px  scale ${view.scale}  ${view.compact ? 'compact' : 'regular'}`,
+    `render    ${view.w.toFixed(0)}x${view.h.toFixed(0)} game px  scale ${view.scale}  ui ${view.uiScale}  ${view.mobile ?? (view.compact ? 'compact' : 'desktop')}`,
     `flight    ${plane.speed.toFixed(1)} px/s  hdg ${heading.toFixed(1)}°  bank ${plane.bank.toFixed(2)}`,
     `engine    heat ${(plane.heat * 100).toFixed(0)}%  fuel ${(plane.fuel * 100).toFixed(0)}%  ${plane.overheated ? 'OVERHEATED' : plane.boosting ? 'BOOST' : 'CRUISE'}`,
     `sun       elev ${((sun.elevation * 180) / Math.PI).toFixed(1)}°  light ${(sun.strength * 100).toFixed(0)}%  shadows ${(sun.shadowStrength * 100).toFixed(0)}%`,
@@ -311,7 +311,7 @@ startLoop(
     drawToggles(display.ctx, view, toggles, IS_DEV);
     const fastTime = toggles.rects[0];
     if (fastTime) {
-      const px = view.scale / (window.devicePixelRatio || 1);
+      const px = view.uiScale / (window.devicePixelRatio || 1);
       const firstRow = IS_DEV ? 1 : 0;
       placeVolume(audioControl, volumeFace, volumeSlider, 'ENGINE', firstRow, fastTime, px);
       placeVolume(musicControl, musicFace, musicSlider, 'MUSIC', firstRow + 1, fastTime, px);

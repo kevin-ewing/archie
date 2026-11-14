@@ -66,9 +66,9 @@ export function createHud(): Hud {
  * A hot engine shakes its dials (by whole pixels) and turns their labels red.
  */
 export function drawHud(ctx: CanvasRenderingContext2D, view: View, hud: Hud, s: Instruments, warning: EngineWarning, t: number): void {
-  ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
+  ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
 
-  const bottom = Math.floor(view.h) - (view.compact ? 40 : 12);
+  const bottom = Math.floor(view.uiH) - (view.compact ? 40 : 12);
   const blink = Math.floor(t * (warning === 2 ? 5 : 3)) % 2 === 0;
   const tick = Math.floor(t * 30);
   let x = view.compact ? 14 : 10;
