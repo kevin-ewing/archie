@@ -28,8 +28,8 @@ export type PilotInput = Controls & {
 
 export type Aids = { mode: AidMode; heading: number; pressBoost: boolean };
 
-/** Starts in Hold on the plane's heading. */
-export const createAids = (plane: Plane): Aids => ({ mode: 'hold', heading: rollOutHeading(plane), pressBoost: false });
+/** Starts in the requested mode on the plane's heading. */
+export const createAids = (plane: Plane, mode: AidMode = 'hold'): Aids => ({ mode, heading: rollOutHeading(plane), pressBoost: false });
 
 /** The heading the plane will be on once its wings are level, if it starts rolling out now. */
 function rollOutHeading(p: Plane): number {

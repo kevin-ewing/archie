@@ -19,6 +19,10 @@ test('the game starts in Hold, flying straight', () => {
   assert.ok(Math.abs(wrapAngle(plane.heading - 1)) < 0.01);
 });
 
+test('Hold can be disabled for the production start', () => {
+  assert.equal(createAids(createPlane(), 'off').mode, 'off');
+});
+
 test('engaged mid-turn at full power: rolls out, drops to cruise, holds the heading it rolled out on', () => {
   const plane = createPlane();
   const aids = createAids(plane);

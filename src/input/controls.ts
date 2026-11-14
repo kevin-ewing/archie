@@ -37,7 +37,7 @@ export type ControlsHandle = {
   requestToggleHold: () => void;
 };
 
-export function createControls(pointerTarget: EventTarget, keyTarget: EventTarget, width: () => number): ControlsHandle {
+export function createControls(pointerTarget: EventTarget, keyTarget: EventTarget, width: () => number, active: () => boolean = () => true): ControlsHandle {
   let steer = 0;
   let boost = false;
   let touchId: number | null = null;
@@ -54,6 +54,7 @@ export function createControls(pointerTarget: EventTarget, keyTarget: EventTarge
   const on = (type: string, fn: (e: PointerLike) => void) => pointerTarget.addEventListener(type, fn as EventListener);
 
   on('pointerdown', (e) => {
+    if (!active()) return;
     if (e.pointerType === 'mouse') {
       if (e.button !== 0) return;
       grab();
@@ -71,6 +72,7 @@ export function createControls(pointerTarget: EventTarget, keyTarget: EventTarge
   });
 
   on('pointermove', (e) => {
+    if (!active()) return;
     if (e.pointerType === 'mouse') steer = steerFrom((e.clientX - width() / 2) / (width() * INPUT.mouseRange), INPUT.mouseDeadzone);
     else if (e.pointerId === touchId) steer = steerFrom((e.clientX - touchX0) / (width() * INPUT.touchRange), INPUT.touchDeadzone);
   });
@@ -93,6 +95,9 @@ export function createControls(pointerTarget: EventTarget, keyTarget: EventTarge
   on('pointercancel', release);
 
   keyTarget.addEventListener('keydown', (e) => {
+    if (!active()) return;
+    const tag = (e.target as { tagName?: string } | null)?.tagName;
+    if (tag && ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(tag)) return; // UI keys must not steer or boost
     const code = (e as KeyboardEvent).code;
     if (code === HOLD_KEY && !(e as KeyboardEvent).repeat) toggleHold = true;
     if ([...STEER_LEFT, ...STEER_RIGHT, ...BOOST_KEYS].includes(code)) {
@@ -115,8 +120,15 @@ export function createControls(pointerTarget: EventTarget, keyTarget: EventTarge
   globalThis.document?.addEventListener('visibilitychange', () => globalThis.document.hidden && letGo());
 
   return {
-    requestToggleHold: () => (toggleHold = true),
+    requestToggleHold: () => {
+      if (active()) toggleHold = true;
+    },
     read() {
+      if (!active()) {
+        letGo();
+        toggleHold = takeControl = false;
+        return { steer: 0, boost: false, toggleHold: false, takeControl: false, pressing: false };
+      }
       const keySteer = (STEER_RIGHT.some((k) => keys.has(k)) ? 1 : 0) - (STEER_LEFT.some((k) => keys.has(k)) ? 1 : 0);
       const input: PilotInput = {
         steer: keySteer || steer,

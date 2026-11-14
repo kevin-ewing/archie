@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { glitterCentre, sparkleLevel } from './sparkle.ts';
+import { glitterCentre, SPARKLE, sparkleLevel } from './sparkle.ts';
 
 const lit = (sun: number, t: number) => Array.from({ length: 2000 }, (_, i) => sparkleLevel(i / 2000, t, sun)).filter((l) => l > 0).length;
 
@@ -11,6 +11,11 @@ test('water sparkles only in sunlight, more in strong sun, and the pattern chang
   const b = Array.from({ length: 200 }, (_, i) => sparkleLevel(i / 200, 1.5, 1)).join('');
   assert.notEqual(a, b, 'it twinkles');
   assert.ok(Array.from({ length: 2000 }, (_, i) => sparkleLevel(i / 2000, 2, 1)).includes(2), 'some flash into stars');
+});
+
+test('every sparkle uses the same slow cycle, at a staggered phase', () => {
+  const levels = (t: number) => Array.from({ length: 200 }, (_, i) => sparkleLevel(i / 200, t, 1));
+  assert.deepEqual(levels(1.234), levels(1.234 + 1 / SPARKLE.rate));
 });
 
 test('the glitter patch lies toward the sun: under you at noon, out by the horizon at sunset', () => {

@@ -27,6 +27,8 @@ export type TileLayer = {
 
 const RETRY_MS = 1000; // after a failed tile, wait this long before asking again
 
+export const fadeProgress = (at: number, now: number, duration: number): number => Math.min(1, Math.max(0, (now - at) / duration));
+
 export function createTileLayer(
   /** Generate a tile; return null if it can't be made yet (e.g. its inputs aren't ready) to try again later. */
   request: (cx: number, cy: number) => Promise<TileData> | null,
@@ -55,12 +57,28 @@ export function createTileLayer(
     job.then(
       (data) => {
         pending.delete(key);
+        const now = performance.now();
         const canvas = document.createElement('canvas');
         canvas.width = canvas.height = tile;
         canvas.getContext('2d')!.putImageData(new ImageData(data.rgba, tile, tile), 0, 0);
         const old = cache.get(key);
+        let prev = opts.fadeMs ? old?.canvas : undefined;
+        // A new sun bake can arrive before the previous cross-fade finishes. Preserve the exact image
+        // currently on screen, rather than jumping back to the last completed bake before fading again.
+        if (old?.prev && opts.fadeMs) {
+          const k = fadeProgress(old.at, now, opts.fadeMs);
+          if (k < 1) {
+            prev = document.createElement('canvas');
+            prev.width = prev.height = tile;
+            const pctx = prev.getContext('2d')!;
+            pctx.globalAlpha = 1 - k;
+            pctx.drawImage(old.prev, 0, 0);
+            pctx.globalAlpha = k;
+            pctx.drawImage(old.canvas, 0, 0);
+          }
+        }
         cache.delete(key);
-        cache.set(key, { canvas, heights: data.heights, glints: data.glints, version: v, prev: opts.fadeMs ? old?.canvas : undefined, at: performance.now() });
+        cache.set(key, { canvas, heights: data.heights, glints: data.glints, version: v, prev, at: now });
         dirty = true;
         failedAt.delete(key);
         while (cache.size > maxCached) cache.delete(cache.keys().next().value!);
@@ -123,7 +141,7 @@ export function createTileLayer(
           for (let cx = cx0; cx <= cx1; cx++) {
             const e = cache.get(`${cx},${cy}`);
             if (!e) continue;
-            const k = e.prev && opts.fadeMs ? (now - e.at) / opts.fadeMs : 1;
+            const k = e.prev && opts.fadeMs ? fadeProgress(e.at, now, opts.fadeMs) : 1;
             if (k < 1) {
               lctx.globalAlpha = 1 - k; // cross-fade from the previous version
               lctx.drawImage(e.prev!, (cx - cx0) * tile, (cy - cy0) * tile);

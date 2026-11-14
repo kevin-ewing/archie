@@ -150,12 +150,14 @@ export function treeAt(seed: number, x: number, y: number): Tree | null {
       const cy = (j + hash(seed + 25, i, j)) * TREE_SIZE;
       const size = hash(seed + 26, i, j);
       const r = 4.2 + size * 2.6; // crown radius ≤ 6.8 < TREE_SIZE, so the 3×3 search sees every crown
-      const dist = Math.hypot(x - cx, y - cy);
-      if (dist >= r) continue;
+      const dx = x - cx;
+      const dy = y - cy;
+      const distSq = dx * dx + dy * dy;
+      if (distSq >= r * r) continue;
       const z = hash(seed + 27, i, j);
       if (z <= bestZ || hash(seed + 28, i, j) >= treeChance(seed, i, j, cx, cy)) continue;
       const sp = hash(seed + 29, i, j);
-      best = { dx: x - cx, dy: y - cy, dist, r, species: sp < 0.72 ? 0 : sp < 0.9 ? 1 : 2 };
+      best = { dx, dy, dist: Math.sqrt(distSq), r, species: sp < 0.72 ? 0 : sp < 0.9 ? 1 : 2 };
       bestZ = z;
     }
   }

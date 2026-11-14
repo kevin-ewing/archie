@@ -1,0 +1,5 @@
+- generic [active] [ref=f1e1]:
+  - generic "Archie game view" [ref=f1e2]
+  - slider "Engine volume" [ref=f1e5] [cursor=pointer]: "70"
+  - button "Hold steady" [ref=f1e6] [cursor=pointer]:
+    - generic [ref=f1e8]: T

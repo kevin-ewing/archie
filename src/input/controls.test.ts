@@ -64,6 +64,17 @@ test('reports one-off actions once: T toggles Hold, a click or a key grabs the c
   assert.equal(c.read().toggleHold, true, 'the HUD button asks the same way');
 });
 
+test('keyboard interaction with HUD controls does not leak into flight or engine input', () => {
+  const button = Object.assign(new EventTarget(), { tagName: 'BUTTON' });
+  const slider = Object.assign(new EventTarget(), { tagName: 'INPUT' });
+  const fromButton = createControls(new EventTarget(), button, () => 1000);
+  const fromSlider = createControls(new EventTarget(), slider, () => 1000);
+  button.dispatchEvent(Object.assign(new Event('keydown'), { code: 'Space' }));
+  slider.dispatchEvent(Object.assign(new Event('keydown'), { code: 'ArrowRight' }));
+  assert.deepEqual(fromButton.read(), { steer: 0, boost: false, toggleHold: false, takeControl: false, pressing: false });
+  assert.deepEqual(fromSlider.read(), { steer: 0, boost: false, toggleHold: false, takeControl: false, pressing: false });
+});
+
 test('losing focus lets go of everything: no steering, no boost, no press', () => {
   const p = new EventTarget();
   const k = new EventTarget();
@@ -100,4 +111,24 @@ test('the edge of the screen turns equally sharply on a phone and a wide laptop'
     send(t, 'pointermove', { pointerType: 'touch', pointerId: 2, clientX: width, button: 0, timeStamp: 20 });
     assert.equal(ct.read().steer, 1, `touch dragged to the edge is hard right (${width} px wide)`);
   }
+});
+
+test('inactive controls ignore and clear input until play resumes', () => {
+  const p = new EventTarget();
+  const k = new EventTarget();
+  let active = false;
+  const c = createControls(p, k, () => 1000, () => active);
+  const send = (target: EventTarget, type: string, props: object) => target.dispatchEvent(Object.assign(new Event(type), props));
+
+  send(p, 'pointerdown', { pointerType: 'mouse', pointerId: 1, button: 0, clientX: 900 });
+  send(k, 'keydown', { code: 'KeyD' });
+  assert.deepEqual(c.read(), { steer: 0, boost: false, toggleHold: false, takeControl: false, pressing: false });
+  active = true;
+  assert.equal(c.read().steer, 0, 'input pressed during loading is not carried into play');
+  send(k, 'keydown', { code: 'KeyD' });
+  assert.equal(c.read().steer, 1, 'input works once play begins');
+  active = false;
+  c.read();
+  active = true;
+  assert.equal(c.read().steer, 0, 'pausing clears held input before play resumes');
 });

@@ -54,8 +54,8 @@ export type Cell = { f1: number; f2: number; id: number; id2: number; dx: number
 export function cellular(seed: number, x: number, y: number, size: number): Cell {
   const ci = Math.floor(x / size);
   const cj = Math.floor(y / size);
-  let f1 = Infinity;
-  let f2 = Infinity;
+  let f1Sq = Infinity;
+  let f2Sq = Infinity;
   let id = 0;
   let id2 = 0;
   let ndx = 0;
@@ -64,19 +64,19 @@ export function cellular(seed: number, x: number, y: number, size: number): Cell
     for (let i = ci - 1; i <= ci + 1; i++) {
       const dx = x - (i + hash(seed, i, j)) * size;
       const dy = y - (j + hash(seed + 1, i, j)) * size;
-      const d = Math.hypot(dx, dy);
-      if (d < f1) {
-        f2 = f1;
+      const dSq = dx * dx + dy * dy;
+      if (dSq < f1Sq) {
+        f2Sq = f1Sq;
         id2 = id;
-        f1 = d;
+        f1Sq = dSq;
         id = hash(seed + 2, i, j);
         ndx = dx;
         ndy = dy;
-      } else if (d < f2) {
-        f2 = d;
+      } else if (dSq < f2Sq) {
+        f2Sq = dSq;
         id2 = hash(seed + 2, i, j);
       }
     }
   }
-  return { f1, f2, id, id2, dx: ndx, dy: ndy };
+  return { f1: Math.sqrt(f1Sq), f2: Math.sqrt(f2Sq), id, id2, dx: ndx, dy: ndy };
 }

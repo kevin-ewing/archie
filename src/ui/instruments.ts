@@ -11,7 +11,7 @@ export const INSTRUMENTS = {
   tremble: 0.012, // engine-vibration jitter, as a fraction of full scale
   compassStiffness: 4, // liquid-damped compass card: underdamped, so it swings past and settles
   compassDamping: 2.2,
-  rpm: { cruise: 1250, full: 1800, hot: 1100, max: 2000 }, // RAF 1a ~90 hp at 1,800 rpm [VERIFY]
+  rpm: { cruise: 1250, full: 1800, hot: 1100, max: 2000 }, // RAF 1a: ~90 hp at 1,600 rpm, about 100–105 hp at 1,800
   tempCruise: 0.45, // a warm engine sits mid-scale; heat pushes the needle on from there
   tempRed: 0.85, // temperature reading above this is the red zone
   warnHeat: 0.7, // engine heat at which the warnings start (before the overheat lockout at 1)

@@ -18,6 +18,42 @@ const GAUGES_TOP = 35; // the tallest instrument on the board, so the toggles si
 
 export const createToggles = (items: Toggle[]): Toggles => ({ items, rects: [], plates: new Map() });
 
+/** DOM-backed volume slider face, painted in the same game pixels and palette as the toggle below it. */
+export function drawVolumePlate(canvas: HTMLCanvasElement, w: number, value: number, label: string): void {
+  const px = createPx(w, HEIGHT);
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = 0; x < w; x++) {
+      const edge = x === 0 || y === 0 || x === w - 1 || y === HEIGHT - 1;
+      plot(px, x, y, edge ? (x + y < 3 ? C.brassLit : x + y > w + HEIGHT - 5 ? C.brassDark : C.brass) : C.face);
+    }
+  }
+  text(px, Math.floor((w - textWidth(label)) / 2), 1, label, C.ink);
+  for (let x = 2; x < w - 2; x++) plot(px, x, HEIGHT - 3, C.brassDark);
+  const thumb = 2 + Math.round(Math.max(0, Math.min(1, value)) * (w - 5));
+  plot(px, thumb, HEIGHT - 4, C.brassLit);
+  plot(px, thumb, HEIGHT - 3, C.brassLit);
+  plot(px, thumb, HEIGHT - 2, C.brass);
+  canvas.width = w;
+  canvas.height = HEIGHT;
+  canvas.getContext('2d')!.putImageData(new ImageData(px.data, w, HEIGHT), 0, 0);
+}
+
+/** DOM-backed button face matching the volume controls. */
+export function drawButtonPlate(canvas: HTMLCanvasElement, w: number, label: string, on: boolean): void {
+  const px = createPx(w, HEIGHT);
+  const face: RGBA = on ? C.brassLit : C.face;
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = 0; x < w; x++) {
+      const edge = x === 0 || y === 0 || x === w - 1 || y === HEIGHT - 1;
+      plot(px, x, y, edge ? (x + y < 3 ? C.brassLit : x + y > w + HEIGHT - 5 ? C.brassDark : C.brass) : face);
+    }
+  }
+  text(px, Math.floor((w - textWidth(label)) / 2), 1 + PAD, label, on ? C.face : C.dim);
+  canvas.width = w;
+  canvas.height = HEIGHT;
+  canvas.getContext('2d')!.putImageData(new ImageData(px.data, w, HEIGHT), 0, 0);
+}
+
 /** The plate for a toggle in one state: brass border lit from the top-left, lit brass or black face. */
 function plate(t: Toggle): HTMLCanvasElement {
   const w = textWidth(t.text) + 2 * PAD + 2;
@@ -37,7 +73,7 @@ function plate(t: Toggle): HTMLCanvasElement {
   return canvas;
 }
 
-export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggles): void {
+export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggles, visible = true): void {
   ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
   const bottom = Math.floor(view.h) - (view.compact ? 40 : 12);
   const x = view.compact ? 14 : 10;
@@ -46,7 +82,7 @@ export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggl
     const key = `${t.id}:${t.on}`;
     let img = tg.plates.get(key);
     if (!img) tg.plates.set(key, (img = plate(t)));
-    ctx.drawImage(img, x, y);
+    if (visible) ctx.drawImage(img, x, y);
     const r = { x, y, w: img.width, h: HEIGHT };
     y -= HEIGHT + GAP;
     return r;

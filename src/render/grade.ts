@@ -73,7 +73,7 @@ export function skyFor(seed: number, day: number, evening: boolean): Sky {
 const WHITE: RGB = [255, 255, 255];
 /** Night is the same flat dark blue whatever the evening's palette was. */
 const NIGHT_BLUE: RGB = hex(0x0c1748);
-const CLOUD_GREY: RGB = hex(0x9a8f80); // night and dusk clouds: a warm grey, so the blue night filter turns them neutral
+const CLOUD_GREY: RGB = hex(0x657080); // muted blue-grey: darker than daytime cloud without disappearing into the night
 const NIGHT_ALPHA = 0.8; // how strongly night's blue is laid over the world (same every night): only a little darker than dusk
 const mix = (a: RGB, b: RGB, t: number): RGB => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -98,12 +98,12 @@ export function gradeFor(sun: Sun, sky: Sky): Grade {
   const p = sky.palette;
   const b = sky.beauty;
   // Golden from ~22° of sun; the blaze from ~12° above the horizon until the sun's rays stop, ~4° below it;
-  // then the sky turns blue straight away (dusk), and deeper blue (night) a little later. The same going
-  // the other way: before sunrise the sky is blue and dark until the first rays.
+  // then the sky turns blue straight away (dusk), and reaches full night soon after. The same going the
+  // other way: it stays fully dark until shortly before sunrise, then lifts into blue dawn.
   const golden = el > 0 ? smooth((22 - el) / 14) : 1 - smooth(-el / 5);
   const blaze = clamp01(el >= 1 ? 1 - (el - 1) / 11 : 1 - (1 - el) / 5);
   const dusk = smooth((0.5 - el) / 2.5); // dark within a couple of degrees (~15 min) of the sun crossing the horizon
-  const night = smooth((-8 - el) / 5);
+  const night = smooth((-1 - el) / 4); // starts ~10 min after sunset, fully dark in ~40; mirrored before sunrise
   const DUSK_BLUE = mix(p.deep, NIGHT_BLUE, 0.5);
   // Toward the sun: gold, then fiery orange-red. Away from it: rose and magenta. Both warm, both multiplied.
   let near = mix(mix(mix(mix(WHITE, p.warm, golden), p.hot, blaze), mix(p.cool, DUSK_BLUE, 0.6), dusk), NIGHT_BLUE, night);
@@ -124,8 +124,7 @@ export function gradeFor(sun: Sun, sky: Sky): Grade {
   const rayColour = mix(p.glow, sky.rayEnd, clamp01((12 - el) / 14));
   // Clouds catch the colour far more than the ground does: lit pink, gold and fire-red by the low sun,
   // then (the moment the sun is gone) a cool blue-grey, and dark blue through the night.
-  // Half the saturation of the sky's colour (same brightness), and at night a warm grey: the night filter laid over everything is
-  // already blue, so a blue cloud tint would double it.
+  // Half the saturation of the sky's colour (same brightness), settling into a darker muted blue-grey at night.
   const soft = (c: RGB): RGB => {
     const y = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]; // the colour's own grey
     return mix([y, y, y], c, 0.5);
@@ -134,7 +133,8 @@ export function gradeFor(sun: Sun, sky: Sky): Grade {
   const cloudFar = mix(mix(mix(mix(WHITE, soft(p.mid), golden * 0.8), soft(mix(p.mid, p.hot, 0.5)), blaze), mix(soft(p.deep), CLOUD_GREY, 0.5), dusk), CLOUD_GREY, night);
   // Only a hint of colour in the golden hours, building to the full blaze as the sun meets the horizon.
   const byDay = clamp01(0.1 * golden + 0.58 * blaze * blaze) * (0.75 + 0.25 * b);
-  const cloudAmount = byDay + (0.5 - byDay) * dusk;
+  const duskCloudAmount = byDay + (0.5 - byDay) * dusk;
+  const cloudAmount = duskCloudAmount + (0.65 - duskCloudAmount) * night;
   return {
     near,
     far,

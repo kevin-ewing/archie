@@ -153,6 +153,8 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   const qy = c.y * CLOUD_PARALLAX - WIND.y * t;
   const cx0 = Math.floor(qx - r);
   const cy0 = Math.floor(qy - r);
+  let lightingComplete = true; // night needs no direct-light layers
+  let wispsComplete = true; // only needed at startup when the plane begins inside cloud
 
   // Direct sunlight, and what blocks it. Everything that only exists in direct sun (tree and hedge
   // shadows, sunny-side highlights, water glints, the plane's shadow) is drawn into one buffer, then
@@ -176,6 +178,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
     const shade = sun.shadowStrength; // the plane's and the clouds' shadows fade as the sun drops: only really visible around midday
     lc.globalAlpha = sun.strength; // landscape shadows stay as strong at any hour
     const light = scene.sunlight.compose(gx, gy, side);
+    lightingComplete = light.complete;
     lc.drawImage(light.canvas, light.x, light.y);
     lc.globalAlpha = 1;
     drawSparkle(lc, scene.ground, scene.sparkle, { x0: gx, y0: gy, side, r }, t, sun, scene.seed);
@@ -220,6 +223,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
     const dx = sun.shadow.x * CLOUD_HEIGHT + WIND.x * t;
     const dy = sun.shadow.y * CLOUD_HEIGHT + WIND.y * t;
     const cs = scene.cloudShadows.compose(gx - Math.round(dx), gy - Math.round(dy), side);
+    lightingComplete &&= cs.complete;
     lc.globalAlpha = shade;
     lc.globalCompositeOperation = 'destination-out'; // no direct sun under a cloud
     lc.drawImage(cs.canvas, cs.x + dx, cs.y + dy);
@@ -273,12 +277,15 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   // field of wisps streaks past close to the camera, so passing through cloud feels fast.
   const pa = cam.angle;
   const pq = { x: qx + off.x * Math.cos(pa) - off.y * Math.sin(pa), y: qy + off.x * Math.sin(pa) + off.y * Math.cos(pa) };
-  scene.inCloud += ((cloudLevel(scene.seed, Math.round(pq.x), Math.round(pq.y)) + 1) / 6 - scene.inCloud) * (1 - Math.exp(-dt / 0.4));
-  if (scene.inCloud > 0.02) {
+  const cloudDepth = (cloudLevel(scene.seed, Math.round(pq.x), Math.round(pq.y)) + 1) / 6;
+  scene.inCloud += (cloudDepth - scene.inCloud) * (1 - Math.exp(-dt / 0.4));
+  const preloadWisps = t === 0 && cloudDepth > 0.02;
+  if (scene.inCloud > 0.02 || preloadWisps) {
     const wx = c.x * WISP_PARALLAX - WIND.x * t;
     const wy = c.y * WISP_PARALLAX - WIND.y * t;
     worldTransform(cc, scale, ax, ay, cam.angle, wx, wy);
     const wisps = scene.wisps.compose(Math.floor(wx - r), Math.floor(wy - r), side);
+    if (preloadWisps) wispsComplete = wisps.complete;
     cc.globalAlpha = Math.min(1, scene.inCloud * 1.6) * WISP_ALPHA;
     cc.drawImage(wisps.canvas, wisps.x, wisps.y);
     cc.globalAlpha = 1;
@@ -318,7 +325,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   drawGrade(ctx, view, scene.grade, grade, toward);
   f.prof.mark('grade');
 
-  return ground.complete && clouds.complete && high.complete;
+  return ground.complete && lightingComplete && wispsComplete && clouds.complete && high.complete;
 }
 
 function worldTransform(ctx: CanvasRenderingContext2D, scale: number, ax: number, ay: number, angle: number, cx: number, cy: number) {

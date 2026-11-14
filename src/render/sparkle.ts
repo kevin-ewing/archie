@@ -1,5 +1,5 @@
-// Sunlight glinting off water: sparse glint points (recorded per ground tile) flash briefly at their own
-// rhythm, as a single bright pixel or, at the peak, a little four-point star. Only while the sun is up,
+// Sunlight glinting off water: sparse glint points (recorded per ground tile) flash at staggered phases,
+// as a single bright pixel or, at the peak, a little four-point star. Only while the sun is up,
 // and only in the sun's glitter patch: the stretch of water angled to bounce the sun up to the eye, which
 // sits toward the sun from below you (just under you at noon, out toward the horizon as the sun sinks).
 // Same pixel size as everything else.
@@ -10,14 +10,14 @@ import { CHUNK, WATER } from '../world/ground.ts';
 import type { TileLayer } from './tiles.ts';
 
 export const SPARKLE = {
-  rate: 0.16, // flashes per second per glint point (each point flashes every ~6 s)
-  duty: 0.09, // fraction of each cycle a point is lit (≈ 0.55 s at full sun), scaled by sun and glitter patch
+  rate: 0.112, // flashes per second per glint point (all points use the former slow end: one cycle every ~9 s)
+  duty: 0.18, // fraction of each cycle a point is lit (≈ 1.6 s at full sun), scaled by sun and glitter patch
   patch: 0.45, // glitter patch size, as a fraction of the view radius
 };
 
 /** 0 = dark, 1 = a glint pixel, 2 = a star (peak of the flash). Pure. */
 export function sparkleLevel(phase: number, t: number, sun: number): 0 | 1 | 2 {
-  const cycle = (t * SPARKLE.rate * (0.7 + phase * 0.6) + phase * 7.3) % 1; // each point its own speed and phase
+  const cycle = (t * SPARKLE.rate + phase * 7.3) % 1; // same slow speed, staggered phases
   const on = SPARKLE.duty * sun;
   if (cycle >= on) return 0;
   return Math.abs(cycle / on - 0.5) < 0.2 ? 2 : 1;

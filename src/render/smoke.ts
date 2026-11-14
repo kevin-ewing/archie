@@ -20,12 +20,14 @@ export type Smoke = { puffs: Puff[]; owed: number; n: number };
 export const createSmoke = (): Smoke => ({ puffs: [], owed: 0, n: 0 });
 
 export function updateSmoke(s: Smoke, p: Plane, warning: 0 | 1 | 2, dt: number): void {
+  let alive = 0;
   for (const puff of s.puffs) {
     puff.age += dt;
     puff.x += SMOKE.drift.x * dt;
     puff.y += SMOKE.drift.y * dt;
+    if (puff.age < SMOKE.life) s.puffs[alive++] = puff;
   }
-  s.puffs = s.puffs.filter((puff) => puff.age < SMOKE.life);
+  s.puffs.length = alive;
   s.owed += SMOKE.rate[warning] * dt;
   while (s.owed >= 1 && s.puffs.length < SMOKE.max) {
     s.owed -= 1;

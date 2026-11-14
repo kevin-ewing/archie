@@ -4,13 +4,18 @@
 
 const MAX_FRAME_SECONDS = 0.25; // clamp so a long pause (backgrounded tab) can't trigger a catch-up spiral
 
-export function startLoop(update: (dt: number) => void, render: (alpha: number) => void, hz = 60): void {
+export function startLoop(update: (dt: number) => void, render: (alpha: number) => void, hz = 60, active = () => true): void {
   const step = 1 / hz;
   let acc = 0;
   let last = performance.now();
 
   function frame(now: number) {
     requestAnimationFrame(frame); // first, so one bad frame (an exception) can't stop the game for good
+    if (!active()) {
+      acc = 0;
+      last = now;
+      return;
+    }
     acc += Math.min(Math.max(0, now - last) / 1000, MAX_FRAME_SECONDS);
     last = now;
     while (acc >= step) {
