@@ -27,8 +27,9 @@ export type Features = {
   onlyTrenches?: boolean; // development: of the front, draw only the trench lines
   frontLine?: boolean; // development: draw the front's own line (its centre) in red
   trenchStyle?: TrenchStyle;
+  atStart?: boolean; // development: a front through the plane's start (see DEV in world/settings.ts)
 };
-export const ALL_FEATURES: Features = { structures: false, military: true }; // the buildings are off for now
+export const ALL_FEATURES: Features = { structures: true, military: true };
 
 export type TileRequest =
   | { kind: 'ground'; seed: number; cx: number; cy: number; features?: Features; damage?: readonly DamageMark[] }
@@ -42,6 +43,7 @@ function applySettings(features: Features) {
   DEV.onlyTrenches = features.onlyTrenches ?? false;
   DEV.trenchStyle = features.trenchStyle ?? 'traversed';
   DEV.frontLine = features.frontLine ?? false;
+  DEV.atStart = features.atStart ?? true;
 }
 
 /** The stamp for one ground tile (layers 1, 3 and 4), or undefined when it has nothing on it (the common case: free). */

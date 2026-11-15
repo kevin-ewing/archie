@@ -17,5 +17,8 @@ export const TRENCH_STYLES = ['traversed', 'hasty'] as const;
 export type TrenchStyle = (typeof TRENCH_STYLES)[number];
 
 /** Per-request settings: development density, whether the fronts exist (when off, buildings ignore
- *  them), only the trench lines (development: everything else on the front is left out), and their style. */
-export const DEV: { density: number; fronts: boolean; onlyTrenches: boolean; trenchStyle: TrenchStyle; frontLine: boolean } = { density: 1, fronts: true, onlyTrenches: false, trenchStyle: 'traversed', frontLine: false };
+ *  them), only the trench lines (development: everything else on the front is left out), and their style.
+ *  `atStart` (development): a front always runs right through the plane's start (the world origin),
+ *  whichever territory that's in, so the front's look can be worked on straight away; off in production,
+ *  where fronts fall only where they fall. */
+export const DEV: { density: number; fronts: boolean; onlyTrenches: boolean; trenchStyle: TrenchStyle; frontLine: boolean; atStart: boolean } = { density: 1, fronts: true, onlyTrenches: false, trenchStyle: 'traversed', frontLine: false, atStart: true };

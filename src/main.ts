@@ -14,10 +14,10 @@ import { createPlane, FLIGHT, updatePlane } from './sim/flight.ts';
 import { createClockFace, drawClock } from './ui/clock.ts';
 import { label } from './ui/gauges.ts';
 import { createHud, drawHud } from './ui/hud.ts';
-import { createToggles, drawButtonPlate, drawToggles, drawVolumePlate, toggleAt } from './ui/toggles.ts';
+import { CONTROL_W, controlsAnchor, createToggles, drawButtonPlate, drawToggles, drawVolumePlate, toggleAt } from './ui/toggles.ts';
 import { createInstruments, engineWarning, updateInstruments } from './ui/instruments.ts';
 import { createSmoke, updateSmoke } from './render/smoke.ts';
-import { TRENCH_STYLES, type TrenchStyle } from './world/settings.ts';
+import { DEV, TRENCH_STYLES, type TrenchStyle } from './world/settings.ts';
 
 export const IS_DEV = import.meta.env.DEV;
 
@@ -35,7 +35,7 @@ const START_HOUR =
   numberFromUrl('time', (n) => n >= 0 && n < 24) ??
   (IS_DEV ? 7 : sunsetHour(DAYLIGHT.startDayOfYear) - (1.75 + randomStart * 0.5)); // development (for now): always 7:00 am; production: 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
 
-// Development aids. Debug toggles (bottom-left, above the gauges): FAST TIME runs the clock 3× (on for now);
+// Development aids. Debug toggles (bottom-right corner, stacked upward, right-aligned): FAST TIME runs the clock 3× (on for now);
 // BUILDINGS and FRONT switch the farms / the military works on and off (the visible ground tiles regenerate
 // over a second or so; flying costs nothing either way). Hold ] to run the clock 40× faster still.
 const toggles = createToggles([
@@ -78,7 +78,7 @@ if (volumeSlider instanceof HTMLInputElement) {
   const updateVolume = () => {
     const value = volumeSlider.valueAsNumber / 100;
     audio.setVolume(value);
-    const width = toggles.rects[0]?.w;
+    const width = CONTROL_W;
     if (volumeFace instanceof HTMLCanvasElement && width) drawVolumePlate(volumeFace, width, value, 'ENGINE');
   };
   volumeSlider.addEventListener('input', updateVolume);
@@ -88,7 +88,7 @@ if (musicSlider instanceof HTMLInputElement) {
   const updateVolume = () => {
     const value = musicSlider.valueAsNumber / 100;
     audio.setMusicVolume(value);
-    const width = toggles.rects[0]?.w;
+    const width = CONTROL_W;
     if (musicFace instanceof HTMLCanvasElement && width) drawVolumePlate(musicFace, width, value, 'MUSIC');
   };
   musicSlider.addEventListener('input', updateVolume);
@@ -175,6 +175,10 @@ const prevPlane = { ...plane };
 const prevCam = { ...cam };
 const STEP = 1 / 60;
 const scene = createScene(SEED, IS_DEV ? 10 : 2.5); // farms 2.5× the base rate in play; development packs them 4× closer still
+// Development only: a front always runs through the plane's start. In production fronts fall where they fall.
+// (Set here for the main thread, which places lamps from the farms, and in every tile request for the workers.)
+DEV.atStart = IS_DEV;
+scene.features.atStart = IS_DEV;
 // The front is being built one part at a time: for now only its trench lines, in one style (being
 // worked on: hasty; `?trench=traversed` shows the original).
 const trenchParam = new URLSearchParams(location.search).get('trench');
@@ -357,16 +361,16 @@ startLoop(
     const view = display.view();
     const warning = engineWarning(plane);
     const sun = sunNow(clock);
-    scene.features.structures = toggleOn('structures');
-    scene.features.military = toggleOn('military');
+    scene.features.structures = !IS_DEV || toggleOn('structures'); // (production: always both)
+    scene.features.military = !IS_DEV || toggleOn('military');
     scene.features.frontLine = IS_DEV && toggleOn('frontLines');
     const complete = drawScene(display.ctx, view, scene, p, c, { t: t - STEP * (1 - alpha), smoke, warning, sun, day: clock.day, prof });
     drawHud(display.ctx, view, hud, instruments, warning, t);
     drawToggles(display.ctx, view, toggles, IS_DEV);
-    const fastTime = toggles.rects[0]; // the bottom toggle (now FAST PLANE): the other plates are placed from it
+    const fastTime = controlsAnchor(view); // the player's own controls stack up on the left, just above the gauges
     if (fastTime) {
       const px = view.uiScale / (window.devicePixelRatio || 1);
-      const firstRow = IS_DEV ? toggles.items.length : 0;
+      const firstRow = 0;
       placeVolume(audioControl, volumeFace, volumeSlider, 'ENGINE', firstRow, fastTime, px);
       placeVolume(musicControl, musicFace, musicSlider, 'MUSIC', firstRow + 1, fastTime, px);
       if (holdButton instanceof HTMLButtonElement && holdFace instanceof HTMLCanvasElement) {

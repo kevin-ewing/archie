@@ -100,7 +100,10 @@ const smooth = (v: number) => (v <= 0 ? 0 : v >= 1 ? 1 : v * v * (3 - 2 * v));
 // (`clear` can be passed in when the caller already has it: one clearance lookup per pixel, not three.)
 const wetness = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => stretch(fbm(seed + 10, x / 900, y / 900, 4), 1.39) - 0.6 * clear;
 /** 0 = open country … 1 = deep forest, ramping over a wide band so woods fade out rather than stop. */
-const woodDensity = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => smooth((stretch(fbm(seed + 20, x / 700, y / 700, 4), 1.41) - 0.68 - 0.5 * clear) / 0.13);
+const woodDensity = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => smooth((stretch(fbm(seed + 20, x / 700, y / 700, 4), 1.41) - 0.68 - 0.5 * woodClear(clear)) / 0.13);
+/** Woods and copses keep only out of the inner part of a front's clearance (lakes keep out of all of it):
+ *  they may grow in well into its fade, close behind the trench lines. */
+const woodClear = (clear: number) => smooth((clear - 0.3) / 0.7);
 /** Glades: small clearings inside woods. > GLADE is open; trees thin out on the approach. */
 const gladeValue = (seed: number, x: number, y: number) => stretch(fbm(seed + 23, x / 120, y / 120, 3), 2.2);
 const GLADE = 0.88;
@@ -140,7 +143,7 @@ function treeChance(seed: number, i: number, j: number, cx: number, cy: number):
       // reach out into the fields, and out in open farmland the only trees are the occasional copse.
       const dens = woodDensity(seed, cx, cy, clear) * (1 - smooth((gladeValue(seed, cx, cy) - (GLADE - 0.1)) / 0.12));
       const clump = valueNoise(seed + 48, cx / 35, cy / 35);
-      chance = Math.max(smooth((dens * 1.2 + (clump - 0.5) * 0.8 - 0.35) / 0.25), copseChance(seed, cx, cy, clear)) * (1 - clear); // no clumps in a front's core
+      chance = Math.max(smooth((dens * 1.2 + (clump - 0.5) * 0.8 - 0.35) / 0.25), copseChance(seed, cx, cy, clear)) * (1 - woodClear(clear)); // no clumps in a front's core
     }
     treeChanceCache.set(key, chance);
   }
@@ -148,7 +151,7 @@ function treeChance(seed: number, i: number, j: number, cx: number, cy: number):
 }
 
 /** Copses: rare, tight clumps of trees out in the fields (with scrub underneath). 0 … 1. */
-const copseValue = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => valueNoise(seed + 49, x / 55, y / 55) - 0.1 * clear;
+const copseValue = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => valueNoise(seed + 49, x / 55, y / 55) - 0.1 * woodClear(clear);
 const copseChance = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => smooth((copseValue(seed, x, y, clear) - 0.955) / 0.02);
 
 export type Tree = { dx: number; dy: number; dist: number; r: number; species: number };
@@ -419,7 +422,7 @@ export type TileData = { rgba: Uint8ClampedArray<ArrayBuffer>; heights?: Uint8Ar
 /** Fraction of water pixels that can sparkle. */
 export const GLINT = 0.0007;
 /** … and of the front's small muddy pools (more, so most shell-hole pools get a glint or two). */
-export const POOL_GLINT = 0.08;
+export const POOL_GLINT = 0.02;
 export const HEIGHT_STEPS = 8;
 
 /** Something stamped over the ground at a pixel (colour, height), or null to let the ground show. */

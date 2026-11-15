@@ -1,4 +1,5 @@
-// Debug toggles: small brass-edged pixel placards, in the style of the gauges, stacked just above them.
+// Debug toggles: small brass-edged pixel placards, in the style of the gauges, stacked up from the
+// bottom-right corner (development only; the player's own controls stay on the left, above the gauges).
 // Lit brass = on, dark face = off. Click or tap one to flip it. Drawn on the canvas on whole game pixels;
 // `hit` maps a screen point back to a toggle (see main.ts, which swallows presses that land on one so
 // they don't also steer the plane).
@@ -73,15 +74,24 @@ function plate(t: Toggle): HTMLCanvasElement {
   return canvas;
 }
 
+/** Width of the player's control plates (volume, HOLD): as wide as the old bottom toggle, FAST PLANE. */
+export const CONTROL_W = textWidth('FAST PLANE') + 2 * PAD + 2;
+/** Where the player's controls stack up from: on the left, just above the gauges. */
+export function controlsAnchor(view: View): Rect {
+  const bottom = Math.floor(view.uiH) - (view.compact ? 40 : 12);
+  return { x: view.compact ? 14 : 10, y: bottom - GAUGES_TOP - 4 - HEIGHT, w: CONTROL_W, h: HEIGHT };
+}
+
 export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggles, visible = true): void {
   ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
   const bottom = Math.floor(view.uiH) - (view.compact ? 40 : 12);
-  const x = view.compact ? 14 : 10;
-  let y = bottom - GAUGES_TOP - 4 - HEIGHT;
+  const right = Math.floor(view.uiW) - (view.compact ? 14 : 10);
+  let y = bottom - HEIGHT;
   tg.rects = tg.items.map((t) => {
     const key = `${t.id}:${t.on}`;
     let img = tg.plates.get(key);
     if (!img) tg.plates.set(key, (img = plate(t)));
+    const x = right - img.width; // right-aligned
     if (visible) ctx.drawImage(img, x, y);
     const r = { x, y, w: img.width, h: HEIGHT };
     y -= HEIGHT + GAP;

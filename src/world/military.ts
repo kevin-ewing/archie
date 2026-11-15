@@ -56,7 +56,7 @@ const M = {
   wreck: [rgb(0x3b3732), rgb(0x4a4038), rgb(0x6a4a32)], // dark steel, burnt paint, rust
   soot: rgb(0x2a2520),
 };
-const H = { boards: 0, bags: 3, relic: 1, spoil: 0.6, wire: 0.8, post: 1.5, earthwork: 2.5, gun: 1.5, net: 2, stump: 5, rim: 1.2, mud: 0.4, tent: 3, hut: 4, crate: 2, wreck: 2.5 };
+const H = { boards: 0, bags: 3, relic: 1, spoil: 0.6, wire: 1.4, post: 1.8, earthwork: 2.5, gun: 1.5, net: 2, stump: 5, rim: 1.2, mud: 0.4, tent: 3, hut: 4, crate: 2, wreck: 2.5 };
 const smooth = (v: number) => (v <= 0 ? 0 : v >= 1 ? 1 : v * v * (3 - 2 * v));
 
 // A front's meander and its trenches' small wobble only change over hundreds of px along the line, so
@@ -522,15 +522,19 @@ const WIRE = {
   tangle: { cell: [26, 14], chance: 0.22, size: [1.5, 4] }, // loose knots of wire thrown about the belts
   german: { depth: [22, 34], gap: [12, 20], rows: [3, 4], pitch: [7, 10], lanes: 0.2, cover: 0.85 },
   british: { depth: [14, 22], pitch: [7, 10], coil: [3, 4], concertina: 0.4, lanes: 0.55, cover: 0.95 },
+  overHole: 1.8, // × how much wire shows where it crosses a shell hole's pit
 };
 const WIRE_REACH = HASTY.offset / 2 + HASTY.lobe[1] + HASTY.bend; // how far the fire trench's ditch strays from fireLine
 /** Is this stamp barbed wire (or its pickets)? (For tests.) */
 export const isWire = (st: Stamp | null) => st?.[0] === M.wire || st?.[0] === M.post;
-/** Is this stamp the shelled ground (churned mud, clods, shell holes), not a work dug or built? (By colour
- *  and height together: the trenches use some of the same colours, at other heights.) */
-const SHELLED = new Map<RGB, readonly number[]>([...M.mud.map((c) => [c, [H.mud]] as const), [M.clod, [H.mud, 0.1]], [M.bowl, [0.2]], ...M.rim.map((c) => [c, [H.rim]] as const), ...WATER.pool.map((c) => [c, [0.05]] as const)]);
-export const isChurned = (st: Stamp | null) => !!st && !!SHELLED.get(st[0])?.includes(st[1]);
-function wire(seed: number, x: number, y: number, u: number, s: number, nml: number, fid: number, d: number, end: number): Stamp | null {
+/** Is this stamp the shelled ground (churned mud, clods, shell holes), not a work dug or built? (By height:
+ *  the shelling's own, which no trench, wire or sap uses, though they share some colours.) */
+const SHELLED = new Set([0.05, 0.1, 0.2, H.rim, H.mud]);
+export const isChurned = (st: Stamp | null) => !!st && SHELLED.has(st[1]);
+/** Wire lies over everything of the shelled ground; over a shell hole's dark pit its strands are drawn
+ *  thicker (WIRE.overHole), so they still read as on top of it rather than broken off by it. */
+const overHole = (ground: Stamp | null) => (ground && ground[1] <= 0.2 && isChurned(ground) ? WIRE.overHole : 1);
+function wire(seed: number, x: number, y: number, u: number, s: number, nml: number, fid: number, d: number, end: number, boost = 1): Stamp | null {
   const side = u < 0 ? -1 : 1;
   const a = u * side; // px from the divide
   if (a < WIRE.keep) return null;
@@ -597,7 +601,7 @@ function wire(seed: number, x: number, y: number, u: number, s: number, nml: num
       const w = t0 - start - (hash(seed + 324 + fid, c, key) - 0.5) * 2 * pc.shift - (s - (lo + hi) / 2) * tilt;
       if (w < 0 || w > D) continue;
       const f =
-        open * lane(k, chance) * stretch * edge(w, D) *
+        boost * open * lane(k, chance) * stretch * edge(w, D) *
         (0.45 + 0.8 * valueNoise(seed + 315 + side, s / 45, w / 10)) * // knots and thin spots
         (0.5 + 0.8 * valueNoise(seed + 333 + side, s / 11, w / 3.5)) * // smaller clumps and holes
         (valueNoise(seed + 334, x / 2.2, y / 2.2) > 0.28 ? 1 : 0.25) * // strands broken into fragments
@@ -776,7 +780,14 @@ const CRATER = {
   smooth: 0.35, // Voronoi smooth F1: how much neighbouring holes blend into one another
   pool: 0.12, // chance a big enough hole holds water
   heavy: 900, // px: the scale of the heavier and lighter shelled stretches
+  speckle: { pit: 0.3, lip: 0.25, lipDug: 0.12, thrownDug: 0.45 }, // how much of each is speckled, and with dug earth
 };
+/** The paler, greyer dug earth (trench banks and spoil) at x, y, about `chance` of the time, else null. */
+function dug(seed: number, x: number, y: number, chance: number): RGB | null {
+  if (hash(seed + 217, x, y) >= chance + (valueNoise(seed + 218, x / 3, y / 3) - 0.5) * 0.4) return null;
+  const h = hash(seed + 219, x, y);
+  return h < 0.5 ? M.earthwork[h < 0.25 ? 0 : 1] : (dirtAt(seed + 5, x, y, 1) ?? M.earthwork[1]);
+}
 const CRATER_CELL = CRATER.cell;
 type Crater = { x: number; y: number; r: number; pool: boolean };
 function craterIn(seed: number, fronts: readonly Front[], i: number, j: number): Crater | null {
@@ -887,7 +898,10 @@ export function militaryAt(
     // Development: the fire, support and reserve lines alone, nothing else of the front.
     const dd = hash(seed + 202, x, y);
     const works = (DEV.trenchStyle === 'hasty' ? leading : present)(seed, fid, end, Math.floor(s / 300)) && au <= nml + ONLY_TRENCHES_REACH;
-    return (works ? (walls(seed, x, y, u, s, nml, end, fid, dd) ?? wire(seed, x, y, u, s, nml, fid, dd, end)) : null) ?? shelling(seed, x, y, u, s, nml, end, fid, dd, cells, craters, ONLY_TRENCHES_GROUND);
+    const t = works ? walls(seed, x, y, u, s, nml, end, fid, dd) : null;
+    if (t) return t;
+    const ground = shelling(seed, x, y, u, s, nml, end, fid, dd, cells, craters, ONLY_TRENCHES_GROUND);
+    return (works ? wire(seed, x, y, u, s, nml, fid, dd, end, overHole(ground)) : null) ?? ground;
   }
 
   const d = hash(seed + 202, x, y);
@@ -1003,12 +1017,8 @@ export function militaryAt(
   }
 
   // Barbed wire in front of each fire trench, each army's own way (see wire).
-  if (present(seed, fid, end, seg)) {
-    const w = wire(seed, x, y, u, s, nml, fid, d, end);
-    if (w) return w;
-  }
-
-  return shelling(seed, x, y, u, s, nml, end, fid, d, cells, craters);
+  const ground = shelling(seed, x, y, u, s, nml, end, fid, d, cells, craters);
+  return (present(seed, fid, end, seg) ? wire(seed, x, y, u, s, nml, fid, d, end, overHole(ground)) : null) ?? ground;
 }
 
 /** Of the shelled ground, what `onlyTrenches` (development) draws: switched on one at a time. */
@@ -1026,11 +1036,13 @@ function shelling(
     // Bands of the smooth distance, their edges dithered so they fray: water (in a few), the dark pit,
     // its muddy lip, then thrown clods thinning out.
     const q = hit.q + (d - 0.5) * 0.12;
+    // The pit and lip are speckled with clods and wet mud; the lip and the thrown earth round it get some of
+    // the paler, greyer dug earth too (as in the trenches' banks and spoil), flung up from below.
     if (hit.c.pool && q < 0.45) return [M.pool[q < 0.3 ? 0 : 1], 0.05];
-    if (q < 0.35) return [M.clod, 0.1];
-    if (q < 0.65) return [M.bowl, 0.2];
-    if (q < 1) return [M.rim[d < 0.55 ? 0 : 1], H.rim];
-    if (d < 0.6 * (1 - (q - 1) / (CRATER.splash - 1))) return [M.clod, H.mud]; // thrown mud around it
+    if (q < 0.35) return [speckle(seed, x, y, CRATER.speckle.pit) ?? M.clod, 0.1];
+    if (q < 0.65) return [speckle(seed, x, y, CRATER.speckle.pit) ?? M.bowl, 0.2];
+    if (q < 1) return [dug(seed, x, y, CRATER.speckle.lipDug) ?? speckle(seed, x, y, CRATER.speckle.lip) ?? M.rim[d < 0.55 ? 0 : 1], H.rim];
+    if (d < 0.6 * (1 - (q - 1) / (CRATER.splash - 1))) return [dug(seed, x, y, CRATER.speckle.thrownDug) ?? M.clod, H.mud]; // thrown earth around it
   }
   if (on.wrecks && au > nml + 40 && au < 900 && dev > 0.15) {
     const ks = Math.floor(s / 260);

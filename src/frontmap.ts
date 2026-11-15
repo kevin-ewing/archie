@@ -3,7 +3,7 @@
 // (world/generate.ts: tileStamp; world/military.ts: frontsNear, frontField; world/ground.ts: landAt), at
 // production front frequency, so it shows exactly what the game generates.
 //
-// By default each image is a close-up cross-section of the front at the plane's start (FRONTS.atStart
+// By default each image is a close-up cross-section of the front at the plane's start (DEV.atStart
 // puts one there for now): a strip straight across it, from behind one side's walls to behind the
 // other's, at 2 image px per world px, in the game's own colours (unlit), with the front's own line in
 // red. Across the front runs left to right (British side on the left); along it, top to bottom.

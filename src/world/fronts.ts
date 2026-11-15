@@ -18,9 +18,6 @@ export const FRONTS = {
   camps: [2100, 2600], // tented and hutted camps, behind the guns
   reach: 2800, // nothing military beyond this distance from a line
   fade: 7000, // over how far a front eases out at its ends: its lines give out from the back, its zone narrows to a rounded tip
-  // FOR NOW, while the front's look is being worked on: a front always runs right through the plane's start
-  // (the world origin), whichever territory that's in. Set false to go back to fronts only where they fall.
-  atStart: true,
 };
 
 export type Front = {
@@ -45,12 +42,12 @@ const regionSize = () => FRONTS.region / Math.sqrt(DEV.density);
  */
 const TERRITORY_SEED = 238; // cellular(seed + 238): points from hash(seed + 238 / 239), ids from hash(seed + 240)
 /**
- * Where the world origin (the plane's start) sits in the territory pattern. With FRONTS.atStart the
+ * Where the world origin (the plane's start) sits in the territory pattern. With DEV.atStart the
  * pattern is shifted so the origin lands right on cell (0, 0)'s own point: deep inside its territory,
  * as far from any edge as a territory's middle, so the front there is at full strength under the plane.
  */
 function territoryOrigin(seed: number): [number, number] {
-  if (!FRONTS.atStart) return [0, 0];
+  if (!DEV.atStart) return [0, 0];
   const size = regionSize();
   return [hash(seed + TERRITORY_SEED, 0, 0) * size, hash(seed + TERRITORY_SEED + 1, 0, 0) * size];
 }
@@ -190,12 +187,12 @@ function onCurve(c: Curve, f: Front, x: number, y: number, k0 = 0, k1 = c.x.leng
 const frontCache = new Map<string, Front | null>();
 
 function frontInRegion(seed: number, i: number, j: number): Front | null {
-  const key = `${seed},${DEV.density},${i},${j}`;
+  const key = `${seed},${DEV.density},${DEV.atStart},${i},${j}`;
   if (frontCache.has(key)) return frontCache.get(key)!;
   if (frontCache.size > 5000) frontCache.clear();
   let f: Front | null = null;
   const territory = hash(seed + TERRITORY_SEED + 2, i, j); // cell (i, j)'s id, as cellular gives it
-  const atStart = FRONTS.atStart && i === 0 && j === 0; // the territory the plane starts in (see territoryOrigin)
+  const atStart = DEV.atStart && i === 0 && j === 0; // the territory the plane starts in (see territoryOrigin)
   if (territory < FRONTS.chance || atStart) {
     const size = regionSize();
     const a = hash(seed + 243, i, j) * Math.PI;
@@ -337,9 +334,12 @@ export function frontField(seed: number, fronts: readonly Front[], x0: number, y
   };
 }
 
+/** The shelled ground runs on, full, nearly to a front's very end: it fades out only over the last of the
+ *  easing (`end` below this), as the fire trench itself peters out, and a little past it. */
+const DEVASTATION_END = 0.15;
 /** How shell-torn the ground is, 0 … 1: total in no-man's land, fading out behind the lines and at a front's ends. */
 export const devastationAt = (seed: number, x: number, y: number, u: number, end: number) =>
-  smooth((640 - Math.abs(u)) / 480) * end * (0.8 + 0.2 * valueNoise(seed + 201, x / 90, y / 90));
+  smooth((640 - Math.abs(u)) / 480) * smooth(end / DEVASTATION_END) * (0.8 + 0.2 * valueNoise(seed + 201, x / 90, y / 90));
 
 /** For placing other things: distance to the nearest front line (Infinity if none) and the devastation. */
 export function frontInfo(seed: number, x: number, y: number): { u: number; dev: number; nml: number } {
@@ -367,7 +367,7 @@ const CLEAR_SLOTS = 1 << 15;
 const clearI = new Int32Array(CLEAR_SLOTS).fill(-2147483648);
 const clearJ = new Int32Array(CLEAR_SLOTS);
 const clearV = new Float32Array(CLEAR_SLOTS);
-const clearWorld = { seed: NaN, density: NaN };
+const clearWorld = { seed: NaN, density: NaN, atStart: true };
 const lastCell = { i: NaN, j: NaN, a: 0, b: 0, c: 0, d: 0 };
 function clearCell(seed: number, i: number, j: number): number {
   const h = (Math.imul(i, 73856093) ^ Math.imul(j, 19349663)) & (CLEAR_SLOTS - 1);
@@ -382,9 +382,10 @@ function clearCell(seed: number, i: number, j: number): number {
 /** The front clearance at a world point (see CLEARANCE): 0 everywhere when the fronts are off. */
 export function frontClearance(seed: number, x: number, y: number): number {
   if (!DEV.fronts) return 0;
-  if (seed !== clearWorld.seed || DEV.density !== clearWorld.density) {
+  if (seed !== clearWorld.seed || DEV.density !== clearWorld.density || DEV.atStart !== clearWorld.atStart) {
     clearWorld.seed = seed; // another world: forget the cached grid
     clearWorld.density = DEV.density;
+    clearWorld.atStart = DEV.atStart;
     clearI.fill(-2147483648);
     lastCell.i = NaN;
   }
