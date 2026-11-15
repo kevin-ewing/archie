@@ -5,7 +5,8 @@
 
 export type Settings = { engine: number; music: number; localTime: boolean }; // volumes, 0 … 1; start at the browser's own time of day
 export type StoryProgress = { seed: number; day: number; hours: number; level: number; sortie: number; plane: { x: number; y: number; heading: number } };
-export type SaveData = { version: 1; settings: Settings; story: StoryProgress | null };
+export type LogEntry = { sortie: number; date: string; minutes: number }; // a story flight, written up in the logbook
+export type SaveData = { version: 1; settings: Settings; story: StoryProgress | null; log: LogEntry[] };
 
 export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({ engine: 0.4, music: 0.4, localTime: false });
 const KEY = 'archie.save';
@@ -28,10 +29,13 @@ export function readSave(raw: string | null): SaveData {
     st && finite(st.seed) && finite(st.day) && finite(st.hours) && finite(st.level) && finite(st.sortie) && finite(p.x) && finite(p.y) && finite(p.heading)
       ? { seed: st.seed, day: st.day, hours: st.hours, level: st.level, sortie: st.sortie, plane: { x: p.x, y: p.y, heading: p.heading } }
       : null;
-  return { version: 1, settings: { engine: unit(s.engine, DEFAULT_SETTINGS.engine), music: unit(s.music, DEFAULT_SETTINGS.music), localTime: s.localTime === true }, story };
+  const log = Array.isArray(v.log)
+    ? (v.log as Record<string, unknown>[]).filter((e) => e && finite(e.sortie) && typeof e.date === 'string' && finite(e.minutes)).map((e) => ({ sortie: e.sortie as number, date: (e.date as string).slice(0, 24), minutes: e.minutes as number }))
+    : [];
+  return { version: 1, log, settings: { engine: unit(s.engine, DEFAULT_SETTINGS.engine), music: unit(s.music, DEFAULT_SETTINGS.music), localTime: s.localTime === true }, story };
 }
 
-export type Save = { data: SaveData; settings: (patch: Partial<Settings>) => void; story: (progress: StoryProgress | null) => void };
+export type Save = { data: SaveData; settings: (patch: Partial<Settings>) => void; story: (progress: StoryProgress | null) => void; log: (entry: LogEntry) => void };
 
 /** The player's save. `enabled` false (development, ?debug): defaults, and nothing is ever written. */
 export function createSave(enabled: boolean, storage: Pick<Storage, 'getItem' | 'setItem'> | undefined = globalThis.localStorage): Save {
@@ -61,6 +65,10 @@ export function createSave(enabled: boolean, storage: Pick<Storage, 'getItem' | 
     },
     story(progress) {
       data = { ...data, story: progress };
+      write();
+    },
+    log(entry) {
+      data = { ...data, log: [...data.log, entry] };
       write();
     },
   };

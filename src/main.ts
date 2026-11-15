@@ -176,6 +176,7 @@ const settings = createSettings([audioControl, musicControl], {
 const pauseUi = createPauseUi({
   // Back to the landing page (it shows at once).
   mainMenu: () => {
+    logStoryFlight();
     leaving = true;
     const url = new URL(location.href);
     url.searchParams.delete('play');
@@ -506,21 +507,67 @@ const show = () => {
 // The landing page comes first (static, already on screen): STORY, FREE FLY or SETTINGS. The world loads
 // behind it; take-off waits for a choice. `?play` skips it (tools and agents go straight to flight).
 let chosen = false;
-let barn: HTMLDialogElement | undefined;
+// STORY opens the barn (src/story/barn.ts): its TAKE OFF / CONTINUE starts a story flight from where the
+// last one left off. Story flights keep their place (every 10 s, and on leaving) and each one is written
+// into the logbook when you go back to the main menu. `?story` opens the barn straight away; `?day=N`
+// sets the campaign day (the desk's calendar and orders) for a look.
+let barn: { close: () => void; isOpen: () => boolean } | undefined;
+let storyFlight = false;
+const storyProgress = () => ({ seed: state.seed, day: state.clock.day, hours: state.clock.hours, level: state.level, sortie: state.sortie.number, plane: { x: plane.x, y: plane.y, heading: plane.heading } });
+const keepStory = () => {
+  if (storyFlight && (state.phase === 'playing' || state.phase === 'paused')) save.story(storyProgress());
+};
+setInterval(keepStory, 10_000);
+window.addEventListener('pagehide', keepStory);
+document.addEventListener('visibilitychange', () => document.hidden && keepStory());
+const logStoryFlight = () => {
+  if (!storyFlight) return;
+  keepStory();
+  const minutes = Math.round(state.sortie.elapsedSeconds / 60);
+  if (minutes >= 1) {
+    save.log({ sortie: save.data.log.length + 1, date: dateText(state.clock.day), minutes });
+  }
+};
+const DAY_PARAM = numberFromUrl('day', (n) => Number.isInteger(n) && n >= 0 && n < 4000);
+if (DAY_PARAM !== undefined) game.setTime(state.clock.hours, DAY_PARAM);
+const openStory = () => {
+  const page = document.getElementById('landing');
+  if (page) page.inert = true;
+  const saved = save.data.story;
+  const day = DAY_PARAM ?? saved?.day ?? state.clock.day;
+  const [year, month, date] = campaignDate(day).split('-').map(Number);
+  barn = openBarn({
+    info: { day: date, month: MONTHS[month - 1], year, sortie: save.data.log.length + 1, date: dateText(day) },
+    resuming: !!saved,
+    log: save.data.log,
+    uiPx: () => display.view().uiScale / (window.devicePixelRatio || 1),
+    gamePx: () => display.view().scale / (window.devicePixelRatio || 1), // flight's pixel size
+    onSettings: (back) => settings.open(back),
+    onFly: () => {
+      barn?.close();
+      barn = undefined;
+      landing.dismiss();
+      if (saved) {
+        game.setTime(saved.hours, saved.day);
+        placePlane(saved.plane.x, saved.plane.y, saved.plane.heading);
+      }
+      storyFlight = true;
+      chosen = true;
+    },
+    onClose: () => {
+      barn = undefined;
+      if (page) page.inert = false;
+      document.getElementById('landing-story')?.focus();
+    },
+  });
+};
 const landing = wireLanding({
   skip: new URLSearchParams(location.search).has('play'),
   onSettings: (back) => settings.open(back),
-  onStory: () => {
-    const page = document.getElementById('landing')!;
-    page.inert = true;
-    barn = openBarn(() => {
-      barn = undefined;
-      page.inert = false;
-      document.getElementById('landing-story')?.focus();
-    });
-  },
+  onStory: openStory,
   onFreeFly: () => { chosen = true; },
 });
+if (new URLSearchParams(location.search).has('story') && !chosen) openStory();
 
 // While the landing page is up, its window shows the landscape and its clouds (no plane), drifting slowly
 // south (the view creeps north from the start), and the game itself isn't drawn: it's hidden beneath. The page
@@ -553,7 +600,7 @@ function drawLanding(c: HTMLCanvasElement, at: number) {
 }
 
 function render(alpha: number, timing: RenderTiming) {
-    if (barn?.open) return;
+    if (barn?.isOpen()) return;
     const terrain = landing.terrain();
     if (terrain) return drawLanding(terrain, timing.at);
     // Tiles are generated in Web Workers and appear when ready (see render/tilegen.ts).

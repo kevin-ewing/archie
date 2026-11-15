@@ -1,72 +1,18 @@
-.barn {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
-  box-sizing: border-box;
-  margin: 0;
-  padding: max(12px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
-  border: 0;
-  background: #211b17;
-  color: #e8dfc4;
-  overflow: auto;
-}
-.barn[open] { display: grid; }
-.barn-desk {
-  --pixel: 2px;
-  position: relative;
-  align-self: center;
-  justify-self: center;
-  width: min(100%, 768px, max(320px, calc((100dvh - 78px) * 1.6)));
-  animation: barn-light .58s steps(7, end) both;
-}
-@keyframes barn-light { from { filter: brightness(.12); } }
-@media (prefers-reduced-motion: reduce) { .barn-desk { animation: none; } }
-.barn header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+/* The Story screen (src/story/barn.ts): the desk fills the screen in flight's pixels; the things in it
+   are invisible buttons over the picture, each showing its riveted name plate under the pointer or focus. */
+.barn { position: fixed; inset: 0; z-index: 115; overflow: hidden; background: #18130f; }
+.barn[hidden] { display: none; }
 .barn canvas { display: block; image-rendering: pixelated; }
-.barn header > canvas { width: 138px; max-width: 50%; height: auto; }
-.barn button {
-  display: grid;
-  place-items: center;
-  min-width: 44px;
-  min-height: 44px;
-  border: 0;
-  padding: 3px;
-  color: inherit;
-  background: transparent;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-.barn button canvas { height: calc(9 * var(--pixel)); width: auto; box-shadow: 2px 2px #211b17; }
-.barn button:hover canvas { filter: brightness(1.18); }
-.barn button:focus-visible { outline: 2px solid #ffe4a1; outline-offset: -2px; }
-.barn-table { position: relative; }
-.barn-table > canvas { width: 100%; height: auto; }
-.barn-table nav button { position: absolute; transform: translate(-50%, -50%); }
-.barn-table nav button:nth-child(1) { left: 31%; top: 51%; }
-.barn-table nav button:nth-child(2) { left: 64%; top: 37%; }
-.barn-table nav button:nth-child(3) { left: 83%; top: 51%; }
-.barn-table nav button:nth-child(4) { left: 78%; top: 76%; }
-.barn-table nav button:nth-child(5) { left: 38%; top: 85%; }
-.barn-sheet {
-  position: absolute;
-  inset: 48px auto auto 50%;
-  transform: translateX(-50%);
-  box-sizing: border-box;
-  width: min(92%, 340px);
-  padding: 14px 18px;
-  color: #31271e;
-  background: #e6d4a3;
-  border: 3px solid #bc9d69;
-  box-shadow: 5px 5px #211b17;
-  font: 1rem/1.45 Georgia, serif;
-}
-.barn-sheet h2, .barn-sheet p { margin: 0 0 .6rem; }
-.barn-sheet > canvas { width: 159px; max-width: 100%; height: auto; }
-@media (max-width: 520px) {
-  .barn-desk { --pixel: 1.5px; }
-  .barn-table nav button:nth-child(2) { top: 30%; }
-  .barn-sheet { position: relative; inset: auto; margin: 8px auto 0; transform: none; }
-}
+.barn-art { position: absolute; left: 0; top: 0; }
+.barn-things { position: absolute; inset: 0; }
+.barn-thing { position: absolute; padding: 0; border: 0; background: transparent; cursor: pointer; touch-action: manipulation; }
+.barn-thing:focus-visible { outline: 2px solid #ead695; outline-offset: 2px; }
+.barn-tag { position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, calc(-2 * var(--ui-px, 2px))); visibility: hidden; pointer-events: none; }
+.barn-thing:hover .barn-tag, .barn-thing:focus-visible .barn-tag { visibility: visible; }
+.barn-plates { position: absolute; top: calc(8 * var(--ui-px, 2px)); right: calc(8 * var(--ui-px, 2px)); display: flex; flex-direction: column; gap: calc(3 * var(--ui-px, 2px)); }
+.barn-held { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(4 * var(--ui-px, 2px)); background: rgb(14 11 8 / 0.62); overflow: auto; }
+.barn-held[hidden] { display: none; }
+.barn-held > canvas { box-shadow: calc(4 * var(--ui-px, 2px)) calc(4 * var(--ui-px, 2px)) 0 rgb(10 8 6 / 0.7); }
+.barn-held-plates { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(3 * var(--ui-px, 2px)); }
+.barn .pause-item { padding: 0; border: 0; background: transparent; cursor: pointer; touch-action: manipulation; }
+.barn .pause-item:focus-visible { outline: 2px solid #ead695; outline-offset: 3px; }

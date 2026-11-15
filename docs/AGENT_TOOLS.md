@@ -99,6 +99,8 @@ keeping the previous run in `debug/backup/`.
 | `?off=frontLines,fastPlane` / `?on=structures` | Set debug toggles (ids below). |
 | `?trench=traversed` | Trench style (`hasty` or `traversed`). |
 | `?play` | Skip the landing page and start Free Fly. |
+| `?story` | Open the Story barn straight away (docs/AERODROME.md). |
+| `?day=40` | Campaign day (0 = 10 May 1915): the date on the desk and in flight. |
 | `?debug` | Profiler overlay and the `archie` API in a production build. Also turns saves off. |
 
 Example: `http://localhost:5174/?play&seed=1915&time=18.9&speed=0&x=1500&y=-800&heading=90&off=frontLines`

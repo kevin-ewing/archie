@@ -7,6 +7,8 @@ export type Landing = {
   terrain: () => HTMLCanvasElement | null;
   /** Everything is loaded: swap the loading mark for the menu and the terrain. */
   ready: () => void;
+  /** Leave the page for a flight started elsewhere (the Story barn's TAKE OFF). */
+  dismiss: () => void;
 };
 
 const READY_AT_LATEST_MS = 12_000; // a world that won't finish loading still gets its menu
@@ -14,7 +16,7 @@ const READY_AT_LATEST_MS = 12_000; // a world that won't finish loading still ge
 export function wireLanding(opts: { skip: boolean; onFreeFly: () => void; onStory: () => void; onSettings: (back: () => void) => void }): Landing {
   const page = document.getElementById('landing');
   const canvas = document.getElementById('landing-terrain');
-  const none: Landing = { terrain: () => null, ready: () => {} };
+  const none: Landing = { terrain: () => null, ready: () => {}, dismiss: () => {} };
   if (!page) {
     opts.onFreeFly();
     return none;
@@ -53,6 +55,10 @@ export function wireLanding(opts: { skip: boolean; onFreeFly: () => void; onStor
   });
   return {
     ready,
+    dismiss() {
+      chosen = true;
+      page.hidden = true;
+    },
     terrain: () => (chosen || !(canvas instanceof HTMLCanvasElement) ? null : canvas), // (still drawn beside the settings)
   };
 }

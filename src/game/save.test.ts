@@ -12,7 +12,10 @@ test('settings and story progress survive a reload; bad or missing data falls ba
   const a = createSave(true, store);
   a.settings({ engine: 0.8, localTime: true });
   a.story({ seed: 7, day: 2, hours: 9.5, level: 1, sortie: 3, plane: { x: 10, y: -4, heading: 1 } });
+  a.log({ sortie: 1, date: '10 MAY 1915', minutes: 12 });
   const b = createSave(true, store);
+  assert.deepEqual(b.data.log, [{ sortie: 1, date: '10 MAY 1915', minutes: 12 }]);
+  assert.deepEqual(readSave(JSON.stringify({ log: [{ sortie: 'x' }] })).log, [], 'a malformed log entry is dropped');
   assert.equal(b.data.settings.engine, 0.8);
   assert.equal(b.data.settings.music, DEFAULT_SETTINGS.music);
   assert.equal(b.data.settings.localTime, true);
