@@ -3,6 +3,7 @@
 // No drawing here; see gauges.ts and hud.ts. Grounded in a 1917 RFC cadet's list of dashboard
 // instruments (rev indicator, petrol gauge, transmitting thermometer, compass, ...).
 
+import { ALTITUDE } from '../render/shadow.ts';
 import { hash } from '../core/noise.ts';
 import { wrapAngle, type Plane } from '../sim/flight.ts';
 
@@ -12,6 +13,9 @@ export const INSTRUMENTS = {
   compassStiffness: 4, // liquid-damped compass card: underdamped, so it swings past and settles
   compassDamping: 2.2,
   rpm: { cruise: 1250, full: 1800, hot: 1100, max: 2000 }, // RAF 1a: ~90 hp at 1,600 rpm, about 100–105 hp at 1,800
+  airspeedMax: 120, // mph; world scale is 0.4 metres / px
+  altitudeMax: 1000, // feet; flight currently stays at the shadow renderer's fixed altitude
+  pressureMax: 3, // petrol-tank air pressure, lb / sq in
   tempCruise: 0.45, // a warm engine sits mid-scale; heat pushes the needle on from there
   tempRed: 0.85, // temperature reading above this is the red zone
   warnHeat: 0.7, // engine heat at which the warnings start (before the overheat lockout at 1)
@@ -32,7 +36,15 @@ export function readings(p: Plane) {
   // An overheated air-cooled engine loses revs; the lockout drops to `hot`.
   const rpm = p.overheated ? r.hot : p.boosting ? r.full : r.cruise;
   const temp = INSTRUMENTS.tempCruise + p.heat * (1 - INSTRUMENTS.tempCruise);
-  return { rpm: rpm / r.max, temp, petrol: p.fuel };
+  return {
+    rpm: rpm / r.max, temp, petrol: p.fuel,
+    airspeed: p.speed * 0.4 * 2.23694 / INSTRUMENTS.airspeedMax,
+    altitude: ALTITUDE * 0.4 * 3.28084 / INSTRUMENTS.altitudeMax,
+    // ponytail: supply pressure is derived from engine condition; a future hand-pump model owns this state.
+    pressure: (p.fuel > 0 ? 1.5 - p.heat * 0.25 : 0) / INSTRUMENTS.pressureMax,
+    // ponytail: bank is the lateral clinometer proxy until the flight model has sideslip / lateral acceleration.
+    clinometer: (p.bank + 1) / 2,
+  };
 }
 
 /** Smoothed needle positions (0…1), plus `shake`: this tick's vibration offset to add when drawing. */
@@ -40,6 +52,10 @@ export type Instruments = {
   rpm: number;
   temp: number;
   petrol: number;
+  airspeed: number;
+  altitude: number;
+  pressure: number;
+  clinometer: number;
   compass: number;
   compassVel: number;
   shake: { rpm: number; temp: number; petrol: number };
@@ -60,6 +76,10 @@ export function updateInstruments(s: Instruments, p: Plane, dt: number): void {
   s.rpm += (target.rpm - s.rpm) * k;
   s.temp += (target.temp - s.temp) * k;
   s.petrol += (target.petrol - s.petrol) * k;
+  s.airspeed += (target.airspeed - s.airspeed) * k;
+  s.altitude += (target.altitude - s.altitude) * k;
+  s.pressure += (target.pressure - s.pressure) * k;
+  s.clinometer += (target.clinometer - s.clinometer) * k;
   s.shake = { rpm: tremble(1), temp: tremble(3) * 0.3, petrol: tremble(2) * 0.3 }; // petrol sloshes a little
   const c = INSTRUMENTS;
   s.compassVel += (c.compassStiffness * wrapAngle(p.heading - s.compass) - c.compassDamping * s.compassVel) * dt;

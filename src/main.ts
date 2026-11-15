@@ -273,10 +273,12 @@ const debugRequested = new URLSearchParams(location.search).has('debug');
 const debugDetails = () => {
   const view = display.view();
   const sun = sunNow(clock);
+  if (view.mobile) return `seed      ${SEED}\nposition  x ${plane.x.toFixed(1)}  y ${plane.y.toFixed(1)}`;
   const heading = ((plane.heading * 180) / Math.PI + 360) % 360;
   return [
     ...(IS_DEV ? [debugSong] : []),
     `seed      ${SEED}`,
+    `position  x ${plane.x.toFixed(1)}  y ${plane.y.toFixed(1)} world px`,
     `phase     ${phase}${document.hidden ? ' (hidden)' : ''}`,
     `date      ${dateText(clock.day)}  ${clock.hours.toFixed(2)} h  x${timeSpeed()}`,
     `viewport  ${innerWidth}x${innerHeight} css  ${view.devW}x${view.devH} device  dpr ${devicePixelRatio || 1}`,
@@ -293,7 +295,16 @@ if (IS_DEV && debugPanel) {
 const prof = createProfiler(IS_DEV || debugRequested, (text) => {
   if (!debugPanel) return;
   debugPanel.hidden = false;
-  debugPanel.textContent = `${debugDetails()}\n${text}`;
+  const view = display.view();
+  const mobile = view.mobile;
+  debugPanel.style.fontSize = mobile ? '9px' : '';
+  const portrait = mobile && view.uiH > view.uiW;
+  debugPanel.style.top = portrait ? 'auto' : '';
+  debugPanel.style.bottom = portrait ? '8px' : '';
+  debugPanel.style.left = portrait ? '8px' : '';
+  debugPanel.style.right = portrait ? 'auto' : '';
+  const timings = mobile ? text.split('\n').filter((s, i) => i === 0 || s.startsWith('frame ')).map((s) => s.split(' (')[0]).join('\n') : text;
+  debugPanel.textContent = `${debugDetails()}\n${timings}`;
 });
 
 let lastComplete = false; // every visible tile ready in the last frame (for archie.ready())
@@ -436,33 +447,37 @@ startLoop(
     const hudCtx = display.hud;
     hudCtx.setTransform(1, 0, 0, 1, 0, 0);
     hudCtx.clearRect(0, 0, view.devW, view.devH);
-    drawHud(hudCtx, view, hud, instruments, warning, t);
+    const board = drawHud(hudCtx, view, hud, instruments, warning, t);
     if (mapButton instanceof HTMLButtonElement) {
       const px = view.uiScale / (window.devicePixelRatio || 1);
-      const size = hud.slots[0].inst.size;
-      mapButton.style.left = `${(view.compact ? 14 : 10) * px}px`;
-      mapButton.style.top = `${(Math.floor(view.uiH) - (view.compact ? 40 : 12) - size) * px}px`;
+      const { x, y, w: size } = board.slots[0];
+      mapButton.style.left = `${x * px}px`;
+      mapButton.style.top = `${y * px}px`;
       mapButton.style.width = mapButton.style.height = `${size * px}px`;
       mapButton.style.visibility = 'visible';
     }
-    drawToggles(hudCtx, view, toggles, IS_DEV);
-    const fastTime = controlsAnchor(view); // the player's own controls stack up on the left, just above the gauges
+    const gapLeft = board.banks[0].x + board.banks[0].w;
+    const gapRight = board.banks[1].x;
+    const devRail = gapRight - gapLeft >= 70;
+    drawToggles(hudCtx, view, toggles, IS_DEV, devRail ? Math.floor(view.uiH) - 8 : board.banks[1].y - 34, devRail ? (gapLeft + gapRight) / 2 : undefined);
+    const fastTime = controlsAnchor(view, board.banks[1].y, 'engine'); // audio stays with the engine bank; Hold follows the navigation bank
     if (fastTime) {
       const px = view.uiScale / (window.devicePixelRatio || 1);
       const firstRow = 0;
       placeVolume(audioControl, volumeFace, volumeSlider, 'ENGINE', firstRow, fastTime, px);
       placeVolume(musicControl, musicFace, musicSlider, 'MUSIC', firstRow + 1, fastTime, px);
+      const holdAnchor = controlsAnchor(view, board.banks[0].y);
       if (holdButton instanceof HTMLButtonElement && holdFace instanceof HTMLCanvasElement) {
         const holding = holdButton.getAttribute('aria-pressed') === 'true';
-        if (holdFace.width !== fastTime.w || holdFace.dataset.on !== String(holding)) {
-          drawButtonPlate(holdFace, fastTime.w, 'HOLD  T', holding);
+        if (holdFace.width !== holdAnchor.w || holdFace.dataset.on !== String(holding)) {
+          drawButtonPlate(holdFace, holdAnchor.w, 'HOLD  T', holding);
           holdFace.dataset.on = String(holding);
         }
-        holdButton.style.left = `${fastTime.x * px}px`;
-        holdButton.style.top = `${(fastTime.y - (firstRow + 2) * (holdFace.height + 2)) * px}px`;
-        holdButton.style.width = `${fastTime.w * px}px`;
+        holdButton.style.left = `${holdAnchor.x * px}px`;
+        holdButton.style.top = `${holdAnchor.y * px}px`;
+        holdButton.style.width = `${holdAnchor.w * px}px`;
         holdButton.style.height = `${holdFace.height * px}px`;
-        holdFace.style.width = `${fastTime.w * px}px`;
+        holdFace.style.width = `${holdAnchor.w * px}px`;
         holdFace.style.height = `${holdFace.height * px}px`;
         holdButton.style.visibility = 'visible';
       }

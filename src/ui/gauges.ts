@@ -54,7 +54,7 @@ function instrument(size: number, paint: (px: Px, reading: number, alert: Alert)
  * A round dial with a 270° scale. `marks` are tick fractions; `red` marks the danger part of the scale;
  * `ends` labels the two ends of the scale (e.g. E / F), set in from the end ticks so they don't collide.
  */
-export function createDial(opts: { r: number; marks: number[]; red?: [number, number]; ends?: [string, string] }): Instrument {
+export function createDial(opts: { r: number; marks: number[]; red?: [number, number]; ends?: [string, string]; figures?: string[] }): Instrument {
   const { r } = opts;
   const size = 2 * r + 1;
   const c = r;
@@ -69,6 +69,10 @@ export function createDial(opts: { r: number; marks: number[]; red?: [number, nu
   opts.ends?.forEach((s, i) => {
     const p = polar(c, c, r - 6, (i === 0 ? -1 : 1) * 0.56 * Math.PI); // just below the 9 and 3 o'clock line
     text(face, Math.round(p.x - textWidth(s) / 2), Math.round(p.y - 2), s, C.dim);
+  });
+  opts.figures?.forEach((s, i, all) => {
+    const p = polar(c, c, r - 9, needleAngle(i / (all.length - 1)));
+    text(face, Math.round(p.x - textWidth(s) / 2), Math.round(p.y - 2), s, C.ink);
   });
   return instrument(size, (px, reading, alert) => {
     px.data.set(face.data);
@@ -138,4 +142,19 @@ export function label(s: string, ink: RGBA, pad = 0, plate?: RGBA): HTMLCanvasEl
   canvas.height = px.h;
   canvas.getContext('2d')!.putImageData(new ImageData(px.data, px.w, px.h), 0, 0);
   return canvas;
+}
+
+/** A simple spirit clinometer, rather than a later gyroscopic attitude indicator. */
+export function createClinometer(r: number): Instrument {
+  return instrument(2 * r + 1, (px, reading) => {
+    bezel(px, r, r);
+    for (let x = r - 9; x <= r + 9; x++) {
+      const y = r - 1 + Math.round((x - r) ** 2 / 35);
+      plot(px, x, y - 2, C.dim);
+      plot(px, x, y + 2, C.dim);
+    }
+    for (const x of [r - 3, r + 3]) line(px, x, r - 4, x, r + 3, C.ink);
+    const x = r + Math.round((Math.max(0, Math.min(1, reading)) - 0.5) * 16);
+    disc(px, x, r - 1 + Math.round((x - r) ** 2 / 35), 1.5, () => C.brassLit);
+  });
 }

@@ -44,3 +44,20 @@ test('dial sweep runs 270° from bottom-left to bottom-right', () => {
   assert.ok(Math.abs(needleAngle(0) + 0.75 * Math.PI) < 1e-9 && Math.abs(needleAngle(1) - 0.75 * Math.PI) < 1e-9);
   assert.equal(needleAngle(0.5), 0);
 });
+
+test('new period instruments follow speed, bank and fuel, with the fixed flight height', () => {
+  const p = createPlane();
+  const s = createInstruments(p);
+  assert.ok(Math.abs(s.airspeed * INSTRUMENTS.airspeedMax - p.speed * 0.4 * 2.23694) < 1e-9);
+  assert.ok(Math.abs(s.altitude * INSTRUMENTS.altitudeMax - 91.86352) < 1e-5);
+  assert.equal(s.pressure * INSTRUMENTS.pressureMax, 1.5);
+  assert.equal(s.clinometer, 0.5);
+  const height = s.altitude;
+  fly(1, true, 4, p, s);
+  assert.ok(s.airspeed > createInstruments(createPlane()).airspeed);
+  assert.ok(s.clinometer > 0.9);
+  assert.equal(s.altitude, height, 'turning and boosting do not invent a climb');
+  p.fuel = 0;
+  for (let n = 0; n < 180; n++) updateInstruments(s, p, 1 / 60);
+  assert.ok(s.pressure < 0.001, 'supply pressure falls when the tank is empty');
+});

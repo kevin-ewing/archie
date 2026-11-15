@@ -76,22 +76,26 @@ function plate(t: Toggle): HTMLCanvasElement {
 
 /** Width of the player's control plates (volume, HOLD): as wide as the old bottom toggle, FAST PLANE. */
 export const CONTROL_W = textWidth('FAST PLANE') + 2 * PAD + 2;
-/** Where the player's controls stack up from: on the left, just above the gauges. */
-export function controlsAnchor(view: View): Rect {
-  const bottom = Math.floor(view.uiH) - (view.compact ? 40 : 12);
-  return { x: view.compact ? 14 : 10, y: bottom - GAUGES_TOP - 4 - HEIGHT, w: CONTROL_W, h: HEIGHT };
+/** Controls follow their instrument bank; narrow screens use the free centre gap for Hold. */
+export function controlsAnchor(view: View, boardTop?: number, side: 'flight' | 'engine' = 'flight'): Rect {
+  const bottom = Math.floor(view.uiH) - (view.compact ? 48 : 40);
+  const landscape = view.compact && view.uiW > view.uiH;
+  const narrow = view.uiW < 150 && view.uiH > view.uiW;
+  const x = side === 'engine' ? Math.floor(view.uiW) - 10 - CONTROL_W : landscape || narrow ? Math.floor((view.uiW - CONTROL_W) / 2) : 10;
+  const y = side === 'flight' && narrow ? bottom - 70 : (boardTop ?? bottom - GAUGES_TOP) - 4 - HEIGHT;
+  return { x, y, w: CONTROL_W, h: HEIGHT };
 }
 
-export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggles, visible = true): void {
+export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggles, visible = true, boardTop?: number, centreX?: number): void {
   ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
   const bottom = Math.floor(view.uiH) - (view.compact ? 40 : 12);
   const right = Math.floor(view.uiW) - (view.compact ? 14 : 10);
-  let y = bottom - HEIGHT;
+  let y = (boardTop ?? bottom) - HEIGHT;
   tg.rects = tg.items.map((t) => {
     const key = `${t.id}:${t.on}`;
     let img = tg.plates.get(key);
     if (!img) tg.plates.set(key, (img = plate(t)));
-    const x = right - img.width; // right-aligned
+    const x = centreX === undefined ? right - img.width : Math.round(centreX - img.width / 2);
     if (visible) ctx.drawImage(img, x, y);
     const r = { x, y, w: img.width, h: HEIGHT };
     y -= HEIGHT + GAP;
