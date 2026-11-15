@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { frontInfo, frontPoint, FRONTS, frontsNear } from './fronts.ts';
-import { isChurned, isWire, militaryAt, sapAt } from './military.ts';
+import { isChurned, isWire, militaryAt, sapAt, trenchBearing } from './military.ts';
 
 const SEED = 1915;
 const fronts = frontsNear(SEED, -60000, -60000, 60000, 60000);
@@ -263,5 +263,36 @@ test('shell holes: lots in no-man\'s land, a few holding water, and that water s
     assert.ok(glints > 0, `the water in them catches the sun (${glints} glints, ${pools} pool samples)`);
   } finally {
     Object.assign(DEV, saved); // (generateTile sets the shared settings from its request)
+  }
+});
+
+
+test('a map bearing points toward a trench floor in both styles, and respects fronts being disabled', async () => {
+  const { DEV } = await import('./settings.ts');
+  const before = { ...DEV };
+  try {
+    DEV.frontLine = false;
+    DEV.onlyTrenches = true;
+    for (const style of ['hasty', 'traversed'] as const) {
+      DEV.trenchStyle = style;
+      const p = frontPoint(SEED, f, 0, -f.nml - 1000);
+      const bearing = trenchBearing(SEED, p.x, p.y);
+      assert.notEqual(bearing, null);
+      let found = false;
+      // The plotted map samples every 64 px: a narrow strip around the heading must meet a real floor.
+      for (let along = 1; along < 2000 && !found; along += 8) {
+        for (let across = -32; across <= 32; across += 2) {
+          const x = p.x + Math.sin(bearing!) * along + Math.cos(bearing!) * across;
+          const y = p.y - Math.cos(bearing!) * along + Math.sin(bearing!) * across;
+          if (militaryAt(SEED, fronts, x, y)?.[1] === 0) { found = true; break; }
+        }
+      }
+      assert.ok(found, `${style}: heading leads to a floor, not the empty front divide`);
+      assert.equal(trenchBearing(SEED, p.x, p.y), bearing, 'same map fix is deterministic');
+    }
+    DEV.fronts = false;
+    assert.equal(trenchBearing(SEED, 0, 0), null);
+  } finally {
+    Object.assign(DEV, before);
   }
 });

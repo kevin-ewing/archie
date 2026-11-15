@@ -17,6 +17,7 @@ import { createHud, drawHud } from './ui/hud.ts';
 import { CONTROL_W, controlsAnchor, createToggles, drawButtonPlate, drawToggles, drawVolumePlate, toggleAt } from './ui/toggles.ts';
 import { createInstruments, engineWarning, updateInstruments } from './ui/instruments.ts';
 import { createSmoke, updateSmoke } from './render/smoke.ts';
+import { trenchBearing } from './world/military.ts';
 import { DEV, TRENCH_STYLES, type TrenchStyle } from './world/settings.ts';
 
 export const IS_DEV = import.meta.env.DEV;
@@ -41,7 +42,7 @@ const START_HOUR =
 const toggles = createToggles([
   { id: 'fastPlane', text: 'FAST PLANE', on: IS_DEV }, // twice the speed, to cover ground faster (bottom of the stack: under FAST TIME)
   { id: 'fastTime', text: 'FAST TIME', on: IS_DEV },
-  { id: 'structures', text: 'BUILDINGS', on: false }, // off while the front is worked on
+  { id: 'structures', text: 'BUILDINGS', on: true },
   { id: 'military', text: 'FRONT', on: true },
   { id: 'frontLines', text: 'FRONT LINES', on: true }, // the front's own line (red) and each side's (blue British, yellow German)
 ]);
@@ -128,6 +129,8 @@ const setPhase = (next: GamePhase) => {
   phase = next;
   audio.setPaused(next === 'paused');
   if (holdButton instanceof HTMLButtonElement) holdButton.disabled = next !== 'playing';
+  const mapButton = document.getElementById('map-bearing');
+  if (mapButton instanceof HTMLButtonElement) mapButton.disabled = next !== 'playing';
 };
 setPhase('loading');
 document.addEventListener('visibilitychange', () => {
@@ -230,7 +233,24 @@ const sizeLoading = () => {
 sizeLoading();
 window.addEventListener('resize', sizeLoading);
 const instruments = createInstruments(plane);
-const hud = createHud();
+let mapBearing: number | null = null;
+const hud = createHud(() => mapBearing);
+const mapButton = document.getElementById('map-bearing');
+const refreshMapBearing = () => {
+  DEV.density = scene.features.density ?? 1;
+  DEV.fronts = scene.features.military;
+  DEV.onlyTrenches = scene.features.onlyTrenches ?? false;
+  DEV.trenchStyle = TRENCH_STYLE;
+  mapBearing = trenchBearing(SEED, plane.x, plane.y);
+  if (!mapButton) return;
+  const fix = mapBearing === null ? 'No trench found on this map' : `Trench bearing ${String(Math.round((mapBearing * 180 / Math.PI + 360) % 360) % 360).padStart(3, '0')} degrees saved`;
+  mapButton.title = `${fix}. Tap compass to consult map again.`;
+  mapButton.setAttribute('aria-label', mapButton.title);
+};
+refreshMapBearing();
+mapButton?.addEventListener('click', () => {
+  if (phase === 'playing') refreshMapBearing();
+});
 const clockFace = createClockFace();
 const smoke = createSmoke();
 const clock = createClock(START_HOUR);
@@ -367,6 +387,14 @@ startLoop(
     scene.features.frontLine = IS_DEV && toggleOn('frontLines');
     const complete = drawScene(display.ctx, view, scene, p, c, { t: t - STEP * (1 - alpha), smoke, warning, sun, day: clock.day, prof });
     drawHud(display.ctx, view, hud, instruments, warning, t);
+    if (mapButton instanceof HTMLButtonElement) {
+      const px = view.uiScale / (window.devicePixelRatio || 1);
+      const size = hud.slots[0].inst.size;
+      mapButton.style.left = `${(view.compact ? 14 : 10) * px}px`;
+      mapButton.style.top = `${(Math.floor(view.uiH) - (view.compact ? 40 : 12) - size) * px}px`;
+      mapButton.style.width = mapButton.style.height = `${size * px}px`;
+      mapButton.style.visibility = 'visible';
+    }
     drawToggles(display.ctx, view, toggles, IS_DEV);
     const fastTime = controlsAnchor(view); // the player's own controls stack up on the left, just above the gauges
     if (fastTime) {

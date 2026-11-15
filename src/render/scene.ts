@@ -100,8 +100,8 @@ export function createScene(seed: number, density = 1): Scene {
     }),
     cloudShadows: createTileLayer((cx, cy) => gen({ kind: 'cloudShadow', seed, cx, cy }), CHUNK),
     clouds: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed, cx, cy }), CHUNK),
-    wisps: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed: seed + 5, cx, cy }), CHUNK),
-    highClouds: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed: seed + 13, cx, cy }), CHUNK),
+    wisps: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed: seed + 5, cx, cy }), CHUNK, { prefetchTiles: 3, maxInFlight: 8 }),
+    highClouds: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed: seed + 13, cx, cy }), CHUNK, { prefetchTiles: 2 }),
     cloudBuf: (() => {
       const canvas = document.createElement('canvas');
       return { canvas, ctx: canvas.getContext('2d')! };
@@ -312,15 +312,18 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   const cloudDepth = (cloudLevel(scene.seed, Math.round(pq.x), Math.round(pq.y)) + 1) / 6;
   scene.inCloud += (cloudDepth - scene.inCloud) * (1 - Math.exp(-dt / 0.4));
   const preloadWisps = t === 0 && cloudDepth > 0.02;
+  const wx = c.x * WISP_PARALLAX - WIND.x * t;
+  const wy = c.y * WISP_PARALLAX - WIND.y * t;
   if (scene.inCloud > 0.02 || preloadWisps) {
-    const wx = c.x * WISP_PARALLAX - WIND.x * t;
-    const wy = c.y * WISP_PARALLAX - WIND.y * t;
     worldTransform(cc, scale, ax, ay, cam.angle, wx, wy);
     const wisps = scene.wisps.compose(Math.floor(wx - r), Math.floor(wy - r), side);
     if (preloadWisps) wispsComplete = wisps.complete;
     cc.globalAlpha = Math.min(1, scene.inCloud * 1.6) * WISP_ALPHA;
     cc.drawImage(wisps.canvas, wisps.x, wisps.y);
     cc.globalAlpha = 1;
+  } else {
+    // Keep fast wisps ready before entering cloud; no composite or draw while they're hidden.
+    scene.wisps.prefetch(Math.floor(wx - r), Math.floor(wy - r), side);
   }
 
   // A higher deck, above everything else: thinner and slower, and (too high to meaningfully block the

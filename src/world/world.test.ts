@@ -36,6 +36,8 @@ test('trees are always drawn whole: every pixel of a crown is tree, wherever it 
       checked++;
       const cx = x - t.dx;
       const cy = y - t.dy;
+      const centre = treeAt(1915, cx, cy)!;
+      assert.ok(centre.dist < 1e-8, 'an overlapping rim must never hide a crown centre');
       for (let py = Math.floor(cy - t.r); py <= cy + t.r; py++) {
         for (let px = Math.floor(cx - t.r); px <= cx + t.r; px++) {
           if (Math.hypot(px - cx, py - cy) >= t.r) continue;

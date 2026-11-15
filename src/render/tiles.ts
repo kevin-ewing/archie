@@ -17,6 +17,8 @@ export type TileLayer = {
    * frames cost nothing here. `complete` = every tile was ready.
    */
   compose: (x0: number, y0: number, side: number) => { canvas: HTMLCanvasElement; x: number; y: number; complete: boolean };
+  /** Warm the cache without composing an image (for a temporarily invisible layer). */
+  prefetch: (x0: number, y0: number, side: number) => void;
   /** Height at a world pixel, from the cached tile (0 if that tile isn't ready). */
   heightAt: (x: number, y: number) => number;
   /** A cached tile's height map (CHUNK×CHUNK, ×HEIGHT_STEPS), if it's ready. */
@@ -35,9 +37,10 @@ export function createTileLayer(
   /** Generate a tile; return null if it can't be made yet (e.g. its inputs aren't ready) to try again later. */
   request: (cx: number, cy: number) => Promise<TileData> | null,
   tile: number,
-  opts: { maxInFlight?: number; version?: (cx: number, cy: number) => string; fadeMs?: number } = {},
+  opts: { maxInFlight?: number; version?: (cx: number, cy: number) => string; fadeMs?: number; prefetchTiles?: number } = {},
 ): TileLayer {
   const maxInFlight = opts.maxInFlight ?? 32;
+  const ring = opts.prefetchTiles ?? 1;
   const version = opts.version ?? (() => '');
   const cache = new Map<string, Entry>(); // insertion order = least recently used first
   const pending = new Set<string>();
@@ -105,13 +108,27 @@ export function createTileLayer(
     return undefined;
   }
 
+  function prefetch(cx0: number, cy0: number, cx1: number, cy1: number, visible: boolean) {
+    maxCached = Math.max(64, 2 * (cx1 - cx0 + 1 + 2 * ring) * (cy1 - cy0 + 1 + 2 * ring));
+    // Nearest tiles first: distant preloads must not take the whole in-flight budget.
+    for (let distance = visible ? 0 : 1; distance <= ring; distance++) {
+      for (let cy = cy0 - distance; cy <= cy1 + distance; cy++) {
+        for (let cx = cx0 - distance; cx <= cx1 + distance; cx++) {
+          if (distance === 0 || cx === cx0 - distance || cx === cx1 + distance || cy === cy0 - distance || cy === cy1 + distance) get(cx, cy);
+        }
+      }
+    }
+  }
+
   return {
+    prefetch(x0, y0, side) {
+      prefetch(Math.floor(x0 / tile), Math.floor(y0 / tile), Math.floor((x0 + side - 1) / tile), Math.floor((y0 + side - 1) / tile), true);
+    },
     compose(x0, y0, side) {
       const cx0 = Math.floor(x0 / tile);
       const cy0 = Math.floor(y0 / tile);
       const cx1 = Math.floor((x0 + side - 1) / tile);
       const cy1 = Math.floor((y0 + side - 1) / tile);
-      maxCached = Math.max(64, 2 * (cx1 - cx0 + 3) * (cy1 - cy0 + 3));
       // Bookkeeping every frame (cheap): keep tiles fresh in the cache, refresh stale ones, note fades.
       let complete = true;
       let fading = false;
@@ -123,10 +140,8 @@ export function createTileLayer(
           else if (e.prev) fading = true;
         }
       }
-      // Prefetch a one-tile ring around the view, so turning never reveals gaps.
-      for (let cy = cy0 - 1; cy <= cy1 + 1; cy++) {
-        for (let cx = cx0 - 1; cx <= cx1 + 1; cx++) if (cy < cy0 || cy > cy1 || cx < cx0 || cx > cx1) get(cx, cy);
-      }
+      // Prefetch outside the view without enlarging the drawn composite.
+      prefetch(cx0, cy0, cx1, cy1, false);
 
       // Redraw the composite only when something under it changed.
       const range = `${cx0},${cy0},${cx1},${cy1}`;

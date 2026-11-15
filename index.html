@@ -49,11 +49,11 @@
       }
       .volume-control canvas, #hands-off canvas { display: block; image-rendering: pixelated; }
       .volume-control input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
-      #hands-off {
+      #hands-off, #map-bearing {
         position: fixed; z-index: 20; visibility: hidden; padding: 0; border: 0; background: transparent; cursor: pointer; touch-action: manipulation;
       }
-      #hands-off:disabled { cursor: default; opacity: 0.55; }
-      .volume-control input:focus-visible, #hands-off:focus-visible { outline: 2px solid #ead695; outline-offset: 3px; }
+      #hands-off:disabled, #map-bearing:disabled { cursor: default; opacity: 0.55; }
+      .volume-control input:focus-visible, #hands-off:focus-visible, #map-bearing:focus-visible { outline: 2px solid #ead695; outline-offset: 3px; }
     </style>
   </head>
   <body>
@@ -68,6 +68,7 @@
     <label id="music-control" class="volume-control"><canvas id="music-volume-label" aria-hidden="true"></canvas><input id="music-volume" type="range" min="0" max="100" value="40" aria-label="Music volume" /></label>
     <label id="audio-control" class="volume-control"><canvas id="engine-volume-label" aria-hidden="true"></canvas><input id="engine-volume" type="range" min="0" max="100" value="40" aria-label="Engine volume" /></label>
     <button id="hands-off" type="button" aria-label="Hold steady (T)" aria-pressed="false" title="Let go of the stick: the plane flies straight and level"><canvas id="hold-steady-label" aria-hidden="true"></canvas></button>
+    <button id="map-bearing" type="button" aria-label="Consult map: set bearing to nearest trench" title="Consult map: pin a trench bearing. Tap again to take a fresh bearing."></button>
     <pre id="debug" hidden></pre>
     <script type="module" src="/src/main.ts"></script>
   </body>

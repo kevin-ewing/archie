@@ -94,7 +94,7 @@ export function createDial(opts: { r: number; marks: number[]; red?: [number, nu
  * Markings stay upright for legibility (ponytail: a real card's letters rotate with it; rotating 3×5
  * glyphs at pixel scale just smears them).
  */
-export function createCompass(r: number): Instrument {
+export function createCompass(r: number, bearing: () => number | null = () => null): Instrument {
   const size = 2 * r + 1;
   const c = r;
   return instrument(size, (px, heading) => {
@@ -111,6 +111,16 @@ export function createCompass(r: number): Instrument {
       const p = polar(c, c, r - 9, (Number(deg) * Math.PI) / 180 - heading);
       text(px, Math.round(p.x - textWidth(String(s)) / 2), Math.round(p.y - 2), String(s), s === 'N' ? C.north : C.ink);
     });
+    // A manually set course index: its compass bearing stays fixed until the pilot consults the map.
+    const course = bearing();
+    if (course !== null) {
+      const a = course - heading;
+      const tip = polar(c, c, r - 5, a);
+      for (const offset of [-0.12, 0.12]) {
+        const base = polar(c, c, r - 1, a + offset);
+        line(px, tip.x, tip.y, base.x, base.y, C.brassLit);
+      }
+    }
     // Fixed lubber line at the top, and a glint on the glass.
     line(px, c, 1, c, 3, C.glint);
     plot(px, c - r + 5, c - r + 6, C.glint);

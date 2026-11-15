@@ -119,7 +119,7 @@ function fieldCell(seed: number, x: number, y: number) {
 
 // --- Trees ---------------------------------------------------------------------------------------
 // Whether a tree exists is decided once, at its centre, so a crown is always drawn whole: never sliced by
-// a biome edge, a glade or a lake. Crowns overlap; the one with the highest z is on top.
+// a biome edge, a glade or a lake. Crowns overlap; their upper surface is visible, so a rim cannot cut through a neighbouring crown.
 
 // Tree chances depend on the seed and the front plan (density, fronts on or off): the cache is for one world.
 const cacheWorld = { seed: NaN, density: NaN, fronts: false };
@@ -172,7 +172,7 @@ export function treeAt(seed: number, x: number, y: number): Tree | null {
       const dy = y - cy;
       const distSq = dx * dx + dy * dy;
       if (distSq >= r * r) continue;
-      const z = hash(seed + 27, i, j);
+      const z = 1 - distSq / (r * r); // highest canopy surface, matching the radial colour and height
       if (z <= bestZ || hash(seed + 28, i, j) >= treeChance(seed, i, j, cx, cy)) continue;
       const sp = hash(seed + 29, i, j);
       best = { dx, dy, dist: Math.sqrt(distSq), r, species: sp < 0.72 ? 0 : sp < 0.9 ? 1 : 2 };

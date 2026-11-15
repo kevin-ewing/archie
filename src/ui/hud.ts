@@ -30,10 +30,10 @@ const QUARTERS = [0, 0.25, 0.5, 0.75, 1];
 // Engine dials: warning → red zone blinks; overheated → red zone lit, bezel flashes.
 const engineAlert = (warning: EngineWarning, blink: boolean): Alert => (warning === 2 ? (blink ? 2 : 1) : warning === 1 && blink ? 1 : 0);
 
-export function createHud(): Hud {
+export function createHud(bearing: () => number | null = () => null): Hud {
   return {
     slots: [
-      { inst: createCompass(17), read: (s) => s.compass, alert: () => 0 },
+      { inst: createCompass(17, bearing), read: (s) => s.compass, alert: () => 0 },
       {
         // Rev indicator: 0 to 2,000 rpm.
         inst: createDial({ r: 13, marks: QUARTERS, red: [0.9, 1] }),

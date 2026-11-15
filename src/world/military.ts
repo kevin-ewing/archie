@@ -17,8 +17,8 @@
 // Scale: 1 world px ≈ 0.4 m. British on one side of each line, German on the other.
 
 import { cellular, cellularField, fbm, hash, valueNoise, type Cell } from '../core/noise.ts';
-import { dirtAt, WATER, type RGB } from './ground.ts';
-import { devastationAt, FRONTS, frontField, nearest, type Front, type FrontCoords } from './fronts.ts';
+import { dirtAt, noDigMask, WATER, type RGB } from './ground.ts';
+import { devastationAt, FRONTS, frontField, frontPoint, frontsNear, nearest, type Front, type FrontCoords } from './fronts.ts';
 import { DEV } from './settings.ts';
 
 export type Stamp = readonly [RGB, number]; // colour, height (world units, like ground heights)
@@ -1061,4 +1061,39 @@ function shelling(
   if (on.clods && d < dev * 0.18) return [M.clod, H.mud]; // small churned clods everywhere
   if (on.mud && d < dev ** 1.3) return [pick(M.mud, valueNoise(seed + 212, x / 3, y / 3)), H.mud];
   return null;
+}
+
+/** A map fix to the closest sampled trench floor, rather than the middle of no-man's land. */
+export function trenchBearing(seed: number, x: number, y: number): number | null {
+  if (!DEV.fronts) return null;
+  let best = Infinity;
+  let target: { x: number; y: number } | null = null;
+  const region = FRONTS.region / Math.sqrt(DEV.density);
+  // ponytail: a map fix samples walls every 64 px, within four territories; use a spatial index for a larger map.
+  for (const radius of [region, region * 2, region * 4]) {
+    const fronts = frontsNear(seed, x - radius, y - radius, x + radius, y + radius);
+    for (const f of fronts) {
+      const fid = f.id % 9973;
+      for (let s = -f.half + 64; s < f.half; s += 64) {
+        for (const side of [-1, 1] as const) {
+          let off = 0;
+          for (let k = 0; k < WALLS.presence.length; k++) {
+            const id = (side < 0 ? 1 : 5) + k;
+            if (k > 0) off += WALLS.spacing[0] + hash(seed + 291 + fid, id, 0) * (WALLS.spacing[1] - WALLS.spacing[0]);
+            const line = wallLine(seed, side, f.nml, fid, s, id, off);
+            const u = DEV.trenchStyle === 'hasty' ? hastyCourse(seed, id, line, s) : line + (hash(seed + 270 + id, Math.floor(s / WALLS.bay[k]), 0) < 0.5 ? -1 : 1) * WALLS.stagger[k];
+            const p = frontPoint(seed, f, s, u);
+            const d = (p.x - x) ** 2 + (p.y - y) ** 2;
+            if (d >= best) continue;
+            const stamp = militaryAt(seed, fronts, p.x, p.y);
+            if (stamp?.[1] !== H.boards || noDigMask(seed, p.x, p.y, p.x + 1, p.y + 1)(p.x, p.y) < 0) continue;
+            best = d;
+            target = p;
+          }
+        }
+      }
+    }
+    if (best <= radius * radius) break;
+  }
+  return target ? Math.atan2(target.x - x, y - target.y) : null;
 }
