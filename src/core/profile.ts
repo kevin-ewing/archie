@@ -2,7 +2,7 @@
 // Off by default, and then free (every call is a no-op).
 //
 // It also says why frames drop. A dropped frame took over 1.5× the display's frame time (the median gap
-// lately). If the game's own work in that frame was most of the gap, the cause is its slowest stage
+// lately, with at least a 60 Hz target so sustained slow delivery is not learned away). If the game's own work in that frame was most of the gap, the cause is its slowest stage
 // ("js: clouds"); if not, the time went elsewhere: the GPU / compositor, garbage collection, or another
 // thread ("external"). Keep measurements in the bounded history instead of logging every dropped frame.
 
@@ -67,7 +67,7 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
         gaps.push(gap);
         allFrames++;
         worst = Math.max(worst, gap);
-        if (gap > period * 1.5) {
+        if (gap > Math.min(period, 1000 / 60) * 1.5) {
           allDrops++;
           drops++;
           const top = [...cur].sort((a, b) => b[1] - a[1])[0];

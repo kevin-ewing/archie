@@ -491,9 +491,11 @@ startLoop(
     if (layoutChanged && mapButton instanceof HTMLButtonElement) {
       const px = view.uiScale / (window.devicePixelRatio || 1);
       const { x, y, w: size } = board.slots[0];
-      mapButton.style.left = `${x * px}px`;
-      mapButton.style.top = `${y * px}px`;
-      mapButton.style.width = mapButton.style.height = `${size * px}px`;
+      const target = Math.max(size * px, 44);
+      const pad = (target - size * px) / 2;
+      mapButton.style.left = `${x * px - pad}px`;
+      mapButton.style.top = `${y * px - pad}px`;
+      mapButton.style.width = mapButton.style.height = `${target}px`;
       mapButton.style.visibility = 'visible';
     }
     // Development toggles: just below the debug panel, top-right.
@@ -515,13 +517,13 @@ startLoop(
           holdFace.dataset.on = String(holding);
         }
         if (layoutChanged) {
-        holdButton.style.left = `${holdAnchor.x * px}px`;
-        holdButton.style.top = `${holdAnchor.y * px}px`;
-        holdButton.style.width = `${holdAnchor.w * px}px`;
-        holdButton.style.height = `${holdFace.height * px}px`;
-        holdFace.style.width = `${holdAnchor.w * px}px`;
-        holdFace.style.height = `${holdFace.height * px}px`;
-        holdButton.style.visibility = 'visible';
+          holdButton.style.left = `${holdAnchor.x * px}px`;
+          holdButton.style.top = `${holdAnchor.y * px}px`;
+          holdButton.style.width = `${holdAnchor.w * px}px`;
+          holdButton.style.height = `${holdFace.height * px}px`;
+          holdFace.style.width = `${holdAnchor.w * px}px`;
+          holdFace.style.height = `${holdFace.height * px}px`;
+          holdButton.style.visibility = 'visible';
         }
       }
     }
@@ -535,6 +537,7 @@ startLoop(
     if (light !== hudLightNow) {
       hudLightNow = light;
       hudGrade?.setAttribute('values', light);
+      for (const el of [holdButton, audioControl, musicControl]) if (el) el.style.filter = instrumentLight ? 'url(#hud-grade)' : 'none';
     }
     prof.mark('hud');
     prof.end();

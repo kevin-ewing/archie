@@ -109,7 +109,7 @@ export function hudLayout(view: View, items: readonly BoardItem[], split: number
         const x = side === 0 ? SIDE : Math.floor(view.uiW) - SIDE - widths[side];
         slots[i] = { x: x + Math.floor((widths[side] - items[i].w) / 2), y: base - below - height + Math.floor((height - items[i].h) / 2), w: items[i].w, h: items[i].h };
       }
-      base -= height + below + ROW_GAP;
+      base -= height + below + ROW_GAP + (row === ALTIMETER + 1 ? 12 : 0); // room for the altimeter's hanging charm
     }
     const banks = groups.map((g, side) => ({ x: side === 0 ? SIDE : Math.floor(view.uiW) - SIDE - widths[side], y: Math.min(...g.map((i) => slots[i].y)), w: widths[side], h: bottom - Math.min(...g.map((i) => slots[i].y)) }));
     return { slots, banks, top: Math.min(...slots.map((r) => r.y)), bottom, rows };

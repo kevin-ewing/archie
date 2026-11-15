@@ -19,6 +19,7 @@ test('frame pacing uses RAF intervals, independently of low JS work and includin
     assert.equal(stats.interval.p95, 33.333);
     assert.equal(stats.work.mean, 4);
     assert.equal(stats.stages.simulation, 2);
+    assert.equal(stats.drops, 3, 'sustained 30 FPS is not silently treated as the display budget');
   } finally {
     if (original) Object.defineProperty(globalThis, 'performance', original);
   }

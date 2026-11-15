@@ -14,11 +14,11 @@ test('blend interpolates numbers, takes the short way round for angles, keeps fl
 });
 
 
-test('30/60/120 Hz and irregular mobile frames cover the same world distance in equal real time', () => {
+test('20/30/60/120 Hz and irregular mobile frames cover the same world distance in equal real time', () => {
   const originalPerformance = Object.getOwnPropertyDescriptor(globalThis, 'performance');
   const originalRAF = Object.getOwnPropertyDescriptor(globalThis, 'requestAnimationFrame');
   try {
-    for (const cadence of [[1000 / 30], [1000 / 60], [1000 / 120], [8, 33, 16, 75, 8, 25]]) {
+    for (const cadence of [[1000 / 20], [1000 / 30], [1000 / 60], [1000 / 120], [8, 33, 16, 75, 8, 25]]) {
       let now = 0, next: FrameRequestCallback | undefined;
       Object.assign(globalThis, { performance: { now: () => now }, requestAnimationFrame: (cb: FrameRequestCallback) => { next = cb; return 1; } });
       const plane = createPlane();

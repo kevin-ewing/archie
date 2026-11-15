@@ -50,7 +50,7 @@ export function summarise(frames: readonly FrameTimes[]) {
     interval: { median: round(period), p95: round(sortedGaps[Math.floor(sortedGaps.length * 0.95)] ?? 0), max: round(sortedGaps.at(-1) ?? 0) },
     work: { mean: round(mean(work)), p95: round(work[Math.floor(work.length * 0.95)] ?? 0), max: round(work[work.length - 1] ?? 0) },
     stages,
-    drops: gaps.filter((g) => g > period * 1.5).length,
+    drops: gaps.filter((g) => g > Math.min(period, 1000 / 60) * 1.5).length,
   };
 }
 

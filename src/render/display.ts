@@ -32,7 +32,7 @@ export function fitView(viewW: number, viewH: number, dpr: number, mobile: Mobil
   const compact = Math.min(viewW, viewH) < COMPACT_BREAKPOINT;
   const baseScale = Math.max(1, Math.round((compact ? PIXEL_SIZE.compact : PIXEL_SIZE.regular) * dpr));
   const scale = mobile ? Math.round(baseScale * MOBILE_SCALE.scene) : baseScale;
-  const uiScale = mobile ? Math.round(baseScale * MOBILE_SCALE.ui) : baseScale;
+  const uiScale = mobile ? Math.max(1, Math.round(baseScale * MOBILE_SCALE.ui * (Math.min(viewW, viewH) < 360 ? 0.8 : 1))) : baseScale;
   // Never 0: a collapsed window (devtools, minimise, mid-drag) reports a 0 size, and drawing from a
   // 0-size canvas throws, which would kill the game loop.
   const devW = Math.max(1, Math.round(viewW * dpr));
