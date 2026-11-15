@@ -366,23 +366,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   cc.globalAlpha = HIGH_CLOUD_ALPHA;
   cc.drawImage(high.canvas, high.x, high.y);
   cc.globalAlpha = 1;
-  const tint = grade.cloud;
-  if (tint.amount > 0.01) {
-    // Sunlit side toward the sun, shaded side away from it (the sun's direction turns with the camera).
-    cc.setTransform(1, 0, 0, 1, 0, 0);
-    const R = Math.hypot(view.devW, view.devH) / 2;
-    const mx = view.devW / 2;
-    const my = view.devH / 2;
-    const gr = cc.createLinearGradient(mx - toward.x * R, my - toward.y * R, mx + toward.x * R, my + toward.y * R);
-    gr.addColorStop(0, `rgb(${tint.far.map(Math.round).join(',')})`);
-    gr.addColorStop(1, `rgb(${tint.near.map(Math.round).join(',')})`);
-    cc.globalCompositeOperation = 'source-atop'; // colour only where there is cloud
-    cc.globalAlpha = tint.amount;
-    cc.fillStyle = gr;
-    cc.fillRect(0, 0, view.devW, view.devH);
-    cc.globalAlpha = 1;
-    cc.globalCompositeOperation = 'source-over';
-  }
+  tintClouds(cc, view.devW, view.devH, grade.cloud, toward); // the sun's direction turns with the camera
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.drawImage(CB.canvas, 0, 0);
   f.prof.mark('clouds');
@@ -418,6 +402,123 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   }
 
   return ground.complete && lightingComplete && wispsComplete && clouds.complete && high.complete;
+}
+
+/**
+ * The landing page's window onto the world: the landscape with its shadows, cloud shadows and clouds,
+ * under the light of the hour (no plane), north up, with world point (x, y) at the centre of `ctx`'s
+ * canvas, and the clouds' drift at time `t` (s). Same pixel size as the game. Returns true once every tile
+ * in it is ready.
+ *
+ * Buffered for how it moves: slowly, and only ever north (the clouds also creep west on the wind). With
+ * no rotation, each layer composes exactly the window's rectangle (the game's rotating view needs a square
+ * the size of the screen's diagonal), and preloads only the rows ahead, plus a tile west for the clouds.
+ */
+const AHEAD = { n: 2, e: 0, s: 0, w: 0 };
+const AHEAD_WIND = { n: 2, e: 0, s: 0, w: 1 };
+const AHEAD_GROUND = { n: 3, e: 1, s: 1, w: 1 }; // a sunlight tile is baked from the ground tiles all round it
+export function drawTerrain(ctx: CanvasRenderingContext2D, view: View, scene: Scene, x: number, y: number, sun: Sun, day: number, t: number): boolean {
+  const { width, height } = ctx.canvas;
+  const { scale } = view;
+  scene.sun = sun;
+  const w = width / scale;
+  const h = height / scale;
+  const rw = Math.ceil(w) + 2;
+  const rh = Math.ceil(h) + 2;
+  // World point (px, py) at the window's centre, on whole device pixels (no rotation: the tiles land exactly
+  // on the screen's pixel grid).
+  const place = (c: CanvasRenderingContext2D, px: number, py: number) => c.setTransform(scale, 0, 0, scale, Math.round(width / 2 - px * scale), Math.round(height / 2 - py * scale));
+  const gx = Math.floor(x - w / 2) - 1;
+  const gy = Math.floor(y - h / 2) - 1;
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = BASE;
+  ctx.fillRect(0, 0, width, height);
+  place(ctx, x, y);
+  const ground = scene.ground.compose(gx, gy, rw, rh, AHEAD_GROUND);
+  ctx.drawImage(ground.canvas, ground.x, ground.y);
+  let complete = ground.complete;
+
+  // Direct sunlight, erased under the clouds' shade, then the cloud shadows themselves (as in drawScene).
+  if (sun.strength > 0) {
+    const L = scene.light;
+    if (L.canvas.width !== width || L.canvas.height !== height) {
+      L.canvas.width = width;
+      L.canvas.height = height;
+      L.ctx.imageSmoothingEnabled = false;
+    } else {
+      L.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      L.ctx.clearRect(0, 0, width, height);
+    }
+    const lc = L.ctx;
+    place(lc, x, y);
+    lc.globalAlpha = sun.strength;
+    const light = scene.sunlight.compose(gx, gy, rw, rh, AHEAD);
+    lc.drawImage(light.canvas, light.x, light.y);
+    const shade = sun.shadowStrength;
+    const dx = sun.shadow.x * CLOUD_HEIGHT + WIND.x * t;
+    const dy = sun.shadow.y * CLOUD_HEIGHT + WIND.y * t;
+    const cs = scene.cloudShadows.compose(gx - Math.round(dx), gy - Math.round(dy), rw, rh, AHEAD_WIND);
+    lc.globalAlpha = shade;
+    lc.globalCompositeOperation = 'destination-out';
+    lc.drawImage(cs.canvas, cs.x + dx, cs.y + dy);
+    lc.globalCompositeOperation = 'source-over';
+    lc.globalAlpha = 1;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(L.canvas, 0, 0);
+    place(ctx, x, y);
+    ctx.globalAlpha = shade * CLOUD_SHADOW_ALPHA;
+    ctx.drawImage(cs.canvas, cs.x + dx, cs.y + dy);
+    ctx.globalAlpha = 1;
+    complete &&= light.complete && cs.complete;
+  }
+
+  // The clouds (both decks), coloured by the light of the hour, then the light of the hour over everything.
+  const grade = gradeFor(sun, skyFor(scene.seed, day, sun.evening));
+  const CB = scene.cloudBuf;
+  if (CB.canvas.width !== width || CB.canvas.height !== height) {
+    CB.canvas.width = width;
+    CB.canvas.height = height;
+    CB.ctx.imageSmoothingEnabled = false;
+  }
+  const cc = CB.ctx;
+  cc.setTransform(1, 0, 0, 1, 0, 0);
+  cc.clearRect(0, 0, width, height);
+  const qx = x - WIND.x * t;
+  const qy = y - WIND.y * t;
+  place(cc, qx, qy);
+  const clouds = scene.clouds.compose(Math.floor(qx - w / 2) - 1, Math.floor(qy - h / 2) - 1, rw, rh, AHEAD_WIND);
+  cc.drawImage(clouds.canvas, clouds.x, clouds.y);
+  const hx = x - WIND.x * HIGH_WIND_SCALE * t;
+  const hy = y - WIND.y * HIGH_WIND_SCALE * t;
+  place(cc, hx, hy);
+  const high = scene.highClouds.compose(Math.floor(hx - w / 2) - 1, Math.floor(hy - h / 2) - 1, rw, rh, AHEAD_WIND);
+  cc.globalAlpha = HIGH_CLOUD_ALPHA;
+  cc.drawImage(high.canvas, high.x, high.y);
+  cc.globalAlpha = 1;
+  tintClouds(cc, width, height, grade.cloud, sun.toward);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.drawImage(CB.canvas, 0, 0);
+  drawGrade(ctx, { ...view, devW: width, devH: height, w, h }, scene.grade, grade, sun.toward); // north up: the sun's direction needs no turning
+  return complete && clouds.complete && high.complete;
+}
+
+/** Colour the clouds in `cc` with the light of the hour: sunlit side toward the sun (`toward`, on screen). */
+function tintClouds(cc: CanvasRenderingContext2D, devW: number, devH: number, tint: Grade['cloud'], toward: { x: number; y: number }) {
+  if (tint.amount <= 0.01) return;
+  cc.setTransform(1, 0, 0, 1, 0, 0);
+  const R = Math.hypot(devW, devH) / 2;
+  const mx = devW / 2;
+  const my = devH / 2;
+  const gr = cc.createLinearGradient(mx - toward.x * R, my - toward.y * R, mx + toward.x * R, my + toward.y * R);
+  gr.addColorStop(0, `rgb(${tint.far.map(Math.round).join(',')})`);
+  gr.addColorStop(1, `rgb(${tint.near.map(Math.round).join(',')})`);
+  cc.globalCompositeOperation = 'source-atop'; // colour only where there is cloud
+  cc.globalAlpha = tint.amount;
+  cc.fillStyle = gr;
+  cc.fillRect(0, 0, devW, devH);
+  cc.globalAlpha = 1;
+  cc.globalCompositeOperation = 'source-over';
 }
 
 function worldTransform(ctx: CanvasRenderingContext2D, scale: number, ax: number, ay: number, angle: number, cx: number, cy: number) {

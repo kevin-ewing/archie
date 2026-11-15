@@ -49,3 +49,19 @@ test('cloud prefetch warms wider rings without composing, and limits pending job
     else Reflect.deleteProperty(globalThis, 'ImageData');
   }
 });
+
+test('a one-way view preloads only ahead of itself, and composes exactly its rectangle', async () => {
+  const { createTileLayer } = await import('./tiles.ts');
+  const savedDocument = Object.getOwnPropertyDescriptor(globalThis, 'document');
+  Object.assign(globalThis, { document: { createElement: () => ({ width: 0, height: 0, getContext: () => ({}) }) } });
+  try {
+    const requested: string[] = [];
+    const layer = createTileLayer((cx, cy) => (requested.push(`${cx},${cy}`), new Promise(() => {})), 16, { prefetchTiles: 1 });
+    const out = layer.compose(0, 0, 32, 16, { n: 2, e: 0, s: 0, w: 0 }); // two tiles wide, one tall
+    assert.equal(out.complete, false);
+    assert.deepEqual(requested, ['0,0', '1,0', '0,-1', '1,-1', '0,-2', '1,-2'], 'the view, then the rows ahead (north), nearest first; nothing to the sides or behind');
+  } finally {
+    if (savedDocument) Object.defineProperty(globalThis, 'document', savedDocument);
+    else Reflect.deleteProperty(globalThis, 'document');
+  }
+});

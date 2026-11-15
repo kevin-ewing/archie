@@ -18,25 +18,6 @@ const GAP = 2;
 
 export const createToggles = (items: Toggle[]): Toggles => ({ items, rects: [], plates: new Map() });
 
-/** DOM-backed volume slider face, painted in the same game pixels and palette as the toggle below it. */
-export function drawVolumePlate(canvas: HTMLCanvasElement, w: number, value: number, label: string): void {
-  const px = createPx(w, HEIGHT);
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < w; x++) {
-      const edge = x === 0 || y === 0 || x === w - 1 || y === HEIGHT - 1;
-      plot(px, x, y, edge ? (x + y < 3 ? C.metalLit : x + y > w + HEIGHT - 5 ? C.metalDark : C.metal) : C.face);
-    }
-  }
-  text(px, Math.floor((w - textWidth(label)) / 2), 1, label, C.ink);
-  for (let x = 2; x < w - 2; x++) plot(px, x, HEIGHT - 3, C.metalDark);
-  const thumb = 2 + Math.round(Math.max(0, Math.min(1, value)) * (w - 5));
-  plot(px, thumb, HEIGHT - 4, C.metalLit);
-  plot(px, thumb, HEIGHT - 3, C.metalLit);
-  plot(px, thumb, HEIGHT - 2, C.metal);
-  canvas.width = w;
-  canvas.height = HEIGHT;
-  canvas.getContext('2d')!.putImageData(new ImageData(px.data, w, HEIGHT), 0, 0);
-}
 
 /**
  * The Hold control's face: a nickel-plated tumbler toggle like the cockpit's magneto switches [VERIFY], lever up =

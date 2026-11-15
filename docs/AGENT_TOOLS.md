@@ -76,8 +76,14 @@ keeping the previous run in `debug/backup/`.
   5174 if 5173 is taken; ask for it if you can't find it.
 - Claude's built-in browser: call `request_access` for that exact origin (for example
   `http://localhost:5174`), then navigate. `127.0.0.1` and `localhost` count as different sites.
-- Development auto-launches: no click is needed, and the game starts once the first tiles are ready.
-  Wait for `window.archie` to exist.
+- The landing page (STORY / FREE FLY / SETTINGS) covers the game until a choice is made, and take-off
+  waits for that choice, and the game isn't drawn until then (only the landing's terrain window is), so
+  `archie.ready()` and `stats()` mean nothing yet. Add `?play` to skip it (Free Fly), or click
+  `#landing-free` from JavaScript.
+  The game starts once the first tiles are ready. Wait for `window.archie` to exist.
+- Saves (`src/game/save.ts`, localStorage `archie.save`: volumes, story progress) are **off** in
+  development and with `?debug`, so every visit starts fresh. To test them, use a production build
+  without `?debug`.
 - A production build (`npm run build`, `npm run preview`) exposes the same API only with `?debug`.
 - Timings are only meaningful with the tab **visible**. A hidden tab pauses the game, and a hidden
   browser pane runs as a background page.
@@ -95,9 +101,10 @@ keeping the previous run in `debug/backup/`.
 | `?heading=90` | Plane start heading, in degrees (0 = north, 90 = east). |
 | `?off=frontLines,fastPlane` / `?on=structures` | Set debug toggles (ids below). |
 | `?trench=traversed` | Trench style (`hasty` or `traversed`). |
-| `?debug` | Profiler overlay and the `archie` API in a production build. |
+| `?play` | Skip the landing page and start Free Fly. |
+| `?debug` | Profiler overlay and the `archie` API in a production build. Also turns saves off. |
 
-Example: `http://localhost:5174/?seed=1915&time=18.9&speed=0&x=1500&y=-800&heading=90&off=frontLines`
+Example: `http://localhost:5174/?play&seed=1915&time=18.9&speed=0&x=1500&y=-800&heading=90&off=frontLines`
 
 ### `archie`: the console API (development, or `?debug`)
 

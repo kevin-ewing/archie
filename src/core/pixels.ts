@@ -59,8 +59,11 @@ export function line(px: Px, x0: number, y0: number, x1: number, y1: number, c: 
 export const polar = (cx: number, cy: number, radius: number, angle: number) => ({ x: cx + Math.sin(angle) * radius, y: cy - Math.cos(angle) * radius });
 
 // 5-px-tall glyphs ('#' = ink), mostly 3 wide; N, M and W need more to read as themselves.
-// Only the characters the HUD uses (instrument labels, the date).
-const FONT: Record<string, string> = {
+// Only the characters the game uses (instrument labels, the date, menus). index.html carries a copy of the
+// glyphs its start-up message needs (kept in step by src/ui/landing.test.ts).
+export const FONT: Readonly<Record<string, string>> = {
+  K: '#.# #.# ##. #.# #.#', Q: '### #.# #.# ##. .##', X: '#.# #.# .#. #.# #.#', Z: '### ..# .#. #.. ###',
+  '.': '. . . . #', '/': '..# ..# .#. #.. #..', '-': '... ... ### ... ...', '?': '### ..# .## ... .#.',
   E: '### #.. ##. #.. ###', F: '### #.. ##. #.. #..', L: '#.. #.. #.. #.. ###', O: '### #.# #.# #.# ###',
   P: '### #.# ### #.. #..', R: '##. #.# ##. #.# #.#', S: '### #.. ### ..# ###', T: '### .#. .#. .#. .#.',
   N: '#..# ##.# #.## #..# #..#', M: '#...# ##.## #.#.# #...# #...#', W: '#...# #...# #.#.# ##.## #...#',

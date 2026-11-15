@@ -112,3 +112,67 @@ With two operators, the ending can land on either relationship, or both (e.g. th
 ## Proposed: the sixpence
 
 The charm hanging under the altimeter is **the old hand's lucky sixpence**, drilled through and strung on signal cord. Proposed, not locked. He gives it to the pilot early in Chapter 1, with a dry line about it having seen more of the war than either of them. It stays on screen for the whole game: it swings in every turn, and it's still there in Chapter 2, long after he's only a voice in letters. One possible payoff: in the ending, the pilot posts it back to him, or it comes back with his last letter. **[VERIFY]** Holed and bent coins carried as soldiers' luck pieces.
+
+## Loading messages
+
+The first load shows one of these at random under the loading mark (the list lives in `index.html`).
+The service is always the **Royal Flying Corps** (RFC). The RAF only formed on 1 April 1918, so it never
+appears in player-facing text. (The B.E.2c's engine is the "RAF 1a", where RAF means Royal Aircraft Factory, so it's described, not named.)
+
+- **Aerodrome chores (flavour, no claims):** doping the wings; tightening the rigging wires; stretching linen over the ribs; checking the magneto; filling the petrol tank; swinging the propeller; warming up the engine; painting the roundels; pulling away the chocks; reading the weather report; squaring off the maps; reeling in the wireless aerial.
+- **Facts:**
+  - The B.E.2c was designed at Farnborough (the Royal Aircraft Factory). **[VERIFY]**
+  - Most B.E.2cs were built by outside firms. **[VERIFY]**
+  - Its air-cooled V8 made about 90 horsepower. **[VERIFY]**
+  - Flat out, it managed about 72 mph. **[VERIFY]**
+  - It was stable enough to fly hands off. **[VERIFY]**
+  - The observer sat in front of the pilot. **[VERIFY]**
+  - "Archie" was RFC slang for anti-aircraft fire. **[VERIFY]**
+  - The RFC was formed in 1912. **[VERIFY]**
+  - Observers corrected the guns by wireless. **[VERIFY]**
+  - The clock code told gunners where shells fell. **[VERIFY]**
+  - RFC headquarters sat at St Omer (1914–16). **[VERIFY]**
+  - The B.E.2c first flew in 1914. **[VERIFY]**
+  - B.E. stood for Blériot Experimental (a tractor, propeller in front, after Blériot's layout). **[VERIFY]**
+  - Geoffrey de Havilland designed the first B.E.2 (1912). **[VERIFY]**
+  - Edward Busk worked out the B.E.2c's inherent stability. **[VERIFY]**
+  - More than 3,000 B.E.2s of all kinds were built (about 3,500). **[VERIFY]**
+  - Its endurance was about three hours. **[VERIFY]**
+  - It had no brakes, only a tailskid to drag on the grass. **[VERIFY]**
+  - Spruce and ash made up its frame. **[VERIFY]**
+  - Irish linen covered many British wings. **[VERIFY]**
+  - Wing dope smelled of pear drops (amyl acetate). **[VERIFY]**
+  - Dope fumes made factory workers ill. **[VERIFY]**
+  - Women did much of the fabric stitching and doping. **[VERIFY]**
+  - The observer, in front, fired between the wires and struts. **[VERIFY]**
+  - In 1914 crews carried rifles and pistols. **[VERIFY]**
+  - Crews called the B.E.2c "Fokker fodder". **[VERIFY]**
+  - The "Fokker Scourge" began in summer 1915. **[VERIFY]**
+  - The Fokker Eindecker fired through its propeller (synchronised gun). **[VERIFY]**
+  - RFC aeroplane crews were not given parachutes. **[VERIFY]**
+  - Some new pilots reached France with under 20 hours solo. **[VERIFY]**
+  - Many pilots were barely twenty. **[VERIFY]**
+  - The RFC went to France in August 1914. **[VERIFY]**
+  - RFC reconnaissance saw von Kluck's army turn before the Marne (September 1914). **[VERIFY]**
+  - The RFC's naval wing became the Royal Naval Air Service in 1914. **[VERIFY]**
+  - Hugh Trenchard took command of the RFC in France in August 1915. **[VERIFY]**
+  - Roundels replaced the Union flag so troops stopped firing on their own aircraft. **[VERIFY]**
+  - Air mechanics (A.M.) were "Ack Emmas", from the signallers' alphabet. **[VERIFY]**
+  - Signallers said "Ack Ack" for anti-aircraft (A.A.). **[VERIFY]**
+  - Observers tapped out Morse on a key. **[VERIFY]**
+  - Spotting aircraft could send by wireless but not receive. **[VERIFY]**
+  - Batteries replied with white cloth strips laid on the ground. **[VERIFY]**
+  - In the clock code, twelve o'clock was true north. **[VERIFY]**
+  - In the clock code, lettered rings showed how far a shell fell from the target. **[VERIFY]**
+  - Trench maps were split into lettered, numbered squares. **[VERIFY]**
+  - The Neuve Chapelle attack (March 1915) was planned from air photographs. **[VERIFY]**
+  - The A-type camera (1915) was held over the side by hand. **[VERIFY]**
+  - Aerodromes were often just farm fields. **[VERIFY]**
+  - Crews billeted in tents, huts and farmhouses. **[VERIFY]**
+  - Zeppelins first bombed Britain in January 1915. **[VERIFY]**
+  - A B.E.2c brought down an airship at Cuffley (Leefe Robinson, September 1916). **[VERIFY]**
+  - Gas was first used on the Western Front at Ypres, April 1915. **[VERIFY]**
+  - The shell crisis of 1915 rationed the guns. **[VERIFY]**
+  - Ypres sat in a salient, overlooked by German guns on three sides. **[VERIFY]**
+  - It was bitterly cold at ten thousand feet, even in summer. **[VERIFY]**
+  - Pilots navigated by compass, map and landmarks. **[VERIFY]**

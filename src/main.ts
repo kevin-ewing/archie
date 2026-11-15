@@ -1,4 +1,4 @@
-import { blend, startLoop } from './core/loop.ts';
+import { blend, startLoop, type RenderTiming } from './core/loop.ts';
 import { createAudio } from './audio/audio.ts';
 import { progressionFor } from './audio/music.ts';
 import { hash } from './core/noise.ts';
@@ -7,19 +7,22 @@ import { createControls } from './input/controls.ts';
 import { createCamera, updateCamera } from './render/camera.ts';
 import { createDisplay } from './render/display.ts';
 import { PROP, propWidth } from './render/plane.ts';
-import { createScene, drawScene } from './render/scene.ts';
+import { createScene, drawScene, drawTerrain } from './render/scene.ts';
 import { applyAids, createAids } from './sim/aids.ts';
 import { DAYLIGHT, dayOfYear, sunNow, sunsetHour } from './sim/daylight.ts';
 import { createPlane, FLIGHT, updatePlane } from './sim/flight.ts';
 import { createClockFace, drawClock } from './ui/clock.ts';
 import { label } from './ui/gauges.ts';
 import { createHud, drawHud, gradeMatrix, radiumGlow } from './ui/hud.ts';
-import { CONTROL_W, controlsAnchor, createToggles, drawToggles, drawTumbler, drawVolumePlate, toggleAt } from './ui/toggles.ts';
+import { controlsAnchor, createToggles, drawToggles, drawTumbler, toggleAt } from './ui/toggles.ts';
 import { createInstruments, engineWarning, updateInstruments } from './ui/instruments.ts';
 import { createSmoke, updateSmoke } from './render/smoke.ts';
 import { trenchBearing } from './world/military.ts';
 import { DEV, TRENCH_STYLES, type TrenchStyle } from './world/settings.ts';
 import { installDevApi } from './devtools.ts';
+import { createPauseUi, createSettings, drawVolumePlate, GAME_URL, MENU_W } from './ui/pause.ts';
+import { wireLanding, type LandingChoice } from './ui/landing.ts';
+import { createSave } from './game/save.ts';
 import { hudLight } from './ui/light.ts';
 import { campaignDate, createGame, worldFeatures } from './game/state.ts';
 
@@ -31,13 +34,21 @@ function numberFromUrl(name: string, ok: (n: number) => boolean): number | undef
   const n = raw === null ? NaN : Number(raw);
   return ok(n) ? n : undefined;
 }
-const SEED = numberFromUrl('seed', (n) => Number.isInteger(n) && n >= 0 && n < 2 ** 31) ?? Math.floor(Math.random() * 2 ** 31); // which world: random each run unless `?seed=` pins it
-// Solar time to start at: `?time=19.5`, else (development and production alike) a random
-// time before sunset (drawn through the seeded hash, fed with the session's start time, so each visit differs).
+// The player's save (settings, story progress): kept in their browser, but never in development or with
+// `?debug`, where every visit starts fresh (see game/save.ts).
+const save = createSave(!import.meta.env.DEV && !new URLSearchParams(location.search).has('debug'));
+const SEED = numberFromUrl('seed', (n) => Number.isInteger(n) && n >= 0 && n < 2 ** 31) ?? save.data.story?.seed ?? Math.floor(Math.random() * 2 ** 31); // which world: `?seed=`, else the story's world (so its tiles load behind the landing page), else random
+// Solar time to start at: `?time=19.5`; else the browser's own time of day, with the LOCAL TIME setting on;
+// else a random time before sunset (drawn through the seeded hash, fed with the session's start time, so
+// each visit differs). (The game's hours are solar; the browser's clock is close enough to stand in.)
 const randomStart = hash(SEED, Math.floor(Date.now() / 1000), 77);
-const START_HOUR =
-  numberFromUrl('time', (n) => n >= 0 && n < 24) ??
-  sunsetHour(DAYLIGHT.startDayOfYear) - (1.75 + randomStart * 0.5); // 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
+const TIME_PARAM = numberFromUrl('time', (n) => n >= 0 && n < 24);
+const RANDOM_HOUR = sunsetHour(DAYLIGHT.startDayOfYear) - (1.75 + randomStart * 0.5); // 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
+const localHour = () => {
+  const d = new Date();
+  return d.getHours() + d.getMinutes() / 60;
+};
+const START_HOUR = TIME_PARAM ?? (save.data.settings.localTime ? localHour() : RANDOM_HOUR);
 
 const trenchParam = new URLSearchParams(location.search).get('trench');
 const TRENCH_STYLE: TrenchStyle = (TRENCH_STYLES as readonly string[]).includes(trenchParam ?? '') ? (trenchParam as TrenchStyle) : 'hasty';
@@ -104,41 +115,30 @@ if (volumeSlider instanceof HTMLInputElement) {
   const updateVolume = () => {
     const value = volumeSlider.valueAsNumber / 100;
     audio.setVolume(value);
-    const width = CONTROL_W;
+    const width = MENU_W; // the volume plates live in the pause menu
     if (volumeFace instanceof HTMLCanvasElement && width) drawVolumePlate(volumeFace, width, value, 'ENGINE');
   };
-  volumeSlider.addEventListener('input', updateVolume);
+  volumeSlider.valueAsNumber = Math.round(save.data.settings.engine * 100);
+  volumeSlider.addEventListener('input', () => {
+    updateVolume();
+    save.settings({ engine: volumeSlider.valueAsNumber / 100 });
+  });
   updateVolume();
 }
 if (musicSlider instanceof HTMLInputElement) {
   const updateVolume = () => {
     const value = musicSlider.valueAsNumber / 100;
     audio.setMusicVolume(value);
-    const width = CONTROL_W;
+    const width = MENU_W; // the volume plates live in the pause menu
     if (musicFace instanceof HTMLCanvasElement && width) drawVolumePlate(musicFace, width, value, 'MUSIC');
   };
-  musicSlider.addEventListener('input', updateVolume);
+  musicSlider.valueAsNumber = Math.round(save.data.settings.music * 100);
+  musicSlider.addEventListener('input', () => {
+    updateVolume();
+    save.settings({ music: musicSlider.valueAsNumber / 100 });
+  });
   updateVolume();
 }
-const placeVolume = (
-  control: HTMLElement | null,
-  face: HTMLElement | null,
-  slider: HTMLElement | null,
-  label: string,
-  row: number,
-  anchor: { x: number; y: number; w: number },
-  px: number,
-) => {
-  if (!control || !(face instanceof HTMLCanvasElement)) return;
-  if (face.width !== anchor.w) drawVolumePlate(face, anchor.w, slider instanceof HTMLInputElement ? slider.valueAsNumber / 100 : 0, label);
-  control.style.left = `${anchor.x * px}px`;
-  control.style.top = `${(anchor.y - row * (face.height + 2)) * px}px`;
-  control.style.width = `${anchor.w * px}px`;
-  control.style.height = `${face.height * px}px`;
-  face.style.width = `${anchor.w * px}px`;
-  face.style.height = `${face.height * px}px`;
-  control.style.visibility = 'visible';
-};
 const unlockAudio = () => void audio.unlock().catch((e) => console.warn('Audio could not start.', e));
 window.addEventListener('pointerdown', unlockAudio, { once: true, capture: true });
 window.addEventListener('keydown', unlockAudio, { once: true, capture: true });
@@ -163,6 +163,62 @@ document.addEventListener('visibilitychange', () => {
   else game.resume('visibility');
   syncSession();
 });
+// Settings (volumes, full screen, controls): one panel, opened from the landing page and the pause menu.
+const settings = createSettings([audioControl, musicControl], {
+  on: () => save.data.settings.localTime,
+  set: (on) => {
+    save.settings({ localTime: on });
+    if (!chosen && TIME_PARAM === undefined) game.setTime(on ? localHour() : RANDOM_HOUR); // the next flight (and the landing's view) starts then
+  },
+});
+// The pause button (top-right) and menu, P to open; photo mode inside it (src/ui/pause.ts).
+const pauseUi = createPauseUi({
+  // Back to the landing page: keep the story's place, then start the page afresh (the landing shows at once).
+  mainMenu: () => {
+    keepStory();
+    leaving = true;
+    const url = new URL(location.href);
+    url.searchParams.delete('play');
+    location.replace(url);
+  },
+  canPause: () => state.phase === 'playing' || state.phase === 'paused',
+  onPause: () => {
+    game.pause('user');
+    syncSession();
+  },
+  onResume: () => {
+    game.resume('user');
+    syncSession();
+  },
+  settings,
+  hideForPhoto: () => [display.hud.canvas, display.glow.canvas, holdButton, document.getElementById('map-bearing'), document.getElementById('debug')],
+  photo: () => {
+    // The frame at device resolution, with a small Archie mark and the game's address, bottom-right.
+    const view = display.view();
+    const out = document.createElement('canvas');
+    out.width = view.devW;
+    out.height = view.devH;
+    const ctx = out.getContext('2d')!;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(display.ctx.canvas, 0, 0);
+    const k = view.uiScale;
+    const name = label('ARCHIE', [0xe8, 0xdf, 0xc4, 255]);
+    const link = label(GAME_URL.replace('https://', '').replace(/\/$/, '').toUpperCase(), [0xb8, 0xb5, 0xa6, 255]);
+    const plane = scene.sprites.frames[Math.floor(scene.sprites.frames.length / 2)];
+    const w = Math.max(name.width + plane.width / 2 + 3, link.width) + 6;
+    const h = 5 + 2 + 5 + 6;
+    const x0 = Math.floor(view.devW / k) - w - 6;
+    const y0 = Math.floor(view.devH / k) - h - 6;
+    ctx.setTransform(k, 0, 0, k, 0, 0);
+    ctx.fillStyle = 'rgb(20 19 15 / 0.7)';
+    ctx.fillRect(x0, y0, w, h);
+    ctx.drawImage(plane, 0, 0, plane.width, plane.height, x0 + 3, y0 + 2, plane.width / 2, plane.height / 2);
+    ctx.drawImage(name, x0 + 3 + plane.width / 2 + 3, y0 + 3);
+    ctx.drawImage(link, x0 + w - 3 - link.width, y0 + 3 + 5 + 2 + 2);
+    return out;
+  },
+});
+
 // A press that lands on a debug toggle flips it and goes no further (it must not steer the plane).
 window.addEventListener(
   'pointerdown',
@@ -194,6 +250,15 @@ applyFastPlane();
 const startHeading = numberFromUrl('heading', Number.isFinite);
 const plane = createPlane(numberFromUrl('x', Number.isFinite) ?? 0, numberFromUrl('y', Number.isFinite) ?? 0, startHeading !== undefined ? (startHeading * Math.PI) / 180 : hash(state.seed, 41, 7) * 2 * Math.PI);
 const cam = createCamera(plane);
+/** Put the plane (and the camera, and the previous tick used for smoothing) at a world point. */
+const placePlane = (x: number, y: number, heading?: number) => {
+  plane.x = x;
+  plane.y = y;
+  if (heading !== undefined) plane.heading = heading;
+  Object.assign(cam, createCamera(plane));
+  Object.assign(prevPlane, plane);
+  Object.assign(prevCam, cam);
+};
 const aids = createAids(plane, IS_DEV ? 'hold' : 'off');
 // Previous sim tick, for smooth rendering between ticks on high-refresh screens.
 const prevPlane = { ...plane };
@@ -210,7 +275,6 @@ console.log(`Trench style: ${TRENCH_STYLE} (pin one with ?trench=${TRENCH_STYLES
 const loading = document.getElementById('loading');
 const loadingPlane = document.getElementById('loading-plane');
 const loadingText = document.getElementById('loading-text');
-const launchButton = document.getElementById('launch');
 const LOADING_MESSAGES = [
   'CLEAR PROP',
   'ALL CLEAR',
@@ -349,14 +413,7 @@ if (IS_DEV || debugRequested) {
     resume: () => { game.resume(); syncSession(); },
     session: () => game.snapshot(),
     setSpeed: (k) => (speedOverride = k),
-    goto: (x, y, headingDeg) => {
-      plane.x = x;
-      plane.y = y;
-      if (headingDeg !== undefined) plane.heading = (headingDeg * Math.PI) / 180;
-      Object.assign(cam, createCamera(plane));
-      Object.assign(prevPlane, plane);
-      Object.assign(prevCam, cam);
-    },
+    goto: (x, y, headingDeg) => placePlane(x, y, headingDeg === undefined ? undefined : (headingDeg * Math.PI) / 180),
     toggles: toggles.items,
     onToggle,
     complete: () => lastComplete,
@@ -398,13 +455,36 @@ const enterGameMode = () => {
   // );
 };
 /** Take off: the loading screen fades, audio starts, steering unlocks once it has cleared. */
+// The browser's back button (or a back swipe) mid-flight: the first press opens the pause menu instead of
+// leaving (a history entry is held for it); pressing back from there asks the browser to confirm, since
+// leaving loses a Free Fly (Story progress is saved). Closing or reloading the tab asks too. Not in
+// development, where every save reloads the page.
+let guarded = false;
+let leaving = false; // MAIN MENU: leave without asking
+const guardBack = () => {
+  if (guarded) return;
+  guarded = true;
+  history.pushState({ archie: 'flight' }, '');
+  window.addEventListener('popstate', () => {
+    if (state.phase !== 'playing' && state.phase !== 'paused') return;
+    history.pushState({ archie: 'flight' }, ''); // hold the page again
+    if (!pauseUi.isOpen()) pauseUi.open();
+  });
+  if (!IS_DEV) {
+    window.addEventListener('beforeunload', (e) => {
+      if (leaving || (state.phase !== 'playing' && state.phase !== 'paused')) return;
+      keepStory();
+      e.preventDefault();
+    });
+  }
+};
 const launch = () => {
   if (!loading?.isConnected) return;
-  if (navigator.userActivation?.isActive) enterGameMode(); // not in dev's automatic launch: there's no click to allow it
-  loading.classList.remove('ready-to-launch', 'awaiting-launch');
+  if (navigator.userActivation?.isActive) enterGameMode(); // only straight after a click (the landing page's)
   audio.start();
   unlockAudio();
   setPhase('handoff'); // audio and flight begin together; steering waits for the reveal
+  guardBack();
   cancelAnimationFrame(loadingFrame);
   loading.classList.add('done');
   loading.setAttribute('aria-hidden', 'true');
@@ -414,46 +494,76 @@ const launch = () => {
     setPhase('playing');
   }, fadeMs);
 };
+// The landing page's choice is the press that starts the flight (and unlocks the audio): once the world is
+// ready the plane settles to its place and the flight begins, with no second press.
 const show = () => {
   shown = true;
   window.removeEventListener('resize', sizeLoading);
   if (IS_DEV) return launch(); // development goes straight in once everything has loaded
   loading?.classList.add('settling');
-  const settleMs = 900;
-  setTimeout(() => {
-    loading?.classList.add('ready-to-launch'); // the whole white screen works as soon as settling ends
-    setTimeout(() => {
-      if (!loading?.classList.contains('ready-to-launch')) return;
-      loading?.classList.add('awaiting-launch');
-      launchButton?.focus();
-    }, 1000);
-  }, settleMs);
+  setTimeout(launch, 900);
 };
 
-loading?.addEventListener('click', () => {
-  if (loading.classList.contains('ready-to-launch')) launch();
-});
-
-startLoop(
-  (dt) => {
-    if (!game.simulating) {
-      controls.read(); // discard anything held before or pressed during an inactive phase
-      return;
+// The landing page comes first (static, already on screen): STORY, FREE FLY or SETTINGS. The world loads
+// behind it; take-off waits for a choice. `?play` skips it (tools and agents go straight to flight).
+let chosen = false;
+let playMode: LandingChoice = 'free';
+const storyProgress = () => ({ seed: state.seed, day: state.clock.day, hours: state.clock.hours, level: state.level, sortie: state.sortie.number, plane: { x: plane.x, y: plane.y, heading: plane.heading } });
+const landing = wireLanding({
+  skip: new URLSearchParams(location.search).has('play'),
+  onSettings: (back) => settings.open(back),
+  onChoose: (choice) => {
+    playMode = choice;
+    chosen = true;
+    // Story: carry on where the player left off (same world, day, hour and place), if there's a save.
+    const saved = save.data.story;
+    if (choice === 'story' && saved) {
+      game.setTime(saved.hours, saved.day);
+      placePlane(saved.plane.x, saved.plane.y, saved.plane.heading);
     }
-    Object.assign(prevPlane, plane);
-    Object.assign(prevCam, cam);
-    applyFastPlane();
-    updatePlane(plane, applyAids(aids, plane, controls.read()), dt);
-    const holding = String(aids.mode === 'hold');
-    if (holdButton && holdButton.getAttribute('aria-pressed') !== holding) holdButton.setAttribute('aria-pressed', holding);
-    updateCamera(cam, plane, dt);
-    updateInstruments(instruments, plane, dt);
-    const warning = engineWarning(plane);
-    audio.updateEngine({ rpm: instruments.rpm * 2000, rough: warning / 2, bank: plane.bank, heat: plane.heat, boosting: plane.boosting, overheated: plane.overheated });
-    updateSmoke(smoke, plane, warning, dt);
-    game.advance(dt, timeSpeed());
   },
-  (alpha, timing) => {
+});
+// Story progress is kept as you fly (every 10 s) and whenever the page is left or hidden.
+const keepStory = () => {
+  if (chosen && playMode === 'story' && (state.phase === 'playing' || state.phase === 'paused')) save.story(storyProgress());
+};
+setInterval(keepStory, 10_000);
+window.addEventListener('pagehide', keepStory);
+document.addEventListener('visibilitychange', () => document.hidden && keepStory());
+
+// While the landing page is up, its window shows the landscape and its clouds (no plane), drifting slowly
+// south (the view creeps north from the start), and the game itself isn't drawn: it's hidden beneath. The page
+// shows only a loading mark until that view is fully loaded.
+const LANDING_DRIFT = 8; // game px / s
+let landingCtx: CanvasRenderingContext2D | null = null;
+let landingT0 = -1;
+function drawLanding(c: HTMLCanvasElement, at: number) {
+  const view = display.view();
+  pauseUi.layout(view); // the UI pixel size (--ui-px), which the landing page is sized in too
+  const dpr = window.devicePixelRatio || 1;
+  const box = c.parentElement!.getBoundingClientRect();
+  const w = Math.max(1, Math.round(box.width * dpr));
+  const h = Math.max(1, Math.round(box.height * dpr));
+  if (c.width !== w || c.height !== h) {
+    c.width = w;
+    c.height = h;
+    c.style.width = `${w / dpr}px`;
+    c.style.height = `${h / dpr}px`;
+  }
+  landingCtx ??= c.getContext('2d', { alpha: false })!;
+  landingCtx.imageSmoothingEnabled = false; // (resizing resets it)
+  if (landingT0 < 0) landingT0 = at;
+  const y = plane.y - ((at - landingT0) / 1000) * LANDING_DRIFT;
+  // The bare landscape: no farms or buildings of any kind, no front (the game's own render sets these back).
+  scene.features.structures = false;
+  scene.features.military = false;
+  scene.features.frontLine = false;
+  if (drawTerrain(landingCtx, view, scene, plane.x, y, sunNow(state.clock), state.clock.day, (at - landingT0) / 1000)) landing.ready();
+}
+
+function render(alpha: number, timing: RenderTiming) {
+    const terrain = landing.terrain();
+    if (terrain) return drawLanding(terrain, timing.at);
     // Tiles are generated in Web Workers and appear when ready (see render/tilegen.ts).
     prof.start(timing);
     const p = blend(prevPlane, plane, alpha, ['heading']);
@@ -470,6 +580,7 @@ startLoop(
     // The HUD has its own canvas, stacked over the game's, so the world canvas ends on the light of the hour
     // (drawing anything on it after the grade forces the browser to render the frame early: ~0.5 ms at dusk).
     const hudCtx = display.hud;
+    pauseUi.layout(view);
     hudCtx.setTransform(1, 0, 0, 1, 0, 0);
     hudCtx.clearRect(0, 0, view.devW, view.devH);
     // Radium glow (dusk to dawn only): its own layer, faded in by CSS opacity, so it isn't dimmed with the HUD.
@@ -504,11 +615,6 @@ startLoop(
     const fastTime = controlsAnchor(board.banks[1], 'engine'); // the volume plates above the engine clump; Hold above the flight clump
     if (fastTime) {
       const px = view.uiScale / (window.devicePixelRatio || 1);
-      const firstRow = 0;
-      if (layoutChanged) {
-        placeVolume(audioControl, volumeFace, volumeSlider, 'ENGINE', firstRow, fastTime, px);
-        placeVolume(musicControl, musicFace, musicSlider, 'MUSIC', firstRow + 1, fastTime, px);
-      }
       const holdAnchor = controlsAnchor(board.banks[0], 'hold');
       if (holdButton instanceof HTMLButtonElement && holdFace instanceof HTMLCanvasElement) {
         const holding = holdButton.getAttribute('aria-pressed') === 'true';
@@ -541,8 +647,36 @@ startLoop(
     }
     prof.mark('hud');
     prof.end();
-    if (complete && !shown) show();
+    if (complete && !shown && chosen) show(); // take-off once the world is ready and a mode is chosen
+}
+// Resizing (full screen in or out, rotating a phone, dragging the window) clears the canvases. While the
+// game runs the next frame repaints them; paused, the loop draws nothing, so repaint once here, after the
+// display has re-fitted, so the world, the HUD and its controls are right behind the menu.
+const repaintIfPaused = () => requestAnimationFrame(() => {
+  if (state.phase === 'paused') render(1, { at: performance.now(), gap: 0, simulationMs: 0 });
+});
+window.addEventListener('resize', repaintIfPaused);
+document.addEventListener('fullscreenchange', repaintIfPaused);
+startLoop(
+  (dt) => {
+    if (!game.simulating) {
+      controls.read(); // discard anything held before or pressed during an inactive phase
+      return;
+    }
+    Object.assign(prevPlane, plane);
+    Object.assign(prevCam, cam);
+    applyFastPlane();
+    updatePlane(plane, applyAids(aids, plane, controls.read()), dt);
+    const holding = String(aids.mode === 'hold');
+    if (holdButton && holdButton.getAttribute('aria-pressed') !== holding) holdButton.setAttribute('aria-pressed', holding);
+    updateCamera(cam, plane, dt);
+    updateInstruments(instruments, plane, dt);
+    const warning = engineWarning(plane);
+    audio.updateEngine({ rpm: instruments.rpm * 2000, rough: warning / 2, bank: plane.bank, heat: plane.heat, boosting: plane.boosting, overheated: plane.overheated });
+    updateSmoke(smoke, plane, warning, dt);
+    game.advance(dt, timeSpeed());
   },
+  render,
   60,
   () => state.phase !== 'paused',
 );
