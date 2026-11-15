@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { landAt } from './ground.ts';
-import { frontInfo, FRONTS } from './military.ts';
+import { frontInfo, FRONTS } from './fronts.ts';
 import { structureAt, structuresNear } from './structures.ts';
 
 const SEED = 1915;

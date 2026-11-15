@@ -39,7 +39,8 @@ The regression check reports every subsystem's before/after timing and fails whe
 Front map (internal tool for auditing and tweaking the fronts; options in [technical design](docs/TECH.md) §7b):
 
 ```sh
-npm run frontmap                      # debug/1.png … 5.png: five seeds, the front at the plane's start and its trenches
+npm run frontmap                      # debug/1.png … 5.png: five seeds, a zoomed cross-section of the front at the plane's start
+npm run frontmap -- --whole           # the whole start front instead
 npm run frontmap -- --seeds=1,2,3,4,5 # pin the seeds (the previous run is kept in debug/backup/)
 npm run frontmap -- --size=320000     # a wide area of many fronts instead (slow: minutes)
 ```

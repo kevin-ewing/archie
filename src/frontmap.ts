@@ -37,7 +37,8 @@ import { deflateSync } from 'node:zlib';
 import { performance } from 'node:perf_hooks';
 import { tileStamp } from './world/generate.ts';
 import { CHUNK, groundAt, landAt, type GroundStamp, type RGB as Colour } from './world/ground.ts';
-import { DEV, FRONTS, frontField, frontPoint, frontsNear, nearest, territoryAt, TRENCH_STYLES, type Front, type TrenchStyle } from './world/military.ts';
+import { FRONTS, frontField, frontPoint, frontsNear, nearest, territoryAt, type Front } from './world/fronts.ts';
+import { DEV, TRENCH_STYLES, type TrenchStyle } from './world/settings.ts';
 
 const opt = new Map(process.argv.slice(2).map((a) => a.replace(/^--/, '').split('=') as [string, string?]).map(([k, v]) => [k, v ?? 'true']));
 const num = (k: string, d: number) => (opt.has(k) ? Number(opt.get(k)) : d);
@@ -106,7 +107,7 @@ function crossSection(seed: number) {
   const start = fronts.find((f) => f.territory === territoryAt(seed, 0, 0).id);
   if (!start) return null;
   const s0 = nearest(seed, fronts, 0, 0)?.s ?? 0;
-  const half = Math.round(start.nml + 12 + 3 * 75 + 140); // past the furthest wall on each side, plus a margin
+  const half = Math.round(start.nml + 12 + 3 * 75 + 260); // past the furthest wall on each side and the trenches back across them
   const along = num('along', 500);
   const w = 2 * half * ZOOM;
   const h = along * ZOOM;

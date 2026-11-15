@@ -5,7 +5,7 @@
 
 import { hash, valueNoise } from '../core/noise.ts';
 import { CHUNK } from './ground.ts';
-import { DEV } from './military.ts';
+import { DEV } from './settings.ts';
 import { structuresNear } from './structures.ts';
 
 /** Minutes from sunset (negative = before) during which any window may be lit. */

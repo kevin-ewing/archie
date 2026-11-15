@@ -14,7 +14,7 @@ import { cloudChunk } from './world/clouds.ts';
 import { CHUNK, groundChunk, HEIGHT_STEPS } from './world/ground.ts';
 import { shadeTile } from './world/shading.ts';
 import { generateTile } from './world/generate.ts';
-import { frontPoint, frontsNear } from './world/military.ts';
+import { frontPoint, frontsNear } from './world/fronts.ts';
 import { structuresNear } from './world/structures.ts';
 
 type Timing = { median: number; p95: number };

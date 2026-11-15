@@ -6,6 +6,7 @@ Follow **[AGENTS.md](AGENTS.md)** (Ponytail) for all code. Project-specific rule
 - `docs/MECHANICS.md`: what the game does
 - `docs/STORY.md`: narrative bible
 - `docs/TECH.md`: stack, module layout, performance rules
+- `docs/TRENCHES.md`: how British/French and German trenches differed (for drawing the fronts)
 
 ## Modularity, the Ponytail way
 Kevin wants clean modules, and Ponytail wants no speculative code. Both hold:
@@ -20,5 +21,6 @@ Kevin wants clean modules, and Ponytail wants no speculative code. Both hold:
 - World graphics are bitmaps drawn with `drawImage`. Never fill vector shapes under rotation (they antialias). One rotated image per layer (see `docs/TECH.md` §2).
 - Simulation never reads from rendering; rendering only reads simulation state.
 - Everything random goes through `src/core/noise.ts` (seeded) so worlds are reproducible.
+- World layers are generated in order: front plan (`world/fronts.ts`) → landscape (`ground.ts`) → farms (`structures.ts`) → stamps (`generate.ts`). A layer reads only earlier layers, never a later one.
 - Historical claims in docs stay marked **[VERIFY]** until checked.
 - Non-trivial logic ships with one runnable check: `npm run check`.

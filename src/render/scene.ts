@@ -79,7 +79,7 @@ export function createScene(seed: number, density = 1): Scene {
   const planeSprites = createPlaneSprites();
   // A ground tile's version: the feature toggles plus that tile's damage count. A change regenerates
   // just the tiles affected (old ones stay on screen until the new ones arrive).
-  const groundVersion = (cx: number, cy: number) => (scene.features.structures ? 1 : 0) + (scene.features.military ? 2 : 0) + 4 * damageVersion(scene.damage, cx, cy);
+  const groundVersion = (cx: number, cy: number) => (scene.features.structures ? 1 : 0) + (scene.features.military ? 2 : 0) + (scene.features.frontLine ? 4 : 0) + 8 * damageVersion(scene.damage, cx, cy);
   const scene: Scene = {
     seed,
     features: { structures: false, military: true, density },

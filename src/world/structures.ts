@@ -26,8 +26,10 @@
 // Scale: 1 world px ≈ 0.4 m.
 
 import { hash, valueNoise } from '../core/noise.ts';
-import { DIRT, dirtAt, landAt, type RGB } from './ground.ts';
-import { DEV, FRONTS, frontInfo, type Stamp } from './military.ts';
+import { DIRT, dirtAt, isWater, landAt, type RGB } from './ground.ts';
+import { FRONTS, frontInfo } from './fronts.ts';
+import { type Stamp } from './military.ts';
+import { DEV } from './settings.ts';
 
 const rgb = (hex: number): RGB => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
 const mod = (a: number, n: number) => ((a % n) + n) % n;
@@ -616,16 +618,36 @@ function tracksFromCell(seed: number, i: number, j: number): Track[] {
       out.push(track(p.x, p.y, q.x, q.y, Math.floor(hash(seed + 410, p.id % 1e6, q.id % 1e6) * 1e9), false));
     };
     const r = rng(seed, s.id);
-    if (others[0] && r(150) < 0.9) link(others[0].t);
-    if (others[1] && r(151) < 0.4) link(others[1].t);
+    if (others[0] && r(150) < 0.9 && dryRun(seed, s.x, s.y, others[0].t.x, others[0].t.y) === 1) link(others[0].t);
+    if (others[1] && r(151) < 0.4 && dryRun(seed, s.x, s.y, others[1].t.x, others[1].t.y) === 1) link(others[1].t);
     if (!out.length) {
       const a = r(152) * 2 * Math.PI;
-      const len = s.core + 60 + r(153) * 140;
-      out.push(track(s.x, s.y, s.x + Math.cos(a) * len, s.y + Math.sin(a) * len, s.id, true));
+      const want = s.core + 60 + r(153) * 140;
+      const len = want * dryRun(seed, s.x, s.y, s.x + Math.cos(a) * want, s.y + Math.sin(a) * want); // stops short of any water
+      if (len > s.core + 30) out.push(track(s.x, s.y, s.x + Math.cos(a) * len, s.y + Math.sin(a) * len, s.id, true));
     }
   }
   trackCache.set(key, out);
   return out;
+}
+
+/**
+ * How much of the straight run a → b is dry (0 … 1, 1 = all of it): the share before it first meets
+ * water, looking along its line and either side of it (its wander and widest fan), with a little margin
+ * so a track never touches a shore. Sampled every 12 px when a track is planned (cached with it).
+ */
+function dryRun(seed: number, ax: number, ay: number, bx: number, by: number): number {
+  const len = Math.hypot(bx - ax, by - ay);
+  const nx = -(by - ay) / len;
+  const ny = (bx - ax) / len;
+  const n = Math.ceil(len / 12);
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    for (const o of [-14, 0, 14]) {
+      if (isWater(seed, ax + (bx - ax) * t + nx * o, ay + (by - ay) * t + ny * o)) return Math.max(0, (i - 2) / n);
+    }
+  }
+  return 1;
 }
 
 /** Every track that could touch the world rectangle [x0, x1) × [y0, y1). */

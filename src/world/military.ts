@@ -17,29 +17,16 @@
 // Scale: 1 world px ≈ 0.4 m. British on one side of each line, German on the other.
 
 import { cellular, cellularField, fbm, hash, valueNoise, type Cell } from '../core/noise.ts';
-import { dirtAt, type RGB } from './ground.ts';
+import { dirtAt, WATER, type RGB } from './ground.ts';
+import { devastationAt, FRONTS, frontField, nearest, type Front, type FrontCoords } from './fronts.ts';
+import { DEV } from './settings.ts';
 
 export type Stamp = readonly [RGB, number]; // colour, height (world units, like ground heights)
 
-/**
- * Development density: `density` > 1 packs the world's additions closer together for local debugging
- * (fronts and farms `density`× as frequent). Set per tile request from the scene's features (see
- * world/generate.ts); 1 in production.
- */
-/**
- * Fire-trench styles (the front is being built one part at a time; see `only` in world/generate.ts):
- *  - traversed:  dug in, a square wave of fire bays staggered by traverses (the standard design).
- *  - hasty:      a shallow, roughly straight ditch with a low spoil bank and the odd sandbag (newly taken
- *                ground, early war).
- */
-export const TRENCH_STYLES = ['traversed', 'hasty'] as const;
-export type TrenchStyle = (typeof TRENCH_STYLES)[number];
-
-/** Per-request settings: development density, whether the fronts exist (when off, buildings ignore
- *  them), only the trench lines (development: everything else on the front is left out), and their style. */
-export const DEV: { density: number; fronts: boolean; onlyTrenches: boolean; trenchStyle: TrenchStyle; frontLine: boolean } = { density: 1, fronts: true, onlyTrenches: false, trenchStyle: 'traversed', frontLine: false };
 /** Development: the front's own line (its centre, u = 0), drawn as a thin red line of pixels. */
 const FRONT_LINE: RGB = [230, 30, 30];
+/** Development: which side is whose, a line behind each side's first level of trenches (u < 0 British). */
+const SIDE_LINE: Record<-1 | 1, RGB> = { [-1]: [40, 110, 240], [1]: [245, 200, 30] }; // British blue, German yellow
 
 const rgb = (hex: number): RGB => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
 const pick = <T>(list: readonly T[], v: number): T => list[Math.min(list.length - 1, Math.max(0, Math.floor(v * list.length)))];
@@ -49,7 +36,7 @@ const M = {
   clod: rgb(0x3a2e22),
   bowl: rgb(0x3a2e22),
   rim: [rgb(0x5a4733), rgb(0x4f3e2c)], // muddy, not dry
-  pool: [rgb(0x3c4642), rgb(0x46524c)],
+  pool: WATER.pool, // (ground.ts knows these, so they can sparkle)
   stump: rgb(0x2c241b),
   boards: [rgb(0x6e5a3e), rgb(0x5c4a33)],
   bags: [rgb(0xa69a7a), rgb(0x8e8366), rgb(0x9a8e70)],
@@ -71,185 +58,6 @@ const M = {
 };
 const H = { boards: 0, bags: 3, relic: 1, spoil: 0.6, wire: 0.8, post: 1.5, earthwork: 2.5, gun: 1.5, net: 2, stump: 5, rim: 1.2, mud: 0.4, tent: 3, hut: 4, crate: 2, wreck: 2.5 };
 const smooth = (v: number) => (v <= 0 ? 0 : v >= 1 ? 1 : v * v * (3 - 2 * v));
-
-export const FRONTS = {
-  region: 130000, // territory size (÷ √density): the world is split into territories, each holding at most one front (big enough that the front mostly fits; at higher density, a front's territory edge cuts it shorter where they meet)
-  chance: 0.6, // share of territories that hold one: few and far between, with wide open country between
-  length: [48000, 76000], // a front's length along its curve, px (tens of km: a long-running line); the same at any density
-  border: 0.06, // a front's works fade out over this × the territory size before its territory's edge
-  noMansLand: [150, 260], // half-width range
-  battery: 1450, // batteries' distance behind their line
-  camps: [2100, 2600], // tented and hutted camps, behind the guns
-  reach: 2800, // nothing military beyond this distance from a line
-  fade: 7000, // over how far a front eases out at its ends: its lines draw together and thin out, its zone narrows to a rounded tip
-  // FOR NOW, while the front's look is being worked on: a front always runs right through the plane's start
-  // (the world origin), whichever territory that's in. Set false to go back to fronts only where they fall.
-  atStart: true,
-};
-
-export type Front = {
-  id: number;
-  x: number; // centre
-  y: number;
-  tx: number; // unit vector along the line
-  ty: number;
-  half: number; // half-length
-  nml: number; // no-man's land half-width
-  territory: number; // the id of the territory it lives in (see territoryAt)
-};
-
-const regionSize = () => FRONTS.region / Math.sqrt(DEV.density);
-
-/**
- * Territories: the world is partitioned by a cellular noise (one cell per region, its borders warped so
- * they wander), and each front lives in exactly one territory: its works only appear inside it and fade
- * out approaching its edge. So fronts never overlap or cross, and no front ever needs comparing with
- * another: a pixel just looks up its territory. A territory holds a front when its id < FRONTS.chance;
- * the front is centred on the territory's own point.
- */
-const TERRITORY_SEED = 238; // cellular(seed + 238): points from hash(seed + 238 / 239), ids from hash(seed + 240)
-/**
- * Where the world origin (the plane's start) sits in the territory pattern. With FRONTS.atStart the
- * pattern is shifted so the origin lands right on cell (0, 0)'s own point: deep inside its territory,
- * as far from any edge as a territory's middle, so the front there is at full strength under the plane.
- */
-function territoryOrigin(seed: number): [number, number] {
-  if (!FRONTS.atStart) return [0, 0];
-  const size = regionSize();
-  return [hash(seed + TERRITORY_SEED, 0, 0) * size, hash(seed + TERRITORY_SEED + 1, 0, 0) * size];
-}
-export function territoryAt(seed: number, x: number, y: number): { id: number; edge: number } {
-  const size = regionSize();
-  const [ox, oy] = territoryOrigin(seed);
-  const px = x + ox;
-  const py = y + oy;
-  const w = size * 0.08; // warp: the borders wander instead of running straight (none at the origin's own point)
-  const warp = (k: number, ax: number, ay: number) => (valueNoise(seed + k, ax / (size * 0.4), ay / (size * 0.4)) - 0.5) * 2 * w;
-  const wx = px + warp(236, px, py) - warp(236, ox, oy);
-  const wy = py + warp(237, px, py) - warp(237, ox, oy);
-  const c = cellular(seed + TERRITORY_SEED, wx, wy, size);
-  return { id: c.id, edge: (c.f2 - c.f1) / 2 }; // edge: roughly the distance to the territory's border
-}
-/**
- * A front's line: a curve that turns as it goes (its heading is the sum of a few smooth bends), sampled
- * every SEG px along its length. Each front takes one of a few shapes, at random sizes:
- *  - C:      one broad bend of 150–270°, a C or a horseshoe;
- *  - hook:   a long run that curls round hard (110–200°) near one end;
- *  - S:      two bends the opposite ways;
- *  - wander: four gentler bends either way.
- * None can cross itself, or come back near itself (it would squeeze its own trenches): an S or a wander
- * never points more than 160° from where it started, and every curve is checked once when it's made,
- * its bends eased a little and tried again until no two parts of it far apart along the line come
- * close on the ground. No short meander on the line itself: its tightest bends stay km wide, so the
- * walls either side (up to ~500 px out) never fold over on the inside of one; each wall wanders on its
- * own instead (see WALLS). The middle of the curve sits on the
- * territory's own point.
- */
-const SEG = 64;
-type Curve = { x: Float64Array; y: Float64Array; nx: Float64Array; ny: Float64Array; box: [number, number, number, number] };
-const curves = new WeakMap<Front, Curve>();
-const DEG = Math.PI / 180;
-function curveOf(seed: number, f: Front): Curve {
-  const known = curves.get(f);
-  if (known) return known;
-  const id = seed + 247 + (f.id % 997);
-  const r = (k: number) => hash(id, k, 11);
-  const sign = (k: number) => (r(k) < 0.5 ? -1 : 1);
-  // Bends: [where along it (0…1), how wide (0…1 of its length), how far it turns (radians)].
-  let bends: [number, number, number][];
-  const kind = r(0);
-  if (kind < 0.35) bends = [[0.5 + (r(1) - 0.5) * 0.3, 0.6 + r(2) * 0.4, sign(3) * (150 + r(4) * 120) * DEG]]; // C
-  else if (kind < 0.55) {
-    const t = sign(5) < 0 ? 0.18 : 0.82;
-    const turn = sign(3) * (110 + r(4) * 90) * DEG;
-    bends = [[t, 0.2 + r(2) * 0.15, turn], [0.5, 0.8, Math.sign(turn) * r(6) * 40 * DEG]]; // hook (both the same way)
-  } else if (kind < 0.75) {
-    const turn = (60 + r(4) * 60) * DEG;
-    bends = [[0.3, 0.3 + r(2) * 0.15, sign(3) * turn], [0.7, 0.3 + r(1) * 0.15, -sign(3) * turn * (0.7 + r(6) * 0.5)]]; // S
-  } else bends = [0.15, 0.4, 0.6, 0.85].map((t, k) => [t, 0.25, sign(10 + k) * (20 + r(20 + k) * 50) * DEG]); // wander
-  // One or two more bends on top, anywhere along it: the same way round for a C or a hook (so it stays one
-  // arc), either way otherwise. (Anything that would bring it back near itself is eased below.)
-  const way = Math.sign(bends[0][2]);
-  const curl = kind < 0.55;
-  for (let e = 0; e < 1 + Math.floor(r(30) * 2); e++) bends.push([0.1 + r(31 + e) * 0.8, 0.15 + r(33 + e) * 0.2, (curl ? way : sign(35 + e)) * (30 + r(37 + e) * 50) * DEG]);
-  const n = Math.max(2, Math.round((2 * f.half) / SEG) + 1);
-  const turned = (t: number) => bends.reduce((a, [at, w, turn]) => a + turn * smooth((t - at) / w + 0.5), 0);
-  // Keep a back-and-forth line from ever doubling back over itself (one-way bends are safe as they are).
-  let lo = 0;
-  let hi = 0;
-  for (let k = 0; k < n; k++) (lo = Math.min(lo, turned(k / (n - 1)))), (hi = Math.max(hi, turned(k / (n - 1))));
-  const oneWay = bends.every(([, , t]) => Math.sign(t) === Math.sign(bends[0][2]));
-  const squeeze = !oneWay && hi - lo > 160 * DEG ? (160 * DEG) / (hi - lo) : 1;
-  const x = new Float64Array(n);
-  const y = new Float64Array(n);
-  const nx = new Float64Array(n);
-  const ny = new Float64Array(n);
-  const trace = (sq: number) => {
-    const heading0 = Math.atan2(f.ty, f.tx) - turned(0.5) * sq; // so the line's middle runs along the front's angle
-    let px = 0;
-    let py = 0;
-    for (let k = 0; k < n; k++) {
-      const a = heading0 + turned(k / (n - 1)) * sq;
-      x[k] = px;
-      y[k] = py;
-      nx[k] = -Math.sin(a); // normal: + toward the German side
-      ny[k] = Math.cos(a);
-      px += Math.cos(heading0 + turned((k + 0.5) / (n - 1)) * sq) * SEG;
-      py += Math.sin(heading0 + turned((k + 0.5) / (n - 1)) * sq) * SEG;
-    }
-  };
-  // Never back near itself: parts more than FAR apart along the line stay GAP apart on the ground.
-  const FAR = Math.round(6000 / SEG); // (a whole number of samples)
-  const GAP2 = (2 * (f.nml + 500)) ** 2;
-  const clear = () => {
-    for (let i = 0; i < n; i += 4) for (let j = i + FAR; j < n; j += 4) if ((x[i] - x[j]) ** 2 + (y[i] - y[j]) ** 2 < GAP2) return false;
-    return true;
-  };
-  let sq = squeeze;
-  trace(sq);
-  for (let tries = 0; tries < 12 && !clear(); tries++) trace((sq *= 0.8)); // ponytail: O(n²/16) once per front (~10k checks); fine at a few hundred points
-  // Centre the curve's middle on the front's point.
-  const m = Math.floor(n / 2);
-  const ox = f.x - x[m];
-  const oy = f.y - y[m];
-  const box: Curve['box'] = [Infinity, Infinity, -Infinity, -Infinity];
-  for (let k = 0; k < n; k++) {
-    x[k] += ox;
-    y[k] += oy;
-    box[0] = Math.min(box[0], x[k]);
-    box[1] = Math.min(box[1], y[k]);
-    box[2] = Math.max(box[2], x[k]);
-    box[3] = Math.max(box[3], y[k]);
-  }
-  const c = { x, y, nx, ny, box };
-  curves.set(f, c);
-  return c;
-}
-
-/** The point on a front's curve nearest to (x, y), as s (along, from −half) and u (across: + German side),
- *  searching segments [k0, k1). */
-function onCurve(c: Curve, f: Front, x: number, y: number, k0 = 0, k1 = c.x.length - 1) {
-  let best = Infinity;
-  let bk = 0;
-  let bt = 0;
-  for (let k = k0; k < k1; k++) {
-    const ax = c.x[k];
-    const ay = c.y[k];
-    const dx = c.x[k + 1] - ax;
-    const dy = c.y[k + 1] - ay;
-    const len2 = dx * dx + dy * dy;
-    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / len2));
-    const ex = x - ax - dx * t;
-    const ey = y - ay - dy * t;
-    const d = ex * ex + ey * ey;
-    if (d < best) (best = d), (bk = k), (bt = t);
-  }
-  const qx = c.x[bk] + (c.x[bk + 1] - c.x[bk]) * bt;
-  const qy = c.y[bk] + (c.y[bk + 1] - c.y[bk]) * bt;
-  const nx = c.nx[bk] + (c.nx[bk + 1] - c.nx[bk]) * bt;
-  const ny = c.ny[bk] + (c.ny[bk + 1] - c.ny[bk]) * bt;
-  return { s: -f.half + (bk + bt) * SEG, u: (x - qx) * nx + (y - qy) * ny };
-}
 
 // A front's meander and its trenches' small wobble only change over hundreds of px along the line, so
 // they're sampled every STEP px (memoised on the front, in plain arrays) and interpolated, instead of
@@ -277,171 +85,20 @@ function slow(seed: number, f: Front, kind: 0 | 1, s: number): number {
   return a0 + (at(k + 1) - a0) * t;
 }
 
-const frontCache = new Map<string, Front | null>();
-
-function frontInRegion(seed: number, i: number, j: number): Front | null {
-  const key = `${seed},${DEV.density},${i},${j}`;
-  if (frontCache.has(key)) return frontCache.get(key)!;
-  if (frontCache.size > 5000) frontCache.clear();
-  let f: Front | null = null;
-  const territory = hash(seed + TERRITORY_SEED + 2, i, j); // cell (i, j)'s id, as cellular gives it
-  const atStart = FRONTS.atStart && i === 0 && j === 0; // the territory the plane starts in (see territoryOrigin)
-  if (territory < FRONTS.chance || atStart) {
-    const size = regionSize();
-    const a = hash(seed + 243, i, j) * Math.PI;
-    const [lo, hi] = FRONTS.length;
-    f = {
-      id: Math.floor(hash(seed + 244, i, j) * 1e9),
-      territory,
-      x: (i + hash(seed + TERRITORY_SEED, i, j)) * size - territoryOrigin(seed)[0], // the territory's own point (the plane's start, for cell (0, 0) with atStart)
-      y: (j + hash(seed + TERRITORY_SEED + 1, i, j)) * size - territoryOrigin(seed)[1],
-      tx: Math.cos(a),
-      ty: Math.sin(a),
-      half: (lo + (hi - lo) * hash(seed + 245, i, j)) / 2, // density only makes fronts more frequent, never smaller
-      nml: FRONTS.noMansLand[0] + (FRONTS.noMansLand[1] - FRONTS.noMansLand[0]) * hash(seed + 246, i, j),
-    };
-  }
-  frontCache.set(key, f);
-  return f;
+/** Dug earth is speckled with dark clods and wet mud (in small clumps), like the churned ground round it:
+ *  that colour at x, y, about `chance` of the time, else null. Sparse on the bank and the middle of the
+ *  spoil (mostly bare dug dirt there), thickening toward the spoil's outer edge where it meets the ground. */
+const SPECKLE = { bank: 0.12, spoil: [0.15, 0.5] };
+function speckle(seed: number, x: number, y: number, chance: number): RGB | null {
+  if (hash(seed + 213, x, y) >= chance + (valueNoise(seed + 214, x / 4, y / 4) - 0.5) * 0.5) return null;
+  return hash(seed + 215, x, y) < 0.3 ? M.clod : pick(M.mud, valueNoise(seed + 212, x / 3, y / 3));
 }
-
-/** Every front whose zone (line ± reach) could touch the rectangle [x0, x1) × [y0, y1). */
-export function frontsNear(seed: number, x0: number, y0: number, x1: number, y1: number): Front[] {
-  const size = regionSize();
-  const pad = FRONTS.length[1] / 2 + FRONTS.reach; // a curve stays within its half-length of its middle
-  const out: Front[] = [];
-  const [ox, oy] = territoryOrigin(seed); // regions are counted in the (shifted) territory pattern
-  for (let j = Math.floor((y0 + oy - pad) / size); j <= Math.floor((y1 + oy + pad) / size); j++) {
-    for (let i = Math.floor((x0 + ox - pad) / size); i <= Math.floor((x1 + ox + pad) / size); i++) {
-      const f = frontInRegion(seed, i, j);
-      if (!f) continue;
-      // The rectangle against the curve's bounding box, grown by the zone's reach.
-      const [bx0, by0, bx1, by1] = curveOf(seed, f).box;
-      const r = FRONTS.reach;
-      if (x1 > bx0 - r && x0 < bx1 + r && y1 > by0 - r && y0 < by1 + r) out.push(f);
-    }
-  }
-  return out;
-}
-
-/** How fully a front is there at s along it: 1 along most of its length, easing to 0 over FRONTS.fade at its ends. */
-const endAt = (f: Front, s: number) => smooth((f.half - Math.abs(s)) / FRONTS.fade);
-/** Zone and works narrow toward the ends, to a rounded tip (and toward a territory's edge). */
-const within = (u: number, end: number) => end > 0 && Math.abs(u) <= FRONTS.reach * Math.sqrt(end);
-
-/** A point in a front's own coordinates: s along its curve, u across it (+ toward the German side), and
- *  `end` (see endAt). Exact: searches the whole curve (for single points; tiles use frontField). */
-function frontCoords(seed: number, f: Front, x: number, y: number) {
-  const { s, u } = onCurve(curveOf(seed, f), f, x, y);
-  return { s, u, end: endAt(f, s), f };
-}
-
-/** The world point at (s along, u across) a front (the inverse of frontCoords; for tests and tools). */
-export function frontPoint(seed: number, f: Front, s: number, u: number): { x: number; y: number } {
-  const c = curveOf(seed, f);
-  const p = Math.max(0, Math.min(c.x.length - 1.000001, (s + f.half) / SEG));
-  const k = Math.floor(p);
-  const t = p - k;
-  const lerp = (a: Float64Array) => a[k] + (a[k + 1] - a[k]) * t;
-  return { x: lerp(c.x) + lerp(c.nx) * u, y: lerp(c.y) + lerp(c.ny) * u };
-}
-
-/** The coordinates of the front whose territory a point is in, or null if there's none or it doesn't reach (exported for src/frontmap.ts). */
-export function nearest(seed: number, fronts: readonly Front[], x: number, y: number) {
-  // Only the front of the territory this point is in (at most one), fading out towards its border.
-  const t = territoryAt(seed, x, y);
-  const f = fronts.find((g) => g.territory === t.id);
-  if (!f) return null;
-  const c = frontCoords(seed, f, x, y);
-  c.end *= smooth(t.edge / (FRONTS.border * regionSize()));
-  return within(c.u, c.end) ? c : null;
-}
-
-export type FrontCoords = { s: number; u: number; end: number; f: Front };
-/**
- * `nearest` for every point of a tile [x0, x1) × [y0, y1), cheaply: the front coordinates are found
- * exactly on a world-aligned 8-px grid (territory, then only the nearby stretch of that front's curve)
- * and interpolated between. Smooth everywhere a front's works are, so it matches `nearest` there.
- * The result object is reused by the next call (it's per pixel, in the hot loop): read it, don't keep it.
- */
-export function frontField(seed: number, fronts: readonly Front[], x0: number, y0: number, x1: number, y1: number): (x: number, y: number) => FrontCoords | null {
-  const G = 8;
-  const i0 = Math.floor(x0 / G);
-  const j0 = Math.floor(y0 / G);
-  const ni = Math.floor((x1 - 1) / G) + 2 - i0;
-  const nj = Math.floor((y1 - 1) / G) + 2 - j0;
-  const S = new Float64Array(ni * nj);
-  const U = new Float64Array(ni * nj);
-  const E = new Float64Array(ni * nj);
-  const F = new Int16Array(ni * nj).fill(-1);
-  // The stretch of each front's curve that can reach this tile.
-  const near = fronts.map((f) => {
-    const c = curveOf(seed, f);
-    const r = FRONTS.reach + G * 2;
-    let k0 = -1;
-    let k1 = -1;
-    for (let k = 0; k < c.x.length; k++) {
-      if (c.x[k] > x0 - r && c.x[k] < x1 + r && c.y[k] > y0 - r && c.y[k] < y1 + r) {
-        if (k0 < 0) k0 = Math.max(0, k - 1);
-        k1 = Math.min(c.x.length - 1, k + 1);
-      }
-    }
-    return { c, k0, k1 };
-  });
-  for (let j = 0; j < nj; j++) {
-    for (let i = 0; i < ni; i++) {
-      const x = (i0 + i) * G;
-      const y = (j0 + j) * G;
-      const t = territoryAt(seed, x, y);
-      const fi = fronts.findIndex((g) => g.territory === t.id);
-      if (fi < 0 || near[fi].k0 < 0) continue;
-      const f = fronts[fi];
-      const { s, u } = onCurve(near[fi].c, f, x, y, near[fi].k0, near[fi].k1);
-      const k = j * ni + i;
-      S[k] = s;
-      U[k] = u;
-      E[k] = endAt(f, s) * smooth(t.edge / (FRONTS.border * regionSize()));
-      F[k] = fi;
-    }
-  }
-  const out: FrontCoords = { s: 0, u: 0, end: 0, f: fronts[0] };
-  return (x, y) => {
-    const fx = x / G - i0;
-    const fy = y / G - j0;
-    const i = Math.min(ni - 2, Math.max(0, Math.floor(fx)));
-    const j = Math.min(nj - 2, Math.max(0, Math.floor(fy)));
-    const k = j * ni + i;
-    const fi = F[k];
-    if (fi < 0 || F[k + 1] !== fi || F[k + ni] !== fi || F[k + ni + 1] !== fi) return null; // at a territory's edge (faded out there anyway)
-    const tx = fx - i;
-    const ty = fy - j;
-    // Bilinear, written out (no closure or object made per pixel).
-    const u = (U[k] * (1 - tx) + U[k + 1] * tx) * (1 - ty) + (U[k + ni] * (1 - tx) + U[k + ni + 1] * tx) * ty;
-    const end = (E[k] * (1 - tx) + E[k + 1] * tx) * (1 - ty) + (E[k + ni] * (1 - tx) + E[k + ni + 1] * tx) * ty;
-    if (!within(u, end)) return null;
-    out.s = (S[k] * (1 - tx) + S[k + 1] * tx) * (1 - ty) + (S[k + ni] * (1 - tx) + S[k + ni + 1] * tx) * ty;
-    out.u = u;
-    out.end = end;
-    out.f = fronts[fi];
-    return out;
-  };
-}
-
-/** How shell-torn the ground is, 0 … 1: total in no-man's land, fading out behind the lines and at a front's ends. */
-const devastationAt = (seed: number, x: number, y: number, u: number, end: number) =>
-  smooth((640 - Math.abs(u)) / 480) * end * (0.8 + 0.2 * valueNoise(seed + 201, x / 90, y / 90));
-
-/** For placing other things: distance to the nearest front line (Infinity if none) and the devastation. */
-export function frontInfo(seed: number, x: number, y: number): { u: number; dev: number; nml: number } {
-  const n = nearest(seed, frontsNear(seed, x, y, x + 1, y + 1), x, y);
-  return n ? { u: Math.abs(n.u) / Math.max(0.3, n.end), dev: devastationAt(seed, x, y, n.u, n.end), nml: n.f.nml } : { u: Infinity, dev: 0, nml: 0 };
-}
-
 /** Spoil: the earth thrown up beside a trench, a band of worn dirt fraying out into the ground. */
 function spoil(seed: number, x: number, y: number, a: number, inner: number, width: number): Stamp | null {
   if (a < inner || a > inner + width) return null;
   const dirt = dirtAt(seed + 5, x, y, 1 - (a - inner) / width);
-  return dirt ? [dirt, H.spoil] : null;
+  const t = (a - inner) / width; // 0 at the bank … 1 at the outer edge
+  return dirt ? [speckle(seed, x, y, SPECKLE.spoil[0] + (SPECKLE.spoil[1] - SPECKLE.spoil[0]) * t * t) ?? dirt, H.spoil] : null;
 }
 
 /**
@@ -452,10 +109,10 @@ function spoil(seed: number, x: number, y: number, a: number, inner: number, wid
 /** What the last trench() stamp was, for drawing order where walls overlap: 3 a trench floor, 2 its
  *  bank or sandbags, 1 its spoil. (The floor is drawn on top, so walls that cross stay readable.) */
 let rank = 0;
-function trench(seed: number, x: number, y: number, u: number, s: number, line: number, bay: number, stagger: number, lineId: number, d: number, presence = HASTY.present): Stamp | null {
+function trench(seed: number, x: number, y: number, u: number, s: number, line: number, bay: number, stagger: number, lineId: number, d: number, presence = HASTY.present, follow?: Follow): Stamp | null {
   rank = 1;
   if (Math.abs(u - line) > (DEV.trenchStyle === 'hasty' ? 85 : stagger * 3 + 20)) return null; // too far from this line for its style (cheap early-out)
-  if (DEV.trenchStyle === 'hasty') return hasty(seed, x, y, u, s, line, lineId, d, presence);
+  if (DEV.trenchStyle === 'hasty') return hasty(seed, x, y, u, s, line, lineId, d, presence, undefined, follow);
   if (hash(seed + 296 + lineId, Math.floor(s / 2400), 0) > presence) return null; // this wall is missing along this stretch
   const k = Math.floor(s / bay);
   const side = (n: number) => (hash(seed + 270 + lineId, n, 0) < 0.5 ? -stagger : stagger);
@@ -513,75 +170,139 @@ const SHAPE_TOTAL = HASTY_SHAPES.reduce((a, [w]) => a + w, 0);
 // Each wall's last kink and section, remembered between pixels (one slot per wall: neighbouring walls
 // are drawn pixel by pixel together, so a single shared slot would be thrown away every call).
 const kinkMemos = Array.from({ length: 16 }, () => ({ id: NaN, k: NaN, o0: 0, o1: 0 }));
-const sectionMemos = Array.from({ length: 16 }, () => ({ id: NaN, q: NaN, shape: HASTY_SHAPES[0][1], height: 0 }));
-function hasty(seed: number, x: number, y: number, u: number, s: number, line: number, lineId: number, d: number, presence = HASTY.present): Stamp | null {
+// Each shape sampled once into a table (looked up and blended between samples: Math.exp per call was a
+// tenth of a front tile's time).
+const SHAPE_N = 512;
+const SHAPE_TABLES = HASTY_SHAPES.map(([, fn]) => Float32Array.from({ length: SHAPE_N + 1 }, (_, i) => fn(i / SHAPE_N)));
+const shapeAt = (table: Float32Array, t: number) => {
+  const v = Math.min(SHAPE_N, Math.max(0, t * SHAPE_N));
+  const i = Math.min(SHAPE_N - 1, Math.floor(v));
+  return table[i] + (table[i + 1] - table[i]) * (v - i);
+};
+const sectionMemos = Array.from({ length: 16 }, () => ({ id: NaN, q: NaN, shape: SHAPE_TABLES[0], height: 0 }));
+/** A hasty ditch's course at a point along its line: kink points joined by straight runs, the section's
+ *  shape (a tab, a wave, a step…) on top, plus wander and jitter. Continuous along the line. */
+function hastyCourse(seed: number, lineId: number, line: number, at: number, rough = true) {
+  const id = seed + 276 + lineId * 7;
+  const k = Math.floor(at / HASTY.kink);
+  const km = kinkMemos[lineId & 15];
+  if (km.id !== id || km.k !== k) {
+    km.id = id;
+    km.k = k;
+    km.o0 = (hash(id, k, 3) - 0.5) * HASTY.offset;
+    km.o1 = (hash(id, k + 1, 3) - 0.5) * HASTY.offset;
+  }
+  const o0 = km.o0;
+  const o1 = km.o1;
+  const q = Math.floor(at / HASTY.section);
+  const sm = sectionMemos[lineId & 15];
+  if (sm.id !== id || sm.q !== q) {
+    let pick = hash(id, q, 4) * SHAPE_TOTAL;
+    let shape = SHAPE_TABLES[0];
+    for (let n = 0; n < HASTY_SHAPES.length; n++) if ((pick -= HASTY_SHAPES[n][0]) < 0) (shape = SHAPE_TABLES[n]), (pick = Infinity);
+    sm.id = id;
+    sm.q = q;
+    sm.shape = shape;
+    sm.height = (hash(id, q, 5) < 0.5 ? -1 : 1) * (HASTY.lobe[0] + hash(id, q, 6) * (HASTY.lobe[1] - HASTY.lobe[0])); // out to one side or the other
+  }
+  const shape = sm.shape;
+  const height = sm.height;
+  return (
+    line + o0 + ((o1 - o0) / HASTY.kink) * (at - k * HASTY.kink) +
+    shapeAt(shape, at / HASTY.section - q) * height +
+    (valueNoise(seed + 273 + lineId, at / 35, 0) - 0.5) * HASTY.bend +
+    (rough ? (valueNoise(seed + 277 + lineId, at / 7, 0) - 0.5) * HASTY.jitter : 0)
+  );
+}
+/** Where a hasty wall's stretch in slot c runs along the line: [start, end] (whether it's there at all is hash(id, c, 0) ≤ presence). */
+function stretchOf(id: number, phase: number, c: number) {
+  return [
+    c * HASTY.stretch + HASTY.gap[0] + hash(id, c, 1) * (HASTY.gap[1] - HASTY.gap[0]) - phase,
+    (c + 1) * HASTY.stretch - hash(id, c, 2) * HASTY.shorten - phase,
+  ] as const;
+}
+/**
+ * Near water (0 … 1, set per pixel by militaryTile): trenches widen as they near a shore, their floors
+ * flooding, and end at the water's edge as if running on under it. SHORE_FLARE: the band, in wetness
+ * (about 40 px of ground; wetness changes ~0.006 per 35 px near a shore).
+ */
+let wetFlare = 0;
+const SHORE_FLARE = 0.007;
+/** Two walls whose ditches come within MERGE.snap px share one path there (easing apart by snap + ease). */
+//  - Closer than `snap`, the wall behind runs exactly in the one in front's ditch: one shared path.
+//  - From snap to snap + ease it's drawn pulled in, its gap closing to nothing at snap, so it bends in
+//    to meet the other ditch cleanly rather than running alongside it.
+//  - Only where the wall in front is actually dug (not in one of its gaps).
+const MERGE = { snap: 16, ease: 12 };
+type Follow = { id: number; line: number; presence: number };
+/** Is a hasty wall (lineId, at this presence) dug at s, within one of its stretches? */
+function wallDug(seed: number, lineId: number, presence: number, s: number) {
+  const id = seed + 276 + lineId * 7;
+  const phase = hash(id, 7, 7) * HASTY.stretch;
+  const c = Math.floor((s + phase) / HASTY.stretch);
+  if (hash(id, c, 0) > presence) return false;
+  const [start, stop] = stretchOf(id, phase, c);
+  return s >= start && s <= stop;
+}
+/**
+ * `span`: one stretch from span[0] to span[1] along the line, instead of the usual stretches and gaps.
+ * `follow`: the wall in front; where this one's ditch comes close to its ditch, it runs in the same one.
+ */
+function hasty(seed: number, x: number, y: number, u: number, s: number, line: number, lineId: number, d: number, presence = HASTY.present, span?: readonly [number, number], follow?: Follow): Stamp | null {
   const id = seed + 276 + lineId * 7;
   const phase = hash(id, 7, 7) * HASTY.stretch; // each wall's stretches and gaps fall in their own places
   const c0 = Math.floor((s + phase) / HASTY.stretch);
   let beyond = Infinity; // how far past the nearest stretch's end (≤ 0: alongside it)
   let sc = s; // the point along the line where that stretch is nearest
   let cell = c0;
+  if (span) (beyond = Math.max(span[0] - s, s - span[1])), (sc = Math.max(span[0], Math.min(span[1], s)));
   // A stretch's end cap can reach into the neighbouring slot, so check those too.
-  for (let c = c0 - 1; c <= c0 + 1; c++) {
+  else for (let c = c0 - 1; c <= c0 + 1; c++) {
     if (hash(id, c, 0) > presence) continue;
-    const start = c * HASTY.stretch + HASTY.gap[0] + hash(id, c, 1) * (HASTY.gap[1] - HASTY.gap[0]) - phase;
-    const end = (c + 1) * HASTY.stretch - hash(id, c, 2) * HASTY.shorten - phase;
+    const [start, end] = stretchOf(id, phase, c);
     const b = Math.max(start - s, s - end);
     if (b < beyond) (beyond = b), (sc = Math.max(start, Math.min(end, s))), (cell = c);
   }
   if (beyond > HASTY.reach) return null;
-  // The ditch's course at a point along the line: kink points joined by straight runs, the section's
-  // shape (a tab, a wave, a step…) on top, plus wander and jitter. Continuous along the line.
+  if (follow && !wallDug(seed, follow.id, follow.presence, sc)) follow = undefined; // nothing in front to share
+  // Far from both this wall's ditch and the one in front (a shared path runs between the two): nothing.
+  if (follow && beyond <= 0 && Math.abs(u - line) > HASTY_SPREAD && Math.abs(u - follow.line) > HASTY_SPREAD) return null;
+  // How far this ditch is pulled in toward the one in front, worked out once for this pixel. Measured
+  // without their fine jitter (so the join doesn't flicker along a near miss).
+  let gap = Infinity;
+  if (follow) {
+    const f = follow;
+    const sep = Math.abs(hastyCourse(seed, lineId, line, sc, false) - hastyCourse(seed, f.id, f.line, sc, false));
+    // (A linear ramp; the capped heading below keeps the bend in from smearing into streaks.)
+    gap = sep <= MERGE.snap ? 0 : sep < MERGE.snap + MERGE.ease ? ((MERGE.snap + MERGE.ease) * (sep - MERGE.snap)) / MERGE.ease : sep;
+    if (gap >= sep) follow = undefined; // not pulled in at all here
+  }
   const course = (at: number) => {
-    const k = Math.floor(at / HASTY.kink);
-    const km = kinkMemos[lineId & 15];
-    if (km.id !== id || km.k !== k) {
-      km.id = id;
-      km.k = k;
-      km.o0 = (hash(id, k, 3) - 0.5) * HASTY.offset;
-      km.o1 = (hash(id, k + 1, 3) - 0.5) * HASTY.offset;
-    }
-    const o0 = km.o0;
-    const o1 = km.o1;
-    const q = Math.floor(at / HASTY.section);
-    const sm = sectionMemos[lineId & 15];
-    if (sm.id !== id || sm.q !== q) {
-      let pick = hash(id, q, 4) * SHAPE_TOTAL;
-      let shape = HASTY_SHAPES[0][1];
-      for (const [w, fn] of HASTY_SHAPES) if ((pick -= w) < 0) (shape = fn), (pick = Infinity);
-      sm.id = id;
-      sm.q = q;
-      sm.shape = shape;
-      sm.height = (hash(id, q, 5) < 0.5 ? -1 : 1) * (HASTY.lobe[0] + hash(id, q, 6) * (HASTY.lobe[1] - HASTY.lobe[0])); // out to one side or the other
-    }
-    const shape = sm.shape;
-    const height = sm.height;
-    return (
-      line + o0 + ((o1 - o0) / HASTY.kink) * (at - k * HASTY.kink) +
-      shape(at / HASTY.section - q) * height +
-      (valueNoise(seed + 273 + lineId, at / 35, 0) - 0.5) * HASTY.bend +
-      (valueNoise(seed + 277 + lineId, at / 7, 0) - 0.5) * HASTY.jitter
-    );
+    const own = hastyCourse(seed, lineId, line, at);
+    if (!follow) return own;
+    const other = hastyCourse(seed, follow.id, follow.line, at);
+    return other + Math.sign(own - other) * Math.min(gap, Math.abs(own - other));
   };
   // Cheap check first: the furthest this section of ditch can stray from the line (its kinks, its shape,
   // wander and jitter), so most pixels near a wall but off its ditch skip tracing the course.
-  course(sc); // (fills this wall's kink and section slots for sc)
+  const centre = course(sc); // (also fills this wall's kink and section slots for sc)
   const km = kinkMemos[lineId & 15];
   const sm = sectionMemos[lineId & 15];
   const stray = Math.max(Math.abs(km.o0), Math.abs(km.o1)) + Math.abs(sm.height) + (HASTY.bend + HASTY.jitter) / 2;
-  if (Math.abs(u - line) - stray > HASTY.reach && beyond <= 0) return null;
-  const centre = course(sc);
-  const slope = (course(sc + 2) - centre) / 2; // the ditch's heading here (tabs have steep flanks)
+  if (!follow && Math.abs(u - line) - stray > HASTY.reach && beyond <= 0) return null;
+  // The ditch's heading here (tabs have steep flanks). Capped: the distance below is only good for a ditch
+  // that runs along the front more than across it; steeper, it would smear the banks into streaks.
+  const slope = Math.max(-2, Math.min(2, (course(sc + 2) - centre) / 2));
   const across = (u - centre) / Math.sqrt(1 + slope * slope);
   const best = beyond > 0 ? Math.hypot(across, beyond) : Math.abs(across);
   const cap = beyond > -4 ? Math.min(1, (beyond + 4) / 6) : 0; // 0 along the sides … 1 past an end
   if (best > HASTY.reach) return null;
   // The ditch and its bank swell and pinch along their length (ragged, uneven digging), edges dithered.
   const swell = valueNoise(seed + 269 + lineId, s / 14, 0);
-  const ditch = 0.6 + swell * 0.9 + (d - 0.5) * 0.5;
-  const bank = ditch + 1 + swell * 0.8 + cap;
-  if (best <= ditch) return (rank = 3), [M.mud[d < 0.5 ? 1 : 0], 0];
-  if (best <= bank) return (rank = 2), hash(seed + 278 + lineId, Math.floor(s / 3), cell) < 0.15 ? [M.bags[1], H.bags - 1.5] : [M.earthwork[d < 0.5 ? 0 : 1], H.spoil + 0.4];
+  const ditch = (0.6 + swell * 0.9 + (d - 0.5) * 0.5) * (1 + 1.8 * wetFlare);
+  const bank = ditch + 1 + swell * 0.8 + cap + 2 * wetFlare;
+  if (best <= ditch) return (rank = 3), [wetFlare > 0.45 && best <= ditch * (wetFlare - 0.2) ? M.pool[d < 0.5 ? 0 : 1] : M.mud[d < 0.5 ? 1 : 0], 0];
+  if (best <= bank) return (rank = 2), hash(seed + 278 + lineId, Math.floor(s / 3), cell) < 0.15 ? [M.bags[1], H.bags - 1.5] : [speckle(seed, x, y, SPECKLE.bank) ?? M.earthwork[d < 0.5 ? 0 : 1], H.spoil + 0.4];
   // The spoil bank, heaped wider round the ends.
   return spoil(seed, x, y, best, bank, 5 + 4 * valueNoise(seed + 279 + lineId, s / 30, 0) + cap * 6);
 }
@@ -598,34 +319,358 @@ const WALLS = {
   wander: [30, 10], // px: each wall's own slow (~1.4 km) and quicker (~450 px) wander
   bay: [22, 30, 36, 40], // traversed: bay length per wall
   stagger: [3, 2, 2, 2], // traversed: how far each bay steps
+  // Hasty: the odd trench straight back from the fire trench, through every wall behind it and on past the
+  // last (toward the next layer back): one chance per slot along the front, per side.
+  across: { slot: 600, chance: 0.5, past: [40, 140] }, // past: px beyond the furthest wall's place
+  // Toward a front's ends the walls give out from the back: wall k thins out (in whole stretches) as the
+  // front's `end` falls from fade[k] + 0.25 to fade[k], and is gone below. The fire trench (and its wire and
+  // saps) instead peters out last, over the final LEAD of the easing (see `leading`). No wall moves.
+  fade: [0, 0.25, 0.45, 0.65],
 };
-function walls(seed: number, x: number, y: number, u: number, s: number, nml: number, kEnd: number, fid: number, d: number): Stamp | null {
+/** How much of wall k is left this near the front's end (1: all of it; see WALLS.fade). */
+const wallFade = (k: number, end: number) => (k === 0 ? 1 : smooth((end - WALLS.fade[k]) / 0.25));
+/** How far any of a hasty ditch reaches from its unkinked line (kinks, lobes, wander, banks and spoil). */
+const HASTY_SPREAD = HASTY.offset / 2 + HASTY.lobe[1] + HASTY.bend + HASTY.jitter + HASTY.reach;
+/** A wall's place before its own kinks: where its line wanders to at s (u, signed). */
+function wallLine(seed: number, side: number, nml: number, fid: number, s: number, id: number, off: number) {
+  return (
+    side * (nml + 12 + off) +
+    (valueNoise(seed + 290 + id, s / 1400, fid % 101) - 0.5) * 2 * WALLS.wander[0] +
+    (valueNoise(seed + 292 + id, s / 450, fid % 101) - 0.5) * 2 * WALLS.wander[1]
+  );
+}
+/** Scratch for walls(), one entry per wall of a side (reused for every pixel: no allocation per pixel). */
+const AHEAD = Array.from({ length: 4 }, () => ({ id: 0, off: 0, k: 0, line: NaN, presence: 0 }));
+function walls(seed: number, x: number, y: number, u: number, s: number, nml: number, end: number, fid: number, d: number): Stamp | null {
   let best: Stamp | null = null;
   let bestRank = 0;
   const reach = 95 + WALLS.wander[0] + WALLS.wander[1]; // the furthest anything of a wall can be from its unwandered place
   for (const side of [-1, 1]) {
     let regional = -1; // (worked out only if a wall on this side is close)
     let off = 0;
+    let last = 0; // the furthest wall still there this near the front's end (its off)
+    let ahead = 0; // the walls in front of this one on this side so far (in AHEAD, nearest last)
     for (let k = 0; k < WALLS.presence.length; k++) {
       const lineId = (side < 0 ? 1 : 5) + k;
       if (k > 0) off += WALLS.spacing[0] + hash(seed + 291 + fid, lineId, 0) * (WALLS.spacing[1] - WALLS.spacing[0]);
-      if (Math.abs(u - side * (nml + 12 + off * kEnd)) > reach) continue; // nowhere near this wall: skip its noise
+      const slot = AHEAD[ahead++];
+      slot.id = lineId;
+      slot.off = off;
+      slot.k = k;
+      slot.line = NaN; // (its place worked out only if needed: by itself, or a wall behind it)
+      slot.presence = 0;
+      if (wallFade(k, end) > 0) last = off;
+      if (Math.abs(u - side * (nml + 12 + off)) > reach || wallFade(k, end) <= 0) continue; // nowhere near this wall: skip drawing it
       // How many walls this stretch of this side has: a slow regional mix, so some stretches have one, some four.
-      if (regional < 0) regional = 0.55 + 0.9 * valueNoise(seed + 295 + (fid % 97), s / 9000, side);
-      const wander =
-        (valueNoise(seed + 290 + lineId, s / 1400, fid % 101) - 0.5) * 2 * WALLS.wander[0] +
-        (valueNoise(seed + 292 + lineId, s / 450, fid % 101) - 0.5) * 2 * WALLS.wander[1];
-      const line = side * (nml + 12 + off * kEnd) + wander;
+      if (regional < 0) regional = 0.55 + 0.9 * valueNoise(seed + 295 + (fid % 97), s / 9000, side); // (as wallPresence)
+      const line = (slot.line = wallLine(seed, side, nml, fid, s, lineId, off));
+      slot.presence = Math.min(1, WALLS.presence[k] * regional) * wallFade(k, end);
       if (Math.abs(u - line) > 95) continue; // too far from this wall for anything of it (cheap)
-      const t = trench(seed, x, y, u, s, line, WALLS.bay[k], WALLS.stagger[k], lineId, d, Math.min(1, WALLS.presence[k] * regional));
+      // Where it comes close to the wall in front, it runs in that wall's ditch for a while (no crossings).
+      let follow: Follow | undefined;
+      if (DEV.trenchStyle === 'hasty' && ahead >= 2) {
+        const w = AHEAD[ahead - 2];
+        if (Number.isNaN(w.line)) (w.line = wallLine(seed, side, nml, fid, s, w.id, w.off)), (w.presence = Math.min(1, WALLS.presence[w.k] * regional) * wallFade(w.k, end));
+        follow = w;
+      }
+      const t = trench(seed, x, y, u, s, line, WALLS.bay[k], WALLS.stagger[k], lineId, d, slot.presence, follow);
       if (t && rank > bestRank) {
         best = t;
         bestRank = rank;
         if (rank === 3) return best; // a trench floor: nothing goes over it
       }
     }
+    if (DEV.trenchStyle !== 'hasty' || side !== (u < 0 ? -1 : 1)) continue;
+    // A sap out from the fire trench into no-man's land, if one is near.
+    const sp = sapAt(seed, side, s, nml, fid, end);
+    if (sp) {
+      const t = sap(seed, x, y, u * side, s, sp, d);
+      const r = rank === 3 ? 3 : rank / 4; // (dug after the fire trench, out of it: its floor joins it)
+      if (t && r > bestRank) {
+        best = t;
+        bestRank = r;
+        if (r === 3) return best;
+      }
+    }
+    // The trench back across the walls: in its slot, kept clear of the slot's ends by more than its spread.
+    const A = WALLS.across;
+    const slot = Math.floor(s / A.slot);
+    const cs = slot * A.slot + HASTY_SPREAD + hash(seed + 297 + fid, slot, side) * (A.slot - 2 * HASTY_SPREAD);
+    if (Math.abs(s - cs) > HASTY_SPREAD || hash(seed + 298 + fid, slot, side) > A.chance || !fireThere(seed, side, cs, fid, end)) continue;
+    const a = u * side; // px away from the divide
+    const fire = nml + 12; // the fire trench's unwandered place
+    const far = fire + last + WALLS.wander[0] + WALLS.wander[1] + A.past[0] + hash(seed + 299 + fid, slot, side) * (A.past[1] - A.past[0]);
+    if (a < fire - 60 || a > far + HASTY.reach) continue;
+    // It starts in the fire trench's own ditch (where that runs at cs), so the two join with no stub in front.
+    const start = side * hastyCourse(seed, side < 0 ? 1 : 5, fireLine(seed, side, nml, cs, fid), cs);
+    const lineId = (side < 0 ? 9 : 10) + 16 * mod(slot, 4096); // its own memo slot (lineId & 15), its own shape
+    const t = hasty(seed, x, y, s - cs, a, 0, lineId, d, 1, [start, far]);
+    // Dug first: its bank and spoil lie under the walls' (theirs is thrown on top), but its floor still
+    // cuts through them, so the two read as joined.
+    const r = rank === 3 ? 3 : rank / 4;
+    if (t && r > bestRank) {
+      best = t;
+      bestRank = r;
+      if (r === 3) return best;
+    }
   }
   return best;
+}
+
+/** How often a side's wall k is there at s (its own chance × the slow regional mix of how many walls a stretch has). */
+const wallPresence = (seed: number, side: -1 | 1, k: number, s: number, fid: number) =>
+  Math.min(1, WALLS.presence[k] * (0.55 + 0.9 * valueNoise(seed + 295 + (fid % 97), s / 9000, side)));
+/**
+ * Is a side's fire trench actually dug at s, at least `margin` px from either end of its stretch? Saps and
+ * cross trenches start only where it is, so none ever begins in a gap, cut off from the trench it leaves.
+ * (Hasty only; `end` is the front's easing out toward its ends, whose gaps take whole 300 px stretches.)
+ */
+function fireThere(seed: number, side: -1 | 1, s: number, fid: number, end: number, margin = 50) {
+  if (!leading(seed, fid, end, Math.floor(s / 300))) return false;
+  if (!leading(seed, fid, end, Math.floor((s - margin) / 300)) || !leading(seed, fid, end, Math.floor((s + margin) / 300))) return false;
+  const id = seed + 276 + (side < 0 ? 1 : 5) * 7; // (as hasty() works out the fire trench's id)
+  const phase = hash(id, 7, 7) * HASTY.stretch;
+  const c = Math.floor((s + phase) / HASTY.stretch);
+  if (hash(id, c, 0) > wallPresence(seed, side, 0, s, fid)) return false;
+  const [start, stop] = stretchOf(id, phase, c);
+  return s >= start + margin && s <= stop - margin;
+}
+/** Where a side's fire trench (its first wall) wanders to at s, before its own kinks and shapes: u, signed. */
+function fireLine(seed: number, side: -1 | 1, nml: number, s: number, fid: number) {
+  const id = side < 0 ? 1 : 5; // the fire trench's lineId (see walls)
+  return (
+    side * (nml + 12) +
+    (valueNoise(seed + 290 + id, s / 1400, fid % 101) - 0.5) * 2 * WALLS.wander[0] +
+    (valueNoise(seed + 292 + id, s / 450, fid % 101) - 0.5) * 2 * WALLS.wander[1]
+  );
+}
+
+/**
+ * Saps: narrow trenches pushed out from the fire trench into no-man's land, through (or nearly through)
+ * their own wire, each ending in a listening post (a small sandbagged pit, where men lay out at night
+ * listening for the enemy). Dug hastily like the walls, ragged and kinking. The wire is left open round
+ * each one (see wire), thinning out to either side of it.
+ */
+//  - British: under an "active front" policy (own no-man's land: patrol, raid, push forward), saps were
+//    many and long, and before an attack were dug out further as jumping-off points (at the Somme, shallow
+//    saps ran from the British line well out into no-man's land). Some end in a T-head, a short crosspiece.
+//  - German: holding ground, relying on deep wire and dugouts: fewer, shorter saps, mostly reaching only
+//    into or just past their own wire, to a small round post.
+const SAPS = {
+  slot: 380,
+  keep: 22, // px short of the divide
+  post: [2.6, 4.8], // listening post: pit and sandbag ring radii
+  british: { chance: 0.6, length: [70, 175], tee: 0.45, arm: [8, 18] }, // tee: share with a T-head; arm: its half-length
+  german: { chance: 0.25, length: [35, 85], tee: 0, arm: [0, 0] },
+};
+type Sap = { cs: number; start: number; end: number; lineId: number; arm: number };
+/** The sap in this slot of the front, if it has one (cs: where along the front; start, end: px from the divide). */
+export function sapAt(seed: number, side: -1 | 1, s: number, nml: number, fid: number, frontEnd: number): Sap | null {
+  const slot = Math.floor(s / SAPS.slot);
+  const kind = side < 0 ? SAPS.british : SAPS.german;
+  if (hash(seed + 340 + fid, slot, side) > kind.chance) return null;
+  const cs = slot * SAPS.slot + HASTY_SPREAD + hash(seed + 341 + fid, slot, side) * (SAPS.slot - 2 * HASTY_SPREAD);
+  if (Math.abs(s - cs) > HASTY_SPREAD || !fireThere(seed, side, cs, fid, frontEnd)) return null;
+  // It starts in the fire trench's own ditch (where that runs at cs), so the two join.
+  const start = side * hastyCourse(seed, side < 0 ? 1 : 5, fireLine(seed, side, nml, cs, fid), cs);
+  const end = Math.max(SAPS.keep, start - (kind.length[0] + hash(seed + 342 + fid, slot, side) * (kind.length[1] - kind.length[0])));
+  const arm = hash(seed + 343 + fid, slot, side) < kind.tee ? kind.arm[0] + hash(seed + 344 + fid, slot, side) * (kind.arm[1] - kind.arm[0]) : 0;
+  return { cs, start, end, lineId: (side < 0 ? 11 : 12) + 16 * mod(slot, 4096), arm };
+}
+/** A sap, a px from the divide: its ditch (a hasty one, run outwards), then the listening post at its head. */
+function sap(seed: number, x: number, y: number, a: number, s: number, sp: Sap, d: number): Stamp | null {
+  if (a < sp.end - 12 || a > sp.start + HASTY.reach || Math.abs(s - sp.cs) > HASTY_SPREAD + sp.arm) return null;
+  const head = sp.cs + hastyCourse(seed, sp.lineId, 0, sp.end);
+  const r = Math.hypot(s - head, a - sp.end);
+  if (sp.arm) {
+    // A T-head: a short ragged crosspiece along the front, floor and a low bank.
+    const off = Math.abs(a - sp.end) + (hash(seed + 345, x, y) - 0.5) * 0.8;
+    const past = Math.max(0, Math.abs(s - head) - sp.arm);
+    const dist = Math.hypot(off, past);
+    if (dist <= 1.3) return (rank = 3), [M.mud[d < 0.5 ? 1 : 0], 0];
+    if (dist <= 3) return (rank = 2), [speckle(seed, x, y, SPECKLE.bank) ?? M.earthwork[d < 0.5 ? 0 : 1], H.spoil + 0.4];
+    if (dist <= 8 && Math.abs(s - head) < sp.arm + 8) {
+      const sp2 = spoil(seed, x, y, dist, 3, 5);
+      if (sp2) return (rank = 1), sp2;
+    }
+  }
+  if (r <= SAPS.post[0]) return (rank = 3), [M.mud[1], 0];
+  if (r <= SAPS.post[1]) return (rank = 2), [M.bags[d < 0.5 ? 0 : 1], H.bags - 1];
+  return hasty(seed, x, y, s - sp.cs, a, 0, sp.lineId, d, 1, [sp.end, sp.start]);
+}
+
+/**
+ * Barbed wire in front of each side's fire trench, following its course, in each army's own way:
+ *  - German: deep, dense entanglements, two belts (at the Somme in 1916, each about 30 yd deep, some
+ *    15 yd apart), rows of staggered pickets laced together every which way, with few gaps. Scaled down
+ *    here to fit the game's narrower no-man's land.
+ *  - British: a single, thinner belt, put out at night by working parties, either a double-apron fence
+ *    (one row of pickets, wires slanting down to pegs either side) or concertina coils; patchier, with
+ *    more gaps left for patrols.
+ * Both stop short of the divide (`keep`), so neither's wire ever runs into the other's.
+ */
+const WIRE = {
+  clear: 26, // px from the fire trench's ditch to its wire's near edge (past its bank and spoil)
+  keep: 12, // px each side of the divide left open
+  slot: 320, // px along the front: each slot may have a gap (a lane) in each belt, and picks the British kind
+  wobble: 5, // px: each belt (and each row of coils) drifts in and out on its own, so none run quite parallel
+  fade: [8, 30], // px: how far the wire thins out, speckled, into a gap (as if cut, buried, or still going up)
+  thin: 0.3, // below this (a slow noise along the front) the wire is thin and patchy for a while
+  // Each belt is laid in pieces, a working party's night each, never quite lined up with the next: each
+  // sits a little in or out, at a slight angle, overlapping or falling short of its neighbours.
+  piece: { length: [18, 55], overlap: 10, shift: 6, tilt: 0.2, missing: 0.06, ends: 6 },
+  tangle: { cell: [26, 14], chance: 0.22, size: [1.5, 4] }, // loose knots of wire thrown about the belts
+  german: { depth: [22, 34], gap: [12, 20], rows: [3, 4], pitch: [7, 10], lanes: 0.2, cover: 0.85 },
+  british: { depth: [14, 22], pitch: [7, 10], coil: [3, 4], concertina: 0.4, lanes: 0.55, cover: 0.95 },
+};
+const WIRE_REACH = HASTY.offset / 2 + HASTY.lobe[1] + HASTY.bend; // how far the fire trench's ditch strays from fireLine
+/** Is this stamp barbed wire (or its pickets)? (For tests.) */
+export const isWire = (st: Stamp | null) => st?.[0] === M.wire || st?.[0] === M.post;
+/** Is this stamp the shelled ground (churned mud, clods, shell holes), not a work dug or built? (By colour
+ *  and height together: the trenches use some of the same colours, at other heights.) */
+const SHELLED = new Map<RGB, readonly number[]>([...M.mud.map((c) => [c, [H.mud]] as const), [M.clod, [H.mud, 0.1]], [M.bowl, [0.2]], ...M.rim.map((c) => [c, [H.rim]] as const), ...WATER.pool.map((c) => [c, [0.05]] as const)]);
+export const isChurned = (st: Stamp | null) => !!st && !!SHELLED.get(st[0])?.includes(st[1]);
+function wire(seed: number, x: number, y: number, u: number, s: number, nml: number, fid: number, d: number, end: number): Stamp | null {
+  const side = u < 0 ? -1 : 1;
+  const a = u * side; // px from the divide
+  if (a < WIRE.keep) return null;
+  const line = fireLine(seed, side, nml, s, fid);
+  const g = WIRE.german;
+  const b = WIRE.british;
+  const pc = WIRE.piece;
+  const tg = WIRE.tangle;
+  const spread = WIRE.wobble + pc.shift + (pc.tilt * pc.length[1]) / 2 + tg.size[1]; // how far a piece can sit from its belt's place
+  const most = WIRE.clear + 2 * g.depth[1] + g.gap[1] + spread; // the deepest wire reaches this far in front of the trench
+  const rough = side * line - a; // px in front of the fire trench's line, before its kinks
+  if (rough < WIRE.clear - spread - WIRE_REACH - 1 || rough > most + WIRE_REACH) return null; // (cheap)
+  const trench = side * (DEV.trenchStyle === 'hasty' ? hastyCourse(seed, side < 0 ? 1 : 5, line, s, false) : line);
+  const t0 = trench - a - WIRE.clear; // px in front of where the wire starts
+  if (t0 < -spread || t0 > most) return null;
+  // Open round a sap: the wire thins out to either side of it.
+  let open = 1;
+  const sp = DEV.trenchStyle === 'hasty' ? sapAt(seed, side, s, nml, fid, end) : null;
+  if (sp && a > sp.end - 8) {
+    const along = sp.cs + hastyCourse(seed, sp.lineId, 0, Math.max(sp.end, Math.min(sp.start, a)), false);
+    open = smooth((Math.abs(s - along) - 5) / 10);
+    if (open <= 0) return null;
+  }
+  const slot = Math.floor(s / WIRE.slot);
+  const fs = fid % 89;
+  const span = (r: readonly number[], h: number) => r[0] + h * (r[1] - r[0]);
+  /** A belt's own slow drift in and out, ± `wobble` px. */
+  const drift = (k: number, scale = 160) => (valueNoise(seed + 310 + side * 8 + k, s / scale, fs) - 0.5) * 2 * WIRE.wobble;
+  /** 1 in the wire, easing to 0 across a gap: the wire thins out into it rather than stopping dead. */
+  const lane = (belt: number, chance: number) => {
+    const h = hash(seed + 303 + fid, slot, side * 4 + belt);
+    if (h > chance) return 1;
+    const at = slot * WIRE.slot + 50 + hash(seed + 304 + fid, slot, side * 4 + belt) * (WIRE.slot - 100);
+    const half = 5 + (h / chance) * 4; // a bare gap 10–18 px wide
+    return smooth((Math.abs(s - at) - half) / span(WIRE.fade, hash(seed + 308 + fid, slot, side * 4 + belt)));
+  };
+  // Variation all through it: long thin stretches, knots and thin spots, edges that speckle out.
+  const stretch = 0.25 + 0.75 * smooth((valueNoise(seed + 314 + side, s / 500, fs) - WIRE.thin) / 0.2);
+  const edge = (w: number, D: number) => 0.35 + 0.65 * smooth(Math.min(w, D - w) / 4);
+  // Wire sags and tangles: nudge where each pixel falls in the pattern, more in some places than others.
+  const sag = (0.6 + 1.6 * valueNoise(seed + 316 + side, s / 300, fs)) * (side > 0 ? 1.4 : 0.8); // (German: more of it, more tangled)
+  const oct = (k: number) =>
+    (valueNoise(seed + k, x / 13, y / 13) - 0.5) * 3.2 +
+    (valueNoise(seed + k + 40, x / 5, y / 5) - 0.5) * 1.6 +
+    (valueNoise(seed + k + 80, x / 1.8, y / 1.8) - 0.5) * 0.9;
+  const ns = oct(305) * sag;
+  const nw = oct(306) * sag;
+  const near = (v: number, w: number) => Math.abs(v - Math.round(v)) * w; // px from the nearest of a family of lines w px apart
+  const keepWire = (cover: number): Stamp | null => (d < cover ? [M.wire, H.wire] : null);
+  // A picket outlasts its wire into a thinning stretch (a fence half built, or half gone).
+  const keepPost = (f: number, id: number): Stamp | null => (f > 0.12 + 0.35 * hash(seed + 313 + fid, id, side) ? [M.post, H.post] : null);
+  type Draw = (w: number, ww: number, ps: number, f: number, c: number) => Stamp | null;
+  /** One belt, laid in pieces (see WIRE.piece), starting `start` px out and D deep; `draw` draws one piece. */
+  const belt = (k: number, start: number, D: number, chance: number, draw: Draw): Stamp | null => {
+    const L = (pc.length[0] + pc.length[1]) / 2;
+    const key = side * 4 + k;
+    const cut = (c: number) => c * L + (hash(seed + 321 + fid, c, key) - 0.5) * (pc.length[1] - pc.length[0]);
+    const c0 = Math.floor(s / L);
+    for (let c = c0 - 1; c <= c0 + 1; c++) {
+      const lo = cut(c);
+      const hi = cut(c + 1) + hash(seed + 322 + fid, c, key) * pc.overlap;
+      if (s < lo || s > hi || hash(seed + 323 + fid, c, key) < pc.missing) continue;
+      const tilt = (hash(seed + 325 + fid, c, key) - 0.5) * 2 * pc.tilt;
+      const w = t0 - start - (hash(seed + 324 + fid, c, key) - 0.5) * 2 * pc.shift - (s - (lo + hi) / 2) * tilt;
+      if (w < 0 || w > D) continue;
+      const f =
+        open * lane(k, chance) * stretch * edge(w, D) *
+        (0.45 + 0.8 * valueNoise(seed + 315 + side, s / 45, w / 10)) * // knots and thin spots
+        (0.5 + 0.8 * valueNoise(seed + 333 + side, s / 11, w / 3.5)) * // smaller clumps and holes
+        (valueNoise(seed + 334, x / 2.2, y / 2.2) > 0.28 ? 1 : 0.25) * // strands broken into fragments
+        (0.6 + 0.6 * hash(seed + 327 + fid, c, key)) * // some parties laid it thicker than others
+        (0.4 + 0.6 * smooth(Math.min(s - lo, hi - s) / pc.ends)); // each piece's ends straggle out
+      if (f <= 0) continue;
+      const hit = draw(w, w + nw, s + hash(seed + 326 + fid, c, key) * 40, f, c); // (each piece's pattern falls differently)
+      if (hit) return hit;
+    }
+    return null;
+  };
+  /** Loose knots of wire about the belts, as if dropped or blown there. */
+  const tangle = (): Stamp | null => {
+    if (t0 < -4 || open < 0.6) return null;
+    const [cs, cw] = tg.cell;
+    const i = Math.floor(s / cs);
+    const j = Math.floor(t0 / cw);
+    const key = side * 64 + j;
+    if (hash(seed + 328 + fid, i, key) > tg.chance * stretch) return null;
+    const r = span(tg.size, hash(seed + 329 + fid, i, key));
+    const cx = (i + 0.5) * cs + (hash(seed + 330 + fid, i, key) - 0.5) * (cs - 2 * r);
+    const cy = (j + 0.5) * cw + (hash(seed + 331 + fid, i, key) - 0.5) * (cw - 2 * r);
+    const dd = Math.hypot(s - cx, t0 - cy);
+    return dd <= r && valueNoise(seed + 332, x / 1.3, y / 1.3) > 0.42 + 0.3 * (dd / r) ? [M.wire, H.wire] : null;
+  };
+  if (side > 0) {
+    // German: two belts, each rows of staggered pickets laced along and diagonally between rows.
+    const D0 = span(g.depth, valueNoise(seed + 300 + (fid % 97), s / 700, 0));
+    const D1 = span(g.depth, valueNoise(seed + 309 + (fid % 97), s / 650, 0));
+    const start0 = drift(0);
+    const start1 = start0 + D0 + span(g.gap, valueNoise(seed + 301 + (fid % 97), s / 900, 0)) + drift(1);
+    const german = (k: number, D: number): Draw => (w, ww, ps, f, c) => {
+      const rows = Math.round(span(g.rows, hash(seed + 317 + fid, k, c)));
+      const Q = D / rows; // px between rows of pickets
+      const P = span(g.pitch, hash(seed + 318 + fid, k, c));
+      const r = Math.floor(w / Q);
+      // A picket every P px along each row, each row offset half a pitch from the last.
+      if (Math.abs(w - (r + 0.5) * Q) < 0.8 && near(ps / P - r / 2, P) < 0.8) return keepPost(f, Math.round(ps / P - r / 2) * 16 + k * 8 + r);
+      const q = ww / Q;
+      const p = (ps + ns) / P;
+      const kk = 1 / Math.hypot(1 / P, 1 / (2 * Q)); // px per unit of the diagonal families
+      const on = near(p - q / 2 + 0.25, kk) < 0.55 || near(p + q / 2 - 0.25, kk) < 0.55 || near(q - 0.5, Q) < 0.5;
+      return on ? keepWire(g.cover * f) : null;
+    };
+    return belt(0, start0, D0, g.lanes, german(0, D0)) ?? belt(1, start1, D1, g.lanes, german(1, D1)) ?? tangle();
+  }
+  // British: one belt, a double-apron fence or concertina coils (a few pieces running of each).
+  const D = span(b.depth, valueNoise(seed + 302 + (fid % 97), s / 600, 0));
+  const mid = D / 2;
+  const british: Draw = (w, ww, ps, f, c) => {
+    const P = span(b.pitch, hash(seed + 319 + fid, c, 0));
+    const pt = ps + ns;
+    if (hash(seed + 307 + fid, Math.floor(c / 3), 0) < b.concertina) {
+      // Concertina: two rows of coils along the belt's middle, pickets every so often.
+      const coil = span(b.coil, hash(seed + 320 + fid, c, 0));
+      if (Math.abs(w - mid) < 0.8 && near(ps / (P * 1.5), P * 1.5) < 0.8) return keepPost(f, Math.round(ps / (P * 1.5)));
+      const step = 2.2; // px between the coil's loops
+      for (const cc of [mid - coil + drift(2, 90) * 0.3, mid + coil + drift(3, 90) * 0.3]) {
+        if (Math.abs(ww - cc) > coil + 0.6) continue;
+        for (let i = Math.ceil((pt - coil - 0.6) / step); i * step <= pt + coil + 0.6; i++) {
+          if (Math.abs(Math.hypot(pt - i * step, ww - cc) - coil) < 0.5) return keepWire(b.cover * f);
+        }
+      }
+      return null;
+    }
+    // Double apron: pickets down the middle, wires slanting down to pegs at both edges, and wires along.
+    if (Math.abs(w - mid) < 0.8 && near(ps / P, P) < 0.8) return keepPost(f, Math.round(ps / P));
+    if ((w < 0.8 || w > D - 0.8) && near(ps / P - 0.5, P) < 0.6) return f > 0.3 ? [M.post, H.spoil] : null; // the pegs
+    const along = [0.12, 0.5, 0.88].some((at, i) => Math.abs(ww - at * D - drift(4 + i, 120) * 0.25) < 0.5);
+    const slant = near((pt - (Math.abs(ww - mid) / mid) * (P / 2)) / P, P) < 0.5; // each picket's wires run out to pegs half a pitch along
+    return along || slant ? keepWire(b.cover * f) : null;
+  };
+  return belt(0, drift(0), D, b.lanes, british) ?? tangle();
 }
 
 /** A sinuous trench (communication trench, network trench) around a centre line: `offset` px across it. */
@@ -716,48 +761,71 @@ const directCells = (seed: number): Cells => ({
   stump: (x, y) => cellular(seed + 220, x, y, 40),
 });
 
-const CRATER_CELL = 26;
-type Crater = { x: number; y: number; r: number; z: number; pool: boolean };
-/** The crater (if any) in crater cell (i, j): size and existence from the devastation at its centre, so
- *  every crater is whole. */
+/**
+ * Shell holes: one possible crater per CRATER_CELL cell (a jittered grid: Voronoi feature points), lots of
+ * them, sized and thinned by the devastation at the centre, so every crater is whole. Some stretches of the
+ * front were shelled far harder than others (`heavy`, a slow regional noise): there they're denser and
+ * bigger. Only a few hold water (`pool`).
+ */
+const CRATER = {
+  cell: 24, // px; a crater's reach (r × splash) stays under one cell, so a 3×3 search finds every one
+  chance: [0.4, 1.6], // (over 1: every cell, in the heaviest stretches) // × devastation: how many cells have one, lightly … heavily shelled
+  r: [4, 9], // px radius range, before the size scale below
+  scale: [0.8, 1.35], // lightly … heavily shelled
+  splash: 1.35, // thrown mud reaches this × r
+  smooth: 0.35, // Voronoi smooth F1: how much neighbouring holes blend into one another
+  pool: 0.12, // chance a big enough hole holds water
+  heavy: 900, // px: the scale of the heavier and lighter shelled stretches
+};
+const CRATER_CELL = CRATER.cell;
+type Crater = { x: number; y: number; r: number; pool: boolean };
 function craterIn(seed: number, fronts: readonly Front[], i: number, j: number): Crater | null {
   const x = (i + hash(seed + 210, i, j)) * CRATER_CELL;
   const y = (j + hash(seed + 211, i, j)) * CRATER_CELL;
   const n = nearest(seed, fronts, x, y);
   if (!n) return null;
   const dev = devastationAt(seed, x, y, n.u, n.end);
-  if (hash(seed + 212, i, j) >= dev * 0.9) return null;
-  const r = (3.5 + hash(seed + 213, i, j) * 9.5) * (0.5 + 0.5 * dev);
-  return { x, y, r, z: hash(seed + 214, i, j), pool: r > 9 && dev > 0.7 && hash(seed + 215, i, j) < 0.35 };
+  const heavy = smooth((valueNoise(seed + 216, x / CRATER.heavy, y / CRATER.heavy) - 0.3) / 0.4);
+  if (hash(seed + 212, i, j) >= Math.sqrt(dev) * (CRATER.chance[0] + (CRATER.chance[1] - CRATER.chance[0]) * heavy)) return null;
+  const r = (CRATER.r[0] + hash(seed + 213, i, j) * (CRATER.r[1] - CRATER.r[0])) * (CRATER.scale[0] + (CRATER.scale[1] - CRATER.scale[0]) * heavy) * (0.6 + 0.4 * dev);
+  return { x, y, r, pool: r > 5.5 && dev > 0.6 && hash(seed + 215, i, j) < CRATER.pool };
 }
 
-/** The topmost crater covering a point (with its splash ring), so overlapping craters stack, not clip. */
-const craterHit = { c: null as unknown as Crater, dist: 0 }; // reused: read it before the next call
-function craterAt(get: (i: number, j: number) => Crater | null, x: number, y: number): { c: Crater; dist: number } | null {
+/**
+ * The shell holes at a point, as Blender's Voronoi "smooth F1": q, the distance to the nearest hole's
+ * centre in its own radii (0 at the centre, 1 at its lip), smooth-min blended with its neighbours' so
+ * holes that overlap run together into one soft pit. `c` is the nearest hole (for its water).
+ */
+const craterHit = { c: null as unknown as Crater, q: 0 }; // reused: read it before the next call
+function craterAt(get: (i: number, j: number) => Crater | null, x: number, y: number): { c: Crater; q: number } | null {
   const ci = Math.floor(x / CRATER_CELL);
   const cj = Math.floor(y / CRATER_CELL);
-  let best: Crater | null = null;
-  let bestDist = 0;
+  const k = CRATER.smooth;
+  let q = Infinity;
+  let near: Crater | null = null;
+  let nearQ = Infinity;
   for (let j = cj - 1; j <= cj + 1; j++) {
     for (let i = ci - 1; i <= ci + 1; i++) {
       const c = get(i, j);
       if (!c) continue;
       const dx = x - c.x;
       const dy = y - c.y;
-      const reach = c.r * 1.35;
-      if (dx * dx + dy * dy > reach * reach * 1.000001) continue; // clearly out of reach: skip the (slow) exact distance
-      const dist = Math.hypot(dx, dy);
-      if (dist < c.r * 1.35 && (!best || c.z > best.z || (dist < c.r && bestDist >= best.r))) (best = c), (bestDist = dist);
+      const reach = c.r * (CRATER.splash + k);
+      if (dx * dx + dy * dy > reach * reach) continue; // too far to matter, even blended (skip the sqrt)
+      const qi = Math.sqrt(dx * dx + dy * dy) / c.r;
+      if (qi < nearQ) (nearQ = qi), (near = c);
+      const h = Math.max(k - Math.abs(q - qi), 0) / k; // polynomial smooth min
+      q = Math.min(q, qi) - (h * h * k) / 4;
     }
   }
-  if (!best) return null;
-  craterHit.c = best;
-  craterHit.dist = bestDist;
+  if (!near || q >= CRATER.splash) return null;
+  craterHit.c = near;
+  craterHit.q = q;
   return craterHit;
 }
 
 /** A military stamp for a whole tile [x0, x1) × [y0, y1): same results as militaryAt, much faster. */
-export function militaryTile(seed: number, fronts: readonly Front[], x0: number, y0: number, x1: number, y1: number): (x: number, y: number) => Stamp | null {
+export function militaryTile(seed: number, fronts: readonly Front[], x0: number, y0: number, x1: number, y1: number, shore?: (x: number, y: number) => number): (x: number, y: number) => Stamp | null {
   const pad = 30; // the network is sampled at warped positions
   const cells: Cells = {
     net: cellularField(seed + 260, 230, x0 - pad, y0 - pad, x1 + pad, y1 + pad),
@@ -769,14 +837,24 @@ export function militaryTile(seed: number, fronts: readonly Front[], x0: number,
   const ni = Math.floor(x1 / CRATER_CELL) + 2 - i0;
   const nj = Math.floor(y1 / CRATER_CELL) + 2 - j0;
   const grid: (Crater | null)[] = [];
-  if (!DEV.onlyTrenches) for (let j = 0; j < nj; j++) for (let i = 0; i < ni; i++) grid.push(craterIn(seed, fronts, i0 + i, j0 + j)); // no craters while isolated
+  if (!DEV.onlyTrenches || ONLY_TRENCHES_GROUND.craters) for (let j = 0; j < nj; j++) for (let i = 0; i < ni; i++) grid.push(craterIn(seed, fronts, i0 + i, j0 + j)); // no craters while isolated
   const craters = (i: number, j: number) => grid[(j - j0) * ni + (i - i0)] ?? null;
   const field = frontField(seed, fronts, x0, y0, x1, y1);
-  return (x, y) => militaryAt(seed, fronts, x, y, cells, craters, field);
+  return (x, y) => {
+    wetFlare = shore ? 1 - smooth(shore(x, y) / SHORE_FLARE) : 0;
+    return militaryAt(seed, fronts, x, y, cells, craters, field);
+  };
 }
 
+/** How far behind the divide (past nml) anything of the trench lines reaches: the furthest wall, wandering,
+ *  the cross trenches past it and their spoil. (Cutting the zone off any nearer leaves a straight edge.) */
+const ONLY_TRENCHES_REACH = 12 + (WALLS.presence.length - 1) * WALLS.spacing[1] + WALLS.wander[0] + WALLS.wander[1] + WALLS.across.past[1] + HASTY_SPREAD;
 /** Near a front's ends the works thin out into gaps: is stretch k there (an unfinished, petering-out line)? */
 const present = (seed: number, fid: number, end: number, k: number) => end > 0.98 || hash(seed + 250 + fid, k, 0) < end;
+/** The hasty front line itself (fire trench, wire, saps) at its very ends: whole 300 px stretches drop out
+ *  only over the last LEAD of the easing, after the walls behind it have given out (WALLS.fade). */
+const LEAD = 0.25;
+const leading = (seed: number, fid: number, end: number, k: number) => hash(seed + 250 + fid, k, 0) < smooth(end / LEAD);
 
 /**
  * The military stamp at a world pixel, or null where the ground shows through unchanged. `fronts` is
@@ -794,17 +872,22 @@ export function militaryAt(
   const n = field(x, y);
   if (!n) return null;
   const { s, u, end, f } = n;
+  const nml = f.nml; // (toward its ends the lines give out from the back, keeping their places: see WALLS.fade)
   if (DEV.frontLine && Math.abs(u) <= 0.75) return [FRONT_LINE, 0]; // development: show where the line itself runs
-  const k = 0.3 + 0.7 * end; // toward its ends a front's lines draw together as it eases out
-  const nml = f.nml * k;
+  if (DEV.frontLine) {
+    // Behind the first level: past the furthest wall's widest wander and the trenches back across them.
+    const behind = nml + 12 + (WALLS.presence.length - 1) * WALLS.spacing[1] + WALLS.wander[0] + WALLS.wander[1] + WALLS.across.past[1] + 40;
+    if (Math.abs(Math.abs(u) - behind) <= 0.75) return [SIDE_LINE[u < 0 ? -1 : 1], 0];
+  }
   const fid = f.id % 9973;
   const au = Math.abs(u);
   const side = u < 0 ? -1 : 1;
 
   if (DEV.onlyTrenches) {
     // Development: the fire, support and reserve lines alone, nothing else of the front.
-    if (!present(seed, fid, end, Math.floor(s / 300)) || au > nml + 340) return null;
-    return walls(seed, x, y, u, s, nml, k, fid, hash(seed + 202, x, y));
+    const dd = hash(seed + 202, x, y);
+    const works = (DEV.trenchStyle === 'hasty' ? leading : present)(seed, fid, end, Math.floor(s / 300)) && au <= nml + ONLY_TRENCHES_REACH;
+    return (works ? (walls(seed, x, y, u, s, nml, end, fid, dd) ?? wire(seed, x, y, u, s, nml, fid, dd, end)) : null) ?? shelling(seed, x, y, u, s, nml, end, fid, dd, cells, craters, ONLY_TRENCHES_GROUND);
   }
 
   const d = hash(seed + 202, x, y);
@@ -847,12 +930,13 @@ export function militaryAt(
       if (r < 2.5) return [M.dugout, 0];
       if (r < 4.6) return [M.bags[2], H.bags + 0.5];
     }
-    const t = walls(seed, x, y, u, s, nml, k, fid, d);
+    const t = walls(seed, x, y, u, s, nml, end, fid, d);
     if (t) return t;
   }
 
   // Saps: short trenches pushed out into no-man's land from the fire trench, ending in a listening post.
-  if (au < nml + 20) {
+  // (Hasty trenches have their own, drawn with the walls.)
+  if (au < nml + 20 && DEV.trenchStyle !== 'hasty') {
     const slot = Math.floor(s / 150);
     if (hash(seed + 251 + fid, slot, side) < 0.4 * end) {
       const ss = slot * 150 + 30 + hash(seed + 252 + fid, slot, side) * 90;
@@ -918,30 +1002,37 @@ export function militaryAt(
     }
   }
 
-  // Barbed wire: belts in front of each fire trench and, thinner, in front of the support line.
-  const wx = Math.round(x);
-  const wy = Math.round(y);
-  const wired = (u > bf + 8 && u < bf + 30) || (u < gf - 8 && u > gf - 36);
-  const thin = (u > bf - 104 && u < bf - 92) || (u < gf + 114 && u > gf + 102);
-  if (present(seed, fid, end, seg) && (wired || thin)) {
-    if (mod(wx, 6) === 0 && mod(wy, 6) === 0) return [M.post, H.post];
-    if ((mod(wx + wy, 6) === 0 || mod(wx - wy, 6) === 0) && d < (wired ? 0.55 : 0.3)) return [M.wire, H.wire];
+  // Barbed wire in front of each fire trench, each army's own way (see wire).
+  if (present(seed, fid, end, seg)) {
+    const w = wire(seed, x, y, u, s, nml, fid, d, end);
+    if (w) return w;
   }
 
-  // Shelling: stacked craters (whole, some full of water), wrecks, blasted stumps, churned mud and clods.
+  return shelling(seed, x, y, u, s, nml, end, fid, d, cells, craters);
+}
+
+/** Of the shelled ground, what `onlyTrenches` (development) draws: switched on one at a time. */
+const ONLY_TRENCHES_GROUND = { craters: true, wrecks: false, stumps: false, clods: false, mud: true };
+/** Shelling: stacked craters (whole, some full of water), wrecks, blasted stumps, churned mud and clods. */
+function shelling(
+  seed: number, x: number, y: number, u: number, s: number, nml: number, end: number, fid: number, d: number,
+  cells: Cells, craters: (i: number, j: number) => Crater | null, on: Readonly<Record<keyof typeof ONLY_TRENCHES_GROUND, boolean>> = { craters: true, wrecks: true, stumps: true, clods: true, mud: true },
+): Stamp | null {
+  const au = Math.abs(u);
   const dev = devastationAt(seed, x, y, u, end);
   if (dev <= 0.02) return null;
-  const hit = craterAt(craters, x, y);
+  const hit = on.craters ? craterAt(craters, x, y) : null;
   if (hit) {
-    const { c, dist } = hit;
-    if (dist < c.r) {
-      if (c.pool && dist < c.r * 0.35) return [M.pool[d < 0.5 ? 0 : 1], 0];
-      if (dist < c.r * 0.62) return [M.bowl, 0.2];
-      return [M.rim[d < 0.55 ? 0 : 1], H.rim];
-    }
-    if (d < 0.5 * (1 - (dist - c.r) / (c.r * 0.35))) return [M.clod, H.mud]; // thrown mud around it
+    // Bands of the smooth distance, their edges dithered so they fray: water (in a few), the dark pit,
+    // its muddy lip, then thrown clods thinning out.
+    const q = hit.q + (d - 0.5) * 0.12;
+    if (hit.c.pool && q < 0.45) return [M.pool[q < 0.3 ? 0 : 1], 0.05];
+    if (q < 0.35) return [M.clod, 0.1];
+    if (q < 0.65) return [M.bowl, 0.2];
+    if (q < 1) return [M.rim[d < 0.55 ? 0 : 1], H.rim];
+    if (d < 0.6 * (1 - (q - 1) / (CRATER.splash - 1))) return [M.clod, H.mud]; // thrown mud around it
   }
-  if (au > nml + 40 && au < 900 && dev > 0.15) {
+  if (on.wrecks && au > nml + 40 && au < 900 && dev > 0.15) {
     const ks = Math.floor(s / 260);
     const ku = Math.floor(u / 200);
     if (hash(seed + 287 + fid, ks, ku) < 0.12) {
@@ -951,9 +1042,11 @@ export function militaryAt(
       if (w) return w;
     }
   }
-  const stump = cells.stump(x, y);
-  if (stump.f1 < 1.3 && stump.id < dev * 0.8) return [M.stump, H.stump];
-  if (d < dev * 0.18) return [M.clod, H.mud]; // small churned clods everywhere
-  if (d < dev ** 1.3) return [pick(M.mud, valueNoise(seed + 212, x / 3, y / 3)), H.mud];
+  if (on.stumps) {
+    const stump = cells.stump(x, y);
+    if (stump.f1 < 1.3 && stump.id < dev * 0.8) return [M.stump, H.stump];
+  }
+  if (on.clods && d < dev * 0.18) return [M.clod, H.mud]; // small churned clods everywhere
+  if (on.mud && d < dev ** 1.3) return [pick(M.mud, valueNoise(seed + 212, x / 3, y / 3)), H.mud];
   return null;
 }

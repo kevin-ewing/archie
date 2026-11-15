@@ -17,7 +17,7 @@ import { createHud, drawHud } from './ui/hud.ts';
 import { createToggles, drawButtonPlate, drawToggles, drawVolumePlate, toggleAt } from './ui/toggles.ts';
 import { createInstruments, engineWarning, updateInstruments } from './ui/instruments.ts';
 import { createSmoke, updateSmoke } from './render/smoke.ts';
-import { TRENCH_STYLES, type TrenchStyle } from './world/military.ts';
+import { TRENCH_STYLES, type TrenchStyle } from './world/settings.ts';
 
 export const IS_DEV = import.meta.env.DEV;
 
@@ -43,6 +43,7 @@ const toggles = createToggles([
   { id: 'fastTime', text: 'FAST TIME', on: IS_DEV },
   { id: 'structures', text: 'BUILDINGS', on: false }, // off while the front is worked on
   { id: 'military', text: 'FRONT', on: true },
+  { id: 'frontLines', text: 'FRONT LINES', on: true }, // the front's own line (red) and each side's (blue British, yellow German)
 ]);
 const toggleOn = (id: string) => toggles.items.find((t) => t.id === id)?.on ?? true;
 const FAST_TIME = 3;
@@ -179,7 +180,7 @@ const scene = createScene(SEED, IS_DEV ? 10 : 2.5); // farms 2.5× the base rate
 const trenchParam = new URLSearchParams(location.search).get('trench');
 const TRENCH_STYLE: TrenchStyle = (TRENCH_STYLES as readonly string[]).includes(trenchParam ?? '') ? (trenchParam as TrenchStyle) : 'hasty';
 scene.features.onlyTrenches = true;
-scene.features.frontLine = IS_DEV; // development: the front's own line in red, to see where it runs
+scene.features.frontLine = false; // development only, with the FRONT LINES toggle (set each frame below); never in production
 scene.features.trenchStyle = TRENCH_STYLE;
 console.log(`Trench style: ${TRENCH_STYLE} (pin one with ?trench=${TRENCH_STYLES.join('|')})`);
 const loading = document.getElementById('loading');
@@ -358,6 +359,7 @@ startLoop(
     const sun = sunNow(clock);
     scene.features.structures = toggleOn('structures');
     scene.features.military = toggleOn('military');
+    scene.features.frontLine = IS_DEV && toggleOn('frontLines');
     const complete = drawScene(display.ctx, view, scene, p, c, { t: t - STEP * (1 - alpha), smoke, warning, sun, day: clock.day, prof });
     drawHud(display.ctx, view, hud, instruments, warning, t);
     drawToggles(display.ctx, view, toggles, IS_DEV);

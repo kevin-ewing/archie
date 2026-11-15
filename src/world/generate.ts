@@ -1,18 +1,25 @@
 // One entry point for generating any tile, used by the worker and by the main-thread fallback.
-// Ground tiles are the landscape with the world's additions stamped over it, in priority order:
-//   live damage → farms and buildings → the front (trenches, wire, craters, batteries) → tracks → landscape.
+//
+// A ground tile is built in layers, each reading only the layers before it (never a later one):
+//   1. Front plan (world/fronts.ts): where the fronts run, from the seed alone.
+//   2. Landscape (world/ground.ts): fields, woods and lakes, kept clear of each front's core.
+//   3. Farms (world/structures.ts): placed on open land, clear of each front's core.
+//   4. Stamping, per pixel, in priority order: live damage → farms and buildings → the front's works
+//      (trenches, wire, craters, batteries; world/military.ts) → tracks → the landscape itself.
 // Flat additions (tracks, worn earth, yards) lie on the ground, so anything standing on it (a tree crown,
 // a hedge, scrub) stays on top of them.
 
 import { CHUNK, groundAt, noDigMask, treeAt, type RGB, groundChunk, type GroundStamp, type TileData } from './ground.ts';
 import { cloudChunk, cloudShadowChunk } from './clouds.ts';
 import { damageAt, type DamageMark } from './damage.ts';
-import { DEV, frontsNear, militaryTile, type TrenchStyle } from './military.ts';
+import { frontsNear } from './fronts.ts';
+import { militaryTile } from './military.ts';
+import { DEV, type TrenchStyle } from './settings.ts';
 import { shadeTile, type ShadeSun } from './shading.ts';
 import { structureAt, structuresNear, trackAt, tracksNear } from './structures.ts';
 
 /** Which additions to stamp into ground tiles (development toggles; both on in play). `density` > 1
- *  packs them closer for local debugging (see DEV in military.ts). */
+ *  packs them closer for local debugging (see DEV in world/settings.ts). */
 export type Features = {
   structures: boolean;
   military: boolean;
@@ -28,20 +35,29 @@ export type TileRequest =
   | { kind: 'clouds' | 'cloudShadow'; seed: number; cx: number; cy: number }
   | { kind: 'shade'; cx: number; cy: number; heights: Uint8Array<ArrayBuffer>; sun: ShadeSun };
 
-/** The stamp for one ground tile, or undefined when it has nothing on it (the common case: free). */
-export function tileStamp(seed: number, cx: number, cy: number, features: Features, damage: readonly DamageMark[]): GroundStamp | undefined {
-  const x0 = cx * CHUNK;
-  const y0 = cy * CHUNK;
-  DEV.fronts = features.military; // buildings only avoid (and are ruined by) fronts that exist
+/** Apply a request's features to the shared world settings (read by every layer). */
+function applySettings(features: Features) {
+  DEV.density = features.density ?? 1;
+  DEV.fronts = features.military; // with the front off, the landscape and farms ignore it entirely
   DEV.onlyTrenches = features.onlyTrenches ?? false;
   DEV.trenchStyle = features.trenchStyle ?? 'traversed';
   DEV.frontLine = features.frontLine ?? false;
+}
+
+/** The stamp for one ground tile (layers 1, 3 and 4), or undefined when it has nothing on it (the common case: free). */
+export function tileStamp(seed: number, cx: number, cy: number, features: Features, damage: readonly DamageMark[]): GroundStamp | undefined {
+  const x0 = cx * CHUNK;
+  const y0 = cy * CHUNK;
+  applySettings(features);
+  // 1. The front plan for this tile.
+  const fronts = features.military ? frontsNear(seed, x0, y0, x0 + CHUNK, y0 + CHUNK) : [];
+  // 3. Farms and their tracks (placed from the plan and the landscape; none in a front's core).
   const structures = features.structures ? structuresNear(seed, x0, y0, x0 + CHUNK, y0 + CHUNK) : [];
   const tracks = features.structures ? tracksNear(seed, x0, y0, x0 + CHUNK, y0 + CHUNK) : [];
-  const fronts = features.military ? frontsNear(seed, x0, y0, x0 + CHUNK, y0 + CHUNK) : [];
   if (!structures.length && !tracks.length && !fronts.length && !damage.length) return undefined;
-  const military = fronts.length ? militaryTile(seed, fronts, x0, y0, x0 + CHUNK, y0 + CHUNK) : null;
-  const noDig = military ? noDigMask(seed, x0, y0, x0 + CHUNK, y0 + CHUNK) : null; // the front keeps out of water
+  // 4. Stamping. The front's works for the whole tile are prepared once (coordinates, craters, cells).
+  const noDig = fronts.length ? noDigMask(seed, x0, y0, x0 + CHUNK, y0 + CHUNK) : null; // the front keeps out of water: < 0 is water
+  const military = noDig ? militaryTile(seed, fronts, x0, y0, x0 + CHUNK, y0 + CHUNK, noDig) : null;
   // A flat stamp gives way to whatever stands on the landscape there (trees, hedges, scrub).
   const under = (x: number, y: number, px: readonly [RGB, number]): readonly [RGB, number] => {
     if (px[1] > 0) return px;
@@ -58,7 +74,7 @@ export function tileStamp(seed: number, cx: number, cy: number, features: Featur
       if (s) return under(x, y, s);
     }
     const m = military ? military(x, y) : null;
-    if (m && !noDig!(x, y)) {
+    if (m && noDig!(x, y) >= 0) {
       // The front runs on through the woods: only the tree crowns themselves are drawn over its works
       // (not the forest floor, glades or scrub between them).
       return treeAt(seed, x, y) ? groundAt(seed, x, y) : m;
@@ -74,7 +90,7 @@ export function tileStamp(seed: number, cx: number, cy: number, features: Featur
 export function generateTile(req: TileRequest): TileData {
   switch (req.kind) {
     case 'ground':
-      DEV.density = req.features?.density ?? 1;
+      // Layer 2 (the landscape) is drawn by groundChunk under the stamp, only where nothing covers it.
       return groundChunk(req.seed, req.cx, req.cy, tileStamp(req.seed, req.cx, req.cy, req.features ?? ALL_FEATURES, req.damage ?? []));
     case 'clouds':
       return { rgba: cloudChunk(req.seed, req.cx, req.cy) };

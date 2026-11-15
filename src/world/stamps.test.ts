@@ -4,7 +4,7 @@ import { CHUNK, groundAt, groundChunk } from './ground.ts';
 import { tileStamp } from './generate.ts';
 
 const ALL_FEATURES = { structures: true, military: true };
-import { frontPoint, frontsNear } from './military.ts';
+import { frontPoint, frontsNear } from './fronts.ts';
 import { structuresNear, tracksNear } from './structures.ts';
 
 // Guards against the whole class of "a stamp returned no colour" bugs (e.g. a negative index from %),

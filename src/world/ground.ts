@@ -8,6 +8,8 @@
 // Pure functions of (seed, world pixel); no DOM, so they're testable and reproducible.
 
 import { bayer, cellular, fbm, hash, valueNoise } from '../core/noise.ts';
+import { frontClearance } from './fronts.ts';
+import { DEV } from './settings.ts';
 
 export type RGB = readonly [number, number, number];
 
@@ -15,7 +17,7 @@ export const CHUNK = 128; // world pixels per tile edge
 
 const rgb = (hex: number): RGB => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
 
-export const WATER = { deep: rgb(0x34494f), shallow: rgb(0x48606a), glint: rgb(0x7d9599) };
+export const WATER = { deep: rgb(0x34494f), shallow: rgb(0x48606a), glint: rgb(0x7d9599), pool: [rgb(0x3c4642), rgb(0x46524c)] as const }; // pool: muddy standing water (shell holes, flooded ditches)
 export const SHORE = { mud: rgb(0x6a5e43), reeds: rgb(0x535b33) };
 const FLOOR = { deep: rgb(0x1f2c19), litter: rgb(0x2a3720) };
 const SCRUB = [rgb(0x3b4a26), rgb(0x46552c), rgb(0x2f3d20)] as const;
@@ -92,9 +94,13 @@ const stripe = (s: number, w: number) => ((Math.floor(s / w) % 2) + 2) % 2 === 0
 const smooth = (v: number) => (v <= 0 ? 0 : v >= 1 ? 1 : v * v * (3 - 2 * v));
 
 // Lakes cover ~2.5% of the land and woods ~18% (the stretch factors set that: 1.7 and 2 gave ~6% and ~26%).
-const wetness = (seed: number, x: number, y: number) => stretch(fbm(seed + 10, x / 900, y / 900, 4), 1.39);
+// Layer 2 of world generation: the landscape is shaped around the front plan (world/fronts.ts). Lakes,
+// woods and copses are lowered by the front's clearance, so none forms in its trenches and no-man's land,
+// though they may reach in a little at the back. (Nothing here depends on farms or the front's works.)
+// (`clear` can be passed in when the caller already has it: one clearance lookup per pixel, not three.)
+const wetness = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => stretch(fbm(seed + 10, x / 900, y / 900, 4), 1.39) - 0.6 * clear;
 /** 0 = open country … 1 = deep forest, ramping over a wide band so woods fade out rather than stop. */
-const woodDensity = (seed: number, x: number, y: number) => smooth((stretch(fbm(seed + 20, x / 700, y / 700, 4), 1.41) - 0.68) / 0.13);
+const woodDensity = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => smooth((stretch(fbm(seed + 20, x / 700, y / 700, 4), 1.41) - 0.68 - 0.5 * clear) / 0.13);
 /** Glades: small clearings inside woods. > GLADE is open; trees thin out on the approach. */
 const gladeValue = (seed: number, x: number, y: number) => stretch(fbm(seed + 23, x / 120, y / 120, 3), 2.2);
 const GLADE = 0.88;
@@ -112,24 +118,29 @@ function fieldCell(seed: number, x: number, y: number) {
 // Whether a tree exists is decided once, at its centre, so a crown is always drawn whole: never sliced by
 // a biome edge, a glade or a lake. Crowns overlap; the one with the highest z is on top.
 
-let cacheSeed = NaN;
+// Tree chances depend on the seed and the front plan (density, fronts on or off): the cache is for one world.
+const cacheWorld = { seed: NaN, density: NaN, fronts: false };
 const treeChanceCache = new Map<number, number>();
 
 function treeChance(seed: number, i: number, j: number, cx: number, cy: number): number {
-  if (seed !== cacheSeed || treeChanceCache.size > 400_000) {
-    cacheSeed = seed;
+  const w = cacheWorld;
+  if (seed !== w.seed || DEV.density !== w.density || DEV.fronts !== w.fronts || treeChanceCache.size > 400_000) {
+    w.seed = seed;
+    w.density = DEV.density;
+    w.fronts = DEV.fronts;
     treeChanceCache.clear();
   }
   const key = i * 2_000_003 + j; // unique for |i|, |j| < 10⁶ cells (a 10,000 km world)
   let chance = treeChanceCache.get(key);
   if (chance === undefined) {
-    if (wetness(seed, cx, cy) > LAKE - SHORE_W - 0.01) chance = 0; // keep crowns off the water
+    const clear = frontClearance(seed, cx, cy);
+    if (wetness(seed, cx, cy, clear) > LAKE - SHORE_W - 0.01) chance = 0; // keep crowns off the water
     else {
       // Trees come in groups, never scattered singly: at a wood's edge a clump noise decides where groups
       // reach out into the fields, and out in open farmland the only trees are the occasional copse.
-      const dens = woodDensity(seed, cx, cy) * (1 - smooth((gladeValue(seed, cx, cy) - (GLADE - 0.1)) / 0.12));
+      const dens = woodDensity(seed, cx, cy, clear) * (1 - smooth((gladeValue(seed, cx, cy) - (GLADE - 0.1)) / 0.12));
       const clump = valueNoise(seed + 48, cx / 35, cy / 35);
-      chance = Math.max(smooth((dens * 1.2 + (clump - 0.5) * 0.8 - 0.35) / 0.25), copseChance(seed, cx, cy));
+      chance = Math.max(smooth((dens * 1.2 + (clump - 0.5) * 0.8 - 0.35) / 0.25), copseChance(seed, cx, cy, clear)) * (1 - clear); // no clumps in a front's core
     }
     treeChanceCache.set(key, chance);
   }
@@ -137,8 +148,8 @@ function treeChance(seed: number, i: number, j: number, cx: number, cy: number):
 }
 
 /** Copses: rare, tight clumps of trees out in the fields (with scrub underneath). 0 … 1. */
-const copseValue = (seed: number, x: number, y: number) => valueNoise(seed + 49, x / 55, y / 55);
-const copseChance = (seed: number, x: number, y: number) => smooth((copseValue(seed, x, y) - 0.955) / 0.02);
+const copseValue = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => valueNoise(seed + 49, x / 55, y / 55) - 0.1 * clear;
+const copseChance = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => smooth((copseValue(seed, x, y, clear) - 0.955) / 0.02);
 
 export type Tree = { dx: number; dy: number; dist: number; r: number; species: number };
 
@@ -184,7 +195,8 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
 
   // Lakes: deep middle, shallow edge, a ragged shore of mud and reeds. Edges frayed + dithered.
   // (Sparkle on the water is live, not baked: see GLINT and render/sparkle.ts.)
-  const wet = wetness(seed, x, y) + (valueNoise(seed + 14, x / 6, y / 6) - 0.5) * 0.012 + (d - 0.5) * 0.006;
+  const clear = frontClearance(seed, x, y);
+  const wet = wetness(seed, x, y, clear) + (valueNoise(seed + 14, x / 6, y / 6) - 0.5) * 0.012 + (d - 0.5) * 0.006;
   if (wet > LAKE) {
     // Shallows only as a thin, frayed band along the shore; everything else is deep water.
     const deep = wet > LAKE + 0.012 + (valueNoise(seed + 11, x / 6, y / 6) - 0.5) * 0.006;
@@ -197,7 +209,7 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
 
   // Woodland ground between the crowns: dark floor deep inside, then scrub that frays out into the
   // fields, dithered like a cloud's edge, so the wood bleeds into the farmland instead of stopping.
-  const dens = woodDensity(seed, x, y) + (valueNoise(seed + 15, x / 9, y / 9) - 0.5) * 0.3 + (d - 0.5) * 0.25;
+  const dens = woodDensity(seed, x, y, clear) + (valueNoise(seed + 15, x / 9, y / 9) - 0.5) * 0.3 + (d - 0.5) * 0.25;
   if (dens > 0.2) { // reaches a little beyond the outermost trees, so edge clumps stand in scrub, not crops
     const glade = gladeValue(seed, x, y) + (valueNoise(seed + 18, x / 7, y / 7) - 0.5) * 0.16 + (d - 0.5) * 0.1;
     if (glade > GLADE) {
@@ -218,7 +230,7 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
   }
 
   // Copse floor: scrub under the clumps of trees standing out in the fields.
-  if (copseValue(seed, x, y) + (valueNoise(seed + 19, x / 5, y / 5) - 0.5) * 0.03 + (d - 0.5) * 0.02 > 0.95) {
+  if (copseValue(seed, x, y, clear) + (valueNoise(seed + 19, x / 5, y / 5) - 0.5) * 0.03 + (d - 0.5) * 0.02 > 0.95) {
     return [SCRUB[Math.floor(valueNoise(seed + 17, x / 3, y / 3) * 2.2 + d * 0.8) % 3], HEIGHT.scrub];
   }
 
@@ -356,7 +368,7 @@ export function landAt(seed: number, x: number, y: number): 'water' | 'wood' | '
   return 'open';
 }
 
-const isWater = (seed: number, x: number, y: number): boolean => wetness(seed, x, y) > LAKE - SHORE_W - 0.02;
+export const isWater = (seed: number, x: number, y: number): boolean => wetness(seed, x, y) > LAKE - SHORE_W - 0.02;
 
 /**
  * Where the front's works may not go, for a tile [x0, x1) × [y0, y1): water (lakes and their shores).
@@ -364,7 +376,7 @@ const isWater = (seed: number, x: number, y: number): boolean => wetness(seed, x
  * the same at every tile edge) and interpolated, instead of per pixel. (Woods don't stop the front: its
  * works run through them, under the tree crowns; see world/generate.ts.)
  */
-export function noDigMask(seed: number, x0: number, y0: number, x1: number, y1: number): (x: number, y: number) => boolean {
+export function noDigMask(seed: number, x0: number, y0: number, x1: number, y1: number): (x: number, y: number) => number {
   const G = 8;
   const i0 = Math.floor(x0 / G);
   const j0 = Math.floor(y0 / G);
@@ -372,7 +384,7 @@ export function noDigMask(seed: number, x0: number, y0: number, x1: number, y1: 
   const nj = Math.floor((y1 - 1) / G) + 2 - j0;
   const wet = new Float32Array(ni * nj);
   for (let j = 0; j < nj; j++) for (let i = 0; i < ni; i++) wet[j * ni + i] = wetness(seed, (i0 + i) * G, (j0 + j) * G);
-  const WET = LAKE - SHORE_W - 0.02;
+  const WET = LAKE - 0.012; // just short of the water itself (its edge is frayed by up to ±0.009): works run up to the water and stop
   return (x, y) => {
     const fx = x / G - i0;
     const fy = y / G - j0;
@@ -381,7 +393,7 @@ export function noDigMask(seed: number, x0: number, y0: number, x1: number, y1: 
     const tx = fx - i;
     const ty = fy - j;
     const k = j * ni + i;
-    return (wet[k] * (1 - tx) + wet[k + 1] * tx) * (1 - ty) + (wet[k + ni] * (1 - tx) + wet[k + ni + 1] * tx) * ty > WET;
+    return WET - ((wet[k] * (1 - tx) + wet[k + 1] * tx) * (1 - ty) + (wet[k + ni] * (1 - tx) + wet[k + ni + 1] * tx) * ty); // < 0: water
   };
 }
 
@@ -406,6 +418,8 @@ export type TileData = { rgba: Uint8ClampedArray<ArrayBuffer>; heights?: Uint8Ar
 
 /** Fraction of water pixels that can sparkle. */
 export const GLINT = 0.0007;
+/** … and of the front's small muddy pools (more, so most shell-hole pools get a glint or two). */
+export const POOL_GLINT = 0.08;
 export const HEIGHT_STEPS = 8;
 
 /** Something stamped over the ground at a pixel (colour, height), or null to let the ground show. */
@@ -426,7 +440,7 @@ export function groundChunk(seed: number, cx: number, cy: number, stamp?: Ground
       const stamped = stamp?.(wx, wy);
       const [c, h] = stamped ?? groundAt(seed, wx, wy);
       const [r, g, b] = c;
-      if (!stamped && (c === WATER.deep || c === WATER.shallow) && hash(seed + 12, wx, wy) < GLINT) glints.push(i);
+      if (stamped ? (c === WATER.pool[0] || c === WATER.pool[1]) && hash(seed + 12, wx, wy) < POOL_GLINT : (c === WATER.deep || c === WATER.shallow) && hash(seed + 12, wx, wy) < GLINT) glints.push(i);
       const k = SHADE[groundShade(seed, wx, wy) + 1];
       rgba[i * 4] = r * k;
       rgba[i * 4 + 1] = g * k;
