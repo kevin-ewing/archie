@@ -6,7 +6,7 @@
 
 import { createPx, plot, text, textWidth, type RGBA } from '../core/pixels.ts';
 import type { View } from '../render/display.ts';
-import { C } from './gauges.ts';
+import { C, plaque } from './gauges.ts';
 
 export type Toggle = { id: string; text: string; on: boolean };
 type Rect = { x: number; y: number; w: number; h: number }; // game px
@@ -15,7 +15,6 @@ export type Toggles = { items: Toggle[]; rects: Rect[]; plates: Map<string, HTML
 const PAD = 2;
 const HEIGHT = 5 + 2 * PAD + 2; // text + padding + the brass border
 const GAP = 2;
-const GAUGES_TOP = 35; // the tallest instrument on the board, so the toggles sit just above it
 
 export const createToggles = (items: Toggle[]): Toggles => ({ items, rects: [], plates: new Map() });
 
@@ -25,45 +24,64 @@ export function drawVolumePlate(canvas: HTMLCanvasElement, w: number, value: num
   for (let y = 0; y < HEIGHT; y++) {
     for (let x = 0; x < w; x++) {
       const edge = x === 0 || y === 0 || x === w - 1 || y === HEIGHT - 1;
-      plot(px, x, y, edge ? (x + y < 3 ? C.brassLit : x + y > w + HEIGHT - 5 ? C.brassDark : C.brass) : C.face);
+      plot(px, x, y, edge ? (x + y < 3 ? C.metalLit : x + y > w + HEIGHT - 5 ? C.metalDark : C.metal) : C.face);
     }
   }
   text(px, Math.floor((w - textWidth(label)) / 2), 1, label, C.ink);
-  for (let x = 2; x < w - 2; x++) plot(px, x, HEIGHT - 3, C.brassDark);
+  for (let x = 2; x < w - 2; x++) plot(px, x, HEIGHT - 3, C.metalDark);
   const thumb = 2 + Math.round(Math.max(0, Math.min(1, value)) * (w - 5));
-  plot(px, thumb, HEIGHT - 4, C.brassLit);
-  plot(px, thumb, HEIGHT - 3, C.brassLit);
-  plot(px, thumb, HEIGHT - 2, C.brass);
+  plot(px, thumb, HEIGHT - 4, C.metalLit);
+  plot(px, thumb, HEIGHT - 3, C.metalLit);
+  plot(px, thumb, HEIGHT - 2, C.metal);
   canvas.width = w;
   canvas.height = HEIGHT;
   canvas.getContext('2d')!.putImageData(new ImageData(px.data, w, HEIGHT), 0, 0);
 }
 
-/** DOM-backed button face matching the volume controls. */
-export function drawButtonPlate(canvas: HTMLCanvasElement, w: number, label: string, on: boolean): void {
-  const px = createPx(w, HEIGHT);
-  const face: RGBA = on ? C.brassLit : C.face;
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < w; x++) {
-      const edge = x === 0 || y === 0 || x === w - 1 || y === HEIGHT - 1;
-      plot(px, x, y, edge ? (x + y < 3 ? C.brassLit : x + y > w + HEIGHT - 5 ? C.brassDark : C.brass) : face);
-    }
+/**
+ * The Hold control's face: a nickel-plated tumbler toggle like the cockpit's magneto switches [VERIFY], lever up =
+ * holding steady, down = off, with a small engraved ivorine plaque reading HOLD beneath it, as the dials have.
+ */
+export const TUMBLER = { w: 29, h: 28 }; // the switch, with its plaque in the bottom rows
+export function drawTumbler(canvas: HTMLCanvasElement, on: boolean): void {
+  const { w, h } = TUMBLER;
+  const px = createPx(w, h);
+  const steel: RGBA = [0x3c, 0x3e, 0x3b, 255];
+  const steelLit: RGBA = [0xb4, 0xb6, 0xae, 255];
+  const c = 8; // the boss sits left of centre, the lever swinging out to the right
+  const by = 9;
+  // A metal mounting ring with a dark centre, the lever thrown up or down from it, a ball on its tip.
+  for (let y = -5; y <= 5; y++) for (let x = -5; x <= 5; x++) {
+    const d = x * x + y * y;
+    if (d <= 27) plot(px, c + x, by + y, d > 14 ? (x + y < -2 ? C.metalLit : x + y > 3 ? C.metalDark : C.metal) : C.face);
   }
-  text(px, Math.floor((w - textWidth(label)) / 2), 1 + PAD, label, on ? C.face : C.dim);
+  // The lever: 3 px thick, thrown 45° up (holding) or 45° down from the boss, a ball on its end.
+  const a = on ? -Math.PI / 4 : Math.PI / 4;
+  for (let k = 0; k <= 9; k++) {
+    const lx = c + Math.round(Math.cos(a) * k);
+    const ly = by + Math.round(Math.sin(a) * k);
+    for (let o = -1; o <= 1; o++) plot(px, lx, ly + o, o < 0 ? steelLit : steel);
+  }
+  const tx = c + Math.round(Math.cos(a) * 9);
+  const ty = by + Math.round(Math.sin(a) * 9);
+  for (let y = -1; y <= 1; y++) for (let x = -1; x <= 1; x++) if (x * x + y * y <= 2) plot(px, tx + x, ty + y, x + y < 0 ? steelLit : steel);
   canvas.width = w;
-  canvas.height = HEIGHT;
-  canvas.getContext('2d')!.putImageData(new ImageData(px.data, w, HEIGHT), 0, 0);
+  canvas.height = h;
+  const ctx = canvas.getContext('2d')!;
+  ctx.putImageData(new ImageData(px.data, w, h), 0, 0);
+  const label = plaque('HOLD'); // the same plaque as every label in the cockpit
+  ctx.drawImage(label, Math.floor((w - label.width) / 2), h - label.height);
 }
 
-/** The plate for a toggle in one state: brass border lit from the top-left, lit brass or black face. */
+/** The plate for a toggle in one state: metal border lit from the top-left, lit metal or black face. */
 function plate(t: Toggle): HTMLCanvasElement {
   const w = textWidth(t.text) + 2 * PAD + 2;
   const px = createPx(w, HEIGHT);
-  const face: RGBA = t.on ? C.brassLit : C.face;
+  const face: RGBA = t.on ? C.metalLit : C.face;
   for (let y = 0; y < HEIGHT; y++) {
     for (let x = 0; x < w; x++) {
       const edge = x === 0 || y === 0 || x === w - 1 || y === HEIGHT - 1;
-      plot(px, x, y, edge ? (x + y < 3 ? C.brassLit : x + y > w + HEIGHT - 5 ? C.brassDark : C.brass) : face);
+      plot(px, x, y, edge ? (x + y < 3 ? C.metalLit : x + y > w + HEIGHT - 5 ? C.metalDark : C.metal) : face);
     }
   }
   text(px, 1 + PAD, 1 + PAD, t.text, t.on ? C.face : C.dim);
@@ -74,23 +92,23 @@ function plate(t: Toggle): HTMLCanvasElement {
   return canvas;
 }
 
-/** Width of the player's control plates (volume, HOLD): as wide as the old bottom toggle, FAST PLANE. */
+/** Width of the player's volume plates: as wide as the old bottom toggle, FAST PLANE. */
 export const CONTROL_W = textWidth('FAST PLANE') + 2 * PAD + 2;
-/** Controls follow their instrument bank; narrow screens use the free centre gap for Hold. */
-export function controlsAnchor(view: View, boardTop?: number, side: 'flight' | 'engine' = 'flight'): Rect {
-  const bottom = Math.floor(view.uiH) - (view.compact ? 48 : 40);
-  const landscape = view.compact && view.uiW > view.uiH;
-  const narrow = view.uiW < 150 && view.uiH > view.uiW;
-  const x = side === 'engine' ? Math.floor(view.uiW) - 10 - CONTROL_W : landscape || narrow ? Math.floor((view.uiW - CONTROL_W) / 2) : 10;
-  const y = side === 'flight' && narrow ? bottom - 70 : (boardTop ?? bottom - GAUGES_TOP) - 4 - HEIGHT;
-  return { x, y, w: CONTROL_W, h: HEIGHT };
+/**
+ * Where the player's controls go, around the instrument clumps (`bank`, from hudLayout): the volume
+ * plates (`engine`) stacked above the engine clump's right end; the Hold switch (`hold`) above the flight clump's left end.
+ */
+export function controlsAnchor(bank: Rect, side: 'hold' | 'engine'): Rect {
+  if (side === 'engine') return { x: bank.x + bank.w - CONTROL_W, y: bank.y - 6 - HEIGHT, w: CONTROL_W, h: HEIGHT };
+  return { x: bank.x, y: bank.y - 4 - TUMBLER.h, ...TUMBLER };
 }
 
-export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggles, visible = true, boardTop?: number, centreX?: number): void {
+/** Stacked up from `boardTop`, or (with `top`) down from it, right-aligned unless `centreX` is given. */
+export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggles, visible = true, boardTop?: number, centreX?: number, top?: number): void {
   ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
   const bottom = Math.floor(view.uiH) - (view.compact ? 40 : 12);
   const right = Math.floor(view.uiW) - (view.compact ? 14 : 10);
-  let y = (boardTop ?? bottom) - HEIGHT;
+  let y = top !== undefined ? top + (tg.items.length - 1) * (HEIGHT + GAP) : (boardTop ?? bottom) - HEIGHT;
   tg.rects = tg.items.map((t) => {
     const key = `${t.id}:${t.on}`;
     let img = tg.plates.get(key);

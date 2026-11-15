@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createPlane, updatePlane } from '../sim/flight.ts';
-import { createInstruments, engineWarning, updateInstruments, needleAngle, INSTRUMENTS } from './instruments.ts';
+import { createPlane, FLIGHT, updatePlane } from '../sim/flight.ts';
+import { createInstruments, engineWarning, updateInstruments, needleAngle, INSTRUMENTS, mph } from './instruments.ts';
 
 function fly(steer: number, boost: boolean, seconds: number, p = createPlane(), s = createInstruments(p)) {
   for (let t = 0; t < seconds; t += 1 / 60) {
@@ -48,7 +48,8 @@ test('dial sweep runs 270° from bottom-left to bottom-right', () => {
 test('new period instruments follow speed, bank and fuel, with the fixed flight height', () => {
   const p = createPlane();
   const s = createInstruments(p);
-  assert.ok(Math.abs(s.airspeed * INSTRUMENTS.airspeedMax - p.speed * 0.4 * 2.23694) < 1e-9);
+  assert.ok(Math.abs(s.airspeed * INSTRUMENTS.airspeedMax - INSTRUMENTS.airspeed.cruise) < 1e-9, 'cruise reads its set speed');
+  assert.ok(Math.abs(mph(FLIGHT.full) - INSTRUMENTS.airspeed.full) < 1e-9, 'full power reads its set speed');
   assert.ok(Math.abs(s.altitude * INSTRUMENTS.altitudeMax - 91.86352) < 1e-5);
   assert.equal(s.pressure * INSTRUMENTS.pressureMax, 1.5);
   assert.equal(s.clinometer, 0.5);

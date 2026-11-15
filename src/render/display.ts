@@ -41,7 +41,7 @@ export function fitView(viewW: number, viewH: number, dpr: number, mobile: Mobil
 }
 
 /** `ctx` draws the world; `hud` is a transparent canvas of the same size stacked over it, for the HUD. */
-export type Display = { ctx: CanvasRenderingContext2D; hud: CanvasRenderingContext2D; view: () => View };
+export type Display = { ctx: CanvasRenderingContext2D; hud: CanvasRenderingContext2D; glow: CanvasRenderingContext2D; view: () => View };
 
 export function createDisplay(canvas: HTMLCanvasElement): Display {
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -53,13 +53,19 @@ export function createDisplay(canvas: HTMLCanvasElement): Display {
   hudCanvas.setAttribute('aria-hidden', 'true');
   canvas.after(hudCanvas);
   const hud = hudCanvas.getContext('2d')!;
+  // Above it, the instruments' radium glow alone: not dimmed with the HUD at night (see ui/hud.ts gradeMatrix).
+  const glowCanvas = document.createElement('canvas');
+  glowCanvas.id = 'hud-glow';
+  glowCanvas.setAttribute('aria-hidden', 'true');
+  hudCanvas.after(glowCanvas);
+  const glow = glowCanvas.getContext('2d')!;
   const mobile = mobilePlatform(navigator.userAgent, navigator.platform, navigator.maxTouchPoints);
   let view = fitView(1, 1, 1, mobile);
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     view = fitView(window.innerWidth, window.innerHeight, dpr, mobile);
-    for (const c of [canvas, hudCanvas]) {
+    for (const c of [canvas, hudCanvas, glowCanvas]) {
       c.width = view.devW;
       c.height = view.devH;
       // CSS size maps 1:1 onto device pixels, so the browser never resamples the canvas.
@@ -68,6 +74,7 @@ export function createDisplay(canvas: HTMLCanvasElement): Display {
     }
     ctx!.imageSmoothingEnabled = false; // resizing resets context state
     hud.imageSmoothingEnabled = false;
+    glow.imageSmoothingEnabled = false;
   }
 
   resize();
@@ -84,5 +91,5 @@ export function createDisplay(canvas: HTMLCanvasElement): Display {
       { once: true },
     );
   watchDpr();
-  return { ctx, hud, view: () => view };
+  return { ctx, hud, glow, view: () => view };
 }

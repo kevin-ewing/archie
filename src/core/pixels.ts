@@ -77,6 +77,20 @@ const glyphWidth = (ch: string) => FONT[ch]?.indexOf(' ') ?? 3;
 export const textWidth = (s: string) => Math.max(0, [...s].reduce((w, ch) => w + glyphWidth(ch) + 1, -1));
 
 /** Draw text with its top-left at (x, y). Unknown characters render as a 3-px gap. */
+// A smaller face for figures on small dials: 3×4 digits.
+const TINY: Record<string, string> = {
+  '0': '### #.# #.# ###', '1': '.#. ##. .#. ###', '2': '##. ..# .#. ###', '3': '### .## ..# ###', '4': '#.# #.# ### ..#',
+  '5': '### ##. ..# ##.', '6': '#.. ### #.# ###', '7': '### ..# .#. .#.', '8': '### ### #.# ###', '9': '### #.# ### ..#',
+};
+export const tinyWidth = (s: string) => Math.max(0, s.length * 4 - 1);
+/** Draw `s` (digits only) in the tiny 3×4 face. */
+export function tinyText(px: Px, x: number, y: number, s: string, c: RGBA): void {
+  for (const ch of s) {
+    TINY[ch]?.split(' ').forEach((row, ry) => [...row].forEach((v, rx) => v === '#' && plot(px, x + rx, y + ry, c)));
+    x += 4;
+  }
+}
+
 export function text(px: Px, x: number, y: number, s: string, c: RGBA): void {
   for (const ch of s) {
     FONT[ch]?.split(' ').forEach((row, ry) => [...row].forEach((v, rx) => v === '#' && plot(px, x + rx, y + ry, c)));

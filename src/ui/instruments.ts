@@ -5,7 +5,7 @@
 
 import { ALTITUDE } from '../render/shadow.ts';
 import { hash } from '../core/noise.ts';
-import { wrapAngle, type Plane } from '../sim/flight.ts';
+import { FLIGHT, wrapAngle, type Plane } from '../sim/flight.ts';
 
 export const INSTRUMENTS = {
   needleLag: 0.35, // seconds for a needle to move most of the way to its reading
@@ -13,7 +13,10 @@ export const INSTRUMENTS = {
   compassStiffness: 4, // liquid-damped compass card: underdamped, so it swings past and settles
   compassDamping: 2.2,
   rpm: { cruise: 1250, full: 1800, hot: 1100, max: 2000 }, // RAF 1a: ~90 hp at 1,600 rpm, about 100–105 hp at 1,800
-  airspeedMax: 120, // mph; world scale is 0.4 metres / px
+  airspeedMax: 120, // mph, the dial's full scale
+  // The dial reads the plane's speed on the game's own scale, not the world's: cruise about 48, full
+  // power about 107 (the world's 0.4 m / px would make them 34 and 55 mph, too slow to read as flying).
+  airspeed: { cruise: 48, full: 107 },
   altitudeMax: 1000, // feet; flight currently stays at the shadow renderer's fixed altitude
   pressureMax: 3, // petrol-tank air pressure, lb / sq in
   tempCruise: 0.45, // a warm engine sits mid-scale; heat pushes the needle on from there
@@ -30,6 +33,13 @@ export function engineWarning(p: Plane): EngineWarning {
 /** Dial angle (radians clockwise from up) for a reading 0…1: a 270° sweep from bottom-left to bottom-right. */
 export const needleAngle = (f: number) => -0.75 * Math.PI + Math.min(1, Math.max(0, f)) * 1.5 * Math.PI;
 
+// The normal speeds, taken before FAST PLANE (development) can double FLIGHT's: with it on, the needle just runs past.
+const BASE = { cruise: FLIGHT.cruise, full: FLIGHT.full };
+/** Indicated airspeed, mph, for a speed in world px / s: through cruise and full power (see INSTRUMENTS.airspeed). */
+export const mph = (speed: number) => {
+  const a = INSTRUMENTS.airspeed;
+  return Math.max(0, a.cruise + ((speed - BASE.cruise) / (BASE.full - BASE.cruise)) * (a.full - a.cruise));
+};
 /** Target readings, 0…1 of each dial's scale (rpm also in revs). */
 export function readings(p: Plane) {
   const r = INSTRUMENTS.rpm;
@@ -38,7 +48,7 @@ export function readings(p: Plane) {
   const temp = INSTRUMENTS.tempCruise + p.heat * (1 - INSTRUMENTS.tempCruise);
   return {
     rpm: rpm / r.max, temp, petrol: p.fuel,
-    airspeed: p.speed * 0.4 * 2.23694 / INSTRUMENTS.airspeedMax,
+    airspeed: mph(p.speed) / INSTRUMENTS.airspeedMax,
     altitude: ALTITUDE * 0.4 * 3.28084 / INSTRUMENTS.altitudeMax,
     // ponytail: supply pressure is derived from engine condition; a future hand-pump model owns this state.
     pressure: (p.fuel > 0 ? 1.5 - p.heat * 0.25 : 0) / INSTRUMENTS.pressureMax,
@@ -71,7 +81,7 @@ export function updateInstruments(s: Instruments, p: Plane, dt: number): void {
   const k = 1 - Math.exp(-dt / INSTRUMENTS.needleLag);
   s.tick++;
   // Needles tremble with the engine; a hot, rough-running engine makes them twitch hard.
-  const rough = [1, 2.5, 6][engineWarning(p)];
+  const rough = [1, 2, 3.5][engineWarning(p)];
   const tremble = (n: number) => (hash(0, s.tick, n) - 0.5) * 2 * INSTRUMENTS.tremble * rough;
   s.rpm += (target.rpm - s.rpm) * k;
   s.temp += (target.temp - s.temp) * k;

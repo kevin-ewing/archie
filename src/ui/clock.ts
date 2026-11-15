@@ -3,7 +3,7 @@
 
 import { createPx, disc, line, plot, polar, text, textWidth, type RGBA } from '../core/pixels.ts';
 import type { View } from '../render/display.ts';
-import { C, label, type Instrument } from './gauges.ts';
+import { C, label, RADIUM, radiumOf, type Instrument } from './gauges.ts';
 
 /** What the clock shows. */
 export type TimeOfDay = { hours: number; day: number; sunset: number; dateText: string };
@@ -16,21 +16,23 @@ export function clockText(hours: number): { clock: string; ampm: string } {
   return { clock: `${h12}:${String(total % 60).padStart(2, '0')}`, ampm: h24 < 12 ? 'AM' : 'PM' };
 }
 
-const INK: RGBA = [0xd8, 0xcf, 0xb4, 255];
-const PLATE: RGBA = [0x14, 0x13, 0x0f, 190];
 type Cached = { key: string; canvas: HTMLCanvasElement };
 /** Re-render a text plate only when its text changes. */
-const cached = (c: Cached, s: string): Cached => (c.key === s ? c : { key: s, canvas: label(s, INK, 2, PLATE) });
+// The time and date aren't cockpit fittings, just help for the player: plain cream text on a soft, see-through
+// dark pad (no plate, bevel or rivets), so they read as an overlay rather than part of the plane.
+const HELP_PAD: RGBA = [0x14, 0x13, 0x0f, 150];
+const helpText = (s: string) => label(s, C.ink, 2, HELP_PAD);
+const cached = (c: Cached, s: string): Cached => (c.key === s ? c : { key: s, canvas: helpText(s) });
 
 export type ClockFace = { watch: ReturnType<typeof createWatch>; digital: Cached; date: Cached };
 
-export const createClockFace = (): ClockFace => ({ watch: createWatch(22), digital: { key: '', canvas: label('', INK) }, date: { key: '', canvas: label('', INK) } });
+export const createClockFace = (): ClockFace => ({ watch: createWatch(27), digital: { key: '', canvas: helpText('') }, date: { key: '', canvas: helpText('') } });
 
 /** Draw in the top-left corner, on whole game pixels. Phones get extra margin (notch, rounded corners). */
-export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: ClockFace, time: TimeOfDay): void {
+export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: ClockFace, time: TimeOfDay, glow?: CanvasRenderingContext2D): void {
   ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
   face.watch.sunset = time.sunset;
-  face.watch.draw(time.hours, 0);
+  face.watch.draw(time.hours, 0, !!glow);
   face.digital = cached(face.digital, clockText(time.hours).clock);
   face.date = cached(face.date, time.dateText);
   const left = view.compact ? 14 : 8;
@@ -39,6 +41,10 @@ export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: Clock
   const half = (c: HTMLCanvasElement) => Math.ceil(c.width / 2);
   const centre = left + Math.max(face.watch.cx, half(face.date.canvas), half(face.digital.canvas));
   ctx.drawImage(face.watch.canvas, centre - face.watch.cx, top);
+  if (glow) {
+    glow.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
+    glow.drawImage(face.watch.glow, centre - face.watch.cx, top);
+  }
   const y = top + face.watch.canvas.height + 2;
   ctx.drawImage(face.digital.canvas, centre - half(face.digital.canvas), y);
   ctx.drawImage(face.date.canvas, centre - half(face.date.canvas), y + face.digital.canvas.height + 1);
@@ -61,9 +67,14 @@ export function createWatch(r: number): Instrument & { sunset: number; cx: numbe
   const shadow: RGBA = [0x56, 0x54, 0x49, 255];
   const face: RGBA = [0x23, 0x24, 0x20, 255];
   const staticFace = createPx(size, size + stem);
+  const glowPx = createPx(size, size + stem);
+  const glowImg = new ImageData(glowPx.data, size, size + stem);
+  const glow = document.createElement('canvas');
+  glow.width = size;
+  glow.height = size + stem;
   // Ribbed brass crown above a nickel-coloured winding stem.
   for (let y = 2; y < stem + 1; y++) for (let x = c - 2; x <= c + 2; x++) plot(staticFace, x, y, x < c ? C.glint : metal);
-  disc(staticFace, c, 3, 3, (dx) => Math.round(dx) % 2 === 0 ? C.brassLit : C.brassDark);
+  disc(staticFace, c, 3, 3, (dx) => Math.round(dx) % 2 === 0 ? C.metalLit : C.metalDark);
   disc(staticFace, c, cy, r, (dx, dy, d) => d > r - 1 ? (dx + dy < 0 ? C.glint : shadow) : d > r - 3 ? metal : face);
   const angle = (hour: number) => (hour % 12) / 12 * 2 * Math.PI;
   for (let tick = 0; tick < 60; tick++) {
@@ -74,29 +85,37 @@ export function createWatch(r: number): Instrument & { sunset: number; cx: numbe
   }
   for (let hr = 1; hr <= 12; hr++) {
     const s = String(hr);
-    const p = polar(c, cy, r - 6, angle(hr));
+    const p = polar(c, cy, r - 8, angle(hr)); // set well in from the minute track, so the figures stand clear
     text(staticFace, Math.round(p.x - textWidth(s) / 2), Math.round(p.y - 2), s, C.ink);
   }
   const watch = {
-    canvas, size, cx: c, sunset: 19.5,
-    draw(hours: number) {
+    canvas, glow, size, cx: c, sunset: 19.5,
+    draw(hours: number, _alert = 0, luminous = false) {
       px.data.set(staticFace.data);
       const mark = polar(c, cy, r - 1, angle(watch.sunset));
       plot(px, mark.x, mark.y, C.red);
       // Readable day/night aperture where the reference's small seconds dial sits.
       const tag = clockText(hours).ampm;
       const tw = textWidth(tag);
-      for (let y = cy + 3; y <= cy + 10; y++) for (let x = c - 7; x <= c + 7; x++) {
-        plot(px, x, y, y === cy + 3 || y === cy + 10 || x === c - 7 || x === c + 7 ? metal : C.face);
+      for (let y = cy + 5; y <= cy + 13; y++) for (let x = c - 7; x <= c + 7; x++) {
+        plot(px, x, y, y === cy + 5 || y === cy + 13 || x === c - 7 || x === c + 7 ? metal : C.face);
       }
-      text(px, c - Math.floor(tw / 2), cy + 5, tag, C.ink);
-      const minute = polar(c, cy, r - 6, (hours % 1) * 2 * Math.PI);
-      const hour = polar(c, cy, r - 10, angle(hours));
-      line(px, c, cy, minute.x, minute.y, C.brassLit);
-      line(px, c, cy, hour.x, hour.y, metal);
-      line(px, c + 1, cy, hour.x + 1, hour.y, metal);
-      disc(px, c, cy, 1, () => C.brass);
+      text(px, c - Math.floor(tw / 2), cy + 7, tag, C.ink);
+      // Hands: a long bright minute hand and a short broad hour hand, both clear of the figures.
+      const minute = polar(c, cy, r - 7, (hours % 1) * 2 * Math.PI);
+      const hour = polar(c, cy, r - 13, angle(hours));
+      line(px, c, cy, minute.x, minute.y, C.metalLit);
+      line(px, c + 1, cy, minute.x + 1, minute.y, C.metal);
+      line(px, c, cy, hour.x, hour.y, C.glint);
+      line(px, c + 1, cy, hour.x + 1, hour.y, C.glint);
+      line(px, c, cy + 1, hour.x, hour.y + 1, metal);
+      disc(px, c, cy, 1.5, () => C.metal);
       ctx.putImageData(img, 0, 0);
+      if (!luminous) return; // by day: no glow work at all
+      // Radium on the figures and main ticks (the cream paint), and on both hands.
+      radiumOf(px, glowPx);
+      for (const p of [minute, hour]) line(glowPx, c, cy, p.x, p.y, RADIUM);
+      glow.getContext('2d')!.putImageData(glowImg, 0, 0);
     },
   };
   return watch;

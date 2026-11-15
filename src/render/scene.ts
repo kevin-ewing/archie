@@ -11,8 +11,8 @@ import { planeOffset, type Camera } from './camera.ts';
 import type { View } from './display.ts';
 import { hash } from '../core/noise.ts';
 import type { Profiler } from '../core/profile.ts';
-import { createGradeLayer, drawGrade, gradeFor, skyFor, type GradeLayer } from './grade.ts';
-import { bankFrame, createPlaneSprites, PROP, propWidth, SPRITE_H, type PlaneSprites } from './plane.ts';
+import { createGradeLayer, drawGrade, gradeFor, skyFor, type Grade, type GradeLayer } from './grade.ts';
+import { bankFrame, createPlaneSprites, prewarmSelfShadow, PROP, propWidth, selfShadowed, SPRITE_H, type PlaneSprites } from './plane.ts';
 import { projectShadow, SHADOW_SCALE, shadowCentre, softSilhouette } from './shadow.ts';
 import { createSparkleSprites, drawSparkle, type SparkleSprites } from './sparkle.ts';
 import { createSmokeSprites, drawSmoke, type Smoke, type SmokeSprites } from './smoke.ts';
@@ -66,6 +66,8 @@ export type Scene = {
   lamp: HTMLCanvasElement; // one lamp's glow (see render/lamps.ts)
   lightBuf: { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D }; // lights minus clouds and plane (screen size)
   lastT: number;
+  selfShadowWarm?: boolean; // the likely self-shadow bakes have been made
+  hourLight?: Grade; // this frame's light of the hour (the HUD takes it too)
   sun: Sun | null; // the sun this frame (the sunlight layer reads it when it asks for tiles)
 };
 
@@ -298,7 +300,13 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
 
   // Plane, rotated by how far it has swung from the camera heading.
   const tick = Math.floor(t * 60);
-  drawSprite(ctx, scale, scene.sprites.frames[frame], ax + off.x, ay + off.y, plane.heading - cam.angle);
+  // With its own shadow (upper wing on the fuselage and lower wing) for this light: baked and cached per
+  // bank frame and quantised sun direction, so this is a lookup on almost every frame (see plane.ts).
+  if (!scene.selfShadowWarm && sun.strength > 0) {
+    scene.selfShadowWarm = true;
+    prewarmSelfShadow(scene.sprites, sun.shadow, sun.strength); // the first frames draw under the loading screen
+  }
+  drawSprite(ctx, scale, selfShadowed(scene.sprites, frame, sun.shadow, plane.heading, sun.strength), ax + off.x, ay + off.y, plane.heading - cam.angle);
   // Propeller: a new random width every sim tick (seeded, so replays match), drawn on the same transform.
   // An overheated engine misfires: the blur keeps collapsing to a thin bar.
   const misfire = f.warning === 2 && hash(scene.seed, tick, 11) < 0.4;
@@ -308,6 +316,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
 
   // The light of the hour, and the sun's direction on screen (it turns with the camera).
   const grade = gradeFor(sun, skyFor(scene.seed, f.day, sun.evening));
+  scene.hourLight = grade; // for the HUD, which takes the same light (see ui/hud.ts gradeMatrix)
   const sa = -cam.angle;
   const toward = { x: sun.toward.x * Math.cos(sa) - sun.toward.y * Math.sin(sa), y: sun.toward.x * Math.sin(sa) + sun.toward.y * Math.cos(sa) };
 

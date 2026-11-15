@@ -108,3 +108,7 @@ With two operators, the ending can land on either relationship, or both (e.g. th
 | C | **The pilot is wounded** on the last flight. You wake to his final transcript, including the last thing you keyed (your fist stumbling). | The fist motif pays off in the transcript. |
 | D | **The lad is transferred** to a wireless school to train others. He's grown up, and you made him. A promotion that takes him away. | Quietly bittersweet; nobody is hurt. |
 | E | **The new aircraft** (two-seaters with observers) arrive; your machine gets an observer who handles the wireless. You never key to him again. | Historical progress as the thing that separates them. |
+
+## Proposed: the sixpence
+
+The charm hanging under the altimeter is **the old hand's lucky sixpence**, drilled through and strung on signal cord. Proposed, not locked. He gives it to the pilot early in Chapter 1, with a dry line about it having seen more of the war than either of them. It stays on screen for the whole game: it swings in every turn, and it's still there in Chapter 2, long after he's only a voice in letters. One possible payoff: in the ending, the pilot posts it back to him, or it comes back with his last letter. **[VERIFY]** Holed and bent coins carried as soldiers' luck pieces.
