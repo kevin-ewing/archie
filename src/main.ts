@@ -288,13 +288,14 @@ document.addEventListener('visibilitychange', () => {
 });
 const enterGameMode = () => {
   keepAwake();
-  document.documentElement.requestFullscreen?.({ navigationUI: 'hide' }).then(
-    () => {
-      void (navigator as any).keyboard?.lock?.(['Escape']).catch(() => {}); // Chromium: hold Esc to leave fullscreen
-      void (screen.orientation as any)?.lock?.('landscape').catch(() => {}); // Android
-    },
-    () => {},
-  );
+  // Fullscreen disabled for now (and with it the Esc and landscape locks, which only work in fullscreen).
+  // document.documentElement.requestFullscreen?.({ navigationUI: 'hide' }).then(
+  //   () => {
+  //     void (navigator as any).keyboard?.lock?.(['Escape']).catch(() => {}); // Chromium: hold Esc to leave fullscreen
+  //     void (screen.orientation as any)?.lock?.('landscape').catch(() => {}); // Android
+  //   },
+  //   () => {},
+  // );
 };
 /** Take off: the loading screen fades, audio starts, steering unlocks once it has cleared. */
 const launch = () => {
