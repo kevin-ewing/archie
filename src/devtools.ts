@@ -10,6 +10,7 @@
 //   archie.toggle('structures')    flip a debug toggle (or toggle(id, true/false)); ids in state().toggles
 //   await archie.ready()           wait until every visible tile has been generated (true), or 10 s pass (false)
 //   archie.snapshot()              the frame as a PNG data URL (game + HUD), at device resolution
+//   archie.photo(path)             save it into the project (dev server only; see vite.config.ts)
 //
 // The same scenarios from the URL (see main.ts): ?seed= ?time= ?x= ?y= ?heading= ?speed= ?off=a,b ?on=a,b
 
@@ -100,6 +101,13 @@ export function installDevApi(h: DevHooks): void {
       for (const c of h.canvases) ctx.drawImage(c, 0, 0, out.width, out.height);
       return out.toDataURL('image/png');
     },
+    /** Development server only: save the frame (or `canvas`) as a PNG at `path`, inside the project. */
+    async photo(path = 'debug/photo.png', canvas?: HTMLCanvasElement) {
+      const blob = await (await fetch(canvas ? canvas.toDataURL('image/png') : api.snapshot())).blob();
+      const r = await fetch(`/__archie/photo?path=${encodeURIComponent(path)}`, { method: 'POST', body: blob });
+      if (!r.ok) throw new Error(await r.text());
+      return r.text();
+    },
   };
   (window as unknown as { archie: typeof api }).archie = api;
   console.info('Dev API: archie.help()');
@@ -116,4 +124,5 @@ const HELP = `archie: development console API
   archie.toggle(id, on?)       flip a debug toggle
   await archie.ready()         wait until every visible tile is generated
   archie.snapshot()            PNG data URL of the frame (game + HUD)
+  await archie.photo(path)     save the frame as a PNG at path, in the project (dev server only)
 URL: ?seed= ?time= ?x= ?y= ?heading= ?speed= ?off=id,id ?on=id,id ?debug`;
