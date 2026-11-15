@@ -1,8 +1,6 @@
 // The landing page (static markup in index.html, so it's on screen before any code loads): STORY,
 // FREE FLY, SETTINGS beside a window onto the terrain (drawn by main.ts while the page is up). This wires
-// its buttons once the code is here. Choosing a mode cuts straight to the take-off screen beneath.
-
-export type LandingChoice = 'story' | 'free';
+// its buttons once the code is here. Free Fly cuts to the take-off screen beneath.
 
 export type Landing = {
   /** The terrain window's canvas, or null once the page is gone (skipped or chosen). */
@@ -13,31 +11,31 @@ export type Landing = {
 
 const READY_AT_LATEST_MS = 12_000; // a world that won't finish loading still gets its menu
 
-export function wireLanding(opts: { skip: boolean; onChoose: (choice: LandingChoice) => void; onSettings: (back: () => void) => void }): Landing {
+export function wireLanding(opts: { skip: boolean; onFreeFly: () => void; onStory: () => void; onSettings: (back: () => void) => void }): Landing {
   const page = document.getElementById('landing');
   const canvas = document.getElementById('landing-terrain');
   const none: Landing = { terrain: () => null, ready: () => {} };
   if (!page) {
-    opts.onChoose('free');
+    opts.onFreeFly();
     return none;
   }
   if (opts.skip) {
     page.hidden = true;
-    opts.onChoose('free');
+    opts.onFreeFly();
     return none;
   }
   const items = [...page.querySelectorAll<HTMLButtonElement>('.landing-item')];
   const ready = () => page.classList.add('ready');
   setTimeout(ready, READY_AT_LATEST_MS);
   let chosen = false;
-  const leave = (choice: LandingChoice) => {
+  const leave = () => {
     if (chosen) return;
     chosen = true;
     page.hidden = true; // a clean cut to the take-off screen, no fade
-    opts.onChoose(choice);
+    opts.onFreeFly();
   };
-  document.getElementById('landing-story')?.addEventListener('click', () => leave('story'));
-  document.getElementById('landing-free')?.addEventListener('click', () => leave('free'));
+  document.getElementById('landing-story')?.addEventListener('click', opts.onStory);
+  document.getElementById('landing-free')?.addEventListener('click', leave);
   document.getElementById('landing-settings')?.addEventListener('click', () => {
     page.classList.add('behind'); // the settings panel takes the menu's place; BACK brings the menu back
     opts.onSettings(() => {
@@ -47,7 +45,7 @@ export function wireLanding(opts: { skip: boolean; onChoose: (choice: LandingCho
   });
   // Keyboard: nothing is lit at first; the arrows light a plate (and move between them), Enter / Space press.
   window.addEventListener('keydown', (e) => {
-    if (chosen || !page.classList.contains('ready') || page.classList.contains('behind') || (e.code !== 'ArrowDown' && e.code !== 'ArrowUp')) return;
+    if (chosen || page.inert || !page.classList.contains('ready') || page.classList.contains('behind') || (e.code !== 'ArrowDown' && e.code !== 'ArrowUp')) return;
     e.preventDefault();
     const i = items.indexOf(document.activeElement as HTMLButtonElement);
     const down = e.code === 'ArrowDown';

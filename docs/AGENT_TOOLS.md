@@ -76,14 +76,11 @@ keeping the previous run in `debug/backup/`.
   5174 if 5173 is taken; ask for it if you can't find it.
 - Claude's built-in browser: call `request_access` for that exact origin (for example
   `http://localhost:5174`), then navigate. `127.0.0.1` and `localhost` count as different sites.
-- The landing page (STORY / FREE FLY / SETTINGS) covers the game until a choice is made, and take-off
-  waits for that choice, and the game isn't drawn until then (only the landing's terrain window is), so
-  `archie.ready()` and `stats()` mean nothing yet. Add `?play` to skip it (Free Fly), or click
-  `#landing-free` from JavaScript.
-  The game starts once the first tiles are ready. Wait for `window.archie` to exist.
-- Saves (`src/game/save.ts`, localStorage `archie.save`: volumes, story progress) are **off** in
-  development and with `?debug`, so every visit starts fresh. To test them, use a production build
-  without `?debug`.
+- **Story** opens the [Rook Field barn](AERODROME.md). Choose **Free Fly** or add `?play` to
+  start flight. Before then, the landing page draws only its terrain window and `archie.ready()`
+  and `stats()` do not describe a flight. The game starts once the first tiles are ready.
+- Browser saves (`src/game/save.ts`, localStorage `archie.save`) are **off** in development and
+  with `?debug`. Use a production build without `?debug` to test saved settings.
 - A production build (`npm run build`, `npm run preview`) exposes the same API only with `?debug`.
 - Timings are only meaningful with the tab **visible**. A hidden tab pauses the game, and a hidden
   browser pane runs as a background page.

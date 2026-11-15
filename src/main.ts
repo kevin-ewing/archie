@@ -21,7 +21,8 @@ import { trenchBearing } from './world/military.ts';
 import { DEV, TRENCH_STYLES, type TrenchStyle } from './world/settings.ts';
 import { installDevApi } from './devtools.ts';
 import { createPauseUi, createSettings, drawVolumePlate, GAME_URL, MENU_W } from './ui/pause.ts';
-import { wireLanding, type LandingChoice } from './ui/landing.ts';
+import { wireLanding } from './ui/landing.ts';
+import { openBarn } from './story/barn.ts';
 import { createSave } from './game/save.ts';
 import { hudLight } from './ui/light.ts';
 import { campaignDate, createGame, worldFeatures } from './game/state.ts';
@@ -173,9 +174,8 @@ const settings = createSettings([audioControl, musicControl], {
 });
 // The pause button (top-right) and menu, P to open; photo mode inside it (src/ui/pause.ts).
 const pauseUi = createPauseUi({
-  // Back to the landing page: keep the story's place, then start the page afresh (the landing shows at once).
+  // Back to the landing page (it shows at once).
   mainMenu: () => {
-    keepStory();
     leaving = true;
     const url = new URL(location.href);
     url.searchParams.delete('play');
@@ -457,7 +457,7 @@ const enterGameMode = () => {
 /** Take off: the loading screen fades, audio starts, steering unlocks once it has cleared. */
 // The browser's back button (or a back swipe) mid-flight: the first press opens the pause menu instead of
 // leaving (a history entry is held for it); pressing back from there asks the browser to confirm, since
-// leaving loses a Free Fly (Story progress is saved). Closing or reloading the tab asks too. Not in
+// leaving ends the flight. Closing or reloading the tab asks too. Not in
 // development, where every save reloads the page.
 let guarded = false;
 let leaving = false; // MAIN MENU: leave without asking
@@ -473,7 +473,6 @@ const guardBack = () => {
   if (!IS_DEV) {
     window.addEventListener('beforeunload', (e) => {
       if (leaving || (state.phase !== 'playing' && state.phase !== 'paused')) return;
-      keepStory();
       e.preventDefault();
     });
   }
@@ -507,29 +506,21 @@ const show = () => {
 // The landing page comes first (static, already on screen): STORY, FREE FLY or SETTINGS. The world loads
 // behind it; take-off waits for a choice. `?play` skips it (tools and agents go straight to flight).
 let chosen = false;
-let playMode: LandingChoice = 'free';
-const storyProgress = () => ({ seed: state.seed, day: state.clock.day, hours: state.clock.hours, level: state.level, sortie: state.sortie.number, plane: { x: plane.x, y: plane.y, heading: plane.heading } });
+let barn: HTMLDialogElement | undefined;
 const landing = wireLanding({
   skip: new URLSearchParams(location.search).has('play'),
   onSettings: (back) => settings.open(back),
-  onChoose: (choice) => {
-    playMode = choice;
-    chosen = true;
-    // Story: carry on where the player left off (same world, day, hour and place), if there's a save.
-    const saved = save.data.story;
-    if (choice === 'story' && saved) {
-      game.setTime(saved.hours, saved.day);
-      placePlane(saved.plane.x, saved.plane.y, saved.plane.heading);
-    }
+  onStory: () => {
+    const page = document.getElementById('landing')!;
+    page.inert = true;
+    barn = openBarn(() => {
+      barn = undefined;
+      page.inert = false;
+      document.getElementById('landing-story')?.focus();
+    });
   },
+  onFreeFly: () => { chosen = true; },
 });
-// Story progress is kept as you fly (every 10 s) and whenever the page is left or hidden.
-const keepStory = () => {
-  if (chosen && playMode === 'story' && (state.phase === 'playing' || state.phase === 'paused')) save.story(storyProgress());
-};
-setInterval(keepStory, 10_000);
-window.addEventListener('pagehide', keepStory);
-document.addEventListener('visibilitychange', () => document.hidden && keepStory());
 
 // While the landing page is up, its window shows the landscape and its clouds (no plane), drifting slowly
 // south (the view creeps north from the start), and the game itself isn't drawn: it's hidden beneath. The page
@@ -562,6 +553,7 @@ function drawLanding(c: HTMLCanvasElement, at: number) {
 }
 
 function render(alpha: number, timing: RenderTiming) {
+    if (barn?.open) return;
     const terrain = landing.terrain();
     if (terrain) return drawLanding(terrain, timing.at);
     // Tiles are generated in Web Workers and appear when ready (see render/tilegen.ts).
