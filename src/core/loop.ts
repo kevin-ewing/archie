@@ -4,7 +4,9 @@
 
 const MAX_FRAME_SECONDS = 0.25; // clamp so a long pause (backgrounded tab) can't trigger a catch-up spiral
 
-export function startLoop(update: (dt: number) => void, render: (alpha: number) => void, hz = 60, active = () => true): void {
+export type RenderTiming = { at: number; gap: number; simulationMs: number };
+
+export function startLoop(update: (dt: number) => void, render: (alpha: number, timing: RenderTiming) => void, hz = 60, active = () => true): void {
   const step = 1 / hz;
   let acc = 0;
   let last = performance.now();
@@ -16,13 +18,15 @@ export function startLoop(update: (dt: number) => void, render: (alpha: number) 
       last = now;
       return;
     }
-    acc += Math.min(Math.max(0, now - last) / 1000, MAX_FRAME_SECONDS);
+    const gap = Math.max(0, now - last);
+    acc += Math.min(gap / 1000, MAX_FRAME_SECONDS);
     last = now;
+    const simStart = performance.now();
     while (acc >= step) {
       update(step);
       acc -= step;
     }
-    render(acc / step);
+    render(acc / step, { at: now, gap, simulationMs: performance.now() - simStart });
   }
 
   requestAnimationFrame(frame);

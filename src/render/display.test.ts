@@ -31,7 +31,7 @@ test('mobile platforms enlarge the scene and HUD independently', () => {
   assert.equal(mobilePlatform('Mozilla/5.0 (Macintosh)', 'MacIntel', 0), null);
   assert.equal(mobilePlatform('Mozilla/5.0 (Macintosh)', 'MacIntel', 5), 'ios');
   const phone = fitView(390, 844, 3, 'ios');
-  assert.deepEqual([phone.scale, phone.uiScale, phone.mobile], [6, 7, 'ios']);
+  assert.deepEqual([phone.scale, phone.uiScale, phone.mobile], [6, 5, 'ios']);
 });
 
 test('a collapsed (0-size) window still gives a drawable canvas', () => {

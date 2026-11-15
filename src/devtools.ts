@@ -18,9 +18,13 @@ import type { FrameTimes, Profiler } from './core/profile.ts';
 export type DevHooks = {
   state: () => Record<string, unknown>;
   setHours: (hours: number) => void;
+  pause: () => void;
+  resume: () => void;
+  session: () => unknown;
   setSpeed: (speed: number | null) => void;
   goto: (x: number, y: number, headingDeg?: number) => void;
   toggles: { id: string; on: boolean }[];
+  onToggle?: (id: string, on: boolean) => void;
   /** Whether the last frame had every visible tile. */
   complete: () => boolean;
   canvases: readonly HTMLCanvasElement[];
@@ -35,13 +39,15 @@ const round = (v: number) => Math.round(v * 1000) / 1000;
 export function summarise(frames: readonly FrameTimes[]) {
   const work = frames.map((f) => f.work).sort((a, b) => a - b);
   const gaps = frames.map((f) => f.gap).filter((g) => g > 0 && g < 1000);
-  const period = [...gaps].sort((a, b) => a - b)[gaps.length >> 1] ?? 1000 / 60;
+  const sortedGaps = [...gaps].sort((a, b) => a - b);
+  const period = sortedGaps[gaps.length >> 1] ?? 1000 / 60;
   const stages: Record<string, number> = {};
   for (const f of frames) for (const [k, v] of f.stages) stages[k] = (stages[k] ?? 0) + v / frames.length;
   for (const k in stages) stages[k] = round(stages[k]);
   return {
     frames: frames.length,
     fps: Math.round(1000 / Math.max(1, mean(gaps))),
+    interval: { median: round(period), p95: round(sortedGaps[Math.floor(sortedGaps.length * 0.95)] ?? 0), max: round(sortedGaps.at(-1) ?? 0) },
     work: { mean: round(mean(work)), p95: round(work[Math.floor(work.length * 0.95)] ?? 0), max: round(work[work.length - 1] ?? 0) },
     stages,
     drops: gaps.filter((g) => g > period * 1.5).length,
@@ -52,18 +58,27 @@ export function installDevApi(h: DevHooks): void {
   const api = {
     help: () => console.log(HELP),
     state: h.state,
+    pause: h.pause,
+    resume: h.resume,
+    session: h.session,
     async stats(ms = 1000) {
       const from = performance.now();
       await sleep(ms);
       return summarise(h.prof.history().filter((f) => f.at >= from));
     },
     time: (hours: number) => h.setHours(((hours % 24) + 24) % 24),
-    speed: (k: number | null) => h.setSpeed(k),
+    speed(k: number | null) {
+      if (k !== null && (!Number.isFinite(k) || k < 0 || k > 1000)) throw new Error('Clock speed must be null or a number from 0 to 1000.');
+      h.setSpeed(k);
+    },
     goto: (x: number, y: number, headingDeg?: number) => h.goto(x, y, headingDeg),
     toggle(id: string, on?: boolean) {
       const t = h.toggles.find((g) => g.id === id);
       if (!t) throw new Error(`No toggle '${id}': ${h.toggles.map((g) => g.id).join(', ')}`);
-      t.on = on ?? !t.on;
+      const next = on ?? !t.on;
+      if (typeof next !== 'boolean') throw new Error('Toggle state must be boolean.');
+      h.onToggle?.(id, next);
+      t.on = next;
       return t.on;
     },
     async ready(timeoutMs = 10000) {
@@ -77,12 +92,12 @@ export function installDevApi(h: DevHooks): void {
       return false;
     },
     snapshot() {
-      const [first] = h.canvases;
+
       const out = document.createElement('canvas');
-      out.width = first.width;
-      out.height = first.height;
+      out.width = Math.max(...h.canvases.map((c) => c.width));
+      out.height = Math.max(...h.canvases.map((c) => c.height));
       const ctx = out.getContext('2d')!;
-      for (const c of h.canvases) ctx.drawImage(c, 0, 0);
+      for (const c of h.canvases) ctx.drawImage(c, 0, 0, out.width, out.height);
       return out.toDataURL('image/png');
     },
   };
@@ -93,6 +108,8 @@ export function installDevApi(h: DevHooks): void {
 const HELP = `archie: development console API
   archie.state()               seed, phase, time, plane, sun, features, toggles
   await archie.stats(ms)       frame timings over the next ms: fps, work mean/p95/max, per-stage means, drops
+  archie.pause() / resume()    pause/resume explicitly (returning to a tab never clears a user pause)
+  archie.session()             detached, versioned campaign/session metadata (not a full aircraft/world save)
   archie.time(hours)           set the solar time
   archie.speed(k)              clock speed override (0 freezes time; null = back to the toggles)
   archie.goto(x, y, deg?)      move the plane to a world point (and heading, degrees)

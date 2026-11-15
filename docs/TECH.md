@@ -83,10 +83,12 @@ src/
     lights.ts          lamplight around sunset: where the lamps are, on/off times, flicker (pure)
     damage.ts          live damage marks (store, per-tile versions) + crater/scorch stamps
     worker.ts          Web Worker entry: generates tiles off the main thread
+  game/
+    state.ts           session owner: lifecycle, pause reasons, level, missions, sortie/calendar/time, checkpoint validation
   sim/
     flight.ts          bank, turn, speed, engine full power / heat / fuel
     aids.ts            flight aids: Hold (hands off) state machine + heading hold
-    daylight.ts        campaign clock + real sun position (Ypres, by date and solar time)
+    daylight.ts        clock advancement maths + real sun position (Ypres, by date and solar time)
   input/
     controls.ts        mouse, touch, keyboard → raw pilot input + one-off actions (toggle Hold, take control)
   render/
@@ -153,6 +155,35 @@ Each system owns its state, exposes a small surface, and guarantees a few things
 ---
 
 ## 5. Procedural world & saves
+
+### Session state (implemented)
+
+`src/game/state.ts` is the session/campaign owner, above the individual simulation systems. `createGame({ mode, seed, startHour, day, level, world, levelId, objectives })` starts in `loading`, in `free-play` mode (the only implemented mode), at level 1 / campaign day 0 by default, with no assigned mission (free flight). The readonly `game.state` view contains the world seed/configuration, mode, phase, calendar clock, current level ID/objectives and mission, sortie number and start time, active sortie seconds and total active seconds. `sim/daylight.ts` still owns solar/time-advance calculations; the game module owns the clock instance. Calendar dates use UTC arithmetic anchored to 10 May 1915, not the device timezone.
+
+- `transition('handoff' | 'playing')` follows the launch/reveal lifecycle. Only these two phases run physics and advance active time. Loading, pause and debrief freeze time.
+- `pause(reason)` / `resume(reason)` track `user` and `visibility` independently. Showing a tab never undoes a user pause. A reveal callback arriving while paused updates the eventual resume phase without resuming early.
+- `startMission(id)` and `finishMission('completed' | 'failed')` own mission lifecycle/timestamps. Completed and failed results are archived with their level/sortie before the next assignment can replace them. Mission IDs reference future content; objectives and rewards are not invented here. `endSortie()` requires any active assignment to be resolved first.
+- `beginSortie({ day, startHour, level, seed?, world?, levelId?, objectives? })` requires debrief and resets sortie-local metadata, preserving total active seconds and prior mission results. Seed/world settings carry over unless explicitly overridden for the next level. Registered objectives persist across sorties at the same level; `completeObjective(id)` marks them done. Switching levels is blocked until all current objectives are completed. Content decides when an objective is satisfied and which definition comes next. Campaign scheduling chooses the next day/level explicitly; midnight only changes the calendar. A future sortie coordinator must also reset aircraft/world/UI as appropriate; this metadata operation does not recreate those systems.
+- `advance(dt, speed)` accepts simulation steps up to one second and clock multipliers 0–1000. Active time stays in simulation seconds even when the solar clock is accelerated or frozen. `setTime(hours, day?)` supports developer inspection without rewriting start timestamps.
+- `snapshot()` returns detached version-2 session metadata, including mode, world configuration and level objectives. Version-1 snapshots migrate to free play with the default world settings, since the old format did not record them. `restoreGame(parsedUnknown)` validates it, rejects unknown versions and invalid lifecycle data, drops the previous tab's visibility reason, and pauses a restored active flight until explicitly resumed. This is the session portion of a future full save: aircraft, world changes, presentation state and storage persistence are **not** included or automatically loaded.
+
+`world` owns `fronts`, `farms`, `frontLines`, `frontAtStart`, `onlyTrenches`, `density` and `trenchStyle`. `worldFeatures()` translates those names into the existing renderer/worker contract. `setWorldFeatures({ fronts?, farms?, frontLines? })` supports the three existing live toggles; generation geometry and seed changes are applied at sortie setup, when a future coordinator can rebuild the scene. `main.ts` uses the same flags in development and production. Debug toggles are mirrors/controllers of this configuration, not an independent owner. A supplied seed (including zero) is used exactly; `createGame()` generates one when omitted.
+
+```ts
+const game = createGame({ mode: 'free-play', seed: 1915, world: { fronts: false, farms: true } });
+game.transition('handoff');
+game.transition('playing');
+game.endSortie(); // future gameplay decides when the current sortie is over
+// Next authored level, after the previous sortie/required objectives have finished:
+game.beginSortie({ day: 1, startHour: 9, level: 2, levelId: 'first-photo', objectives: ['photograph-target'], seed: 2718, world: { fronts: true, farms: false } });
+// Its gameplay system calls game.completeObjective('photograph-target') when the actual objective is met.
+```
+
+There is no campaign mode, level catalogue, authored objective content or story scripting yet; these APIs provide the state/progression contract for them.
+
+`main.ts` creates one session, reads its state for flight gating, lighting, the watch and diagnostics, and applies transitions to audio, input and DOM controls through `syncSession`. The browser visibility event adds/removes only the visibility pause reason. New UI/mission systems should call the session API and apply the relevant presentation effects, rather than create parallel phase/day/mission variables.
+
+### Procedural sector
 
 - The world is a **pure function of a seed** (§3.6 of `MECHANICS.md`): `generate(seed, profile) → sector`.
 - The evolving sector is saved as **seed + a list of changes** (craters, ruins, front shifts), not as full map data. Saves stay a few KB.

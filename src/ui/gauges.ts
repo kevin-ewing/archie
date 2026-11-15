@@ -3,6 +3,7 @@
 // own small canvas from a cached face, so the HUD just places them.
 
 import { createPx, disc, line, plot, polar, text, textWidth, tinyText, tinyWidth, type Px, type RGBA } from '../core/pixels.ts';
+import { applyLight, type HudLight } from './light.ts';
 import { needleAngle } from './instruments.ts';
 
 export const C = {
@@ -25,7 +26,7 @@ export const C = {
 /** alert: 0 normal, 1 warning (red zone lit), 2 alarm (red zone lit and the bezel flashes red). */
 export type Alert = 0 | 1 | 2;
 /** `glow`: the instrument's radium paint alone, for the night layer (filled only when drawn `luminous`). */
-export type Instrument = { canvas: HTMLCanvasElement; glow: HTMLCanvasElement; size: number; draw: (reading: number, alert: Alert, luminous?: boolean) => void };
+export type Instrument = { canvas: HTMLCanvasElement; glow: HTMLCanvasElement; size: number; draw: (reading: number, alert: Alert, luminous?: boolean, light?: HudLight) => void };
 
 /**
  * Radium luminous paint, as on the needles, figures and main ticks of the period's instruments [VERIFY]:
@@ -67,13 +68,15 @@ function instrument(size: number, paint: (px: Px, reading: number, alert: Alert)
     canvas,
     glow,
     size,
-    draw(reading, alert, luminous = false) {
+    draw(reading, alert, luminous = false, light) {
       px.data.fill(0);
       paint(px, reading, alert);
+      if (luminous) {
+        radiumOf(px, glowPx);
+        glowCtx.putImageData(glowImg, 0, 0);
+      }
+      applyLight(px, light);
       ctx.putImageData(img, 0, 0);
-      if (!luminous) return; // by day: no glow work at all
-      radiumOf(px, glowPx);
-      glowCtx.putImageData(glowImg, 0, 0);
     },
   };
 }

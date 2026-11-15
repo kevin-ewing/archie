@@ -6,7 +6,7 @@
 export const PIXEL_SIZE = { regular: 1.75, compact: 1.5 };
 /** Screens whose short side is below this many CSS pixels count as compact. */
 export const COMPACT_BREAKPOINT = 600;
-export const MOBILE_SCALE = { scene: 1.25, ui: 1.3 };
+export const MOBILE_SCALE = { scene: 1.25, ui: 1 };
 export type MobilePlatform = 'ios' | 'android' | 'other';
 
 export function mobilePlatform(userAgent: string, platform = '', maxTouchPoints = 0): MobilePlatform | null {
@@ -66,11 +66,13 @@ export function createDisplay(canvas: HTMLCanvasElement): Display {
     const dpr = window.devicePixelRatio || 1;
     view = fitView(window.innerWidth, window.innerHeight, dpr, mobile);
     for (const c of [canvas, hudCanvas, glowCanvas]) {
-      c.width = view.devW;
-      c.height = view.devH;
+      const width = view.devW;
+      const height = view.devH;
+      if (c.width !== width) c.width = width;
+      if (c.height !== height) c.height = height;
       // CSS size maps 1:1 onto device pixels, so the browser never resamples the canvas.
-      c.style.width = `${view.devW / dpr}px`;
-      c.style.height = `${view.devH / dpr}px`;
+      c.style.width = `${width / dpr}px`;
+      c.style.height = `${height / dpr}px`;
     }
     ctx!.imageSmoothingEnabled = false; // resizing resets context state
     hud.imageSmoothingEnabled = false;

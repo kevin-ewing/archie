@@ -167,3 +167,11 @@ existing marks in `src/render/scene.ts` (or in `src/main.ts` for the HUD). The n
   the page (Vite does it on save), then `await archie.ready()`.
 - **Performance numbers.** Compare with the same scenario (seed, place, hour, toggles, clock speed) and
   the tab visible. Run-to-run noise is around ±0.1–0.2 ms per frame, so take `stats()` over 1–2 s.
+
+
+### Session state debugging
+
+`archie.state()` includes level, mission, sortie start/current calendar time and active elapsed seconds alongside existing aircraft/render diagnostics. `archie.pause()` and `archie.resume()` control the user pause reason; hiding/showing the tab is independent. `archie.session()` returns a detached versioned session checkpoint for inspection. It is metadata, not a full aircraft/world save, and does not write browser storage. `archie.time(hours)` now updates time through the session owner without changing the sortie start time. See `game/state.ts` and the session-state section of `TECH.md` for mission and next-sortie APIs.
+
+
+Mode/world configuration: `archie.session()` now exposes `mode: 'free-play'`, `world` (fronts/farms/front markers, density, placement and trench style), and `levelProgress` (stable level ID and objective completion). Existing `archie.toggle('military', false)` / `toggle('structures', false)` update the game controller and renderer together. For a pinned startup use `?seed=1915&off=military,structures`; flags are respected in production as well. Controller APIs accept per-sortie seed/world overrides for future level definitions; switching geometry/seed requires rebuilding the scene as described in `TECH.md`.

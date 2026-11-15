@@ -59,3 +59,17 @@ test('radium shows only from dusk: none by day, full in the dark', () => {
   assert.ok(radiumGlow(deg(-3)) > 0 && radiumGlow(deg(-3)) < 1);
   assert.equal(radiumGlow(deg(-15)), 1);
 });
+
+
+test('portrait phone gauges form two side columns and leave the centre clear', () => {
+  const items = [35, 31, 31, 27, 27, 27, 31, 27].map((s, i) => ({ w: s, h: s, plaque: [2, 3, 4, 5].includes(i) }));
+  for (const [w, h] of [[359, 660], [390, 710], [320, 620]]) {
+    const v = fitView(w, h, 3, 'ios');
+    const board = hudLayout(v, items, 4);
+    for (const group of [board.slots.slice(0, 4), board.slots.slice(4)]) {
+      assert.equal(new Set(group.map((r) => r.x + Math.floor(r.w / 2))).size, 1, 'each bank is a single centred column');
+      assert.ok(group.every((r, i) => i === 0 || r.y > group[i - 1].y), 'instruments ascend along the side rather than spreading across the bottom');
+    }
+    assert.ok(board.banks[1].x - (board.banks[0].x + board.banks[0].w) > v.uiW * 0.5, 'more than half the flight view remains clear between columns');
+  }
+});

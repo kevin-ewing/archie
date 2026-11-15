@@ -9,6 +9,7 @@
 // on a cord from the altimeter and swings as the plane banks. The board wraps into centred rows on
 // narrow screens rather than shrinking the instruments.
 
+import { litCanvas, type HudLight } from './light.ts';
 import type { View } from '../render/display.ts';
 import { hash } from '../core/noise.ts';
 import { INSTRUMENTS, type EngineWarning, type Instruments } from './instruments.ts';
@@ -91,6 +92,28 @@ const MIDDLE = 16; // the least space between the two clumps
  * row is centred on one horizontal line (the row's centre line is shared by both clumps), plaques beneath.
  */
 export function hudLayout(view: View, items: readonly BoardItem[], split: number) {
+  if (view.mobile && view.uiH > view.uiW) {
+    const groups = [[...items.keys()].slice(0, split), [...items.keys()].slice(split)];
+    const widths = groups.map((g) => Math.max(...g.map((i) => items[i].w)));
+    const bottom = Math.floor(view.uiH) - BOARD_MARGIN.compact;
+    const slots: Rect[] = new Array(items.length);
+    const rows = Math.max(...groups.map((g) => g.length));
+    let base = bottom;
+    for (let row = rows - 1; row >= 0; row--) {
+      const indices = groups.flatMap((g) => g[row] === undefined ? [] : [g[row]]);
+      const height = Math.max(...indices.map((i) => items[i].h));
+      const below = indices.some((i) => items[i].plaque) ? PLAQUE_GAP + PLAQUE_H : 0;
+      for (const [side, group] of groups.entries()) {
+        const i = group[row];
+        if (i === undefined) continue;
+        const x = side === 0 ? SIDE : Math.floor(view.uiW) - SIDE - widths[side];
+        slots[i] = { x: x + Math.floor((widths[side] - items[i].w) / 2), y: base - below - height + Math.floor((height - items[i].h) / 2), w: items[i].w, h: items[i].h };
+      }
+      base -= height + below + ROW_GAP;
+    }
+    const banks = groups.map((g, side) => ({ x: side === 0 ? SIDE : Math.floor(view.uiW) - SIDE - widths[side], y: Math.min(...g.map((i) => slots[i].y)), w: widths[side], h: bottom - Math.min(...g.map((i) => slots[i].y)) }));
+    return { slots, banks, top: Math.min(...slots.map((r) => r.y)), bottom, rows };
+  }
   const half = Math.floor((Math.floor(view.uiW) - 2 * SIDE - MIDDLE) / 2);
   const wrap = (idx: number[]) => {
     const rows: number[][] = [[]];
@@ -147,7 +170,7 @@ export const SPLIT = 4;
 
 /** Draw the two clumps along the bottom. Returns the layout: `slots` are the instruments' rects. */
 /** `glow`: at night, the layer the radium paint is drawn on (undefined by day: no glow work). */
-export function drawHud(ctx: CanvasRenderingContext2D, view: View, hud: Hud, s: Instruments, warning: EngineWarning, t: number, glow?: CanvasRenderingContext2D) {
+export function drawHud(ctx: CanvasRenderingContext2D, view: View, hud: Hud, s: Instruments, warning: EngineWarning, t: number, glow?: CanvasRenderingContext2D, light?: HudLight) {
   glow?.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
   ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
   const layout = hudLayout(view, boardItems(hud), SPLIT);
@@ -160,7 +183,7 @@ export function drawHud(ctx: CanvasRenderingContext2D, view: View, hud: Hud, s: 
   const blink = Math.floor(t * (warning === 2 ? 5 : 3)) % 2 === 0;
   const tick = Math.floor(t * 30);
   hud.slots.forEach((slot, i) => {
-    slot.inst.draw(slot.read(s), slot.alert(s, warning, blink), !!glow);
+    slot.inst.draw(slot.read(s), slot.alert(s, warning, blink), !!glow, light);
     const shake = slot.engine && warning > 0 && hash(1, tick, i) < (warning === 2 ? 0.3 : 0.12);
     const dx = shake ? (hash(2, tick, i) < 0.5 ? -1 : 1) : 0;
     const dy = shake && warning === 2 && hash(4, tick, i) < 0.4 ? (hash(3, tick, i) < 0.5 ? -1 : 1) : 0;
@@ -170,7 +193,7 @@ export function drawHud(ctx: CanvasRenderingContext2D, view: View, hud: Hud, s: 
     if (slot.plaque) {
       const p = slot.plaque[slot.engine && warning > 0 && blink ? 1 : 0];
       // All the plaques in a row hang on one line: under the row's lowest dial, whatever this one's size.
-      ctx.drawImage(p, x + Math.floor((slot.inst.size - p.width) / 2), plaqueLine.get(rowKey(slots[i]))! + PLAQUE_GAP);
+      ctx.drawImage(litCanvas(p, light), x + Math.floor((slot.inst.size - p.width) / 2), plaqueLine.get(rowKey(slots[i]))! + PLAQUE_GAP - 2);
     }
   });
 
@@ -180,7 +203,7 @@ export function drawHud(ctx: CanvasRenderingContext2D, view: View, hud: Hud, s: 
   const alt = slots[ALTIMETER];
   // Tied round the left side of the bezel, halfway up (its knot over the rim), hanging down between the
   // altimeter and the compass. (The coin may hang off the screen's bottom edge: that's fine.)
-  drawCharm(ctx, hud.cat, hud.swing, alt.x + 4, alt.y + Math.floor(alt.h * 0.5));
+  drawCharm(ctx, hud.cat, hud.swing, alt.x + 4, alt.y + Math.floor(alt.h * 0.5), light);
   return { ...layout, slots };
 }
 
@@ -197,13 +220,15 @@ export function stepMascot(s: { angle: number; velocity: number }, bank: number,
  * and the coin hangs at the cord's end at the full swing angle. Whole UI pixels throughout.
  */
 const CORD = { length: 12, knot: 0.45, bow: 0.45, maxBow: 1.5 }; // bow: px of lag per rad/s of swing
-function drawCharm(ctx: CanvasRenderingContext2D, c: Charm, swing: { angle: number; velocity: number }, px: number, py: number) {
+function drawCharm(ctx: CanvasRenderingContext2D, c: Charm, swing: { angle: number; velocity: number }, px: number, py: number, light?: HudLight) {
   const a = swing.angle;
+  const color = (v: RGBA) => `rgb(${light ? light.channels[0][v[0]] : v[0]},${light ? light.channels[1][v[1]] : v[1]},${light ? light.channels[2][v[2]] : v[2]})`;
+  const cordA = color(c.cordA), cordB = color(c.cordB);
   ctx.save();
   ctx.translate(px, py);
   ctx.save();
   ctx.rotate(a * CORD.knot);
-  ctx.drawImage(c.knot, -c.pivot, 0);
+  ctx.drawImage(litCanvas(c.knot, light), -c.pivot, 0);
   ctx.restore();
   // The cord from below the knot: its direction eases from the knot's angle to the coin's, and it bows
   // back against the swing (lagging behind like a soft cord), most in the middle.
@@ -219,15 +244,15 @@ function drawCharm(ctx: CanvasRenderingContext2D, c: Charm, swing: { angle: numb
     const lag = bow * Math.sin(Math.PI * t);
     const cx = Math.round(x + lag) - 1;
     const cy = Math.round(y);
-    ctx.fillStyle = k % 2 ? c.cordB : c.cordA;
+    ctx.fillStyle = k % 2 ? cordB : cordA;
     ctx.fillRect(cx, cy, 1, 1);
-    ctx.fillStyle = k % 2 ? c.cordA : c.cordB;
+    ctx.fillStyle = k % 2 ? cordA : cordB;
     ctx.fillRect(cx + 1, cy, 1, 1);
   }
   // The coin, hung from the cord's end at the full angle.
   ctx.translate(Math.round(x), Math.round(y));
   ctx.rotate(a);
-  ctx.drawImage(c.coin, -c.pivot, 0);
+  ctx.drawImage(litCanvas(c.coin, light), -c.pivot, 0);
   ctx.restore();
 }
 
@@ -239,7 +264,7 @@ function drawCharm(ctx: CanvasRenderingContext2D, c: Charm, swing: { angle: numb
  * pieces [VERIFY].) Made as two images, the knot and the coin (the cord between is drawn live, see
  * drawCharm), each hung from `pivot` px across its top.
  */
-type Charm = { knot: HTMLCanvasElement; coin: HTMLCanvasElement; pivot: number; cordA: string; cordB: string };
+type Charm = { knot: HTMLCanvasElement; coin: HTMLCanvasElement; pivot: number; cordA: RGBA; cordB: RGBA };
 function luckPiece(): Charm {
   const W = 23;
   const H = 34;
@@ -320,7 +345,6 @@ function luckPiece(): Charm {
     out.getContext('2d')!.drawImage(whole, 0, y0, W, h, 0, 0, W, h);
     return out;
   };
-  const css = ([r, g, b]: RGBA) => `rgb(${r} ${g} ${b})`;
   // The knot mirrored, so its cut ends point away from the bezel it's tied round (the left side).
   const knot = part(0, 7);
   const flipped = document.createElement('canvas');
@@ -330,7 +354,7 @@ function luckPiece(): Charm {
   fc.translate(W, 0);
   fc.scale(-1, 1);
   fc.drawImage(knot, 0, 0);
-  return { knot: flipped, coin: part(16, H - 16), pivot: c, cordA: css(cordA), cordB: css(cordB) };
+  return { knot: flipped, coin: part(16, H - 16), pivot: c, cordA, cordB };
 }
 
 /**

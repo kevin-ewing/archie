@@ -2,6 +2,7 @@
 // digital readout and the date beneath. Its own module: reads the time, draws itself, nothing else.
 
 import { createPx, disc, line, plot, polar, text, textWidth, type RGBA } from '../core/pixels.ts';
+import { applyLight, litCanvas, type HudLight } from './light.ts';
 import type { View } from '../render/display.ts';
 import { C, label, RADIUM, radiumOf, type Instrument } from './gauges.ts';
 
@@ -29,10 +30,10 @@ export type ClockFace = { watch: ReturnType<typeof createWatch>; digital: Cached
 export const createClockFace = (): ClockFace => ({ watch: createWatch(27), digital: { key: '', canvas: helpText('') }, date: { key: '', canvas: helpText('') } });
 
 /** Draw in the top-left corner, on whole game pixels. Phones get extra margin (notch, rounded corners). */
-export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: ClockFace, time: TimeOfDay, glow?: CanvasRenderingContext2D): void {
+export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: ClockFace, time: TimeOfDay, glow?: CanvasRenderingContext2D, light?: HudLight): void {
   ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
   face.watch.sunset = time.sunset;
-  face.watch.draw(time.hours, 0, !!glow);
+  face.watch.draw(time.hours, 0, !!glow, light);
   face.digital = cached(face.digital, clockText(time.hours).clock);
   face.date = cached(face.date, time.dateText);
   const left = view.compact ? 14 : 8;
@@ -46,8 +47,8 @@ export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: Clock
     glow.drawImage(face.watch.glow, centre - face.watch.cx, top);
   }
   const y = top + face.watch.canvas.height + 2;
-  ctx.drawImage(face.digital.canvas, centre - half(face.digital.canvas), y);
-  ctx.drawImage(face.date.canvas, centre - half(face.date.canvas), y + face.digital.canvas.height + 1);
+  ctx.drawImage(litCanvas(face.digital.canvas, light), centre - half(face.digital.canvas), y);
+  ctx.drawImage(litCanvas(face.date.canvas, light), centre - half(face.date.canvas), y + face.digital.canvas.height + 1);
 }
 
 /** Mark V-inspired cockpit watch; the user's reference has a long stem and no bow.
@@ -90,7 +91,7 @@ export function createWatch(r: number): Instrument & { sunset: number; cx: numbe
   }
   const watch = {
     canvas, glow, size, cx: c, sunset: 19.5,
-    draw(hours: number, _alert = 0, luminous = false) {
+    draw(hours: number, _alert = 0, luminous = false, light?: HudLight) {
       px.data.set(staticFace.data);
       const mark = polar(c, cy, r - 1, angle(watch.sunset));
       plot(px, mark.x, mark.y, C.red);
@@ -110,12 +111,14 @@ export function createWatch(r: number): Instrument & { sunset: number; cx: numbe
       line(px, c + 1, cy, hour.x + 1, hour.y, C.glint);
       line(px, c, cy + 1, hour.x, hour.y + 1, metal);
       disc(px, c, cy, 1.5, () => C.metal);
+      if (luminous) {
+        // Extract luminous paint before tinting the visible metal and face.
+        radiumOf(px, glowPx);
+        for (const p of [minute, hour]) line(glowPx, c, cy, p.x, p.y, RADIUM);
+        glow.getContext('2d')!.putImageData(glowImg, 0, 0);
+      }
+      applyLight(px, light);
       ctx.putImageData(img, 0, 0);
-      if (!luminous) return; // by day: no glow work at all
-      // Radium on the figures and main ticks (the cream paint), and on both hands.
-      radiumOf(px, glowPx);
-      for (const p of [minute, hour]) line(glowPx, c, cy, p.x, p.y, RADIUM);
-      glow.getContext('2d')!.putImageData(glowImg, 0, 0);
     },
   };
   return watch;
