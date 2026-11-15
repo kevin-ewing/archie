@@ -19,6 +19,7 @@ import { createInstruments, engineWarning, updateInstruments } from './ui/instru
 import { createSmoke, updateSmoke } from './render/smoke.ts';
 import { trenchBearing } from './world/military.ts';
 import { DEV, TRENCH_STYLES, type TrenchStyle } from './world/settings.ts';
+import { installDevApi } from './devtools.ts';
 
 export const IS_DEV = import.meta.env.DEV;
 
@@ -46,6 +47,13 @@ const toggles = createToggles([
   { id: 'military', text: 'FRONT', on: true },
   { id: 'frontLines', text: 'FRONT LINES', on: true }, // the front's own line (red) and each side's (blue British, yellow German)
 ]);
+// Scenario from the URL (development and tools): `?off=structures,frontLines` / `?on=…` set toggles.
+for (const [param, on] of [['off', false], ['on', true]] as const) {
+  for (const id of new URLSearchParams(location.search).get(param)?.split(',') ?? []) {
+    const t = toggles.items.find((g) => g.id === id);
+    if (t) t.on = on;
+  }
+}
 const toggleOn = (id: string) => toggles.items.find((t) => t.id === id)?.on ?? true;
 const FAST_TIME = 3;
 const FAST_FORWARD = 40;
@@ -53,7 +61,9 @@ let forward = false;
 window.addEventListener('keydown', (e) => e.code === 'BracketRight' && (forward = true));
 window.addEventListener('keyup', (e) => e.code === 'BracketRight' && (forward = false));
 window.addEventListener('blur', () => (forward = false));
-const timeSpeed = () => (IS_DEV ? (forward ? FAST_FORWARD : toggleOn('fastTime') ? FAST_TIME : 1) : 1);
+// `?speed=` or archie.speed() override the clock speed (0 freezes time), for looking at one moment.
+let speedOverride: number | null = numberFromUrl('speed', (n) => n >= 0 && n <= 1000) ?? null;
+const timeSpeed = () => speedOverride ?? (IS_DEV ? (forward ? FAST_FORWARD : toggleOn('fastTime') ? FAST_TIME : 1) : 1);
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const CAMPAIGN_START = new Date(1915, 4, 10); // 10 May 1915; matches DAYLIGHT.startDayOfYear
@@ -170,7 +180,9 @@ const applyFastPlane = () => {
 };
 applyFastPlane();
 // Start on a random heading (from the seed, so `?seed=` repeats it), not lined up with the world's pixels.
-const plane = createPlane(0, 0, hash(SEED, 41, 7) * 2 * Math.PI);
+// `?x= &y= &heading=` (degrees) start the plane somewhere else, for revisiting a spot.
+const startHeading = numberFromUrl('heading', Number.isFinite);
+const plane = createPlane(numberFromUrl('x', Number.isFinite) ?? 0, numberFromUrl('y', Number.isFinite) ?? 0, startHeading !== undefined ? (startHeading * Math.PI) / 180 : hash(SEED, 41, 7) * 2 * Math.PI);
 const cam = createCamera(plane);
 const aids = createAids(plane, IS_DEV ? 'hold' : 'off');
 // Previous sim tick, for smooth rendering between ticks on high-refresh screens.
@@ -284,6 +296,38 @@ const prof = createProfiler(IS_DEV || debugRequested, (text) => {
   debugPanel.textContent = `${debugDetails()}\n${text}`;
 });
 
+let lastComplete = false; // every visible tile ready in the last frame (for archie.ready())
+if (IS_DEV || debugRequested) {
+  installDevApi({
+    state: () => ({
+      seed: SEED,
+      phase,
+      day: clock.day,
+      hours: +clock.hours.toFixed(3),
+      speed: timeSpeed(),
+      plane: { x: +plane.x.toFixed(1), y: +plane.y.toFixed(1), headingDeg: +(((plane.heading * 180) / Math.PI + 360) % 360).toFixed(1), speed: +plane.speed.toFixed(1), bank: +plane.bank.toFixed(2) },
+      sun: (({ elevation, azimuth, strength }) => ({ elevationDeg: +((elevation * 180) / Math.PI).toFixed(2), azimuthDeg: +((azimuth * 180) / Math.PI).toFixed(2), strength: +strength.toFixed(2) }))(sunNow(clock)),
+      features: { ...scene.features },
+      toggles: Object.fromEntries(toggles.items.map((g) => [g.id, g.on])),
+      view: (({ w, h, scale, devW, devH }) => ({ w, h, scale, devW, devH }))(display.view()),
+    }),
+    setHours: (hours) => (clock.hours = hours),
+    setSpeed: (k) => (speedOverride = k),
+    goto: (x, y, headingDeg) => {
+      plane.x = x;
+      plane.y = y;
+      if (headingDeg !== undefined) plane.heading = (headingDeg * Math.PI) / 180;
+      Object.assign(cam, createCamera(plane));
+      Object.assign(prevPlane, plane);
+      Object.assign(prevCam, cam);
+    },
+    toggles: toggles.items,
+    complete: () => lastComplete,
+    canvases: [canvas, display.hud.canvas],
+    prof,
+  });
+}
+
 let t = 0;
 let shown = false;
 let loadingFrame = 0;
@@ -386,7 +430,13 @@ startLoop(
     scene.features.military = !IS_DEV || toggleOn('military');
     scene.features.frontLine = IS_DEV && toggleOn('frontLines');
     const complete = drawScene(display.ctx, view, scene, p, c, { t: t - STEP * (1 - alpha), smoke, warning, sun, day: clock.day, prof });
-    drawHud(display.ctx, view, hud, instruments, warning, t);
+    lastComplete = complete;
+    // The HUD has its own canvas, stacked over the game's, so the world canvas ends on the light of the hour
+    // (drawing anything on it after the grade forces the browser to render the frame early: ~0.5 ms at dusk).
+    const hudCtx = display.hud;
+    hudCtx.setTransform(1, 0, 0, 1, 0, 0);
+    hudCtx.clearRect(0, 0, view.devW, view.devH);
+    drawHud(hudCtx, view, hud, instruments, warning, t);
     if (mapButton instanceof HTMLButtonElement) {
       const px = view.uiScale / (window.devicePixelRatio || 1);
       const size = hud.slots[0].inst.size;
@@ -395,7 +445,7 @@ startLoop(
       mapButton.style.width = mapButton.style.height = `${size * px}px`;
       mapButton.style.visibility = 'visible';
     }
-    drawToggles(display.ctx, view, toggles, IS_DEV);
+    drawToggles(hudCtx, view, toggles, IS_DEV);
     const fastTime = controlsAnchor(view); // the player's own controls stack up on the left, just above the gauges
     if (fastTime) {
       const px = view.uiScale / (window.devicePixelRatio || 1);
@@ -417,7 +467,7 @@ startLoop(
         holdButton.style.visibility = 'visible';
       }
     }
-    drawClock(display.ctx, view, clockFace, {
+    drawClock(hudCtx, view, clockFace, {
       hours: clock.hours,
       day: clock.day,
       sunset: sunsetHour(dayOfYear(clock)),

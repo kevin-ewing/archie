@@ -30,6 +30,7 @@ export type TileLayer = {
 };
 
 const RETRY_MS = 1000; // after a failed tile, wait this long before asking again
+const NOT_READY_MS = 100; // after a tile that can't be made yet (its inputs aren't ready), wait this long: not every frame
 
 export const fadeProgress = (at: number, now: number, duration: number): number => Math.min(1, Math.max(0, (now - at) / duration));
 
@@ -57,7 +58,10 @@ export function createTileLayer(
     if (performance.now() - (failedAt.get(key) ?? -Infinity) < RETRY_MS) return;
     const v = version(cx, cy);
     const job = request(cx, cy);
-    if (!job) return;
+    if (!job) {
+      failedAt.set(key, performance.now() - RETRY_MS + NOT_READY_MS); // asked again in NOT_READY_MS
+      return;
+    }
     pending.add(key);
     job.then(
       (data) => {

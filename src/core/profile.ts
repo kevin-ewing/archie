@@ -6,10 +6,20 @@
 // ("js: clouds"); if not, the time went elsewhere: the GPU / compositor, garbage collection, or another
 // thread ("external"). Each drop is also logged to the console with its stage times.
 
-export type Profiler = { start: () => void; mark: (name: string) => void; end: () => void };
+/** One frame's timings: when it ended, the game's work in it, the gap since the last, and each stage. */
+export type FrameTimes = { at: number; work: number; gap: number; stages: ReadonlyMap<string, number> };
+export type Profiler = {
+  start: () => void;
+  mark: (name: string) => void;
+  end: () => void;
+  /** The last few hundred frames, oldest first (for tools: see src/devtools.ts). Empty when disabled. */
+  history: () => readonly FrameTimes[];
+};
+const HISTORY = 600; // ~5–10 s of frames
 
 export function createProfiler(enabled: boolean, show: (text: string) => void): Profiler {
-  if (!enabled) return { start: () => {}, mark: () => {}, end: () => {} };
+  if (!enabled) return { start: () => {}, mark: () => {}, end: () => {}, history: () => [] };
+  const history: FrameTimes[] = [];
   const totals = new Map<string, number>();
   let cur = new Map<string, number>(); // this frame's stage times
   let frames = 0;
@@ -56,6 +66,8 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
           console.debug(`frame drop ${gap.toFixed(1)} ms (work ${work.toFixed(1)}) → ${cause}`, Object.fromEntries([...cur].map(([k, v]) => [k, +v.toFixed(2)])));
         }
       }
+      history.push({ at: now, work, gap: prevEnd ? now - prevEnd : 0, stages: cur });
+      if (history.length > HISTORY) history.shift();
       prevEnd = now;
       if (now - windowStart < 500) return;
       const fps = (frames * 1000) / (now - windowStart);
@@ -75,5 +87,6 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
       frames = 0;
       windowStart = now;
     },
+    history: () => history,
   };
 }

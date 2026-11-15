@@ -40,23 +40,34 @@ export function fitView(viewW: number, viewH: number, dpr: number, mobile: Mobil
   return { scale, uiScale, compact, mobile, devW, devH, w: devW / scale, h: devH / scale, uiW: devW / uiScale, uiH: devH / uiScale };
 }
 
-export type Display = { ctx: CanvasRenderingContext2D; view: () => View };
+/** `ctx` draws the world; `hud` is a transparent canvas of the same size stacked over it, for the HUD. */
+export type Display = { ctx: CanvasRenderingContext2D; hud: CanvasRenderingContext2D; view: () => View };
 
 export function createDisplay(canvas: HTMLCanvasElement): Display {
   const ctx = canvas.getContext('2d', { alpha: false });
   if (!ctx) throw new Error('Canvas 2D is not supported in this browser.');
+  // The HUD's own canvas, right over the game's (clicks pass through to the game): the world canvas then
+  // ends each frame on the light of the hour, which keeps the browser from rendering the frame early.
+  const hudCanvas = document.createElement('canvas');
+  hudCanvas.id = 'hud';
+  hudCanvas.setAttribute('aria-hidden', 'true');
+  canvas.after(hudCanvas);
+  const hud = hudCanvas.getContext('2d')!;
   const mobile = mobilePlatform(navigator.userAgent, navigator.platform, navigator.maxTouchPoints);
   let view = fitView(1, 1, 1, mobile);
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     view = fitView(window.innerWidth, window.innerHeight, dpr, mobile);
-    canvas.width = view.devW;
-    canvas.height = view.devH;
-    // CSS size maps 1:1 onto device pixels, so the browser never resamples the canvas.
-    canvas.style.width = `${view.devW / dpr}px`;
-    canvas.style.height = `${view.devH / dpr}px`;
+    for (const c of [canvas, hudCanvas]) {
+      c.width = view.devW;
+      c.height = view.devH;
+      // CSS size maps 1:1 onto device pixels, so the browser never resamples the canvas.
+      c.style.width = `${view.devW / dpr}px`;
+      c.style.height = `${view.devH / dpr}px`;
+    }
     ctx!.imageSmoothingEnabled = false; // resizing resets context state
+    hud.imageSmoothingEnabled = false;
   }
 
   resize();
@@ -73,5 +84,5 @@ export function createDisplay(canvas: HTMLCanvasElement): Display {
       { once: true },
     );
   watchDpr();
-  return { ctx, view: () => view };
+  return { ctx, hud, view: () => view };
 }

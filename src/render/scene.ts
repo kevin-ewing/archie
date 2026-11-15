@@ -70,7 +70,11 @@ export type Scene = {
 };
 
 /** Sun quantised for re-baking the sunlight tiles: a fresh bake every half degree or so, cross-faded in. */
-const sunVersion = (s: Sun | null) => (s && s.elevation > 0.5 * RAD ? `${Math.round(s.azimuth / (0.5 * RAD))}:${Math.round(s.elevation / (0.25 * RAD))}` : 'down');
+const sunKey = (s: Sun | null) => (s && s.elevation > 0.5 * RAD ? `${Math.round(s.azimuth / (0.5 * RAD))}:${Math.round(s.elevation / (0.25 * RAD))}` : 'down');
+// Asked once per visible tile per frame: worked out once per sun (the scene sets a new sun each frame).
+let lastSun: Sun | null | undefined;
+let lastSunKey = 'down';
+const sunVersion = (s: Sun | null) => (s === lastSun ? lastSunKey : ((lastSun = s), (lastSunKey = sunKey(s))));
 const SUNLIGHT_FADE_MS = 1500;
 
 /** `density`: development only, packs farms and the front closer (see DEV in world/military.ts). */
@@ -79,6 +83,9 @@ export function createScene(seed: number, density = 1): Scene {
   const planeSprites = createPlaneSprites();
   // A ground tile's version: the feature toggles plus that tile's damage count. A change regenerates
   // just the tiles affected (old ones stay on screen until the new ones arrive).
+  let shared = '';
+  let sharedSun = '';
+  let sharedGround = NaN;
   const groundVersion = (cx: number, cy: number) => (scene.features.structures ? 1 : 0) + (scene.features.military ? 2 : 0) + (scene.features.frontLine ? 4 : 0) + 8 * damageVersion(scene.damage, cx, cy);
   const scene: Scene = {
     seed,
@@ -92,9 +99,23 @@ export function createScene(seed: number, density = 1): Scene {
     // Sunlight depends on the sun and on the heights of the tile and its neighbours (shadows cross edges).
     sunlight: createTileLayer((cx, cy) => sunlightRequest(cx, cy), CHUNK, {
       version: (cx, cy) => {
+        const sv = sunVersion(scene.sun);
+        // No damage anywhere (the usual case): every tile's neighbours share one ground version, so every
+        // tile has the same sunlight version. Build that string once, not once per tile per frame.
+        if (!scene.damage.version.size) {
+          const v0 = groundVersion(0, 0);
+          if (sv !== sharedSun || v0 !== sharedGround) {
+            let g = 0;
+            for (let k = 0; k < 9; k++) g = g * 31 + v0;
+            sharedSun = sv;
+            sharedGround = v0;
+            shared = `${sv}|${g}`;
+          }
+          return shared;
+        }
         let g = 0;
         for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) g = g * 31 + groundVersion(cx + i, cy + j);
-        return `${sunVersion(scene.sun)}|${g}`;
+        return `${sv}|${g}`;
       },
       fadeMs: SUNLIGHT_FADE_MS,
     }),
@@ -134,11 +155,12 @@ export function createScene(seed: number, density = 1): Scene {
   function sunlightRequest(cx: number, cy: number) {
     const sun = scene.sun;
     if (!sun || sun.elevation <= 0.5 * RAD) return null;
+    // All nine ground tiles must be ready (checked before allocating anything: this is asked often).
+    for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) if (!scene.ground.heights(cx + i, cy + j) || !scene.ground.isCurrent(cx + i, cy + j)) return null; // try again once the ground is ready
     const heights = new Uint8Array(9 * CHUNK * CHUNK);
     for (let j = 0; j < 3; j++) {
       for (let i = 0; i < 3; i++) {
-        const h = scene.ground.heights(cx + i - 1, cy + j - 1);
-        if (!h || !scene.ground.isCurrent(cx + i - 1, cy + j - 1)) return null; // try again once the ground is ready
+        const h = scene.ground.heights(cx + i - 1, cy + j - 1)!;
         for (let row = 0; row < CHUNK; row++) heights.set(h.subarray(row * CHUNK, row * CHUNK + CHUNK), (j * CHUNK + row) * 3 * CHUNK + i * CHUNK);
       }
     }

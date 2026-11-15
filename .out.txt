@@ -1,0 +1,397 @@
+TAP version 13
+# Subtest: engine pitch and level rise with rpm while rough running adds mechanical noise
+ok 1 - engine pitch and level rise with rpm while rough running adds mechanical noise
+  ---
+  duration_ms: 0.683083
+  type: 'test'
+  ...
+# Subtest: turning loads the engine, and heat faults become frequent through overheat
+ok 2 - turning loads the engine, and heat faults become frequent through overheat
+  ---
+  duration_ms: 0.118666
+  type: 'test'
+  ...
+# Subtest: master volume is clamped and follows a perceptual curve
+ok 3 - master volume is clamped and follows a perceptual curve
+  ---
+  duration_ms: 0.080541
+  type: 'test'
+  ...
+# Subtest: music uses a fixed short glide for every authored voice
+ok 4 - music uses a fixed short glide for every authored voice
+  ---
+  duration_ms: 0.041875
+  type: 'test'
+  ...
+# Subtest: patient awe preserves the supplied harmony as a valid looping 4/4 progression
+ok 5 - patient awe preserves the supplied harmony as a valid looping 4/4 progression
+  ---
+  duration_ms: 1.302833
+  type: 'test'
+  ...
+# Subtest: resolute duty preserves the reference timing, voicings, and loop
+ok 6 - resolute duty preserves the reference timing, voicings, and loop
+  ---
+  duration_ms: 0.133292
+  type: 'test'
+  ...
+# Subtest: ominous vigil preserves its accelerating reference and seamless return
+ok 7 - ominous vigil preserves its accelerating reference and seamless return
+  ---
+  duration_ms: 0.084042
+  type: 'test'
+  ...
+# Subtest: development chooses among the music library while production stays on patient awe
+ok 8 - development chooses among the music library while production stays on patient awe
+  ---
+  duration_ms: 0.108791
+  type: 'test'
+  ...
+# Subtest: weary stillness preserves the major-minor contractions and soft loop seam
+ok 9 - weary stillness preserves the major-minor contractions and soft loop seam
+  ---
+  duration_ms: 0.082166
+  type: 'test'
+  ...
+# Subtest: tracks four through six preserve their source structures and intended playback tempos
+ok 10 - tracks four through six preserve their source structures and intended playback tempos
+  ---
+  duration_ms: 0.195167
+  type: 'test'
+  ...
+# Subtest: tracks seven through eleven preserve their slow blocks and functional turnarounds
+ok 11 - tracks seven through eleven preserve their slow blocks and functional turnarounds
+  ---
+  duration_ms: 0.138167
+  type: 'test'
+  ...
+# Subtest: small victory keeps its modest success arc and prepared dominant return
+ok 12 - small victory keeps its modest success arc and prepared dominant return
+  ---
+  duration_ms: 0.060291
+  type: 'test'
+  ...
+# Subtest: identical chord data is stored once across the soundtrack library
+ok 13 - identical chord data is stored once across the soundtrack library
+  ---
+  duration_ms: 0.220917
+  type: 'test'
+  ...
+# Subtest: blend interpolates numbers, takes the short way round for angles, keeps flags from the newer state
+ok 14 - blend interpolates numbers, takes the short way round for angles, keeps flags from the newer state
+  ---
+  duration_ms: 1.80625
+  type: 'test'
+  ...
+# Subtest: an empty raster is still at least 1×1 (ImageData rejects 0-size)
+ok 15 - an empty raster is still at least 1×1 (ImageData rejects 0-size)
+  ---
+  duration_ms: 1.12075
+  type: 'test'
+  ...
+# Subtest: mouse: position from centre steers, button held = full power
+ok 16 - mouse: position from centre steers, button held = full power
+  ---
+  duration_ms: 1.902958
+  type: 'test'
+  ...
+# Subtest: touch: drag steers from where the finger landed; double-tap and hold = full power
+ok 17 - touch: drag steers from where the finger landed; double-tap and hold = full power
+  ---
+  duration_ms: 0.529042
+  type: 'test'
+  ...
+# Subtest: reports one-off actions once: T toggles Hold, a click or a key grabs the controls
+ok 18 - reports one-off actions once: T toggles Hold, a click or a key grabs the controls
+  ---
+  duration_ms: 0.342875
+  type: 'test'
+  ...
+# Subtest: keyboard interaction with HUD controls does not leak into flight or engine input
+ok 19 - keyboard interaction with HUD controls does not leak into flight or engine input
+  ---
+  duration_ms: 0.65975
+  type: 'test'
+  ...
+# Subtest: losing focus lets go of everything: no steering, no boost, no press
+ok 20 - losing focus lets go of everything: no steering, no boost, no press
+  ---
+  duration_ms: 0.114125
+  type: 'test'
+  ...
+# Subtest: the edge of the screen turns equally sharply on a phone and a wide laptop
+ok 21 - the edge of the screen turns equally sharply on a phone and a wide laptop
+  ---
+  duration_ms: 0.217583
+  type: 'test'
+  ...
+# Subtest: inactive controls ignore and clear input until play resumes
+ok 22 - inactive controls ignore and clear input until play resumes
+  ---
+  duration_ms: 0.074792
+  type: 'test'
+  ...
+# Subtest: opening the throttle: the ground never scrolls slower, the plane pulls ahead up the screen
+ok 23 - opening the throttle: the ground never scrolls slower, the plane pulls ahead up the screen
+  ---
+  duration_ms: 1.831792
+  type: 'test'
+  ...
+# Subtest: turns swing the plane out and the camera lags the heading; everything settles home
+ok 24 - turns swing the plane out and the camera lags the heading; everything settles home
+  ---
+  duration_ms: 8.61225
+  type: 'test'
+  ...
+# Subtest: a game pixel is a whole number of device pixels, about the same physical size everywhere
+ok 25 - a game pixel is a whole number of device pixels, about the same physical size everywhere
+  ---
+  duration_ms: 1.198834
+  type: 'test'
+  ...
+# Subtest: mobile platforms enlarge the scene and HUD independently
+ok 26 - mobile platforms enlarge the scene and HUD independently
+  ---
+  duration_ms: 0.186542
+  type: 'test'
+  ...
+# Subtest: a collapsed (0-size) window still gives a drawable canvas
+ok 27 - a collapsed (0-size) window still gives a drawable canvas
+  ---
+  duration_ms: 0.044625
+  type: 'test'
+  ...
+# Subtest: plain daylight draws nothing; sunset glows; night is darker than dusk
+ok 28 - plain daylight draws nothing; sunset glows; night is darker than dusk
+  ---
+  duration_ms: 2.950959
+  type: 'test'
+  ...
+# Subtest: skies vary: deterministic per day, some evenings dull, some spectacular
+ok 29 - skies vary: deterministic per day, some evenings dull, some spectacular
+  ---
+  duration_ms: 0.550416
+  type: 'test'
+  ...
+# Subtest: clouds blaze at sunset, go blue the moment the rays stop, and the night is only a little darker than dusk
+ok 30 - clouds blaze at sunset, go blue the moment the rays stop, and the night is only a little darker than dusk
+  ---
+  duration_ms: 58.855333
+  type: 'test'
+  ...
+# Subtest: the light shafts change colour as the sun sinks, from the palette glow toward its ray colour
+ok 31 - the light shafts change colour as the sun sinks, from the palette glow toward its ray colour
+  ---
+  duration_ms: 0.123208
+  type: 'test'
+  ...
+# Subtest: it is already pretty dark just after the sun sets, and still dark just before it rises
+ok 32 - it is already pretty dark just after the sun sets, and still dark just before it rises
+  ---
+  duration_ms: 0.250708
+  type: 'test'
+  ...
+# Subtest: the fast row-copying paint matches the full per-pixel computation
+ok 33 - the fast row-copying paint matches the full per-pixel computation
+  ---
+  duration_ms: 25.656333
+  type: 'test'
+  ...
+# Subtest: prop width stays in range, covers it, and narrows as the plane banks
+ok 34 - prop width stays in range, covers it, and narrows as the plane banks
+  ---
+  duration_ms: 1.136
+  type: 'test'
+  ...
+# Subtest: the shadow falls down-sun at altitude, and closer to the plane over trees
+ok 35 - the shadow falls down-sun at altitude, and closer to the plane over trees
+  ---
+  duration_ms: 0.584875
+  type: 'test'
+  ...
+# Subtest: it slides onto new ground smoothly (no snapping), and moves smoothly with the plane (no jitter)
+ok 36 - it slides onto new ground smoothly (no snapping), and moves smoothly with the plane (no jitter)
+  ---
+  duration_ms: 0.081
+  type: 'test'
+  ...
+# Subtest: each pixel lifts toward the plane only where it is over raised ground
+ok 37 - each pixel lifts toward the plane only where it is over raised ground
+  ---
+  duration_ms: 0.36025
+  type: 'test'
+  ...
+# Subtest: soft silhouette: solid inside, a soft fringe at the edge, nothing far away
+ok 38 - soft silhouette: solid inside, a soft fringe at the edge, nothing far away
+  ---
+  duration_ms: 2.339083
+  type: 'test'
+  ...
+# Subtest: the shadow silhouette can be drawn smaller (perspective), same bitmap size, centred
+ok 39 - the shadow silhouette can be drawn smaller (perspective), same bitmap size, centred
+  ---
+  duration_ms: 4.12525
+  type: 'test'
+  ...
+# Subtest: exhaust smoke: none when fine, light when hot, thick and dark when overheated; puffs fade out
+ok 40 - exhaust smoke: none when fine, light when hot, thick and dark when overheated; puffs fade out
+  ---
+  duration_ms: 1.009667
+  type: 'test'
+  ...
+# Subtest: water sparkles only in sunlight, more in strong sun, and the pattern changes over time
+ok 41 - water sparkles only in sunlight, more in strong sun, and the pattern changes over time
+  ---
+  duration_ms: 35.875375
+  type: 'test'
+  ...
+# Subtest: every sparkle uses the same slow cycle, at a staggered phase
+ok 42 - every sparkle uses the same slow cycle, at a staggered phase
+  ---
+  duration_ms: 3.508667
+  type: 'test'
+  ...
+# Subtest: the glitter patch lies toward the sun: under you at noon, out by the horizon at sunset
+ok 43 - the glitter patch lies toward the sun: under you at noon, out by the horizon at sunset
+  ---
+  duration_ms: 0.091542
+  type: 'test'
+  ...
+# Subtest: tile cross-fades progress smoothly and clamp at both ends
+ok 44 - tile cross-fades progress smoothly and clamp at both ends
+  ---
+  duration_ms: 3.324291
+  type: 'test'
+  ...
+# Subtest: the game starts in Hold, flying straight
+ok 45 - the game starts in Hold, flying straight
+  ---
+  duration_ms: 0.95675
+  type: 'test'
+  ...
+# Subtest: Hold can be disabled for the production start
+ok 46 - Hold can be disabled for the production start
+  ---
+  duration_ms: 0.059125
+  type: 'test'
+  ...
+# Subtest: engaged mid-turn at full power: rolls out, drops to cruise, holds the heading it rolled out on
+ok 47 - engaged mid-turn at full power: rolls out, drops to cruise, holds the heading it rolled out on
+  ---
+  duration_ms: 3.001167
+  type: 'test'
+  ...
+# Subtest: holds steady across the ±180° wrap
+ok 48 - holds steady across the ±180° wrap
+  ---
+  duration_ms: 2.032834
+  type: 'test'
+  ...
+# Subtest: a click or tap that takes the stick also opens the throttle, for as long as it is held
+ok 49 - a click or tap that takes the stick also opens the throttle, for as long as it is held
+  ---
+  duration_ms: 0.332708
+  type: 'test'
+  ...
+# Subtest: the sun is where it should be over Ypres in May: shadows west at dawn, north at noon, east at dusk
+ok 50 - the sun is where it should be over Ypres in May: shadows west at dawn, north at noon, east at dusk
+  ---
+  duration_ms: 0.744042
+  type: 'test'
+  ...
+# Subtest: long May days at 51°N: sunset a little after 19:30 solar time; the clock rolls over at midnight
+ok 51 - long May days at 51°N: sunset a little after 19:30 solar time; the clock rolls over at midnight
+  ---
+  duration_ms: 0.115625
+  type: 'test'
+  ...
+# Subtest: the clock slows around sunset, so the colourful hours last longer in real time
+ok 52 - the clock slows around sunset, so the colourful hours last longer in real time
+  ---
+  duration_ms: 11.129
+  type: 'test'
+  ...
+# Subtest: shadows are full around midday and fade out as the sun drops
+ok 53 - shadows are full around midday and fade out as the sun drops
+  ---
+  duration_ms: 0.17075
+  type: 'test'
+  ...
+# Subtest: steering right banks, turns clockwise and moves east
+ok 54 - steering right banks, turns clockwise and moves east
+  ---
+  duration_ms: 0.891083
+  type: 'test'
+  ...
+# Subtest: full power is faster, burns more fuel, and overheating locks it out until cooled
+ok 55 - full power is faster, burns more fuel, and overheating locks it out until cooled
+  ---
+  duration_ms: 13.476791
+  type: 'test'
+  ...
+# Subtest: 12-hour clock text with AM / PM
+ok 56 - 12-hour clock text with AM / PM
+  ---
+  duration_ms: 1.114625
+  type: 'test'
+  ...
+# Subtest: needles follow the engine: revs up at full power, temperature into the red, revs drop when overheated
+ok 57 - needles follow the engine: revs up at full power, temperature into the red, revs drop when overheated
+  ---
+  duration_ms: 9.980292
+  type: 'test'
+  ...
+# Subtest: the liquid compass lags a turn, swings past the new heading, then settles on it
+ok 58 - the liquid compass lags a turn, swings past the new heading, then settles on it
+  ---
+  duration_ms: 8.375
+  type: 'test'
+  ...
+# Subtest: dial sweep runs 270° from bottom-left to bottom-right
+ok 59 - dial sweep runs 270° from bottom-left to bottom-right
+  ---
+  duration_ms: 0.128584
+  type: 'test'
+  ...
+# Subtest: damage is recorded on every tile it touches, bumping just their versions
+ok 60 - damage is recorded on every tile it touches, bumping just their versions
+  ---
+  duration_ms: 1.264875
+  type: 'test'
+  ...
+# Subtest: a crater: low bowl, raised rim; and it lands in the regenerated ground tile
+ok 61 - a crater: low bowl, raised rim; and it lands in the regenerated ground tile
+  ---
+  duration_ms: 63.395083
+  type: 'test'
+  ...
+# Subtest: no lake or wood in a front's core; behind it the landscape comes back
+ok 62 - no lake or wood in a front's core; behind it the landscape comes back
+  ---
+  duration_ms: 350.336916
+  type: 'test'
+  ...
+# Subtest: no farm in a front's core
+ok 63 - no farm in a front's core
+  ---
+  duration_ms: 3.091667
+  type: 'test'
+  ...
+# Subtest: with the front off, the landscape ignores it
+ok 64 - with the front off, the landscape ignores it
+  ---
+  duration_ms: 8.039459
+  type: 'test'
+  ...
+# Subtest: lamps come on around sunset, one house after another, and are out again after dusk
+ok 65 - lamps come on around sunset, one house after another, and are out again after dusk
+  ---
+  duration_ms: 1.214833
+  type: 'test'
+  ...
+# Subtest: each flame flickers on its own but never goes out while lit
+ok 66 - each flame flickers on its own but never goes out while lit
+  ---
+  duration_ms: 0.169083
+  type: 'test'
+  ...

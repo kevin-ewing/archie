@@ -90,7 +90,7 @@ src/
   input/
     controls.ts        mouse, touch, keyboard → raw pilot input + one-off actions (toggle Hold, take control)
   render/
-    display.ts         full-screen device-res canvas, fixed pixel size
+    display.ts         full-screen device-res canvas, fixed pixel size; plus a transparent HUD canvas stacked on top
     tiles.ts           cached tiles (async) composed into one layer image; ground heights
     tilegen.ts         Web Worker pool for tile generation, with a main-thread fallback
     camera.ts          heading-up camera with lag; position follows the plane (critically damped)
@@ -129,7 +129,7 @@ Each system owns its state, exposes a small surface, and guarantees a few things
 | **Flight aids** `sim/aids.ts` | What the plane does when not hand-flown: Hold | Starts in Hold ✔; engaged mid-turn at full power: rolls out, cruise, holds the roll-out heading ✔; holds across ±180° ✔; a click / tap that takes the stick opens the throttle while held, a steer key doesn't ✔ | New aid = a new `AidMode` and its branch in `applyAids` |
 | **Audio** `audio/audio.ts`, `audio/engine-processor.js` | Lazy Web Audio graph; master/effect buses; AudioWorklet renders each RAF 1a V8 cylinder event with its own timing/gain through an exhaust resonance | Starts only after a user gesture; oscillator fallback; restrained RPM response, irregular firing texture, bank/load feedback, and heat-driven missed firings/backfires; volume and pause use smooth ramps ✔ | Add a bus/source behind `GameAudio`; keep sim state out of the audio graph |
 | **Smoke** `render/smoke.ts` | Exhaust puffs by engine warning | None when fine, light when hot, dark when overheated; all fade ✔; capped | Battle damage smoke can reuse it |
-| **Display** `render/display.ts` | Full-screen device-res canvas, fixed pixel size | Whole device pixels per game pixel, ~same physical size everywhere ✔; never 0-size ✔; re-fits on resize, rotation, zoom and DPR change | Tune `PIXEL_SIZE`, `COMPACT_BREAKPOINT` |
+| **Display** `render/display.ts` | Full-screen device-res canvas, fixed pixel size; the HUD on its own canvas over it, so the world canvas ends each frame on the grade (drawing after the grade forced an early render: ~0.5 ms at dusk) | Whole device pixels per game pixel, ~same physical size everywhere ✔; never 0-size ✔; re-fits on resize, rotation, zoom and DPR change | Tune `PIXEL_SIZE`, `COMPACT_BREAKPOINT` |
 | **Instruments** `ui/` | Readings → needles → dials → board layout, in separate files | Cruise revs; warm engine reads mid-scale; revs rise at full power and sag when hot; warning stage before lockout; temperature reaches the red; compass lags, swings past, settles ✔ | New instrument: a reading in `instruments.ts`, a dial in `gauges.ts`, a slot in `hud.ts` |
 | **Daylight** `sim/daylight.ts` | Clock; sun azimuth / elevation; shadow vector; sun strength; sunset hour | Morning shadows west, noon north, evening east; no sun at night; May sunset ~19:30 solar; midnight rollover ✔ | Change date / latitude in `DAYLIGHT`; the story calendar drives `day` |
 | **Sunlight** `world/shading.ts` + scene | Cast shadows and relief per tile, re-baked every ~3° of sun (stale tiles shown until fresh ones arrive) | Tree shadows fall down-sun and flip morning → evening; crowns lit on the sun side; lower sun → longer shadows ✔ | Tune `SHADE`; new tall things just need heights |
@@ -220,3 +220,7 @@ Biggest remaining cost: the sunlight layer's cross-fades (~0.4–0.8 ms), since 
 1. Pixel font: license an existing one, or draw our own?
 2. Hosting: GitHub Pages, Netlify, itch.io?
 3. Does the dusk lighting need WebGL, or is palette swapping plus canvas compositing enough? (Start with Canvas 2D; measure first.)
+
+## Fast iteration (for agents and people)
+
+See **[AGENT_TOOLS.md](AGENT_TOOLS.md)**: `npm run snap` (any patch of the world to a PNG from Node), `npm run fingerprint` (prove output unchanged), URL scenarios (`?seed= ?time= ?x= ?y= ?heading= ?speed= ?off= ?on=`), and the `archie` console API in the running game (`src/devtools.ts`).

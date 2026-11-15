@@ -38,7 +38,9 @@ export function addDamage(dmg: Damage, mark: DamageMark, chunk: number): string[
 }
 
 export const marksFor = (dmg: Damage, cx: number, cy: number): readonly DamageMark[] => dmg.byTile.get(`${cx},${cy}`) ?? NONE;
-export const damageVersion = (dmg: Damage, cx: number, cy: number): number => dmg.version.get(`${cx},${cy}`) ?? 0;
+// Asked for every visible tile every frame: with no damage anywhere yet (the usual case) answer at once,
+// without building a key.
+export const damageVersion = (dmg: Damage, cx: number, cy: number): number => (dmg.version.size ? (dmg.version.get(`${cx},${cy}`) ?? 0) : 0);
 
 /** The damage stamp at a world pixel from a tile's marks (later marks on top), or null. Pure. */
 export function damageAt(marks: readonly DamageMark[], x: number, y: number): Stamp | null {
