@@ -1,5 +1,6 @@
 /* The Story screen (src/story/barn.ts): the desk fills the screen in flight's pixels; the things in it
-   are invisible buttons over the picture, each showing its riveted name plate under the pointer or focus. */
+   are invisible buttons over the picture (under the pointer or focus, the thing lifts a little off the
+   desk, drawn on the canvas). Picked up, it slides up from the bottom; pressing anywhere else puts it down. */
 .barn { position: fixed; inset: 0; z-index: 115; overflow: hidden; background: #18130f; }
 .barn[hidden] { display: none; }
 .barn canvas { display: block; image-rendering: pixelated; }
@@ -7,12 +8,11 @@
 .barn-things { position: absolute; inset: 0; }
 .barn-thing { position: absolute; padding: 0; border: 0; background: transparent; cursor: pointer; touch-action: manipulation; }
 .barn-thing:focus-visible { outline: 2px solid #ead695; outline-offset: 2px; }
-.barn-tag { position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, calc(-2 * var(--ui-px, 2px))); visibility: hidden; pointer-events: none; }
-.barn-thing:hover .barn-tag, .barn-thing:focus-visible .barn-tag { visibility: visible; }
 .barn-plates { position: absolute; top: calc(8 * var(--ui-px, 2px)); right: calc(8 * var(--ui-px, 2px)); display: flex; flex-direction: column; gap: calc(3 * var(--ui-px, 2px)); }
-.barn-held { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(4 * var(--ui-px, 2px)); background: rgb(14 11 8 / 0.62); overflow: auto; }
+/* The held thing's slide is animated in barn.ts (pickUp / putDown); the dark backdrop shows at once. */
+.barn-held { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgb(14 11 8 / 0.62); overflow: hidden; outline: none; cursor: pointer; }
 .barn-held[hidden] { display: none; }
-.barn-held > canvas { box-shadow: calc(4 * var(--ui-px, 2px)) calc(4 * var(--ui-px, 2px)) 0 rgb(10 8 6 / 0.7); }
+.barn-held-lift { display: flex; flex-direction: column; align-items: center; gap: calc(4 * var(--ui-px, 2px)); cursor: default; will-change: transform; }
 .barn-held-plates { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(3 * var(--ui-px, 2px)); }
 .barn .pause-item { padding: 0; border: 0; background: transparent; cursor: pointer; touch-action: manipulation; }
 .barn .pause-item:focus-visible { outline: 2px solid #ead695; outline-offset: 3px; }

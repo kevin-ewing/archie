@@ -1,7 +1,7 @@
 // The cockpit watch, top-left: the time of day at a glance (hands, AM / PM aperture, sunset mark), with a
 // digital readout and the date beneath. Its own module: reads the time, draws itself, nothing else.
 
-import { createPx, disc, line, plot, polar, text, textWidth, type RGBA } from '../core/pixels.ts';
+import { createPx, disc, line, plot, polar, text, textWidth, type Px, type RGBA } from '../core/pixels.ts';
 import { applyLight, litCanvas, type HudLight } from './light.ts';
 import type { View } from '../render/display.ts';
 import { C, label, RADIUM, radiumOf, type Instrument } from './gauges.ts';
@@ -51,30 +51,20 @@ export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: Clock
   ctx.drawImage(litCanvas(face.date.canvas, light), centre - half(face.date.canvas), y + face.digital.canvas.height + 1);
 }
 
-/** Mark V-inspired cockpit watch; the user's reference has a long stem and no bow.
- * The AM / PM aperture replaces its subsidiary seconds dial as a deliberate game aid. */
-export function createWatch(r: number): Instrument & { sunset: number; cx: number } {
+const STEM = 9;
+
+/** The watch's drawing, free of any canvas: its fixed face, and `paint` for the moving parts (sunset mark,
+ * AM / PM aperture, hands). The cockpit and the desk in the barn both draw from it, so they are one watch. */
+function watchFace(r: number) {
   const size = 2 * r + 1;
-  const stem = 9;
-  const px = createPx(size, size + stem);
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size + stem;
-  const ctx = canvas.getContext('2d')!;
-  const img = new ImageData(px.data, size, size + stem);
   const c = r;
-  const cy = r + stem;
+  const cy = r + STEM;
   const metal: RGBA = [0x9c, 0x98, 0x82, 255];
   const shadow: RGBA = [0x56, 0x54, 0x49, 255];
   const face: RGBA = [0x23, 0x24, 0x20, 255];
-  const staticFace = createPx(size, size + stem);
-  const glowPx = createPx(size, size + stem);
-  const glowImg = new ImageData(glowPx.data, size, size + stem);
-  const glow = document.createElement('canvas');
-  glow.width = size;
-  glow.height = size + stem;
+  const staticFace = createPx(size, size + STEM);
   // Ribbed brass crown above a nickel-coloured winding stem.
-  for (let y = 2; y < stem + 1; y++) for (let x = c - 2; x <= c + 2; x++) plot(staticFace, x, y, x < c ? C.glint : metal);
+  for (let y = 2; y < STEM + 1; y++) for (let x = c - 2; x <= c + 2; x++) plot(staticFace, x, y, x < c ? C.glint : metal);
   disc(staticFace, c, 3, 3, (dx) => Math.round(dx) % 2 === 0 ? C.metalLit : C.metalDark);
   disc(staticFace, c, cy, r, (dx, dy, d) => d > r - 1 ? (dx + dy < 0 ? C.glint : shadow) : d > r - 3 ? metal : face);
   const angle = (hour: number) => (hour % 12) / 12 * 2 * Math.PI;
@@ -89,28 +79,71 @@ export function createWatch(r: number): Instrument & { sunset: number; cx: numbe
     const p = polar(c, cy, r - 8, angle(hr)); // set well in from the minute track, so the figures stand clear
     text(staticFace, Math.round(p.x - textWidth(s) / 2), Math.round(p.y - 2), s, C.ink);
   }
+  /** The seconds hand (with its pivot): the cockpit's watch has one; the desk's leaves it off. */
+  const seconds = (px: Px, hours: number) => {
+    const sa = ((Math.floor(hours * 3600 * 4 + 1e-6) / 4) % 60) / 60 * 2 * Math.PI; // in quarter-second steps
+    const sec = polar(c, cy, r - 5, sa);
+    const tail = polar(c, cy, 3, sa + Math.PI);
+    line(px, tail.x, tail.y, sec.x, sec.y, C.red);
+    disc(px, c, cy, 1.5, () => C.metal);
+  };
+  const paint = (px: Px, hours: number, sunset: number, withSeconds = true) => {
+    const mark = polar(c, cy, r - 1, angle(sunset));
+    plot(px, mark.x, mark.y, C.red);
+    // Readable day/night aperture where the reference's small seconds dial sits.
+    const tag = clockText(hours).ampm;
+    const tw = textWidth(tag);
+    for (let y = cy + 5; y <= cy + 13; y++) for (let x = c - 7; x <= c + 7; x++) {
+      plot(px, x, y, y === cy + 5 || y === cy + 13 || x === c - 7 || x === c + 7 ? metal : C.face);
+    }
+    text(px, c - Math.floor(tw / 2), cy + 7, tag, C.ink);
+    // Hands: a long bright minute hand and a short broad hour hand, both clear of the figures.
+    const minute = polar(c, cy, r - 7, (hours % 1) * 2 * Math.PI);
+    const hour = polar(c, cy, r - 13, angle(hours));
+    line(px, c, cy, minute.x, minute.y, C.metalLit);
+    line(px, c + 1, cy, minute.x + 1, minute.y, C.metal);
+    line(px, c, cy, hour.x, hour.y, C.glint);
+    line(px, c + 1, cy, hour.x + 1, hour.y, C.glint);
+    line(px, c, cy + 1, hour.x, hour.y + 1, metal);
+    // The centre seconds hand: a thin red sweep from the pivot with a short counterweight tail.
+    if (withSeconds) seconds(px, hours);
+    else disc(px, c, cy, 1.5, () => C.metal);
+    return { minute, hour };
+  };
+  return { size, c, cy, staticFace, paint };
+}
+
+/** The watch as a plain raster at a given time, for the desk in the barn (`withSeconds: false` leaves the
+ * seconds hand off). Pure. */
+export function watchPx(r: number, hours: number, sunset: number, withSeconds = true): Px {
+  const f = watchFace(r);
+  const px = createPx(f.size, f.size + STEM);
+  px.data.set(f.staticFace.data);
+  f.paint(px, hours, sunset, withSeconds);
+  return px;
+}
+
+
+/** Mark V-inspired cockpit watch; the user's reference has a long stem and no bow.
+ * The AM / PM aperture replaces its subsidiary seconds dial as a deliberate game aid; the seconds hand sweeps from the centre. */
+export function createWatch(r: number): Instrument & { sunset: number; cx: number } {
+  const { size, c, cy, staticFace, paint } = watchFace(r);
+  const px = createPx(size, size + STEM);
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size + STEM;
+  const ctx = canvas.getContext('2d')!;
+  const img = new ImageData(px.data, size, size + STEM);
+  const glowPx = createPx(size, size + STEM);
+  const glowImg = new ImageData(glowPx.data, size, size + STEM);
+  const glow = document.createElement('canvas');
+  glow.width = size;
+  glow.height = size + STEM;
   const watch = {
     canvas, glow, size, cx: c, sunset: 19.5,
     draw(hours: number, _alert = 0, luminous = false, light?: HudLight) {
       px.data.set(staticFace.data);
-      const mark = polar(c, cy, r - 1, angle(watch.sunset));
-      plot(px, mark.x, mark.y, C.red);
-      // Readable day/night aperture where the reference's small seconds dial sits.
-      const tag = clockText(hours).ampm;
-      const tw = textWidth(tag);
-      for (let y = cy + 5; y <= cy + 13; y++) for (let x = c - 7; x <= c + 7; x++) {
-        plot(px, x, y, y === cy + 5 || y === cy + 13 || x === c - 7 || x === c + 7 ? metal : C.face);
-      }
-      text(px, c - Math.floor(tw / 2), cy + 7, tag, C.ink);
-      // Hands: a long bright minute hand and a short broad hour hand, both clear of the figures.
-      const minute = polar(c, cy, r - 7, (hours % 1) * 2 * Math.PI);
-      const hour = polar(c, cy, r - 13, angle(hours));
-      line(px, c, cy, minute.x, minute.y, C.metalLit);
-      line(px, c + 1, cy, minute.x + 1, minute.y, C.metal);
-      line(px, c, cy, hour.x, hour.y, C.glint);
-      line(px, c + 1, cy, hour.x + 1, hour.y, C.glint);
-      line(px, c, cy + 1, hour.x, hour.y + 1, metal);
-      disc(px, c, cy, 1.5, () => C.metal);
+      const { minute, hour } = paint(px, hours, watch.sunset);
       if (luminous) {
         // Extract luminous paint before tinting the visible metal and face.
         radiumOf(px, glowPx);

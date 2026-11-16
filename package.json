@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:story": "vite --open /story.html",
     "build": "tsc && vite build --base=./",
     "preview": "vite preview",
     "check": "tsc && node --experimental-strip-types --test \"src/**/*.test.ts\"",

@@ -23,6 +23,8 @@ import { installDevApi } from './devtools.ts';
 import { createPauseUi, createSettings, drawVolumePlate, GAME_URL, MENU_W } from './ui/pause.ts';
 import { wireLanding } from './ui/landing.ts';
 import { openBarn } from './story/barn.ts';
+import { barnScene, type BarnInfo } from './story/barn-art.ts';
+import { LOGBOOK_START } from './story/desk-items.ts';
 import { createSave } from './game/save.ts';
 import { hudLight } from './ui/light.ts';
 import { campaignDate, createGame, worldFeatures } from './game/state.ts';
@@ -530,28 +532,46 @@ const logStoryFlight = () => {
 };
 const DAY_PARAM = numberFromUrl('day', (n) => Number.isInteger(n) && n >= 0 && n < 4000);
 if (DAY_PARAM !== undefined) game.setTime(state.clock.hours, DAY_PARAM);
+/** The desk as the story stands: the date, the next sortie, the log book (its rank and number as he
+ * arrived, for now; it wears with every flight logged). */
+const storyInfo = (): BarnInfo => {
+  const day = DAY_PARAM ?? save.data.story?.day ?? state.clock.day;
+  const [year, month, date] = campaignDate(day).split('-').map(Number);
+  const now = new Date();
+  return {
+    day: date, month: MONTHS[month - 1], year, sortie: save.data.log.length + 1, date: dateText(day),
+    hours: now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600, sunset: sunsetHour(dayOfYear({ day, hours: 0 })),
+    logbook: { ...LOGBOOK_START, wear: Math.min(1, LOGBOOK_START.wear + save.data.log.length * 0.02) },
+  };
+};
+const storyGamePx = () => display.view().scale / (window.devicePixelRatio || 1);
+// The desk's drawings take ~0.3 s the first time: make them as soon as STORY is pointed at or focused, so
+// that pressing it opens the desk at once.
+let deskReady = false;
+const prepareDesk = () => {
+  if (deskReady) return;
+  deskReady = true;
+  const g = storyGamePx();
+  setTimeout(() => barnScene(Math.max(80, Math.ceil(innerWidth / g)), Math.max(80, Math.ceil(innerHeight / g)), storyInfo(), [], [], Math.max(1, Math.round(g * (window.devicePixelRatio || 1)))), 0);
+};
+for (const ev of ['pointerenter', 'focus', 'touchstart']) document.getElementById('landing-story')?.addEventListener(ev, prepareDesk, { once: true, passive: true });
 const openStory = () => {
   const page = document.getElementById('landing');
   if (page) page.inert = true;
   const saved = save.data.story;
-  const day = DAY_PARAM ?? saved?.day ?? state.clock.day;
-  const [year, month, date] = campaignDate(day).split('-').map(Number);
   barn = openBarn({
-    info: { day: date, month: MONTHS[month - 1], year, sortie: save.data.log.length + 1, date: dateText(day) },
+    info: storyInfo(),
     resuming: !!saved,
     log: save.data.log,
     uiPx: () => display.view().uiScale / (window.devicePixelRatio || 1),
-    gamePx: () => display.view().scale / (window.devicePixelRatio || 1), // flight's pixel size
+    gamePx: storyGamePx, // flight's pixel size
     onSettings: (back) => settings.open(back),
     onFly: () => {
       barn?.close();
       barn = undefined;
       landing.dismiss();
-      if (saved) {
-        game.setTime(saved.hours, saved.day);
-        placePlane(saved.plane.x, saved.plane.y, saved.plane.heading);
-      }
-      storyFlight = true;
+      // For now every take-off from the desk (the goggles, the orders, the log book, the plates) is a Free Fly:
+      // story flights (resuming `saved`, keeping their place, the log book) come back with the missions.
       chosen = true;
     },
     onClose: () => {
