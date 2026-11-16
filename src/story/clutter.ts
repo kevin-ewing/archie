@@ -266,15 +266,85 @@ export function inkBottle(): Px {
 
 /** A picture postcard face up: a view of a town square, the printed caption, a corner bent up. */
 export function postcard(): Px {
-  return toned(72, 48, (set) => {
-    for (let y = 0; y < 48; y++) for (let x = 0; x < 72; x++) {
-      if (x > 64 && y < 72 - x - 56) continue; // the bent corner…
-      const pic = x > 3 && y > 3 && x < 68 && y < 38;
-      const sky = y < 18 - (x > 20 && x < 30 ? 10 : 0) - (Math.abs(x - 50) < 8 ? 6 : 0); // a spire, a roofline
-      set(x, y, pic ? (sky ? [176, 168, 140] : [110, 98, 76]) : CREAM, pic ? (fbm(381, x / 4, y / 4, 2) - 0.5) * 24 + (sky ? 0 : (x % 6 === 0 ? -10 : 0)) : (x + y < 20 ? 6 : 0));
+  const W = 104, H = 70, F = 12; // F: how big the bent-up corner is
+  return toned(W, H, (set) => {
+    const SEPIA_LIGHT: RGB = [184, 182, 174], STONE: RGB = [128, 126, 119], SLATE: RGB = [77, 76, 72], DARKW: RGB = [50, 49, 47], STREET: RGB = [95, 94, 88], BORDER: RGB = [198, 196, 187], FLAP: RGB = [176, 173, 166];
+    const photo = (px: number, py: number): [RGB, number] => { // the picture, in its own coordinates (94 × 46)
+      const grain = (hash(381, px, py) - 0.5) * 3;
+      const e = Math.min(px, py, 93 - px, 45 - py), vig = -Math.max(0, 7 - e) * 1.4; // darker towards the edges, as a print is
+      const HZ = 34; // the street begins
+      // The belfry and its spire.
+      if (px >= 41 && px <= 53) {
+        if (py >= 8 && py < 21) {
+          const dark = py >= 11 && py <= 15 && px >= 45 && px <= 49; // the louvres
+          return dark ? [DARKW, 0] : [STONE, (px > 50 ? -9 : px < 43 ? 5 : 0) + grain + vig];
+        }
+        if (py < 8 && Math.abs(px - 47) <= py * 0.8 + 0.3) return [SLATE, (px > 47 ? -6 : 2) + grain]; // the spire
+      }
+      // The corner turrets and their spires.
+      for (const tx of [8, 81]) {
+        if (px >= tx && px <= tx + 5) {
+          if (py >= 10 && py < 21) return [STONE, (px >= tx + 4 ? -9 : px === tx ? 5 : 0) + grain + vig];
+          if (py >= 5 && py < 10 && Math.abs(px - (tx + 2.5)) <= (py - 5) * 0.6 + 0.3) return [SLATE, (px > tx + 2 ? -6 : 2) + grain];
+        }
+      }
+      if (px >= 8 && px <= 86) {
+        if (py >= 16 && py < 21) { // the long roof, with dormers
+          const dormer = (px % 12 === 4 || px % 12 === 5) && py < 18;
+          return [SLATE, (py === 16 ? 6 : py === 20 ? -8 : 0) + (dormer ? 5 : 0) + grain + vig];
+        }
+        if (py >= 13 && py < 16 && px % 12 >= 3 && px % 12 <= 6 && Math.abs(px % 12 - 4.5) <= (py - 13) * 0.6 + 0.8) return [SLATE, 2 + grain]; // dormer gables
+        if (py >= 21 && py < HZ) {
+          const wy = py >= 22 && py <= 26 && (px - 11) % 5 < 3 && (px - 11) % 5 >= 0 && !(py === 22 && (px - 11) % 5 !== 1); // pointed upper windows
+          if (wy) return [DARKW, 0];
+          if (py >= 28) { // the arcade: pillars between dark arches
+            const bx = (px - 10 + 600) % 6;
+            if ((bx >= 2 && py >= 28) || (bx >= 3 && bx <= 4 && py === 27)) return [DARKW, py > 31 ? -2 : 0];
+          }
+          return [STONE, (py === 21 ? 4 : py === 27 ? -2 : 0) + (px > 82 ? -2 : 0) + (fbm(383, px / 3, py / 3, 2) - 0.5) * 3 + grain + vig];
+        }
+      }
+      // The street: rubble and ruts, with a few small figures, a cart and a lamp.
+      if (py >= HZ) {
+        const fig = (fx: number, fy: number) => px === fx && py >= fy && py <= fy + 3 || (px === fx && py === fy - 1);
+        if (fig(26, 36) || fig(31, 37) || fig(62, 36) || fig(66, 37) || (px >= 73 && px <= 79 && py >= 37 && py <= 38) || (px === 6 && py >= 24 && py <= 38)) return [DARKW, 0];
+        const rut = (py - HZ) % 5 === 3 ? -5 : 0;
+        return [STREET, (rut < 0 ? rut * 0.5 : rut) + (fbm(384, px / 5, py / 3, 3) - 0.5) * 8 + grain + vig - (py - HZ) * 0.2];
+      }
+      // The sky: pale at the horizon, a little cloud.
+      const cloud = fbm(385, px / 11, py / 6, 3);
+      return [SEPIA_LIGHT, (HZ - py) * 0.3 - 2 + (cloud - 0.5) * 10 + grain + vig];
+    };
+    const CRACK: RGB = [238, 237, 230], FIBRE: RGB = [234, 232, 224];
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const u = x - (W - 1 - F); // the corner bent up: cut away, its underside folded back over the card
+      const e = Math.min(x, y, W - 1 - x, H - 1 - y);
+      const corner = Math.hypot(Math.max(0, 4 - Math.min(x, W - 1 - x)), Math.max(0, 4 - Math.min(y, H - 1 - y))) > 3.6; // handled corners wear round
+      if (corner || (e < 2 && hash(387, x, y) < 0.2 - e * 0.09 + (e === 0 && (x < 14 || x > W - 14 || y < 10 || y > H - 10) ? 0.1 : 0))) continue; // nicks and chips along the edge
+      if (u - y > 0) continue;
+      if (u >= 0 && y <= F && u <= y) { // the flap: the back of the card, creased and gone soft along its fold
+        if (y - u < 1 && hash(388, x, y) < 0.3) { set(x, y, CRACK, 6, true); continue; } // the fold's white crack
+        set(x, y, FLAP, u === y ? -8 : (y - u) < 2 ? -3 : 2 - (y - u) * 0.2 + (fbm(389, x / 3, y / 3, 2) - 0.5) * 6, true);
+        continue;
+      }
+      const inPic = x >= 5 && x < 99 && y >= 5 && y < 51;
+      if (inPic) {
+        let [c, v] = photo(x - 5, y - 5);
+        const d = u - y; // distance from the fold line (negative = on the card)
+        if (d > -4 && d <= 0 && hash(390, x, y) < 0.55 - Math.abs(d) * 0.12) { c = CRACK; v = 8; } // the emulsion cracked white along the fold
+        const fy = 33 + Math.round((valueNoise(391, x / 6, 0) - 0.5) * 3); // a long crease across the picture, cracked here and there
+        if (Math.abs(y - 5 - fy) < 1 && x > 8 && x < 96) { if (hash(392, x, y) < 0.35) { c = CRACK; v = 6; } else v -= 6; }
+        else if (y - 5 === fy + 1 && x > 8 && x < 96 && hash(393, x, y) < 0.5) v += 5;
+        set(x, y, c, v);
+        continue;
+      }
+      // The white border: foxed and grubby, the edge frayed pale where it's been handled, darkest at the corners.
+      const grime = Math.max(0, 5 - Math.min(Math.min(x, W - 1 - x), Math.min(y, H - 1 - y))) * 0.5 + (Math.hypot(Math.min(x, W - 1 - x), Math.min(y, H - 1 - y)) < 14 ? 3 : 0);
+      if (e < 1.5 && hash(394, x, y) < 0.5) { set(x, y, FIBRE, 6, true); continue; }
+      set(x, y, BORDER, (fbm(386, x / 7, y / 7, 2) - 0.5) * 8 + (x + y < 22 ? 5 : 0) - grime - (fbm(395, x / 4, y / 4, 2) > 0.66 ? 6 : 0), e < 1);
     }
-    for (let k = 0; k < 8; k++) set(64 + k, 8 - k, PAPER, -8, true); // …showing its back
-    letters(set, 5, 41, 'YPRES - LES HALLES', [70, 60, 48], 0);
+    letters(set, centre(W, 'YPRES - LES HALLES'), 58, 'YPRES - LES HALLES', [70, 68, 64], 0);
+    for (let x = 30; x < W - 30; x++) set(x, 65, [194, 192, 184], -2, true); // a pencilled line under it, as on a card sent home
   });
 }
 
@@ -340,20 +410,20 @@ export function gauntlets(): Px {
   });
 }
 
-/** An Army message pad, half used: printed heading, pencilled spotting notes, the torn stubs at the top. */
+/** An Army message pad, half used: printed heading, pencilled spotting notes, the torn stubs at the top. A thing you can pick up. */
 export function messagePad(): Px {
-  return toned(62, 80, (set) => {
-    for (let y = 0; y < 80; y++) for (let x = 0; x < 62; x++) {
-      const e = Math.min(x, y, 61 - x, 79 - y);
-      set(x, y, y < 8 ? [100, 104, 72] : PAPER, y < 8 ? (y < 2 ? 12 : 0) : e < 1 ? -12 : (fbm(421, x / 8, y / 8, 2) - 0.5) * 8 + (y > 12 && (y - 12) % 6 === 0 ? -8 : 0), y < 8 || e < 1);
+  const W = 108, H = 140;
+  return toned(W, H, (set) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const e = Math.min(x, y, W - 1 - x, H - 1 - y);
+      set(x, y, y < 12 ? [100, 104, 72] : PAPER, y < 12 ? (y < 2 ? 12 : 0) : e < 1 ? -12 : (fbm(421, x / 8, y / 8, 2) - 0.5) * 8 + (y > 18 && (y - 18) % 7 === 0 ? -8 : 0), y < 12 || e < 1);
     }
-    for (let x = 0; x < 62; x += 3) set(x, 8, CREAM, 6, true); // the torn stubs
-    letters(set, centre(62, 'MESSAGE'), 2, 'MESSAGE', CREAM, 0);
-    const notes = ['B4 B4', 'C2 OK', 'Z11 W', 'MG AT', 'H 2 3', 'LL 6'];
-    notes.forEach((s, i) => letters(set, 4, 13 + i * 6, s, [96, 92, 88], 0));
+    for (let x = 0; x < W; x += 3) set(x, 12, CREAM, 6, true); // the torn stubs
+    letters(set, centre(W, 'MESSAGE'), 4, 'MESSAGE', CREAM, 0);
+    const notes = ['B4 B4', 'C2 OK', 'Z11 W', 'MG AT', 'H 2 3', 'LL 6', 'A5 OK', 'BTY SHORT', 'C2 OK', 'F3 B2', 'X OK', 'LL 4'];
+    notes.forEach((s, i) => letters(set, 6 + (hash(422, i, 1) < 0.3 ? 1 : 0), 20 + i * 7, s, [96, 92, 88], 0));
   });
 }
-
 /** A KLG sparking plug, out of the engine for cleaning: the brown porcelain, the hex, the sooted points. */
 export function sparkPlug(): Px {
   return toned(46, 14, (set) => {
@@ -366,16 +436,46 @@ export function sparkPlug(): Px {
   });
 }
 
-/** A spanner from the rigger's roll: forged steel, an open jaw at each end, the size struck in it, oily. */
-export function spanner(): Px {
-  return toned(86, 24, (set) => {
-    rod(set, 16, 12, 70, 12, 3.4, (t, _a, s) => [STEEL, s * 22 + (valueNoise(431, t * 30, 0) > 0.75 ? -10 : 0), false]);
-    for (const [cx, dir] of [[10, -1], [76, 1]] as const) blob(set, cx, 12, 10, 10, 0, (d, nx, ny, x, y) => {
-      const ox = (x + 0.5 - cx) * dir, oy = y + 0.5 - 12;
-      if (ox > -2 && Math.abs(oy) < 4.2) return null; // the jaw: a slot open to the end
-      return [STEEL, lit(nx, ny) * 20 * d + 4 + (Math.abs(Math.abs(oy) - 4.6) < 0.8 && ox > -2 ? -10 : 0), false];
-    });
-    letters(set, 33, 10, '7/16', [74, 74, 70], 0);
+/** A combination spanner from the rigger's roll (7/16 and 3/8 Whitworth): a ring with a hex hole at one end, an
+ * open jaw at the other (turned 15° off the handle, as they are), the sizes stamped in the handle. The nickel of
+ * the goggles' rims and the orders' clip, shaded the same way: its edges in whole tones (the outermost catching
+ * the light on the top-left, dark on the bottom-right; the hex hole the other way round, lit on its far wall), the
+ * flat faces dithered, a little old oil. `turn`: how it will lie, so its light still falls from the top-left. */
+export function spanner(turn = 0): Px {
+  const W = 206, H = 38, cy = 19, X0 = 19, X1 = 186; // the two heads' centres
+  const heads = [{ x: X0, R: 17, hex: 9, turn: 0, open: false }, { x: X1, R: 17, hex: 8, turn: Math.PI / 12, open: true }];
+  const METAL: RGB = [0x9c, 0x98, 0x82], DARKM: RGB = [0x56, 0x54, 0x49], LITM: RGB = [0xe2, 0xe0, 0xd6];
+  const smin = (a: number, b: number, k: number) => { const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k / 4; };
+  const hexOut = (ox: number, oy: number, r: number, a0: number) => { // > 0 outside a hexagon of inradius r
+    let d = -Infinity;
+    for (let k = 0; k < 3; k++) { const a = a0 + k * Math.PI / 3; d = Math.max(d, Math.abs(ox * Math.cos(a) + oy * Math.sin(a)) - r); }
+    return d;
+  };
+  /** How far inside the steel (x, y) is, in px (≤ 0: off it, or in a hole). */
+  const inside = (x: number, y: number) => {
+    const hw = 7.5 + Math.cos(((x - X0) / (X1 - X0)) * Math.PI * 2) ** 2; // the handle, a little fuller towards the heads
+    let d = Math.max(Math.abs(y - cy) - hw, X0 - x, x - X1);
+    for (const h of heads) d = smin(d, Math.hypot(x - h.x, y - cy) - h.R, 8); // flared into the heads
+    for (const h of heads) {
+      const ox = x - h.x, oy = y - cy, u = ox * Math.cos(h.turn) + oy * Math.sin(h.turn), v = -ox * Math.sin(h.turn) + oy * Math.cos(h.turn);
+      d = Math.max(d, -(h.open ? Math.min(hexOut(ox, oy, h.hex, h.turn + Math.PI / 6), Math.max(Math.abs(v) - h.hex, -u)) : hexOut(ox, oy, h.hex, h.turn)));
+    }
+    return -d;
+  };
+  const lc = Math.cos(turn), ls = Math.sin(turn); // the top-left of the screen, in the drawing's own frame
+  const lit = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the light
+  return toned(W, H, (set) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const px = x + 0.5, py = y + 0.5, e = inside(px, py);
+      if (e <= 0) continue;
+      const gx = inside(px + 0.5, py) - inside(px - 0.5, py), gy = inside(px, py + 0.5) - inside(px, py - 0.5), gl = Math.hypot(gx, gy) || 1;
+      const l = lit(-gx / gl, -gy / gl); // which way the nearest edge faces
+      if (e < 1.2) set(x, y, l > 0.4 ? LITM : l < -0.4 ? DARKM : METAL, l > 0.4 ? 6 : l < -0.4 ? -6 : -4, true); // the very edge
+      else if (e < 2.6) set(x, y, METAL, l > 0.3 ? 14 : l < -0.3 ? -16 : l > -0.05 ? 4 : -6, true); // the rounded edge, in whole tones
+      else set(x, y, METAL, lit(0, (py - cy) / 9) * 6 + (fbm(431, px / 9, py / 6, 2) > 0.64 ? -8 : 0) + (fbm(432, px / 14, py / 14, 2) - 0.5) * 6); // the flat: dithered, old oil
+    }
+    letters(set, X0 + 26, cy - 2, '7/16', DARKM, -4);
+    letters(set, X1 - 26 - textWidth('3/8'), cy - 2, '3/8', DARKM, -4);
   });
 }
 
@@ -390,22 +490,6 @@ export function candle(): Px {
     for (let k = 0; k < 7; k++) { const a = hash(442, k, 1) * 6.283, r = 8 + hash(442, k, 2) * 4; rod(set, 21 + Math.cos(a) * 7, 21 + Math.sin(a) * 7, 21 + Math.cos(a) * r, 21 + Math.sin(a) * r, 1.6, (_t, _a2, sh) => [[238, 226, 192], sh * 10, true]); } // drips
     blob(set, 21, 21, 7.5, 7.5, 0, (d, nx, ny) => (d > 0.6 ? [[244, 234, 204], lit(nx, ny) * 14, true] : [[214, 198, 156], -lit(nx, ny) * 8 - 4, true])); // the stub, its melted cup
     set(21, 21, CHAR, 0, true); set(22, 20, CHAR, 0, true); set(20, 21, [120, 100, 80], 0, true);
-  });
-}
-
-/** A square of aeroplane linen cut from a wreck as a keepsake: doped cream fabric, part of a roundel, a tear
- * and a bullet hole, the ragged cut edges. */
-export function fabricPatch(): Px {
-  return toned(54, 44, (set, has) => {
-    for (let y = 0; y < 44; y++) for (let x = 0; x < 54; x++) {
-      const edge = Math.min(x, y, 53 - x, 43 - y) - (valueNoise(451, (x + y) / 2, 0) * 3);
-      if (edge < 0) continue;
-      const r = Math.hypot(x - 54, y - 44); // the roundel's rings, centred off the corner
-      const c: RGB = r < 14 ? [176, 46, 38] : r < 24 ? [226, 220, 204] : r < 34 ? [44, 64, 112] : [204, 194, 164];
-      set(x, y, c, ((x + y) % 2 ? 3 : -3) + (fbm(452, x / 9, y / 9, 2) - 0.5) * 12 + (edge < 1.5 ? -10 : 0));
-    }
-    for (let y = 13; y < 20; y++) for (let x = 17; x < 24; x++) if (Math.hypot(x + 0.5 - 20, y + 0.5 - 16.5) < 2.6 && has(x, y)) set(x, y, CHAR, 0, true); // the bullet hole
-    for (let k = 0; k < 10; k++) set(8 + k, 30 + k * 0.4, CHAR, 0, true); // a tear
   });
 }
 
@@ -437,13 +521,13 @@ export function twine(): Px {
   });
 }
 
-/** Clutter as the desk draws it: each kind's drawing, and how many of it lie about (the small things, more). */
-export const CLUTTER: readonly { name: string; art: () => Px; count: number }[] = [
-  { name: 'pad', art: messagePad, count: 1 },
+/** Clutter as the desk draws it: each kind's drawing, and how many of it lie about (the small things, more).
+ * `z`: how high it lies (barn-art.ts `Z`; default under everything you use), `depth`: its shadow's drop,
+ * `spin`: turned every way to find where it fits best (and drawn lit for the way it lies). */
+export const CLUTTER: readonly { name: string; art: (turn?: number) => Px; count: number; turn?: number; z?: number; depth?: number; spin?: boolean }[] = [
   { name: 'gauntlets', art: gauntlets, count: 1 },
   { name: 'sideCap', art: sideCap, count: 1 },
-  { name: 'postcard', art: postcard, count: 1 },
-  { name: 'fabric', art: fabricPatch, count: 1 },
+  { name: 'postcard', art: postcard, count: 1, turn: -0.3 }, // laid nearly upright, to be read
   { name: 'rag', art: rag, count: 1 },
   { name: 'newspaper', art: newspaper, count: 1 },
   { name: 'biscuit', art: biscuit, count: 1 },
@@ -455,7 +539,7 @@ export const CLUTTER: readonly { name: string; art: () => Px; count: number }[] 
   { name: 'candle', art: candle, count: 1 },
   { name: 'pipe', art: pipe, count: 1 },
   { name: 'ink', art: inkBottle, count: 1 },
-  { name: 'spanner', art: spanner, count: 1 },
+  { name: 'spanner', art: spanner, count: 1, z: 8.7, depth: 5, spin: true }, // heavy: dropped on top of almost anything (only the orders above it)
   { name: 'twine', art: twine, count: 1 },
   { name: 'matches', art: matchbox, count: 1 },
   { name: 'plug', art: sparkPlug, count: 1 },

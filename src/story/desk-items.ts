@@ -20,7 +20,7 @@ export const P = {
   glass: [132, 148, 146, 255], glassLit: [196, 210, 206, 255], flameRing: [255, 222, 150, 255], tea: [120, 72, 30, 255], teaLit: [158, 102, 44, 255], wood: [176, 128, 64, 255],
 } satisfies Record<string, RGBA>;
 
-export type ItemId = 'orders' | 'chart' | 'letters' | 'logbook' | 'clockcode' | 'calendar' | 'mug' | 'watch' | 'goggles' | 'coin';
+export type ItemId = 'orders' | 'chart' | 'letters' | 'logbook' | 'clockcode' | 'calendar' | 'mug' | 'watch' | 'goggles' | 'coin' | 'pad';
 export type DateInfo = { day: number; month: string; year: number };
 
 const rect = (px: Px, x: number, y: number, w: number, h: number, c: RGBA) => { for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) plot(px, x + i, y + j, c); };

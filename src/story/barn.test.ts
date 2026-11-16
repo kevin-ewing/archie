@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { arrange, barnScene, drawing, SCENERY, SHOWN, sizes } from './barn-art.ts';
+import { arrange, barnScene, CLUTTER_SHOWN, drawing, SCENERY, SHOWN, sizes } from './barn-art.ts';
 import { calendarDays, LOGBOOK_START, logbookArt } from './desk-items.ts';
 
 const info = { day: 10, month: 'May', year: 1915, sortie: 1, date: '10 MAY 1915' };
@@ -88,8 +88,8 @@ test('the clutter fills the desk, none of it a button but the sixpence, and it s
   }
   const big = barnScene(960, 540, info, [], [], 4), small = barnScene(300, 225, info, [], [], 4);
   const clutter = (sc: typeof big) => sc.drawn.filter((d) => d.id === null);
-  assert.equal(clutter(big).length, CLUTTER.length, 'all of it is on the desk');
+  assert.equal(clutter(big).length, CLUTTER.filter((c) => CLUTTER_SHOWN.includes(c.name)).length, 'what is brought back is on the desk, and only that');
   assert.ok(clutter(small).every((d) => d.k < 1), 'smaller on a small screen, like the mug');
   assert.ok(big.spots.every((s) => s.id !== null), 'no clutter is a button');
-  assert.ok(big.spots.some((s) => s.id === 'coin'), 'the sixpence is');
+  assert.equal(big.spots.some((s) => s.id === 'coin'), SHOWN.includes('coin'), 'the sixpence is a button once it is brought back');
 });

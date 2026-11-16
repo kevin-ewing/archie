@@ -5,7 +5,7 @@
 import { bayer, fbm, hash, valueNoise } from '../core/noise.ts';
 import { createPx, plot, type Px, type RGBA } from '../core/pixels.ts';
 import * as I from './desk-items.ts';
-import { CLUTTER } from './clutter.ts';
+import { CLUTTER, messagePad } from './clutter.ts';
 
 export type SpotId = I.ItemId;
 export type Spot = { id: SpotId; x: number; y: number; w: number; h: number };
@@ -25,9 +25,11 @@ export const drawing = (key: string, make: () => Px): Px => drawings.get(key) ??
 
 const SEED = 1916;
 // For now: only these things are on the desk, brought back one at a time (none of the loose clutter).
-export const SHOWN: readonly I.ItemId[] = ['chart', 'orders', 'calendar', 'logbook', 'clockcode', 'goggles', 'mug', 'watch', 'coin'];
+export const SHOWN: readonly I.ItemId[] = ['chart', 'orders', 'calendar', 'logbook', 'clockcode', 'goggles', 'mug', 'watch', 'pad'];
+// … and of the loose clutter (story/clutter.ts), only these by name, brought back one at a time. (The sixpence, 'coin', is the last, above.)
+export const CLUTTER_SHOWN: readonly string[] = ['postcard', 'spanner'];
 type Box = { x: number; y: number; w: number; h: number };
-type Thing = { id: I.ItemId | null; art: Px; turn: number; live?: boolean; k: number; keep?: Box[] }; // k: drawn at this size (the drawing's pixels × k game px) // keep: parts of it (in its pixels) nothing may cover
+type Thing = { id: I.ItemId | null; art: Px; turn: number; live?: boolean; k: number; keep?: Box[]; z?: number; depth?: number; spin?: boolean; relit?: (turn: number) => Px }; // k: drawn at this size (the drawing's pixels × k game px) // keep: parts of it (in its pixels) nothing may cover
 
 /** The usable things, bottom of the pile first, then what just lies about. */
 /**
@@ -63,11 +65,12 @@ function things(info: BarnInfo, W: number, H: number, pixel: number): { usable: 
       t('logbook', logbookDrawing(info), 2),
       { ...t('goggles', drawing('goggles', I.gogglesArt), 24), turn: -0.2, k: Math.max(1, Math.round(size.usable * pixel * (W >= 700 ? 0.8 : 0.55))) / pixel, keep: [{ x: 20, y: 6, w: 174, h: 72 }] }, // the mask and lenses stay in view; the strap round them may be covered // three quarters of the other things' size (half on a small screen), still whole device pixels: it's a big thing to lay down
       t('mug', drawing('coffee', I.coffeeArt), 12),
-      { ...t('coin', drawing('coin', I.coinArt), 21), turn: hash(SEED, 21, 9) * Math.PI * 2 }, // the sixpence: the one bit of clutter you can pick up
+      ...(SHOWN.includes('pad') ? [t('pad', drawing('pad', messagePad), 10)] : []), // the message pad: a thing you can pick up
+      ...(SHOWN.includes('coin') ? [{ ...t('coin', drawing('coin', I.coinArt), 21), turn: hash(SEED, 21, 9) * Math.PI * 2 }] : []), // the sixpence: the one bit of clutter you can pick up
       { ...t('watch', drawing(`watch:${info.hours ?? 8}:${info.sunset ?? 19.5}`, () => I.watchArt(info.hours ?? 8, info.sunset ?? 19.5, false)), 20), live: true }, // redrawn as time passes
     ],
     // The clutter (story/clutter.ts), at the size of the things you use, each turned any way at all.
-    loose: CLUTTER.map((c, n) => ({ ...t(null, drawing(`clutter:${c.name}`, c.art), 60 + n), turn: hash(SEED, 60 + n, 9) * Math.PI * 2 })),
+    loose: CLUTTER.flatMap((c, n) => (CLUTTER_SHOWN.includes(c.name) ? [{ ...t(null, drawing(`clutter:${c.name}`, c.art), 60 + n), turn: c.turn ?? hash(SEED, 60 + n, 9) * Math.PI * 2, z: c.z, depth: c.depth, spin: c.spin, relit: c.spin ? (turn: number) => drawing(`clutter:${c.name}:${turn.toFixed(3)}`, () => c.art(turn)) : undefined }] : [])),
   };
 }
 
@@ -112,32 +115,40 @@ export function arrange(W: number, H: number, info: BarnInfo, keepClear: { x: nu
     const x = Math.floor(Math.min(...xs)), y = Math.floor(Math.min(...ys));
     return { x, y, w: Math.ceil(Math.max(...xs)) - x, h: Math.ceil(Math.max(...ys)) - y };
   });
-  const spotFor = (t: Thing, k: number, avoid: readonly { x: number; y: number; w: number; h: number }[]) => {
-    const e = extent(t.art, t.turn, t.k);
+  const spotFor = (t: Thing, k: number, avoid: readonly (Box & { weight?: number })[]): Spot & { turn: number } => {
+    let e = extent(t.art, t.turn, t.k);
     // The orders lie square in the middle of the desk, a touch low, whatever else has to move round them.
-    if (t.id === 'orders') return { id: 'orders' as I.ItemId, x: Math.round((W - e.w) / 2), y: Math.round(Math.max(m, (H - e.h) / 2 + H * 0.03)), ...e };
+    if (t.id === 'orders') return { id: 'orders' as I.ItemId, x: Math.round((W - e.w) / 2), y: Math.round(Math.max(m, (H - e.h) / 2 + H * 0.03)), ...e, turn: t.turn };
     // The chart lies right of centre and a little low, bleeding off the right and bottom edges.
     if (t.id === 'chart') {
       const cx = Math.max(W * 0.55, W - e.w * 0.45), cy = Math.max(H * 0.55, H - e.h * 0.45);
-      return { id: 'chart' as I.ItemId, x: Math.round(cx - e.w / 2), y: Math.round(cy - e.h / 2), ...e };
+      return { id: 'chart' as I.ItemId, x: Math.round(cx - e.w / 2), y: Math.round(cy - e.h / 2), ...e, turn: t.turn };
     }
-    let best: Spot | null = null;
+    let best: (Spot & { turn: number }) | null = null;
     let bestScore = Infinity;
     // Where it may go: anywhere on screen; the calendar may run a third of itself off any edge (its kept parts
     // stay on); the clock-code card on the left, to balance the pale papers on the right.
     const bleed = t.id === 'calendar' ? 0.35 : t.id === 'goggles' ? 0.25 : 0; // the goggles' strap loop may run off an edge (the mask and lenses may not)
     const x0 = m - e.w * bleed, x1 = Math.max(x0, t.id === 'clockcode' ? W * 0.34 - e.w / 2 : W - e.w * (1 - bleed) - m); // the card's centre stays in the left third
     const y0 = m - e.h * bleed, y1 = Math.max(y0, H - e.h * (1 - bleed) - m);
-    for (let i = 0; i < 900; i++) { // (many tries: the desk is crowded)
-      const x = Math.round(x0 + hash(SEED + k, i, 1) * (x1 - x0));
-      const y = Math.round(y0 + hash(SEED + k, i, 2) * (y1 - y0));
-      const s = { id: (t.id ?? 'chart') as I.ItemId, x, y, ...e };
+    for (let i = 0; i < (t.spin ? 3000 : 900); i++) { // (many tries: the desk is crowded)
+      const turn = t.spin ? Math.floor(hash(SEED + k, i, 3) * 36) / 36 * Math.PI * 2 : t.turn; // a long thing is tried every way round
+      if (t.spin) e = extent(t.art, turn, t.k);
+      const mm = t.spin ? 8 : 0, X1 = t.spin ? Math.max(x0 + mm, W - e.w - m - mm) : x1, Y1 = t.spin ? Math.max(y0 + mm, H - e.h - m - mm) : y1; // (kept a little off the screen's edge)
+      const x = Math.round(x0 + mm + hash(SEED + k, i, 1) * (X1 - x0 - mm));
+      const y = Math.round(y0 + mm + hash(SEED + k, i, 2) * (Y1 - y0 - mm));
+      const s = { id: (t.id ?? 'chart') as I.ItemId, x, y, ...e, turn };
+      // What it covers: its box, or for a long thing turned, a row of squares along its length (its box, turned
+      // diagonal, would be mostly empty desk).
+      const n = t.spin ? Math.max(1, Math.round(t.art.w / t.art.h)) : 1, side = t.art.h * t.k, step = (t.art.w * t.k - side) / Math.max(1, n - 1);
+      const pieces: Box[] = n === 1 ? [s] : Array.from({ length: n }, (_, j) => { const o = (j - (n - 1) / 2) * step; return { x: x + e.w / 2 + Math.cos(turn) * o - side / 2, y: y + e.h / 2 + Math.sin(turn) * o - side / 2, w: side, h: side }; });
+      const cover = (a: Box) => pieces.reduce((q, b) => q + overlap(b, a), 0);
       const own = kept(t, s); // its own kept parts must stay on screen and clear of the plates
       const off = own.reduce((q, b) => q + b.w * b.h - overlap(b, { x: 0, y: 0, w: W, h: H }), 0);
       const low = t.id === 'goggles' && W < 700 ? (y1 - y) * 3 : 0; // shrunk right down, it prefers the bottom of the desk, where the room is
-      const score = low + avoid.reduce((sum, a) => sum + overlap(s, a), 0) +
+      const score = low + avoid.reduce((sum, a) => sum + cover(a) * (a.weight ?? 1), 0) +
         own.reduce((q, b) => q + avoid.reduce((r, a) => r + overlap(b, a), 0), 0) * 100000 + // and what a thing keeps clear isn't under what's already down
-         off * 1000000 + keepClear.reduce((sum, a) => sum + overlap(s, a) * 30 + own.reduce((q, b) => q + overlap(b, a) * 1000, 0), 0) + guard.reduce((sum, a) => sum + overlap(s, a) * 100000, 0);
+         off * 1000000 + keepClear.reduce((sum, a) => sum + cover(a) * 30 + own.reduce((q, b) => q + overlap(b, a) * 1000, 0), 0) + guard.reduce((sum, a) => sum + cover(a) * 100000, 0);
       if (score < bestScore) { best = s; bestScore = score; }
     }
     return best!;
@@ -150,9 +161,14 @@ export function arrange(W: number, H: number, info: BarnInfo, keepClear: { x: nu
   const down: Box[] = [];
   const lying = [...loose].sort((a, b) => b.art.w * b.art.h - a.art.w * a.art.h).map((t, k) => {
     const cal = placed.filter((p) => p.id === 'calendar'); // the calendar is to be read: clutter keeps mostly off its face
-    const s = spotFor(t, 40 + k, [...onDesk, ...onDesk, ...onDesk, ...cal, ...down]); // (the things you use count three times over)
+    // Most clutter keeps off the things you use (they count three times over); what lies on top of them (a high
+    // `z`) may lie across almost anything, only shy of what it would hide (the orders above it, the watch's face,
+    // the coffee) and a little of the rest.
+    const high = (t.z ?? 0) >= 1, shy: I.ItemId[] = ['orders', 'watch', 'mug'];
+    const avoid = high ? [...placed.filter((p) => SHOWN.includes(p.id)).map((p) => ({ ...p, weight: shy.includes(p.id) ? 50 : p.id === 'chart' ? 0 : 0.2 })), ...down] : [...onDesk, ...onDesk, ...onDesk, ...cal, ...down];
+    const s = spotFor(t, 40 + k, avoid);
     down.push(s);
-    return { t, ...s };
+    return { t: { ...t, turn: s.turn, art: t.relit?.(s.turn) ?? t.art }, ...s };
   });
   return { usable: placed, loose: lying, guard };
 }
@@ -383,11 +399,11 @@ const silhouette = (art: Px, alpha = 255): Px => {
 };
 /** How high each thing lies on the desk, bottom to top: the charts always at the bottom (the calendar just above them), the orders always on
  * top (they're how you go and fly, so nothing may ever lie on them); the loose clutter lies between 0 and 1. */
-export const Z: Record<I.ItemId, number> = { chart: 0, calendar: 0.5, letters: 3, logbook: 5, clockcode: 4.5, coin: 6, watch: 7, mug: 8, goggles: 8.5, orders: 9 };
+export const Z: Record<I.ItemId, number> = { chart: 0, calendar: 0.5, letters: 3, logbook: 5, clockcode: 4.5, pad: 4.8, coin: 6, watch: 7, mug: 8, goggles: 8.5, orders: 9 };
 /** Things that are part of the scenery: drawn, but not buttons. */
 export const SCENERY: readonly I.ItemId[] = ['chart', 'calendar'];
 /** How things lie: the chart flat on the desk (a low, faint shadow); everything else on top of it. */
-const lie = (id: I.ItemId | null) => (id === 'chart' || id === 'calendar' ? { depth: 2, alpha: 120 } : id === 'logbook' || id === 'orders' ? { depth: 4, alpha: 190 } : id === 'clockcode' ? { depth: 3, alpha: 180 } : id === 'watch' ? { depth: 4, alpha: 190 } : id === 'mug' ? { depth: 6, alpha: 170 } : id === 'goggles' ? { depth: 4, alpha: 180 } : id === 'coin' ? { depth: 2, alpha: 190 } : { depth: id ? 3 : 2, alpha: 255 });
+const lie = (id: I.ItemId | null) => (id === 'chart' || id === 'calendar' ? { depth: 2, alpha: 120 } : { depth: id === 'orders' || id === 'clockcode' ? 2 : id === 'logbook' || id === 'watch' || id === 'goggles' ? 4 : id === 'mug' ? 6 : id ? 3 : 2, alpha: 180 }); // one kind of shadow for everything that lies on the desk, hidden things too (the same soft dark, never pitch black); the flat sheets lie lower and fainter
 
 /**
  * One thing on the desk: its square, axis-aligned drawing and a shadow of it, to be drawn turned by `turn`
@@ -415,7 +431,9 @@ export function barnScene(W: number, H: number, info: BarnInfo, order: readonly 
     const cx = chart.x + chart.w / 2 - 28, cy = chart.y + chart.h / 2 - 16;
     return [{ t: { id: 'chart', art, turn, k: 1 } as Thing, x: cx - e.w / 2, y: cy - e.h / 2, ...e }];
   })() : [];
-  const drawn = [...under, ...sorted.filter((u) => Z[u.id] < 1), ...loose, ...sorted.filter((u) => Z[u.id] >= 1)].map(({ t, x, y, w, h }) => ({ id: t.id, art: t.art, shadow: silhouette(t.art, lie(t.id).alpha), cx: x + w / 2, cy: y + h / 2, turn: t.turn, depth: lie(t.id).depth, live: t.live, k: t.k }));
+  const zOf = (t: Thing) => t.z ?? (t.id ? Z[t.id] : 0.9); // loose clutter: on the maps, under the things you use (unless it says)
+  const upper = [...sorted.filter((u) => Z[u.id] >= 1), ...loose.filter((l) => zOf(l.t) >= 1)].sort((a, b) => zOf(a.t) - zOf(b.t)); // (stable: picked-up order kept)
+  const drawn = [...under, ...sorted.filter((u) => Z[u.id] < 1), ...loose.filter((l) => zOf(l.t) < 1), ...upper].map(({ t, x, y, w, h }) => ({ id: t.id, art: t.art, shadow: silhouette(t.art, lie(t.id).alpha), cx: x + w / 2, cy: y + h / 2, turn: t.turn, depth: t.depth ?? lie(t.id).depth, live: t.live, k: t.k }));
   return { px, spots: sorted.filter((u) => !SCENERY.includes(u.id)).map(({ id, t, x, y, w, h }) => { // what's on screen of each (the calendar and goggles may run off an edge)
       const b = hug(t.art, t.turn, t.k), cx = x + w / 2, cy = y + h / 2;
       const x0 = Math.max(0, Math.floor(cx + b.x0)), y0 = Math.max(0, Math.floor(cy + b.y0));

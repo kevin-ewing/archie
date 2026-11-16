@@ -8,6 +8,7 @@ import { createPx, plot, text, textWidth, type Px, type RGBA } from '../core/pix
 import { menuItem, MENU_W, sizeFaces } from '../ui/pause.ts';
 import { barnScene, drawing, logbookDrawing, ordersDrawing, Z, type BarnInfo, type BarnScene, type Spot } from './barn-art.ts';
 import * as I from './desk-items.ts';
+import { messagePad } from './clutter.ts';
 import './barn.css';
 
 export type LogEntry = { sortie: number; date: string; minutes: number };
@@ -27,7 +28,7 @@ export type BarnOptions = {
 const INK: RGBA = I.P.ink;
 const PAPER: RGBA = I.P.cream;
 const EDGE: RGBA = I.P.paperShade;
-const LABEL: Record<I.ItemId, string> = { orders: 'ORDERS', chart: 'CHART', letters: 'LETTERS', logbook: 'LOG BOOK', clockcode: 'CLOCK CODE', calendar: 'CALENDAR', mug: 'COFFEE', watch: 'WATCH', goggles: 'GOGGLES', coin: 'SIXPENCE' };
+const LABEL: Record<I.ItemId, string> = { orders: 'ORDERS', chart: 'CHART', letters: 'LETTERS', logbook: 'LOG BOOK', clockcode: 'CLOCK CODE', calendar: 'CALENDAR', mug: 'COFFEE', watch: 'WATCH', goggles: 'GOGGLES', pad: 'MESSAGE PAD', coin: 'SIXPENCE' };
 
 /** Words wrapped to `w` px in the game's lettering ('' = a blank line). */
 function wrap(lines: readonly string[], w: number): string[] {
@@ -228,6 +229,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     letters: () => ({ art: drawing('letters', I.lettersArt), body: ['YOUR CARD CAME ON TUESDAY. THE APPLE TREE HAS COME OUT ALL AT ONCE. I HAVE PUT A PHOTOGRAPH IN WITH THIS. WRITE WHEN YOU CAN.', 'MOTHER'], actions: [] }),
     logbook: () => ({ art: logbookDrawing(o.info), body: logLines(), actions: [[flyLabel(), fly]] }),
     clockcode: () => ({ art: drawing('clockcode', I.clockcodeArt), body: ['TARGET AT THE CENTRE, TWELVE IS NORTH. RINGS A TO F: 50 TO 500 YARDS. B4: 100 YARDS, A LITTLE SOUTH OF EAST.'], actions: [] }),
+    pad: () => ({ art: drawing('pad', messagePad), body: ['YOUR SPOTTING NOTES FROM THE LAST SHOOT, IN PENCIL.'], actions: [] }),
     goggles: () => ({ art: drawing('goggles', I.gogglesArt), body: ['FLYING GOGGLES: LEATHER AND NICKEL, THE GLASS CLEAR BUT DUSTY.'], actions: [takeOff] }),
     coin: () => ({ art: drawing('coin', I.coinArt), body: ['A SIXPENCE, DRILLED THROUGH FOR A CORD. FOR LUCK.'], actions: [] }),
     mug: () => ({ art: drawing('coffee', I.coffeeArt), body: ['COFFEE FROM THE MESS. GONE COLD.'], actions: [] }),
