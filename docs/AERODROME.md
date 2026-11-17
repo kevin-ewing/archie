@@ -36,11 +36,16 @@ The story sets the cover (`LogbookCover` in desk-items.ts; `BarnInfo.logbook`):
 
 What just lies about (`src/story/clutter.ts`). It's drawn the way the coffee and the log book are: colour and tone built up per pixel, lit from the top-left with no outlines, broad shading dithered in the desk's tone steps, and thin parts in whole tones. Each thing is turned any way at all (its drop shadow still falls down-right) and drawn at the same size as the things you use, so it shrinks with the mug.
 
-- **The things:** a message pad with spotting notes, the gauntlets, an RFC side cap, a postcard of Ypres, a square of aeroplane linen with part of a roundel and a bullet hole, a greasy rag, a folded newspaper, an Army biscuit, a screwed-up ball of paper, a pocket knife, a pewter hip flask, an ashtray cut from an 18-pounder shell case, a tin of Navy Cut, a candle stub in an enamel saucer, a briar pipe, a bottle of ink, a spanner, a coil of twine, a box of Swan matches, a KLG sparking plug, a pencil, a fountain pen, two .303 rounds, spent matches, cigarette ends and drawing pins.
+- **The things:** a message pad with spotting notes, a postcard of Ypres, a pocket knife, a pewter hip flask, an ashtray cut from an 18-pounder shell case, a tin of Navy Cut, a candle stub in an enamel saucer, a bottle of ink, a spanner, a box of Swan matches, a pencil, a fountain pen, two .303 rounds, and spent matches and cigarette ends left by the ashtray and the candle.
 - **Where it goes:** it fills what's left, biggest first. Each piece goes where it covers least of the things you use (weighted three times), the calendar's face and the clutter already down, and never what anything keeps clear.
 - **Not buttons:** none of the clutter is a button except the **sixpence** (desk-items.ts `coinArt`), which you can pick up.
-- **[VERIFY]** the period details: "Daily Mail" in 1915, Navy Cut and Swan Vestas tins, KLG plugs on the RAF 1a, the 18-pounder case-base ashtray as trench art, and ".303" rounds on an aerodrome desk.
+- **[VERIFY]** the period details: "Daily Mail" in 1915, Navy Cut and Swan Vestas tins, the 18-pounder case-base ashtray as trench art, and ".303" rounds on an aerodrome desk.
 
 ## The controls (for now)
 
 TAKE OFF from the goggles or the orders, the log book's button, and the first plate all go straight to **Free Fly**. Story flights (resuming, keeping their place, the log book's entries) come back with the missions. SETTINGS opens the shared settings panel, with BACK returning to the desk. MAIN MENU returns to the landing page, and Esc puts down what you're holding, then leaves the desk.
+
+## Picking up from under a pile; the barn's loading screen
+
+- **Under something:** if anything lies on the thing you press, what lies on it fades away first (0.09 s), with the thing still where it lies. Then it rises. Putting it down, it lands first, and what lies on top of its place closes back over it (0.11 s). That's the covers layer in barn.ts: whatever is above it in the pile, cut to its own outline. So it never shows through what's on top of it, never jumps out over the pile, and never pops back under it. It works for any stack and any turn.
+- **Loading screen:** the arrangement is worked out behind the barn's own loading screen, in the desk's brown. A phrase from `BARN_LOADING` (barn.ts) sits in the game's lettering above the first load's three pulsing pixels. It shows when the desk opens (from the main menu or `?story`), and on every resize until the window has been still for a moment and the new arrangement is ready. A resize puts down anything you're holding.

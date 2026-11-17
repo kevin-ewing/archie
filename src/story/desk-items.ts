@@ -4,20 +4,14 @@
 
 import { bayer, fbm, hash, valueNoise } from '../core/noise.ts';
 import { watchPx } from '../ui/clock.ts';
-import { luckPx } from '../ui/luck.ts';
+import { LUCK, luckPx } from '../ui/luck.ts';
 import { createPx, line, plot, text, textWidth, type Px, type RGBA } from '../core/pixels.ts';
 
 export const P = {
-  dark: [24, 19, 15, 255], shadow: [36, 24, 15, 255], ink: [40, 34, 30, 255], typed: [52, 46, 42, 255], pencil: [96, 92, 88, 255],
+  dark: [24, 19, 15, 255], shadow: [36, 24, 15, 255], ink: [40, 34, 30, 255], pencil: [96, 92, 88, 255],
   paper: [214, 198, 154, 255], paperShade: [188, 170, 126, 255], paperDark: [160, 142, 102, 255],
   cream: [236, 224, 186, 255], creamShade: [214, 200, 160, 255], white: [244, 240, 226, 255],
-  red: [138, 50, 38, 255], redLit: [180, 74, 54, 255], redDark: [100, 34, 26, 255], blue: [70, 98, 122, 255], blueLit: [104, 134, 156, 255],
-  olive: [92, 96, 62, 255], oliveLit: [118, 122, 80, 255], oliveDark: [66, 70, 44, 255],
-  cloth: [58, 66, 50, 255], clothLit: [80, 90, 66, 255], clothDark: [42, 48, 36, 255],
-  leather: [96, 62, 36, 255], leatherLit: [132, 90, 54, 255], leatherDark: [64, 40, 24, 255], fleece: [220, 206, 174, 255],
-  steel: [0x9c, 0x98, 0x82, 255], steelLit: [0xe2, 0xe0, 0xd6, 255], steelDark: [0x56, 0x54, 0x49, 255],
-  brass: [0xc9, 0x9a, 0x3c, 255], brassLit: [0xf0, 0xcc, 0x6e, 255], brassDark: [0x8a, 0x66, 0x24, 255],
-  glass: [132, 148, 146, 255], glassLit: [196, 210, 206, 255], flameRing: [255, 222, 150, 255], tea: [120, 72, 30, 255], teaLit: [158, 102, 44, 255], wood: [176, 128, 64, 255],
+  red: [138, 50, 38, 255], redLit: [180, 74, 54, 255],
 } satisfies Record<string, RGBA>;
 
 export type ItemId = 'orders' | 'chart' | 'letters' | 'logbook' | 'clockcode' | 'calendar' | 'mug' | 'watch' | 'goggles' | 'coin' | 'pad';
@@ -27,27 +21,6 @@ const rect = (px: Px, x: number, y: number, w: number, h: number, c: RGBA) => { 
 const disc = (px: Px, cx: number, cy: number, r: number, c: (d: number, dx: number, dy: number) => RGBA | null) => {
   for (let dy = -Math.ceil(r); dy <= Math.ceil(r); dy++) for (let dx = -Math.ceil(r); dx <= Math.ceil(r); dx++) { const d = Math.hypot(dx, dy); if (d <= r) { const k = c(d, dx, dy); if (k) plot(px, cx + dx, cy + dy, k); } }
 };
-const centred = (px: Px, y: number, s: string, c: RGBA, x0 = 0, w = px.w) => text(px, x0 + Math.floor((w - textWidth(s)) / 2), y, s, c);
-/** A sheet of paper: lit top and left edges, shaded bottom and right, foxing, a dog-eared corner. */
-function sheet(px: Px, x: number, y: number, w: number, h: number, face: RGBA, shade: RGBA, seed: number, dogEar = false) {
-  rect(px, x, y, w, h, face);
-  rect(px, x, y, w, 1, P.white); rect(px, x, y, 1, h, P.white);
-  rect(px, x, y + h - 1, w, 1, shade); rect(px, x + w - 1, y, 1, h, shade);
-  for (let k = 0; k < (w * h) / 220; k++) plot(px, x + 2 + Math.floor(hash(seed, k, 1) * (w - 4)), y + 2 + Math.floor(hash(seed, k, 2) * (h - 4)), shade);
-  if (dogEar) for (let k = 0; k < 6; k++) for (let j = 0; j <= k; j++) plot(px, x + w - 6 + k, y + h - 1 - j, k + j > 5 ? P.shadow : shade);
-}
-/** Words too small to read at the desk: inked dashes of word-like lengths. */
-function scrawl(px: Px, x: number, y: number, w: number, rows: number, c: RGBA, seed: number, gap = 4) {
-  for (let r = 0; r < rows; r++) {
-    let cx = x + (r === 0 ? 5 : 0);
-    const end = x + w - Math.floor(hash(seed, r, 9) * (r === rows - 1 ? w * 0.5 : 5));
-    while (cx < end) {
-      const len = 2 + Math.floor(hash(seed, r * 31 + cx, 3) * 7);
-      for (let i = 0; i < len && cx + i < end; i++) plot(px, cx + i, y + r * gap + (hash(seed, cx + i, r) < 0.15 ? -1 : 0), c);
-      cx += len + 2;
-    }
-  }
-}
 
 /**
  * What the orders say: all of it text the story fills in, so each new sortie can bring its own orders as they
@@ -287,23 +260,6 @@ export function chartArt(w = 250, h = 176, sheetNo = 0, mug = 1): Px { // mug: t
     const grey = (r + g + b) / 3, wash = sheetNo ? 0.4 : 0; // and is more washed out: its colours pulled towards a warm grey
     plot(px, x, y, [Math.round(r + (grey * 1.04 - r) * wash), Math.round(g + (grey - g) * wash), Math.round(b + (grey * 0.93 - b) * wash), 255]);
   }
-  return px;
-}
-
-/** A bundle of letters tied with string: the top one addressed, stamped and postmarked. */
-export function lettersArt(): Px {
-  const px = createPx(110, 76);
-  sheet(px, 12, 0, 94, 58, P.paperShade, P.paperDark, 31);
-  sheet(px, 6, 6, 96, 60, P.paper, P.paperShade, 32);
-  sheet(px, 0, 14, 100, 60, P.cream, P.creamShade, 33);
-  text(px, 26, 38, '2ND LT', P.ink); text(px, 26, 45, 'NO 6 SQUADRON', P.ink); text(px, 26, 52, 'R.F.C. B.E.F.', P.ink); scrawl(px, 26, 60, 46, 1, P.ink, 34);
-  rect(px, 82, 18, 14, 17, P.red); rect(px, 83, 19, 12, 15, P.redLit); rect(px, 85, 21, 8, 11, P.red); centred(px, 24, '1D', P.cream, 82, 14); // a penny stamp
-  for (let a = 0; a < 60; a++) plot(px, 76 + Math.round(Math.cos(a / 9.5) * 9), 28 + Math.round(Math.sin(a / 9.5) * 9), P.pencil); // postmark
-  for (const yy of [24, 27, 30]) line(px, 58, yy, 70, yy, P.pencil);
-  const STRING: RGBA = [158, 124, 82, 255];
-  for (let x = 0; x < 106; x++) plot(px, x, 47 + (x > 46 && x < 54 ? -1 : 0), STRING);
-  for (let y = 0; y < 76; y++) plot(px, 50, y, STRING);
-  for (const [bx, by] of [[46, 43], [47, 42], [53, 43], [54, 42], [48, 51], [52, 51]]) plot(px, bx, by, STRING); // the bow
   return px;
 }
 
@@ -638,14 +594,36 @@ export function calendarArt(d: DateInfo, big = false): Px {
 }
 
 /** The cockpit watch, laid on the desk showing the time of day (the same drawing, ui/clock.ts). */
-export const watchArt = (hours: number, sunset: number, withSeconds = true): Px => watchPx(27, hours, sunset, withSeconds);
+export const watchArt = (hours: number, sunset: number): Px => watchPx(27, hours, sunset);
 
-/** The lucky sixpence, as hangs under the altimeter (the same drawing, ui/luck.ts), with a stub of its cord. */
-export function coinArt(): Px {
-  const from = luckPx();
-  const top = 16;
-  const px = createPx(from.w, from.h - top);
-  px.data.set(from.data.subarray(top * from.w * 4));
+/** The lucky sixpence, as hangs under the altimeter (the same drawing, ui/luck.ts), still on its cord: the cord
+ * runs from the drilled hole in a loose curve across the desk to the knot it's tied off with (the cockpit's own
+ * knot and cut ends). The cord in the charm's two twisted tones, whole, with its shaded side away from the light.
+ * `turn`: how it will lie, so the coin's rim and the cord are lit from the top-left of the screen. */
+export function coinArt(turn = 0): Px {
+  const from = luckPx(turn), c = LUCK.pivot, TOP = 16, KNOT = 7; // the coin is from row 16; the knot, rows 0 … 6
+  const W = 46, H = 56, ox = 2, oy = H - (from.h - TOP); // the coin at the bottom left; the knot top right
+  const px = createPx(W, H);
+  const copy = (sy0: number, sy1: number, dx: number, dy: number) => {
+    for (let y = sy0; y < sy1; y++) for (let x = 0; x < from.w; x++) {
+      const i = (y * from.w + x) * 4;
+      if (from.data[i + 3]) plot(px, x + dx, y + dy, [from.data[i], from.data[i + 1], from.data[i + 2], 255]);
+    }
+  };
+  // The cord: from the hole, out to the right and round, up to the knot.
+  const kx = W - from.w + 1, ky = 1; // where the knot's drawing goes
+  const p = [[ox + c + 0.5, oy + 1.5], [ox + c + 34, oy - 4], [kx + c - 30, ky + 22], [kx + c + 0.5, ky + KNOT - 1]];
+  const at = (t: number) => { const m = 1 - t; return [0, 1].map((k) => m * m * m * p[0][k] + 3 * m * m * t * p[1][k] + 3 * m * t * t * p[2][k] + t * t * t * p[3][k]); };
+  const sx = Math.round((Math.cos(turn) + Math.sin(turn)) / Math.SQRT2), sy = Math.round((Math.cos(turn) - Math.sin(turn)) / Math.SQRT2); // the screen's down-right, in the drawing
+  let len = 0, [lx, ly] = at(0);
+  for (let t = 0; t <= 1; t += 0.004) {
+    const [x, y] = at(t);
+    len += Math.hypot(x - lx, y - ly); [lx, ly] = [x, y];
+    plot(px, Math.floor(x) + sx, Math.floor(y) + sy, LUCK.cordB); // its shaded side
+    plot(px, Math.floor(x), Math.floor(y), Math.floor(len / 1.5) % 2 ? LUCK.cordA : LUCK.cordB); // the twist
+  }
+  copy(0, KNOT, kx, ky); // the knot and its cut ends
+  copy(TOP, from.h, ox, oy - TOP); // the coin over the cord's end, the cord through its hole
   return px;
 }
 
@@ -653,7 +631,7 @@ export function coinArt(): Px {
  * A tin enamel mug of mess coffee from straight above, in the desk's style, with no outlines: the lip and the
  * inside wall are the same enamel, told apart only by the light (the lip lit on its top-left, the wall
  * inside on its far side), the coffee near black with a broad glossy sheen and the window's glint
- * in it, and a crescent of tan crema packed with bubbles against the wall, breaking up at its inner edge; the handle out to the right, solid from above.
+ * in it, and a smooth crescent of tan crema against the wall, a few bubbles along its edge and just off it; the handle out to the right, solid from above.
  * The coffee's wide shading is in tone steps with the ordered dither; the thin parts take whole tones, so
  * they stay clean. The rim's radius (37) is a little more than the old rings' on the desk (30 … 33, left by its narrower
  * bottom), and more than the watch's (27).
@@ -676,20 +654,13 @@ export function coffeeArt(): Px {
     if (d > IN) set(x, y, ENAMEL, lit > 0.4 ? 10 : lit < -0.4 ? -8 : 2, true); // the lip
     else if (d > TEA) set(x, y, ENAMEL, -lit > 0.5 ? 6 : -lit > 0 ? 0 : -lit > -0.5 ? -8 : -14, true); // the wall: lit on the far side
     else {
-      // Crema: a crescent of tan foam hugging the wall on the bottom-left, thick there and thinning to
-      // nothing round the other side, its inner edge ragged.
-      const th = 10 * Math.max(0, Math.cos(a - 2.3)) ** 1.6 + (valueNoise(155, (a + Math.PI) * 5, 0) - 0.5) * 4;
-      const into = TEA - d; // px in from the wall
+      // Crema: a smooth crescent of tan foam against the wall on the bottom-left, thick there and thinning to
+      // nothing round the other side, palest by the wall, its inner edge gently wavy and a step darker.
+      const th = 10 * Math.max(0, Math.cos(a - 2.3)) ** 1.6 + (valueNoise(155, (a + Math.PI) * 5, 0) - 0.5) * 3;
+      const into = TEA - d;
       if (into < th) {
-        const deep = into / Math.max(1, th); // 0 at the wall … 1 at the foam's inner edge
-        // Packed bubbles: a jittered grid of cells, each a bubble; a dark pixel at its heart, a lit one on its
-        // top-left, bigger and darker towards the inner edge where they're breaking up.
-        const cell = deep > 0.6 ? 3 : 2, cx0 = Math.floor(x / cell), cy0 = Math.floor(y / cell);
-        const hx = cx0 * cell + Math.floor(hash(156, cx0, cy0) * cell), hy = cy0 * cell + Math.floor(hash(157, cx0, cy0) * cell);
-        const v = 12 - deep * 16 + (fbm(158, x / 6, y / 6, 2) - 0.5) * 10;
-        if (x === hx && y === hy && hash(159, cx0, cy0) < 0.4 + deep * 0.5) set(x, y, FROTH, -34 - deep * 10, true);
-        else if (x === hx - 1 && y === hy - 1 && deep > 0.4) set(x, y, FROTH, v + 14, true);
-        else set(x, y, FROTH, v);
+        const deep = into / Math.max(1, th); // 0 at the wall … 1 at the inner edge
+        set(x, y, FROTH, 12 - deep * 12 + (th - into < 1.2 ? -8 : 0) + (fbm(158, x / 6, y / 6, 2) - 0.5) * 5);
         continue;
       }
       // The coffee: near black, with a broad glossy sheen of the sky across its upper middle, brightest at
@@ -700,15 +671,18 @@ export function coffeeArt(): Px {
       else set(x, y, COFFEE, sheen ** 1.5 * 96 + (g < 7 ? 14 : 0) - (dx + dy + TEA) * 0.3 + (fbm(153, x / 10, y / 10, 2) - 0.5) * 6);
     }
   }
-  // A few loose bubbles drifting off the crema's inner edge: a tan ring round a dark heart.
-  for (let k = 0; k < 26; k++) {
-    const a = 2.3 + (hash(154, k, 1) - 0.5) * 2.6, th = 10 * Math.max(0, Math.cos(a - 2.3)) ** 1.6;
-    const r0 = TEA - th - 1.5 - hash(154, k, 2) * 4, br = hash(154, k, 3) < 0.3 ? 1.6 : 1;
+  // A few bubbles: small ones sitting along the crema's edge, two or three larger drifting just off it onto the
+  // coffee. Each a pale ring, brightest on its top-left, the coffee dark through its middle.
+  for (let k = 0; k < 14; k++) {
+    const a = 2.3 + (hash(154, k, 1) - 0.5) * 2.4, th = 10 * Math.max(0, Math.cos(a - 2.3)) ** 1.6;
+    if (th < 2) continue;
+    const loose = k % 5 === 0, br = loose ? 1.6 : 1, r0 = TEA - th - (loose ? 3 + hash(154, k, 2) * 3 : 0.4);
     const bx = c + Math.cos(a) * r0, by = c + Math.sin(a) * r0;
-    for (let y = Math.floor(by - 2); y <= by + 2; y++) for (let x = Math.floor(bx - 2); x <= bx + 2; x++) {
-      const e = Math.hypot(x + 0.5 - bx, y + 0.5 - by);
-      if (e > br + 0.5 || Math.hypot(x + 0.5 - c, y + 0.5 - c) > TEA) continue;
-      if (e > br - 0.6) set(x, y, FROTH, x + y < bx + by ? 2 : -14, true);
+    for (let y = Math.floor(by - 3); y <= by + 3; y++) for (let x = Math.floor(bx - 3); x <= bx + 3; x++) {
+      const ox = x + 0.5 - bx, oy = y + 0.5 - by, e = Math.hypot(ox, oy);
+      if (e > br + 0.4) continue;
+      if (br < 1.2) { set(x, y, FROTH, e < 0.5 ? 10 : 0, true); continue; } // a small one: a pale bead
+      set(x, y, FROTH, e < br - 0.8 ? -30 : ox + oy < 0 ? 10 : -6, true); // a larger one: a ring, lit on its top-left
     }
   }
   const px = createPx(W, H);

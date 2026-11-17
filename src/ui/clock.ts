@@ -79,15 +79,7 @@ function watchFace(r: number) {
     const p = polar(c, cy, r - 8, angle(hr)); // set well in from the minute track, so the figures stand clear
     text(staticFace, Math.round(p.x - textWidth(s) / 2), Math.round(p.y - 2), s, C.ink);
   }
-  /** The seconds hand (with its pivot): the cockpit's watch has one; the desk's leaves it off. */
-  const seconds = (px: Px, hours: number) => {
-    const sa = ((Math.floor(hours * 3600 * 4 + 1e-6) / 4) % 60) / 60 * 2 * Math.PI; // in quarter-second steps
-    const sec = polar(c, cy, r - 5, sa);
-    const tail = polar(c, cy, 3, sa + Math.PI);
-    line(px, tail.x, tail.y, sec.x, sec.y, C.red);
-    disc(px, c, cy, 1.5, () => C.metal);
-  };
-  const paint = (px: Px, hours: number, sunset: number, withSeconds = true) => {
+  const paint = (px: Px, hours: number, sunset: number) => {
     const mark = polar(c, cy, r - 1, angle(sunset));
     plot(px, mark.x, mark.y, C.red);
     // Readable day/night aperture where the reference's small seconds dial sits.
@@ -105,27 +97,24 @@ function watchFace(r: number) {
     line(px, c, cy, hour.x, hour.y, C.glint);
     line(px, c + 1, cy, hour.x + 1, hour.y, C.glint);
     line(px, c, cy + 1, hour.x, hour.y + 1, metal);
-    // The centre seconds hand: a thin red sweep from the pivot with a short counterweight tail.
-    if (withSeconds) seconds(px, hours);
-    else disc(px, c, cy, 1.5, () => C.metal);
+    disc(px, c, cy, 1.5, () => C.metal); // the pivot
     return { minute, hour };
   };
   return { size, c, cy, staticFace, paint };
 }
 
-/** The watch as a plain raster at a given time, for the desk in the barn (`withSeconds: false` leaves the
- * seconds hand off). Pure. */
-export function watchPx(r: number, hours: number, sunset: number, withSeconds = true): Px {
+/** The watch as a plain raster at a given time, for the desk in the barn. Pure. */
+export function watchPx(r: number, hours: number, sunset: number): Px {
   const f = watchFace(r);
   const px = createPx(f.size, f.size + STEM);
   px.data.set(f.staticFace.data);
-  f.paint(px, hours, sunset, withSeconds);
+  f.paint(px, hours, sunset);
   return px;
 }
 
 
 /** Mark V-inspired cockpit watch; the user's reference has a long stem and no bow.
- * The AM / PM aperture replaces its subsidiary seconds dial as a deliberate game aid; the seconds hand sweeps from the centre. */
+ * The AM / PM aperture replaces its subsidiary seconds dial as a deliberate game aid; no seconds hand. */
 export function createWatch(r: number): Instrument & { sunset: number; cx: number } {
   const { size, c, cy, staticFace, paint } = watchFace(r);
   const px = createPx(size, size + STEM);

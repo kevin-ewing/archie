@@ -6,9 +6,9 @@
 
 import { createPx, plot, text, textWidth, type Px, type RGBA } from '../core/pixels.ts';
 import { menuItem, MENU_W, sizeFaces } from '../ui/pause.ts';
-import { barnScene, drawing, logbookDrawing, ordersDrawing, Z, type BarnInfo, type BarnScene, type Spot } from './barn-art.ts';
+import { BARN_LOADING, barnScene, drawing, logbookDrawing, ordersDrawing, Z, type BarnInfo, type BarnScene, type Spot } from './barn-art.ts';
 import * as I from './desk-items.ts';
-import { messagePad } from './clutter.ts';
+import { messagePad, sealedLetter } from './clutter.ts';
 import './barn.css';
 
 export type LogEntry = { sortie: number; date: string; minutes: number };
@@ -20,6 +20,8 @@ export type BarnOptions = {
   gamePx: () => number; // CSS px per game px: flight's pixel size, used for the desk too
   /** The watch's time of day in hours (default: the device's clock, to the second). */
   now?: () => number;
+  /** Draw the layout's boxes over the desk (barn-art.ts `DebugBox`): for working on the arrangement. */
+  debugBoxes?: boolean;
   onFly: () => void;
   onSettings: (back: () => void) => void;
   onClose: () => void;
@@ -28,7 +30,7 @@ export type BarnOptions = {
 const INK: RGBA = I.P.ink;
 const PAPER: RGBA = I.P.cream;
 const EDGE: RGBA = I.P.paperShade;
-const LABEL: Record<I.ItemId, string> = { orders: 'ORDERS', chart: 'CHART', letters: 'LETTERS', logbook: 'LOG BOOK', clockcode: 'CLOCK CODE', calendar: 'CALENDAR', mug: 'COFFEE', watch: 'WATCH', goggles: 'GOGGLES', pad: 'MESSAGE PAD', coin: 'SIXPENCE' };
+const LABEL: Record<I.ItemId, string> = { orders: 'ORDERS', chart: 'CHART', letters: 'LETTER', logbook: 'LOG BOOK', clockcode: 'CLOCK CODE', calendar: 'CALENDAR', mug: 'COFFEE', watch: 'WATCH', goggles: 'GOGGLES', pad: 'MESSAGE PAD', coin: 'SIXPENCE' };
 
 /** Words wrapped to `w` px in the game's lettering ('' = a blank line). */
 function wrap(lines: readonly string[], w: number): string[] {
@@ -80,6 +82,62 @@ function note(body: readonly string[], w: number): Px {
   return px;
 }
 
+/** The layout's boxes over the desk, each thing's own box as it lies: cyan (red where nothing may lie on it),
+ * what may never be covered (yellow), the plates' room (magenta). The buttons are these same boxes. */
+function drawBoxes(ctx: CanvasRenderingContext2D, boxes: BarnScene['boxes'], s: number) {
+  const STYLE = { box: '#3ad', shy: '#f90', keep: '#fd2', clear: '#e4e' } as const, size = Math.max(9, Math.round(s * 2.4));
+  ctx.save();
+  ctx.font = `${size}px monospace`;
+  ctx.textBaseline = 'top';
+  for (const b of boxes) {
+    ctx.strokeStyle = b.kind === 'box' && b.bears === false ? '#f44' : STYLE[b.kind];
+    ctx.lineWidth = b.kind === 'box' ? 2 : 1;
+    ctx.beginPath();
+    b.quad.forEach(([x, y], i) => (i ? ctx.lineTo(x * s, y * s) : ctx.moveTo(x * s, y * s)));
+    ctx.closePath();
+    ctx.stroke();
+    const [tx, ty] = b.quad.reduce((q, p) => (p[1] < q[1] ? p : q)).map((v) => Math.round(v * s) + 3), w = ctx.measureText(b.label).width;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(tx - 2, ty - 1, w + 4, size + 2);
+    ctx.fillStyle = ctx.strokeStyle; ctx.fillText(b.label, tx, ty);
+  }
+  ctx.restore();
+}
+
+
+/** The barn's loading screen: the desk's own brown, a message in the game's lettering above the same three
+ * pulsing pixels as the first load (index.html's .landing-wait). */
+function barnLoading() {
+  const el = document.createElement('div');
+  el.className = 'barn-loading';
+  el.setAttribute('role', 'status');
+  const wait = document.createElement('div');
+  wait.className = 'landing-wait';
+  const msg = document.createElement('canvas');
+  msg.className = 'barn-loading-message';
+  const dots = document.createElement('div');
+  dots.className = 'landing-dots';
+  dots.append(document.createElement('i'), document.createElement('i'), document.createElement('i'));
+  wait.append(msg, dots);
+  el.append(wait);
+  const say = () => {
+    const s = BARN_LOADING[Math.floor(Math.random() * BARN_LOADING.length)];
+    const px = createPx(textWidth(s), 5);
+    text(px, 0, 0, s, [20, 19, 15, 255]);
+    msg.width = px.w;
+    msg.height = px.h;
+    msg.getContext('2d')!.putImageData(new ImageData(px.data, px.w, px.h), 0, 0);
+    msg.style.setProperty('--w', String(px.w));
+    msg.style.setProperty('--h', String(px.h));
+    el.setAttribute('aria-label', `Loading. ${s.toLowerCase()}`);
+  };
+  let up = false;
+  return {
+    el,
+    show() { if (!up) { up = true; say(); el.hidden = false; } },
+    hide() { up = false; el.hidden = true; },
+  };
+}
+
 export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boolean } {
   const room = document.createElement('div');
   room.className = 'barn';
@@ -96,7 +154,14 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
   const held = document.createElement('div');
   held.className = 'barn-held';
   held.hidden = true;
-  room.append(art, things, plates, held);
+  // What lies on top of the thing being picked up or put down, cut to its outline: drawn over the held thing
+  // so it comes out from under them (and goes back under them) rather than jumping over the pile.
+  const covers = document.createElement('canvas');
+  covers.className = 'barn-covers';
+  covers.setAttribute('aria-hidden', 'true');
+  covers.hidden = true;
+  const loading = barnLoading();
+  room.append(art, things, plates, held, covers, loading.el);
   document.body.append(room);
 
   const flyLabel = () => (o.resuming ? 'CONTINUE' : o.info.sortie > 1 ? `SORTIE ${o.info.sortie}` : 'FIRST SORTIE');
@@ -144,7 +209,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     return `translate(${dx}px, ${dy}px) rotate(${d.turn}rad) scale(${(d.art.w * d.k) / Math.max(1, el.offsetWidth / g)})`;
   };
   let flight: Animation[] = [];
-  const stop = () => { flight.forEach((a) => a.cancel()); flight = []; };
+  const stop = () => { flight.forEach((a) => a.cancel()); flight = []; covers.hidden = true; };
 
   /** Put it back: it flies home to its place on the desk as the room lightens, then lies there again. */
   const putDown = () => {
@@ -154,16 +219,19 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     const thing = held.querySelector<HTMLElement>('.barn-held-thing');
     const rest = [...held.querySelectorAll<HTMLElement>('.barn-held-lift > :not(.barn-held-thing)')];
     stop();
+    const LAND = 300;
     flight = [
-      held.animate([{ backgroundColor: DIM }, { backgroundColor: CLEAR }], { duration: ms(260), easing: 'ease-in', fill: 'forwards' }),
+      held.animate([{ backgroundColor: DIM }, { backgroundColor: CLEAR }], { duration: ms(LAND - 20), easing: 'ease-in', fill: 'forwards' }),
       ...rest.map((e) => e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms(120), fill: 'forwards' })),
-      ...(thing ? [thing.animate([{ transform: 'none' }, { transform: onDesk(id, thing) }], { duration: ms(280), easing: 'cubic-bezier(0.4, 0, 0.6, 1)', fill: 'forwards' })] : []),
+      ...(thing ? [thing.animate([{ transform: 'none' }, { transform: onDesk(id, thing) }], { duration: ms(LAND), easing: 'cubic-bezier(0.4, 0, 0.6, 1)', fill: 'forwards' })] : []),
+      // Once it has landed (still now), whatever lies on top of its place closes back over it.
+      ...(drawCovers(id) ? [covers.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms(110), delay: ms(LAND), easing: 'ease-out', fill: 'both' })] : []),
     ];
     Promise.all(flight.map((a) => a.finished)).then(() => {
-      held.hidden = true;
       heldId = null;
+      paint(); // back on the desk, under what's on it, in the same frame the flying copy and the covers go
+      held.hidden = true;
       stop();
-      paint();
       quiet = true;
       from?.focus({ preventScroll: true });
       quiet = false;
@@ -180,6 +248,8 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
    * dimming behind it; then its note and what you can do with it appear under it. */
   function pickUp(id: I.ItemId, button: HTMLElement | null) {
     from = button;
+    stop();
+    const covered = drawCovers(id); // what lies on it now, before it comes to the top of its pile
     const i = order.indexOf(id);
     if (i >= 0) order.splice(i, 1);
     order.push(id);
@@ -203,7 +273,6 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     row.className = 'barn-held-plates';
     for (const [name, act] of actions) row.append(menuItem(name, act));
     if (actions.length) lift.append(row);
-    stop();
     held.replaceChildren(lift);
     sizeFaces([row], o.uiPx());
     held.hidden = false;
@@ -212,10 +281,14 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     hover = null;
     lifted.delete(id);
     paint(); // it leaves the desk in the same frame it starts to rise, so it never shows twice
+    // Under something? First what lies on it fades away (the thing still where it lies), then it rises: it never
+    // shows through what was on top of it, nor jumps out over it.
+    const CLEAR_MS = covered ? ms(90) : 0;
     flight = [
-      held.animate([{ backgroundColor: CLEAR }, { backgroundColor: DIM }], { duration: ms(320), easing: 'ease-out', fill: 'forwards' }),
-      thing.animate([{ transform: from0 }, { transform: 'none' }], { duration: ms(420), easing: EASE, fill: 'forwards' }),
-      ...[...lift.children].filter((e) => e !== thing).map((e) => (e as HTMLElement).animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: ms(220), delay: ms(260), easing: 'ease-out', fill: 'backwards' })),
+      held.animate([{ backgroundColor: CLEAR }, { backgroundColor: DIM }], { duration: ms(320), delay: CLEAR_MS, easing: 'ease-out', fill: 'both' }),
+      thing.animate([{ transform: from0 }, { transform: 'none' }], { duration: ms(420), delay: CLEAR_MS, easing: EASE, fill: 'both' }),
+      ...[...lift.children].filter((e) => e !== thing).map((e) => (e as HTMLElement).animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: ms(220), delay: CLEAR_MS + ms(260), easing: 'ease-out', fill: 'backwards' })),
+      ...(covered ? [covers.animate([{ opacity: 1 }, { opacity: 0 }], { duration: CLEAR_MS, easing: 'ease-in', fill: 'forwards' })] : []),
     ];
     things.inert = plates.inert = true;
     ((row.querySelector('button') as HTMLElement | null) ?? held).focus({ preventScroll: true });
@@ -226,14 +299,14 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
   const USE: Record<I.ItemId, () => { art: Px; body: string[]; actions: [string, () => void][] }> = {
     orders: () => ({ art: ordersDrawing(o.info), body: [], actions: [takeOff] }), // the sheet says it all
     chart: () => ({ art: drawing('chart:held', () => I.chartArt()), body: ['OUR SECTOR. THE GERMAN LINE IN RED, OURS IN BLUE. BTY: OUR BATTERY. TGT: TODAY.'], actions: [] }),
-    letters: () => ({ art: drawing('letters', I.lettersArt), body: ['YOUR CARD CAME ON TUESDAY. THE APPLE TREE HAS COME OUT ALL AT ONCE. I HAVE PUT A PHOTOGRAPH IN WITH THIS. WRITE WHEN YOU CAN.', 'MOTHER'], actions: [] }),
+    letters: () => ({ art: drawing('letters', sealedLetter), body: ['A LETTER FROM HOME, IN MOTHER\'S HAND. STILL SEALED.'], actions: [] }),
     logbook: () => ({ art: logbookDrawing(o.info), body: logLines(), actions: [[flyLabel(), fly]] }),
     clockcode: () => ({ art: drawing('clockcode', I.clockcodeArt), body: ['TARGET AT THE CENTRE, TWELVE IS NORTH. RINGS A TO F: 50 TO 500 YARDS. B4: 100 YARDS, A LITTLE SOUTH OF EAST.'], actions: [] }),
     pad: () => ({ art: drawing('pad', messagePad), body: ['YOUR SPOTTING NOTES FROM THE LAST SHOOT, IN PENCIL.'], actions: [] }),
     goggles: () => ({ art: drawing('goggles', I.gogglesArt), body: ['FLYING GOGGLES: LEATHER AND NICKEL, THE GLASS CLEAR BUT DUSTY.'], actions: [takeOff] }),
     coin: () => ({ art: drawing('coin', I.coinArt), body: ['A SIXPENCE, DRILLED THROUGH FOR A CORD. FOR LUCK.'], actions: [] }),
     mug: () => ({ art: drawing('coffee', I.coffeeArt), body: ['COFFEE FROM THE MESS. GONE COLD.'], actions: [] }),
-    watch: () => ({ art: I.watchArt(clock(), o.info.sunset ?? 19.5, false), body: ['THE RED MARK ON THE RIM IS SUNSET. BE DOWN BEFORE IT.'], actions: [] }),
+    watch: () => ({ art: I.watchArt(clock(), o.info.sunset ?? 19.5), body: ['THE RED MARK ON THE RIM IS SUNSET. BE DOWN BEFORE IT.'], actions: [] }),
     calendar: () => { const big = innerWidth / o.gamePx() >= 480 && innerHeight / o.gamePx() >= 300; return { art: drawing(`calendar:${o.info.day}:${o.info.month}:${o.info.year}:${big}`, () => I.calendarArt(o.info, big)), body: ['THE CALENDAR ONLY MOVES WHEN YOU FLY.'], actions: [] }; },
   };
   // Make every close-up's drawing while the browser is idle, so picking something up never waits on one.
@@ -276,21 +349,52 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     if (d.k !== 1) ctx.scale(d.k, d.k); // drawn smaller on a small screen (k × the device pixels is whole)
   };
   let shownMinute = -1; // the minute the watch's face (hour and minute hands) was last drawn at
+  const mapOf = (px: Px, pad: number) => maps.get(px) ?? (maps.set(px, bitmap(px, pad)), maps.get(px)!);
+  /** Draw onto the covers layer what lies on top of `id` where it lies (each thing after it in the pile,
+   * with its shadow), cut to `id`'s own outline; false if nothing lies on it. */
+  function drawCovers(id: I.ItemId): boolean {
+    if (!scene) return false;
+    const all = scene.drawn, j = all.findIndex((d) => d.id === id);
+    if (j < 0) return false;
+    const me = all[j], above = all.slice(j + 1).filter((d) => d.id !== heldId || d.id === id);
+    if (!above.length) return false;
+    if (covers.width !== art.width || covers.height !== art.height) { covers.width = art.width; covers.height = art.height; }
+    Object.assign(covers.style, { width: art.style.width, height: art.style.height });
+    const ctx = covers.getContext('2d')!;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, covers.width, covers.height);
+    ctx.imageSmoothingEnabled = false;
+    const now = clock();
+    for (const d of above) {
+      const face = d.live ? I.watchArt(now, o.info.sunset ?? 19.5) : d.art;
+      for (const [img, off] of [[d.shadow, d.depth], [face, 0]] as const) {
+        place(ctx, d, off, off);
+        ctx.drawImage(d.live && img === face ? faceBitmap(img) : mapOf(img, 1), -img.w / 2 - 1, -img.h / 2 - 1);
+      }
+    }
+    ctx.globalCompositeOperation = 'destination-in'; // only over the thing itself
+    place(ctx, me, 0, 0);
+    ctx.drawImage(mapOf(me.art, 1), -me.art.w / 2 - 1, -me.art.h / 2 - 1);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const shown = ctx.getImageData(0, 0, covers.width, covers.height).data.some((v, i) => i % 4 === 3 && v > 0);
+    covers.hidden = !shown;
+    return shown;
+  }
   /** The desk at device resolution: the planks on the game-pixel grid, then every thing drawn turned whole
    * (nearest-neighbour, in a 1-px transparent border so the canvas's antialiased edge stays off its pixels).
-   * The watch has no seconds hand on the desk, so the desk is redrawn only when its minute hand moves. */
+   * The watch has no seconds hand, so the desk is redrawn only when its minute hand moves. */
   function paint() {
     if (!scene) return;
     const s = scale;
     const ctx = art.getContext('2d')!;
     ctx.imageSmoothingEnabled = false;
-    const mapOf = (px: Px, pad: number) => maps.get(px) ?? (maps.set(px, bitmap(px, pad)), maps.get(px)!);
     ctx.drawImage(mapOf(scene.px, 0), 0, 0, scene.px.w * s, scene.px.h * s);
     const now = clock();
     shownMinute = Math.floor(now * 60);
     for (const d of scene.drawn) {
       if (d.id && d.id === heldId) continue; // it's in your hands, not on the desk
-      const face = d.live ? I.watchArt(now, o.info.sunset ?? 19.5, false) : d.art;
+      const face = d.live ? I.watchArt(now, o.info.sunset ?? 19.5) : d.art;
       const up = liftOf(d.id); // lifted: it rises, and its shadow falls further away
       for (const [img, off] of [[d.shadow, d.depth + up], [face, -up]] as const) {
         place(ctx, d, img === face ? 0 : off, off);
@@ -298,6 +402,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
       }
     }
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (o.debugBoxes) drawBoxes(ctx, scene.boxes, s);
   }
   let timer = 0;
   const tick = () => {
@@ -332,7 +437,8 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
       b.type = 'button';
       b.className = 'barn-thing';
       b.setAttribute('aria-label', LABEL[s.id].toLowerCase());
-      Object.assign(b.style, { left: `${s.x * g}px`, top: `${s.y * g}px`, width: `${s.w * g}px`, height: `${s.h * g}px` });
+      const { cx, cy, w, h, turn } = s.box; // pressed by its own box, turned as it lies
+      Object.assign(b.style, { left: `${(cx - w / 2) * g}px`, top: `${(cy - h / 2) * g}px`, width: `${w * g}px`, height: `${h * g}px`, transform: `rotate(${turn}rad)` });
       b.dataset.id = s.id;
       const lift = (on: boolean) => setHover(on ? s.id : hover === s.id ? null : hover);
       b.addEventListener('pointerenter', () => lift(true));
@@ -344,10 +450,26 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     }));
     sizeFaces([things, plates], o.uiPx());
   }
-  layout();
-  // While the window is being dragged: lay out at most once a frame.
-  let pending = 0;
-  const relayout = () => { if (!pending) pending = requestAnimationFrame(() => { pending = 0; layout(); }); };
+  // Working out the arrangement can take a moment (most of a second the first time; then very little), so it
+  // happens behind the barn's loading screen: shown at once, the arrangement worked out once it's on screen
+  // (two frames later), then lifted. A resize brings it back until the window has stopped changing.
+  let pending = 0, settle = 0;
+  const arrangeBehind = (wait: number) => {
+    loading.show();
+    clearTimeout(settle);
+    cancelAnimationFrame(pending);
+    settle = window.setTimeout(() => {
+      pending = requestAnimationFrame(() => (pending = requestAnimationFrame(() => {
+        pending = 0;
+        if (!open) return;
+        if (heldId) { stop(); held.hidden = true; things.inert = plates.inert = false; heldId = null; } // (a resize puts it down)
+        layout();
+        loading.hide();
+      })));
+    }, wait);
+  };
+  arrangeBehind(0);
+  const relayout = () => arrangeBehind(180); // once the window has been still for a moment
   addEventListener('resize', relayout);
   const keys = (e: KeyboardEvent) => {
     if (room.hidden || e.code !== 'Escape') return;
@@ -366,6 +488,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     cancelAnimationFrame(rising);
     removeEventListener('resize', relayout);
     cancelAnimationFrame(pending);
+    clearTimeout(settle);
     removeEventListener('keydown', keys, true);
     room.remove();
     if (notify) o.onClose();

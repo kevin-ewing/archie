@@ -5,10 +5,13 @@
 import { bayer, fbm, hash, valueNoise } from '../core/noise.ts';
 import { createPx, plot, type Px, type RGBA } from '../core/pixels.ts';
 import * as I from './desk-items.ts';
-import { CLUTTER, messagePad } from './clutter.ts';
+import { CLUTTER, cigaretteEnd, messagePad, sealedLetter, spentMatch } from './clutter.ts';
 
 export type SpotId = I.ItemId;
-export type Spot = { id: SpotId; x: number; y: number; w: number; h: number };
+/** A thing's own box: the rectangle round its drawn pixels, in its own frame, turned with it (game px). */
+export type OBox = { cx: number; cy: number; w: number; h: number; turn: number };
+/** A pressable thing: where its own box lies (`box`), and the screen rectangle round that, clipped to the screen. */
+export type Spot = { id: SpotId; x: number; y: number; w: number; h: number; box: OBox };
 export type BarnInfo = I.DateInfo & {
   sortie: number;
   date: string;
@@ -16,6 +19,7 @@ export type BarnInfo = I.DateInfo & {
   sunset?: number; // … and its sunset mark
   logbook?: Readonly<I.LogbookCover>; // the log book as the story has it (rank, number, wear); default: as he arrives
   orders?: Readonly<I.OrdersText>; // what today's orders say, filled in as the story unlocks them; default: the first sortie's
+  mail?: boolean; // a letter from home has come: it lies on the desk, sealed, until the story moves on
 };
 
 // Every drawing here depends only on what it's drawn from, and some are slow (the chart ~14 ms): each is made once and kept, so a resize or a new arrangement costs only the layout.
@@ -23,13 +27,22 @@ const drawings = new Map<string, Px>();
 /** The drawing `key` names, made once. (Callers must not draw into it: it's shared.) */
 export const drawing = (key: string, make: () => Px): Px => drawings.get(key) ?? (drawings.set(key, make()), drawings.get(key)!);
 
+/** What the barn's loading screen says while the desk is set out: one, at random. */
+export const BARN_LOADING = [
+  'SORTING THE MORNING POST', 'CLEARING A SPACE ON THE DESK', 'WINDING THE WATCH', 'SHARPENING THE PENCIL',
+  'FINDING THE GOGGLES', 'WARMING UP THE COFFEE', 'SMOOTHING OUT THE MAPS', 'READING THE ORDERS TWICE',
+  'BLOTTING THE INK', 'TURNING THE CALENDAR', 'EMPTYING THE ASHTRAY', 'FILLING IN THE LOG BOOK',
+  'PINNING UP THE CHART', 'LIGHTING THE PIPE', 'LOOKING FOR THE SIXPENCE', 'TIDYING AWAY THE TOOLS',
+  'CHECKING THE CLOCK CODE', 'STRAIGHTENING THE PAPERS', 'PUSHING ASIDE THE BISCUITS', 'TRIMMING THE CANDLE',
+] as const;
+
 const SEED = 1916;
-// For now: only these things are on the desk, brought back one at a time (none of the loose clutter).
-export const SHOWN: readonly I.ItemId[] = ['chart', 'orders', 'calendar', 'logbook', 'clockcode', 'goggles', 'mug', 'watch', 'pad'];
-// … and of the loose clutter (story/clutter.ts), only these by name, brought back one at a time. (The sixpence, 'coin', is the last, above.)
-export const CLUTTER_SHOWN: readonly string[] = ['postcard', 'spanner'];
+// The things you use on the desk, brought back one at a time (the letters are still to come).
+export const SHOWN: readonly I.ItemId[] = ['chart', 'orders', 'calendar', 'logbook', 'clockcode', 'goggles', 'mug', 'watch', 'pad', 'coin'];
+// … and of the loose clutter (story/clutter.ts), only these by name, brought back one at a time.
+export const CLUTTER_SHOWN: readonly string[] = ['postcard', 'spanner', 'ashtray', 'pencil', 'matches', 'tin', 'ink', 'knife', 'flask', 'pen', 'candle', 'rounds'];
 type Box = { x: number; y: number; w: number; h: number };
-type Thing = { id: I.ItemId | null; art: Px; turn: number; live?: boolean; k: number; keep?: Box[]; z?: number; depth?: number; spin?: boolean; relit?: (turn: number) => Px }; // k: drawn at this size (the drawing's pixels × k game px) // keep: parts of it (in its pixels) nothing may cover
+type Thing = { id: I.ItemId | null; art: Px; turn: number; live?: boolean; k: number; keep?: Box[]; z?: number; depth?: number; spin?: boolean; relit?: (turn: number) => Px; bears: boolean; name?: string; body?: Box; shy?: Box }; // shy: the part of it (in its pixels) others keep off, if not all of it // body: the part of its drawing (in its pixels) that is its own box, if not all of it // bears: whether anything may lie on top of it // k: drawn at this size (the drawing's pixels × k game px) // keep: parts of it (in its pixels) nothing may cover
 
 /** The usable things, bottom of the pile first, then what just lies about. */
 /**
@@ -54,46 +67,95 @@ function things(info: BarnInfo, W: number, H: number, pixel: number): { usable: 
   // They shrink a little on small windows, but never below 65 %: they just run further off the edge (at least about a third stays in view).
   const cw = Math.round(520 * size.map);
   const bigCal = W >= 360 && H >= 230; // the large calendar page on anything but a phone (it may run off the edge; its date stays on screen)
-  const t = (id: I.ItemId | null, art: Px, n: number): Thing => ({ id, art, turn: (hash(SEED, n, 3) - 0.5) * 0.5, k: size.usable });
+  const t = (id: I.ItemId | null, art: Px, n: number): Thing => ({ id, art, turn: (hash(SEED, n, 3) - 0.5) * 0.5, k: size.usable, bears: id ? BEARS[id] : true });
   return {
     usable: [
       { ...t('chart', drawing(`chart:${cw}:${size.usable}`, () => I.chartArt(cw, Math.round((cw * 176) / 250), 0, size.usable)), 1), turn: 0.35, k: 1 }, // the map: its own size
       { ...t('orders', ordersDrawing(info), 4), turn: 0 }, // square, front and centre, and on top of everything: the way to the next flight
       { ...t('calendar', drawing(`calendar:${info.day}:${info.month}:${info.year}:${bigCal}`, () => I.calendarArt(info, bigCal)), 8), k: 1, keep: I.calendarKeep(info, bigCal) }, // its own size, like the maps; the month and the days round today stay in view
-      { ...t('clockcode', drawing('clockcode', I.clockcodeArt), 5), turn: -0.1 }, // placed first so the rest lie around it; only a little off square, the other way, to be read where it lies
-      ...(SHOWN.includes('letters') ? [t('letters', drawing('letters', I.lettersArt), 3)] : []), // (not drawn at all while it's off the desk, and nothing lies round where it would be)
+      { ...t('clockcode', drawing('clockcode', I.clockcodeArt), 5), turn: -0.1, shy: { x: 42, y: 44, w: 116, h: 128 } }, // others keep off only its rings, the middle third; its margins may be covered // placed first so the rest lie around it; only a little off square, the other way, to be read where it lies
+      ...(info.mail ? [t('letters', drawing('letters', sealedLetter), 3)] : []), // a letter from home, sealed: only while there is mail (nothing lies round where it would be otherwise)
       t('logbook', logbookDrawing(info), 2),
-      { ...t('goggles', drawing('goggles', I.gogglesArt), 24), turn: -0.2, k: Math.max(1, Math.round(size.usable * pixel * (W >= 700 ? 0.8 : 0.55))) / pixel, keep: [{ x: 20, y: 6, w: 174, h: 72 }] }, // the mask and lenses stay in view; the strap round them may be covered // three quarters of the other things' size (half on a small screen), still whole device pixels: it's a big thing to lay down
+      { ...t('goggles', drawing('goggles', I.gogglesArt), 24), turn: -0.2, body: { x: 20, y: 6, w: 174, h: 72 }, keep: [{ x: 20, y: 6, w: 174, h: 72 }] }, // its own box is the mask and lenses: the strap may run off an edge, and things may lie on it // the mask and lenses stay in view; the strap round them may be covered // the same size as the other things you use, shrinking with them
+      ...(SHOWN.includes('pad') ? [t('pad', drawing('pad', messagePad), 10)] : []), // the message pad: a thing you can pick up (the last of the papers, after the goggles, which need the room most)
       t('mug', drawing('coffee', I.coffeeArt), 12),
-      ...(SHOWN.includes('pad') ? [t('pad', drawing('pad', messagePad), 10)] : []), // the message pad: a thing you can pick up
-      ...(SHOWN.includes('coin') ? [{ ...t('coin', drawing('coin', I.coinArt), 21), turn: hash(SEED, 21, 9) * Math.PI * 2 }] : []), // the sixpence: the one bit of clutter you can pick up
-      { ...t('watch', drawing(`watch:${info.hours ?? 8}:${info.sunset ?? 19.5}`, () => I.watchArt(info.hours ?? 8, info.sunset ?? 19.5, false)), 20), live: true }, // redrawn as time passes
+      ...(SHOWN.includes('coin') ? [((turn) => ({ ...t('coin', drawing(`coin:${turn.toFixed(3)}`, () => I.coinArt(turn)), 21), turn }))(hash(SEED, 21, 9) * Math.PI * 2)] : []), // the sixpence: the one bit of clutter you can pick up, dropped any way round (and lit for it)
+      { ...t('watch', drawing(`watch:${info.hours ?? 8}:${info.sunset ?? 19.5}`, () => I.watchArt(info.hours ?? 8, info.sunset ?? 19.5)), 20), live: true }, // redrawn as time passes
     ],
     // The clutter (story/clutter.ts), at the size of the things you use, each turned any way at all.
-    loose: CLUTTER.flatMap((c, n) => (CLUTTER_SHOWN.includes(c.name) ? [{ ...t(null, drawing(`clutter:${c.name}`, c.art), 60 + n), turn: c.turn ?? hash(SEED, 60 + n, 9) * Math.PI * 2, z: c.z, depth: c.depth, spin: c.spin, relit: c.spin ? (turn: number) => drawing(`clutter:${c.name}:${turn.toFixed(3)}`, () => c.art(turn)) : undefined }] : [])),
+    loose: CLUTTER.flatMap((c, n) => (CLUTTER_SHOWN.includes(c.name) ? [{ ...t(null, drawing(`clutter:${c.name}`, c.art), 60 + n), turn: c.turn ?? hash(SEED, 60 + n, 9) * Math.PI * 2, z: c.z, depth: c.depth, spin: c.spin, bears: c.bears, name: c.name, relit: c.spin ? (turn: number) => drawing(`clutter:${c.name}:${turn.toFixed(3)}`, () => c.art(turn)) : undefined }] : [])),
   };
 }
 
-/** The smallest box round a thing's drawn pixels when turned (and drawn `k` × size), from its centre: a
- * button that covers all of it and no more (a round watch's box is not its square drawing's, turned). */
-const hugs = new WeakMap<Px, Map<string, { x0: number; y0: number; x1: number; y1: number }>>();
-function hug(a: Px, turn: number, k: number) {
-  const key = `${turn}:${k}`, kept = hugs.get(a)?.get(key);
-  if (kept) return kept;
-  const c = Math.cos(turn), s = Math.sin(turn), half = 0.5 * k * (Math.abs(c) + Math.abs(s));
-  const b = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
-  for (let y = 0; y < a.h; y++) for (let x = 0; x < a.w; x++) {
-    if (!a.data[(y * a.w + x) * 4 + 3]) continue;
-    const lx = (x + 0.5 - a.w / 2) * k, ly = (y + 0.5 - a.h / 2) * k, X = lx * c - ly * s, Y = lx * s + ly * c;
-    b.x0 = Math.min(b.x0, X - half); b.x1 = Math.max(b.x1, X + half); b.y0 = Math.min(b.y0, Y - half); b.y1 = Math.max(b.y1, Y + half);
+// ── Geometry: every collision is between things' own boxes (turned rectangles), by the area they share.
+type Pt = [number, number];
+export type Quad = Pt[];
+/** The four corners of a turned box. */
+export const quadOf = (b: OBox): Quad => {
+  const c = Math.cos(b.turn), n = Math.sin(b.turn), hw = b.w / 2, hh = b.h / 2;
+  return [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(([x, y]) => [b.cx + x * c - y * n, b.cy + x * n + y * c] as Pt);
+};
+const rectQuad = (b: Box): Quad => [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]];
+const signed = (p: Quad) => p.reduce((q, [x, y], i) => { const [X, Y] = p[(i + 1) % p.length]; return q + x * Y - X * y; }, 0) / 2;
+export const quadArea = (p: Quad) => Math.abs(signed(p));
+/** The area two convex shapes share (Sutherland–Hodgman: clip one by each edge of the other). */
+export function meet(a: Quad, b: Quad): number {
+  const ax0 = Math.min(...a.map((p) => p[0])), ax1 = Math.max(...a.map((p) => p[0])), ay0 = Math.min(...a.map((p) => p[1])), ay1 = Math.max(...a.map((p) => p[1]));
+  const bx0 = Math.min(...b.map((p) => p[0])), bx1 = Math.max(...b.map((p) => p[0])), by0 = Math.min(...b.map((p) => p[1])), by1 = Math.max(...b.map((p) => p[1]));
+  if (ax1 <= bx0 || bx1 <= ax0 || ay1 <= by0 || by1 <= ay0) return 0;
+  const dir = Math.sign(signed(b)) || 1;
+  let out: Pt[] = a;
+  for (let i = 0; i < b.length && out.length; i++) {
+    const [px, py] = b[i], [qx, qy] = b[(i + 1) % b.length], ins = (p: Pt) => ((qx - px) * (p[1] - py) - (qy - py) * (p[0] - px)) * dir >= 0;
+    const cut = (p: Pt, q: Pt): Pt => { const d1 = (qx - px) * (p[1] - py) - (qy - py) * (p[0] - px), d2 = (qx - px) * (q[1] - py) - (qy - py) * (q[0] - px), t = d1 / (d1 - d2); return [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]; };
+    const next: Pt[] = [];
+    out.forEach((cur, j) => {
+      const prev = out[(j + out.length - 1) % out.length];
+      if (ins(cur)) { if (!ins(prev)) next.push(cut(prev, cur)); next.push(cur); } else if (ins(prev)) next.push(cut(prev, cur));
+    });
+    out = next;
   }
-  if (!hugs.has(a)) hugs.set(a, new Map());
-  hugs.get(a)!.set(key, b);
-  return b;
+  return out.length > 2 ? quadArea(out) : 0;
 }
+/** Whether (x, y) lies inside a convex quad. */
+const inside = (q: Quad, x: number, y: number) => { const d = Math.sign(signed(q)) || 1; return q.every(([ax, ay], i) => { const [bx, by] = q[(i + 1) % q.length]; return ((bx - ax) * (y - ay) - (by - ay) * (x - ax)) * d >= 0; }); };
+/** A few drips of ink spilt beside the bottle (its own box `b`, drawn `k` × size), as a flat stain in screen
+ * space, centred on the bottle: none where `blocked` (what stands up off the desk there, which the ink can't lie on). */
+const DROPS = [[0, 4, 3.4], [0.32, 3, 2], [-0.22, 9, 1.6], [0.12, 12, 1.1], [-0.08, 14.5, 0.8], [0.42, 8, 1], [-0.4, 4.5, 1.2]]; // [angle off the side, px out, radius]: a pool and its splashes
+/** Where each drop lands (screen px) when they fall on `side` of the bottle. */
+const dropsAt = (b: OBox, k: number, side: number) => { const out = Math.min(b.w, b.h) / 2; return DROPS.map(([da, dd, r]) => [b.cx + Math.cos(side + da) * (out + dd * k), b.cy + Math.sin(side + da) * (out + dd * k), r] as const); };
+function inkDrips(b: OBox, k: number, blocked: (x: number, y: number) => boolean, side: number): Px {
+  const R = Math.ceil(Math.hypot(b.w, b.h) / 2 / k + 16), S = 2 * R, px = createPx(S, S);
+  const INK: RGBA = [26, 30, 46, 255], WET: RGBA = [70, 82, 112, 255];
+  for (const [sx, sy, r] of dropsAt(b, k, side)) { // all to one side, from the bottle's edge: where it was knocked
+    const cx = R + (sx - b.cx) / k, cy = R + (sy - b.cy) / k;
+    for (let y = Math.floor(cy - r - 1); y <= cy + r + 1; y++) for (let x = Math.floor(cx - r - 1); x <= cx + r + 1; x++) {
+      const d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy) + (valueNoise(SEED + 72, x, y) - 0.5) * 0.5;
+      if (d > r || x < 0 || y < 0 || x >= S || y >= S) continue;
+      if (blocked(b.cx + (x + 0.5 - R) * k, b.cy + (y + 0.5 - R) * k)) continue;
+      plot(px, x, y, r > 1.4 && x + 0.5 < cx - r * 0.3 && y + 0.5 < cy - r * 0.3 ? WET : INK); // the bigger drops still wet: a lit edge on the top-left
+    }
+  }
+  return px;
+}
+/** The rectangle round a drawing's pixels, in its own pixels. */
+const tights = new WeakMap<Px, Box>();
+const tight = (a: Px): Box => {
+  const kept = tights.get(a);
+  if (kept) return kept;
+  let x0 = a.w, y0 = a.h, x1 = 0, y1 = 0;
+  for (let y = 0; y < a.h; y++) for (let x = 0; x < a.w; x++) if (a.data[(y * a.w + x) * 4 + 3]) { x0 = Math.min(x0, x); x1 = Math.max(x1, x + 1); y0 = Math.min(y0, y); y1 = Math.max(y1, y + 1); }
+  const b = x1 > x0 ? { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } : { x: 0, y: 0, w: a.w, h: a.h };
+  tights.set(a, b);
+  return b;
+};
+/** The box of part `b` (in the drawing's pixels; default: all of it) of `art` drawn `k` × size, turned, centred at (cx, cy). */
+const ownBox = (art: Px, turn: number, k: number, cx: number, cy: number, b: Box = tight(art)): OBox => {
+  const ox = (b.x + b.w / 2 - art.w / 2) * k, oy = (b.y + b.h / 2 - art.h / 2) * k, c = Math.cos(turn), n = Math.sin(turn);
+  return { cx: cx + ox * c - oy * n, cy: cy + ox * n + oy * c, w: b.w * k, h: b.h * k, turn };
+};
 /** A thing's bounding box when turned. */
 const extent = (a: Px, turn: number, k = 1) => ({ w: Math.ceil((Math.abs(a.w * Math.cos(turn)) + Math.abs(a.h * Math.sin(turn))) * k), h: Math.ceil((Math.abs(a.w * Math.sin(turn)) + Math.abs(a.h * Math.cos(turn))) * k) });
-const overlap = (a: Box, b: Box) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
 
 /**
  * Where everything goes: each usable thing at the seeded spot (of many tried) that covers the least of the
@@ -102,73 +164,89 @@ const overlap = (a: Box, b: Box) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) -
  */
 export function arrange(W: number, H: number, info: BarnInfo, keepClear: { x: number; y: number; w: number; h: number }[] = [], pixel = 4) {
   const { usable, loose } = things(info, W, H, pixel);
-  const placed: (Spot & { t: Thing })[] = [];
-  const guard: (Box & { id: I.ItemId })[] = []; // on screen, what nothing may cover (the calendar's month and its days round today)
-  const m = 2;
-  /** Where on screen the parts of `t` it keeps clear end up, when it lies in box `s`. */
-  const kept = (t: Thing, s: Box): Box[] => (t.keep ?? []).map((b) => {
-    const c = Math.cos(t.turn), n = Math.sin(t.turn), xs: number[] = [], ys: number[] = [];
-    for (const [px, py] of [[b.x, b.y], [b.x + b.w, b.y], [b.x, b.y + b.h], [b.x + b.w, b.y + b.h]]) {
-      const lx = (px - t.art.w / 2) * t.k, ly = (py - t.art.h / 2) * t.k;
-      xs.push(s.x + s.w / 2 + lx * c - ly * n); ys.push(s.y + s.h / 2 + lx * n + ly * c);
-    }
-    const x = Math.floor(Math.min(...xs)), y = Math.floor(Math.min(...ys));
-    return { x, y, w: Math.ceil(Math.max(...xs)) - x, h: Math.ceil(Math.max(...ys)) - y };
-  });
-  const spotFor = (t: Thing, k: number, avoid: readonly (Box & { weight?: number })[]): Spot & { turn: number } => {
+  const shown = (id: I.ItemId) => SHOWN.includes(id) || (id === 'letters' && !!info.mail); // what's on the desk now (the letter only with mail)
+  type Laid = Spot & { t: Thing; turn: number; quad: Quad; shyQuad: Quad; score: number; ex: number; ey: number; e: { w: number; h: number } }; // ex, ey, e: the turned drawing's extent on screen (it's drawn centred in it)
+  const placed: Laid[] = [];
+  const guard: { id: I.ItemId; box: OBox; quad: Quad }[] = []; // what nothing may cover (the calendar's month and its days round today, the goggles' lenses)
+  const m = 2, screen = rectQuad({ x: 0, y: 0, w: W, h: H }), plates = keepClear.map(rectQuad);
+  /** The parts of `t` it keeps clear, when it lies centred at (cx, cy) turned by `turn`. */
+  const kept = (t: Thing, cx: number, cy: number, turn: number) => (t.keep ?? []).map((b) => ownBox(t.art, turn, t.k, cx, cy, b));
+  // Everything down so far, with its height and whether it bears weight: nothing may lie on what doesn't.
+  const laid: { quad: Quad; z: number; bears: boolean }[] = [];
+  const zOf = (t: Thing) => t.z ?? (t.id ? Z[t.id] : 0.9); // loose clutter: on the maps, under the things you use (unless it says)
+  /** A thing lying at the screen box `e` (its turned extent) put at (x, y): its own box, and the screen rectangle round that. */
+  const at = (t: Thing, x: number, y: number, e: { w: number; h: number }, turn: number) => {
+    const box = ownBox(t.art, turn, t.k, x + e.w / 2, y + e.h / 2, t.body), quad = quadOf(box);
+    const xs = quad.map((p) => p[0]), ys = quad.map((p) => p[1]);
+    const x0 = Math.max(0, Math.floor(Math.min(...xs))), y0 = Math.max(0, Math.floor(Math.min(...ys)));
+    const shyQuad = t.shy ? quadOf(ownBox(t.art, turn, t.k, x + e.w / 2, y + e.h / 2, t.shy)) : quad; // what others keep off
+    return { id: (t.id ?? 'chart') as I.ItemId, x: x0, y: y0, w: Math.min(W, Math.ceil(Math.max(...xs))) - x0, h: Math.min(H, Math.ceil(Math.max(...ys))) - y0, box, quad, shyQuad, turn, ex: x, ey: y, e };
+  };
+  const apart = Math.hypot(W, H) / 3; // how far apart the big papers' centres would like to be
+  const CENTRE = 3; // how hard the papers lean in to the middle (per px² of paper, at the screen's corner)
+  const spotFor = (t: Thing, k: number, avoid: readonly { quad: Quad; weight?: number }[]): Laid => {
     let e = extent(t.art, t.turn, t.k);
     // The orders lie square in the middle of the desk, a touch low, whatever else has to move round them.
-    if (t.id === 'orders') return { id: 'orders' as I.ItemId, x: Math.round((W - e.w) / 2), y: Math.round(Math.max(m, (H - e.h) / 2 + H * 0.03)), ...e, turn: t.turn };
+    if (t.id === 'orders') return { ...at(t, Math.round((W - e.w) / 2), Math.round(Math.max(m, (H - e.h) / 2 + H * 0.03)), e, t.turn), t, score: 0 };
     // The chart lies right of centre and a little low, bleeding off the right and bottom edges.
     if (t.id === 'chart') {
       const cx = Math.max(W * 0.55, W - e.w * 0.45), cy = Math.max(H * 0.55, H - e.h * 0.45);
-      return { id: 'chart' as I.ItemId, x: Math.round(cx - e.w / 2), y: Math.round(cy - e.h / 2), ...e, turn: t.turn };
+      return { ...at(t, Math.round(cx - e.w / 2), Math.round(cy - e.h / 2), e, t.turn), t, score: 0 };
     }
-    let best: (Spot & { turn: number }) | null = null;
-    let bestScore = Infinity;
+    let best: Laid | null = null;
+    const zt = zOf(t);
     // Where it may go: anywhere on screen; the calendar may run a third of itself off any edge (its kept parts
     // stay on); the clock-code card on the left, to balance the pale papers on the right.
-    const bleed = t.id === 'calendar' ? 0.35 : t.id === 'goggles' ? 0.25 : 0; // the goggles' strap loop may run off an edge (the mask and lenses may not)
+    const bleed = t.id === 'calendar' ? 0.35 : t.id === 'goggles' ? 0.45 : 0; // the goggles' strap may run off an edge (the mask and lenses, its kept parts, may not)
     const x0 = m - e.w * bleed, x1 = Math.max(x0, t.id === 'clockcode' ? W * 0.34 - e.w / 2 : W - e.w * (1 - bleed) - m); // the card's centre stays in the left third
     const y0 = m - e.h * bleed, y1 = Math.max(y0, H - e.h * (1 - bleed) - m);
-    for (let i = 0; i < (t.spin ? 3000 : 900); i++) { // (many tries: the desk is crowded)
+    for (let i = 0; i < (t.spin || t.id === 'goggles' ? 3000 : 900); i++) { // (many tries: the desk is crowded; more for what is long or big)
       const turn = t.spin ? Math.floor(hash(SEED + k, i, 3) * 36) / 36 * Math.PI * 2 : t.turn; // a long thing is tried every way round
       if (t.spin) e = extent(t.art, turn, t.k);
       const mm = t.spin ? 8 : 0, X1 = t.spin ? Math.max(x0 + mm, W - e.w - m - mm) : x1, Y1 = t.spin ? Math.max(y0 + mm, H - e.h - m - mm) : y1; // (kept a little off the screen's edge)
-      const x = Math.round(x0 + mm + hash(SEED + k, i, 1) * (X1 - x0 - mm));
-      const y = Math.round(y0 + mm + hash(SEED + k, i, 2) * (Y1 - y0 - mm));
-      const s = { id: (t.id ?? 'chart') as I.ItemId, x, y, ...e, turn };
-      // What it covers: its box, or for a long thing turned, a row of squares along its length (its box, turned
-      // diagonal, would be mostly empty desk).
-      const n = t.spin ? Math.max(1, Math.round(t.art.w / t.art.h)) : 1, side = t.art.h * t.k, step = (t.art.w * t.k - side) / Math.max(1, n - 1);
-      const pieces: Box[] = n === 1 ? [s] : Array.from({ length: n }, (_, j) => { const o = (j - (n - 1) / 2) * step; return { x: x + e.w / 2 + Math.cos(turn) * o - side / 2, y: y + e.h / 2 + Math.sin(turn) * o - side / 2, w: side, h: side }; });
-      const cover = (a: Box) => pieces.reduce((q, b) => q + overlap(b, a), 0);
-      const own = kept(t, s); // its own kept parts must stay on screen and clear of the plates
-      const off = own.reduce((q, b) => q + b.w * b.h - overlap(b, { x: 0, y: 0, w: W, h: H }), 0);
-      const low = t.id === 'goggles' && W < 700 ? (y1 - y) * 3 : 0; // shrunk right down, it prefers the bottom of the desk, where the room is
-      const score = low + avoid.reduce((sum, a) => sum + cover(a) * (a.weight ?? 1), 0) +
-        own.reduce((q, b) => q + avoid.reduce((r, a) => r + overlap(b, a), 0), 0) * 100000 + // and what a thing keeps clear isn't under what's already down
-         off * 1000000 + keepClear.reduce((sum, a) => sum + cover(a) * 30 + own.reduce((q, b) => q + overlap(b, a) * 1000, 0), 0) + guard.reduce((sum, a) => sum + cover(a) * 100000, 0);
-      if (score < bestScore) { best = s; bestScore = score; }
+      const s = at(t, Math.round(x0 + mm + hash(SEED + k, i, 1) * (X1 - x0 - mm)), Math.round(y0 + mm + hash(SEED + k, i, 2) * (Y1 - y0 - mm)), e, turn);
+      const cover = (q: Quad) => meet(s.quad, q);
+      const tips = laid.reduce((q, o) => ((zt > o.z ? !o.bears : !t.bears) ? q + cover(o.quad) : q), 0); // lying on (or under) what can't take it
+      const own = kept(t, s.ex + e.w / 2, s.ey + e.h / 2, turn).map(quadOf); // its own kept parts must stay on screen and clear of the plates
+      const off = own.reduce((q, b) => q + quadArea(b) - meet(b, screen), 0);
+      const low = t.id === 'goggles' && W < 700 ? (y1 - s.ey) * 3 : 0; // on a narrow desk the goggles prefer the bottom, where the room is
+      // A big paper keeps its distance from the others down (centre to centre), so they spread out evenly.
+      const spread = t.id && PAPERS.includes(t.id) ? placed.reduce((q, p) => (PAPERS.includes(p.id) ? q + Math.max(0, apart - Math.hypot(p.box.cx - s.box.cx, p.box.cy - s.box.cy)) ** 2 : q), 0) : 0;
+      // The big papers lean in towards the middle of the desk (by their size and how far out they are), while
+      // keeping their distance from each other: a balanced group in the centre, the rest scattered round them.
+      const out = ((s.box.cx - W / 2) ** 2 + (s.box.cy - H / 2) ** 2) / ((W / 2) ** 2 + (H / 2) ** 2);
+      const centre = t.id && PAPERS.includes(t.id) && t.id !== 'calendar' ? CENTRE * quadArea(s.quad) * out : 0; // (the calendar runs off an edge instead, under the rest)
+      const score = low + spread + centre + tips * 1000000 + avoid.reduce((sum, a) => sum + cover(a.quad) * (a.weight ?? 1), 0) +
+        own.reduce((q, b) => q + laid.reduce((r, o) => (o.z > zt ? r + meet(b, o.quad) : r), 0), 0) * 100000 + // and what a thing keeps clear isn't under anything down already that lies above it
+        off * 1000000 + plates.reduce((sum, a) => sum + cover(a) * 30 + own.reduce((q, b) => q + meet(b, a) * 1000, 0), 0) + guard.reduce((sum, a) => sum + cover(a.quad) * 100000, 0);
+      if (!best || score < best.score) best = { ...s, t, score };
     }
     return best!;
   };
-  usable.forEach((t, k) => { const s = spotFor(t, k, placed.filter((p) => !SCENERY.includes(p.id))); // things may lie on the maps and the calendar (but never on its days round today)
-    placed.push({ ...s, id: t.id!, t }); if (SHOWN.includes(t.id!)) guard.push(...kept(t, s).map((b) => ({ ...b, id: t.id! }))); });
-  const onDesk = placed.filter((p) => SHOWN.includes(p.id) && Z[p.id] >= 1); // loose things keep off what's shown, but may lie on the maps
+  usable.forEach((t, k) => {
+    const s = spotFor(t, k, placed.filter((p) => !SCENERY.includes(p.id)).map((p) => ({ quad: p.shyQuad, weight: t.id === 'coin' ? 0.2 : 1 }))); // things may lie on the maps and the calendar (but never on its days round today); the sixpence, small, may lie on most things
+    placed.push(s); laid.push({ quad: s.quad, z: zOf(t), bears: t.bears });
+    if (shown(t.id!)) guard.push(...kept(t, s.ex + s.e.w / 2, s.ey + s.e.h / 2, s.turn).map((box) => ({ id: t.id!, box, quad: quadOf(box) })));
+  });
+  const onDesk = placed.filter((p) => shown(p.id) && Z[p.id] >= 1); // loose things keep off what's shown, but may lie on the maps
+  const shyDesk = onDesk.map((p) => ({ quad: p.shyQuad }));
   // The clutter fills what's left: biggest first, each where it covers least of the things you use and of
-  // the clutter already down (so it spreads out into every gap), and never what any of them keeps clear.
-  const down: Box[] = [];
-  const lying = [...loose].sort((a, b) => b.art.w * b.art.h - a.art.w * a.art.h).map((t, k) => {
+  // the clutter already down (so it spreads out into every gap), and never what any of them keeps clear. It is
+  // what gives way on a small desk: the things you use never shrink to make room for it, so a piece with no
+  // good place is left off (one that would break a hard rule, or, lying under the things you use, be more than
+  // a quarter hidden by them).
+  const down: { quad: Quad }[] = [];
+  const lying = [...loose].sort((a, b) => b.art.w * b.art.h - a.art.w * a.art.h).flatMap((t, k) => {
     const cal = placed.filter((p) => p.id === 'calendar'); // the calendar is to be read: clutter keeps mostly off its face
     // Most clutter keeps off the things you use (they count three times over); what lies on top of them (a high
-    // `z`) may lie across almost anything, only shy of what it would hide (the orders above it, the watch's face,
-    // the coffee) and a little of the rest.
-    const high = (t.z ?? 0) >= 1, shy: I.ItemId[] = ['orders', 'watch', 'mug'];
-    const avoid = high ? [...placed.filter((p) => SHOWN.includes(p.id)).map((p) => ({ ...p, weight: shy.includes(p.id) ? 50 : p.id === 'chart' ? 0 : 0.2 })), ...down] : [...onDesk, ...onDesk, ...onDesk, ...cal, ...down];
+    // `z`) may lie across anything that bears it (see `BEARS`), a little shy of covering the rest.
+    const high = (t.z ?? 0) >= 1;
+    const avoid = high ? [...placed.filter((p) => shown(p.id) && p.id !== 'chart').map((p) => ({ quad: p.shyQuad, weight: 0.2 })), ...down] : [...shyDesk, ...shyDesk, ...shyDesk, ...cal, ...down];
     const s = spotFor(t, 40 + k, avoid);
-    down.push(s);
-    return { t: { ...t, turn: s.turn, art: t.relit?.(s.turn) ?? t.art }, ...s };
+    const hidden = high ? 0 : onDesk.reduce((r, a) => r + meet(s.quad, a.quad), 0) / quadArea(s.quad); // (hidden: by all of what lies over it)
+    if (s.score >= 100000 || hidden > 0.25) return [];
+    down.push(s); laid.push({ quad: s.quad, z: zOf(t), bears: t.bears });
+    return [{ ...s, t: { ...t, turn: s.turn, art: t.relit?.(s.turn) ?? t.art } }];
   });
   return { usable: placed, loose: lying, guard };
 }
@@ -399,19 +477,31 @@ const silhouette = (art: Px, alpha = 255): Px => {
 };
 /** How high each thing lies on the desk, bottom to top: the charts always at the bottom (the calendar just above them), the orders always on
  * top (they're how you go and fly, so nothing may ever lie on them); the loose clutter lies between 0 and 1. */
-export const Z: Record<I.ItemId, number> = { chart: 0, calendar: 0.5, letters: 3, logbook: 5, clockcode: 4.5, pad: 4.8, coin: 6, watch: 7, mug: 8, goggles: 8.5, orders: 9 };
+export const Z: Record<I.ItemId, number> = { chart: 0, calendar: 0.5, letters: 3, logbook: 5, clockcode: 4.5, pad: 4.8, coin: 6, watch: 7, goggles: 7.8, mug: 8, orders: 9 }; // the coffee stands on the goggles' strap, never under it
 /** Things that are part of the scenery: drawn, but not buttons. */
 export const SCENERY: readonly I.ItemId[] = ['chart', 'calendar'];
+/** The big papers: placed first (after the chart), spread out evenly over the desk to balance it, and the rest fit
+ * in round them. */
+export const PAPERS: readonly I.ItemId[] = ['orders', 'calendar', 'clockcode', 'letters', 'logbook', 'pad'];
+/** Whether anything may lie on top of each thing: the flat papers and books, yes; what is round, tall or would
+ * tip (the coffee, the watch, the goggles, the sixpence on its cord) and the orders (always on top: the way to the next flight), no. */
+export const BEARS: Record<I.ItemId, boolean> = { chart: true, calendar: true, letters: true, logbook: true, clockcode: true, pad: true, coin: false, watch: false, mug: false, goggles: false, orders: false };
 /** How things lie: the chart flat on the desk (a low, faint shadow); everything else on top of it. */
-const lie = (id: I.ItemId | null) => (id === 'chart' || id === 'calendar' ? { depth: 2, alpha: 120 } : { depth: id === 'orders' || id === 'clockcode' ? 2 : id === 'logbook' || id === 'watch' || id === 'goggles' ? 4 : id === 'mug' ? 6 : id ? 3 : 2, alpha: 180 }); // one kind of shadow for everything that lies on the desk, hidden things too (the same soft dark, never pitch black); the flat sheets lie lower and fainter
+const lie = (id: I.ItemId | null) => (id === 'chart' || id === 'calendar' ? { depth: 2, alpha: 120 } : { depth: id === 'orders' || id === 'clockcode' || id === 'coin' ? 2 : id === 'logbook' || id === 'watch' || id === 'goggles' ? 4 : id === 'mug' ? 6 : id ? 3 : 2, alpha: 180 }); // one kind of shadow for everything that lies on the desk, hidden things too (the same soft dark, never pitch black); the flat sheets lie lower and fainter
 
 /**
  * One thing on the desk: its square, axis-aligned drawing and a shadow of it, to be drawn turned by `turn`
  * about (cx, cy) (game px), the shadow `depth` px down-right. The pictures are never resampled here: as in
  * flight (see docs/TECH.md §2), they're drawn rotated whole, so each pixel stays a square.
  */
-export type Drawn = { id: I.ItemId | null; art: Px; shadow: Px; cx: number; cy: number; turn: number; depth: number; live?: boolean; k: number }; // k: drawn at this size // live: the watch, redrawn as time passes
-export type BarnScene = { px: Px; spots: Spot[]; drawn: Drawn[] };
+export type Drawn = { id: I.ItemId | null; art: Px; shadow: Px; cx: number; cy: number; turn: number; depth: number; live?: boolean; k: number; stain?: boolean }; // k: drawn at this size // live: the watch, redrawn as time passes // stain: not a thing (spilt ink): no shadow, no button
+/** The layout's boxes, for the debug overlay (story.html `?boxes`), as corners in game px:
+ * - `box`: each thing's own box, which it is placed, stacked and pressed by (`bears` false: nothing may lie on it);
+ * - `shy`: the only part of a thing others keep off, where that isn't all of it (the clock-code's rings);
+ * - `keep`: what may never be covered (the calendar's days round today, the goggles' lenses);
+ * - `clear`: screen kept for the plates. */
+export type DebugBox = { kind: 'box' | 'shy' | 'keep' | 'clear'; label: string; bears?: boolean; quad: Quad };
+export type BarnScene = { px: Px; spots: Spot[]; drawn: Drawn[]; boxes: DebugBox[] };
 
 /** The desk on a W × H screen (game px). `order` lifts picked-up things to the top of the pile. */
 /** `pixel`: device px per game px on this screen (the usable things shrink only in whole device pixels). */
@@ -420,7 +510,7 @@ export function barnScene(W: number, H: number, info: BarnInfo, order: readonly 
   px.data.set(planks(W, H).data); // the bare desk, made once per size
   mugRings(px, sizes(W, H, pixel).usable); // the mug's rings, at the size the things you use are drawn
   const all = arrange(W, H, info, keepClear, pixel);
-  const usable = all.usable.filter((u) => SHOWN.includes(u.id)), loose = all.loose;
+  const usable = all.usable.filter((u) => SHOWN.includes(u.id) || (u.id === 'letters' && !!info.mail)), loose = all.loose;
   // By height on the desk (Z); within a height, picked-up things come to the top.
   const lift = (id: I.ItemId) => (order.includes(id) ? 1 + order.indexOf(id) : 0);
   const sorted = [...usable].sort((a, b) => Z[a.id] - Z[b.id] || lift(a.id) - lift(b.id));
@@ -429,14 +519,57 @@ export function barnScene(W: number, H: number, info: BarnInfo, order: readonly 
   const under = chart ? (() => {
     const art = drawing(`chart-under:${chart.t.art.w}`, () => I.chartArt(Math.round(chart.t.art.w * 1.08), Math.round(chart.t.art.h * 1.08), 1)), turn = chart.t.turn - 0.14, e = extent(art, turn);
     const cx = chart.x + chart.w / 2 - 28, cy = chart.y + chart.h / 2 - 16;
-    return [{ t: { id: 'chart', art, turn, k: 1 } as Thing, x: cx - e.w / 2, y: cy - e.h / 2, ...e }];
+    return [{ t: { id: 'chart', art, turn, k: 1 } as Thing, ex: cx - e.w / 2, ey: cy - e.h / 2, e }];
   })() : [];
-  const zOf = (t: Thing) => t.z ?? (t.id ? Z[t.id] : 0.9); // loose clutter: on the maps, under the things you use (unless it says)
+  const zOf = (t: Thing) => t.z ?? (t.id ? Z[t.id] : 0.9);
   const upper = [...sorted.filter((u) => Z[u.id] >= 1), ...loose.filter((l) => zOf(l.t) >= 1)].sort((a, b) => zOf(a.t) - zOf(b.t)); // (stable: picked-up order kept)
-  const drawn = [...under, ...sorted.filter((u) => Z[u.id] < 1), ...loose.filter((l) => zOf(l.t) < 1), ...upper].map(({ t, x, y, w, h }) => ({ id: t.id, art: t.art, shadow: silhouette(t.art, lie(t.id).alpha), cx: x + w / 2, cy: y + h / 2, turn: t.turn, depth: t.depth ?? lie(t.id).depth, live: t.live, k: t.k }));
-  return { px, spots: sorted.filter((u) => !SCENERY.includes(u.id)).map(({ id, t, x, y, w, h }) => { // what's on screen of each (the calendar and goggles may run off an edge)
-      const b = hug(t.art, t.turn, t.k), cx = x + w / 2, cy = y + h / 2;
-      const x0 = Math.max(0, Math.floor(cx + b.x0)), y0 = Math.max(0, Math.floor(cy + b.y0));
-      return { id, x: x0, y: y0, w: Math.min(W, Math.ceil(cx + b.x1)) - x0, h: Math.min(H, Math.ceil(cy + b.y1)) - y0 };
-    }), drawn };
+  const drawn: Drawn[] = [...under, ...sorted.filter((u) => Z[u.id] < 1), ...loose.filter((l) => zOf(l.t) < 1), ...upper].map(({ t, ex, ey, e }) => ({ id: t.id, art: t.art, shadow: silhouette(t.art, lie(t.id).alpha), cx: ex + e.w / 2, cy: ey + e.h / 2, turn: t.turn, depth: (t.depth ?? lie(t.id).depth) * t.k, live: t.live, k: t.k }));
+  const spots: Spot[] = sorted.filter((u) => !SCENERY.includes(u.id)).map(({ id, x, y, w, h, box }) => ({ id, x, y, w, h, box })); // pressed by its own box
+  const boxes: DebugBox[] = [
+    ...usable.map((u) => ({ kind: 'box' as const, label: u.id, bears: u.t.bears, quad: u.quad })),
+    ...loose.map((l) => ({ kind: 'box' as const, label: l.t.name ?? 'clutter', bears: l.t.bears, quad: l.quad })),
+    ...usable.filter((u) => u.t.shy).map((u) => ({ kind: 'shy' as const, label: `${u.id} shy`, quad: u.shyQuad })),
+    ...all.guard.map((g) => ({ kind: 'keep' as const, label: `${g.id} keep`, quad: g.quad })),
+    ...keepClear.map((c) => ({ kind: 'clear' as const, label: 'plates', quad: rectQuad(c) })),
+  ];
+  // A few drips of ink by the bottle, on whatever lies there: drawn just under the bottle, and never on what stands
+  // up off the desk below it (the coffee, the watch, the goggles, the tin …), where ink couldn't lie.
+  const ink = loose.find((l) => l.t.name === 'ink');
+  if (ink) {
+    const zi = zOf(ink.t), tall = [...usable.filter((u) => !u.t.bears && Z[u.id] < zi), ...loose.filter((l) => l !== ink && !l.t.bears && zOf(l.t) < zi)].map((u) => u.quad);
+    const blocked = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || tall.some((q) => inside(q, x, y));
+    const over = [...usable.filter((u) => Z[u.id] > zi), ...loose.filter((l) => l === ink || zOf(l.t) > zi)].map((u) => ({ q: u.quad, d: (u.t.depth ?? lie(u.t.id).depth) * u.t.k })); // what would hide them, and its shadow (the bottle's own too)
+    const sides = Array.from({ length: 8 }, (_, j) => hash(SEED, 71, 1) * Math.PI * 2 + (j * Math.PI) / 4);
+    const free = (side: number) => dropsAt(ink.box, ink.t.k, side).reduce((q, [x, y, r]) => q + (blocked(x, y) || over.some((o) => inside(o.q, x, y) || inside(o.q, x - o.d, y - o.d)) ? 0 : r * r), 0);
+    const side = sides.reduce((a, b) => (free(b) > free(a) ? b : a)); // they fall on the side with the most clear desk
+    const art = inkDrips(ink.box, ink.t.k, blocked, side);
+    const at = drawn.findIndex((d) => d.art === ink.t.art);
+    drawn.splice(at, 0, { id: null, art, shadow: createPx(1, 1), cx: ink.box.cx, cy: ink.box.cy, turn: 0, depth: 0, live: false, k: ink.t.k, stain: true });
+  }
+  // What's been left by the ashtray and the candle: a few cigarette ends and spent matches beside each, lying on
+  // whatever is there (never on what stands up, never where something above would hide them), drawn just under it.
+  const things_ = [...usable.map((u) => ({ q: u.quad, z: Z[u.id], bears: u.t.bears, d: (u.t.depth ?? lie(u.t.id).depth) * u.t.k })), ...loose.map((l) => ({ q: l.quad, z: zOf(l.t), bears: l.t.bears, d: (l.t.depth ?? 2) * l.t.k }))];
+  const litter: Quad[] = [];
+  const beside = (name: string, make: (n: number, turn: number) => Px, count: number, salt: number) => {
+    const p = loose.find((l) => l.t.name === name);
+    if (!p) return;
+    const zp = zOf(p.t), k = p.t.k;
+    const clear = (x: number, y: number) => x > 1 && y > 1 && x < W - 1 && y < H - 1 && !inside(p.quad, x, y) &&
+      things_.every((o) => (o.z > zp ? !inside(o.q, x, y) && !inside(o.q, x - o.d, y - o.d) : o.bears || !inside(o.q, x, y))) && !litter.some((q) => inside(q, x, y));
+    for (let n = 0; n < count; n++) {
+      for (let i = 0; i < 60; i++) {
+        const a = hash(SEED + salt, n, i) * Math.PI * 2, turn = hash(SEED + salt + 1, n, i) * Math.PI * 2;
+        const dist = Math.min(p.box.w, p.box.h) / 2 + (4 + hash(SEED + salt + 2, n, i) * 14) * k;
+        const cx = p.box.cx + Math.cos(a) * dist, cy = p.box.cy + Math.sin(a) * dist, art = drawing(`${name}:litter:${n}:${turn.toFixed(2)}`, () => make(n, turn));
+        const q = quadOf(ownBox(art, turn, k, cx, cy));
+        if (![...q, [cx, cy]].every(([x, y]) => clear(x, y))) continue;
+        litter.push(q);
+        drawn.splice(drawn.findIndex((d) => d.art === p.t.art), 0, { id: null, art, shadow: silhouette(art, lie(null).alpha), cx, cy, turn, depth: 1 * k, live: false, k, stain: true });
+        break;
+      }
+    }
+  };
+  beside('ashtray', (n, turn) => (n < 2 ? cigaretteEnd(n, turn) : spentMatch(n, turn)), 3, 81);
+  beside('candle', (n, turn) => spentMatch(n + 3, turn), 2, 91);
+  return { px, spots, drawn, boxes };
 }

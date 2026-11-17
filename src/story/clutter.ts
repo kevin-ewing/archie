@@ -32,6 +32,8 @@ function toned(W: number, H: number, draw: (set: Set, get: (x: number, y: number
   return px;
 }
 
+/** A colour pulled towards its own grey: `k` of its saturation left (print gone dull with age and handling). */
+const mute = (c: RGB, k = 0.6): RGB => { const g = (c[0] + c[1] + c[2]) / 3; return [Math.round(g + (c[0] - g) * k), Math.round(g + (c[1] - g) * k), Math.round(g + (c[2] - g) * k)]; };
 /** How a surface facing (nx, ny) catches the top-left light: 1 full on, −1 away. */
 const lit = (nx: number, ny: number) => -(nx + ny) / Math.SQRT2;
 /** A round rod from (ax, ay) to (bx, by), radius r, shaded across its width like a cylinder seen from above:
@@ -64,256 +66,500 @@ function letters(set: Set, x: number, y: number, s: string, c: RGB, v = 0) {
 }
 const centre = (w: number, s: string) => Math.floor((w - textWidth(s)) / 2);
 
-const BRASS: RGB = [186, 142, 62], NICKEL: RGB = [168, 164, 146], STEEL: RGB = [112, 112, 104], BLACK: RGB = [34, 30, 28];
-const CREAM: RGB = [226, 214, 176], PAPER: RGB = [206, 190, 148], LEATHER: RGB = [104, 66, 38], KHAKI: RGB = [120, 110, 74];
+const BRASS: RGB = [186, 142, 62];
+const CREAM: RGB = [226, 214, 176], PAPER: RGB = [206, 190, 148];
 const ASH: RGB = [150, 146, 136], CHAR: RGB = [40, 32, 28];
 
-/** A pencil: painted hexagonal barrel (three facets lit differently), a knife-whittled point, a chewed end. */
-export function pencil(): Px {
-  return toned(96, 9, (set) => {
-    const L = 96, mid = 4;
-    for (let x = 0; x < L; x++) for (let y = 0; y < 9; y++) {
-      const across = (y - mid) / 4.5;
-      if (Math.abs(across) > 1) continue;
-      const facet = across < -0.33 ? 10 : across > 0.33 ? -14 : 0;
-      if (x < 4) { if (hash(301, x, y) < 0.6 + x * 0.1) set(x, y, [142, 112, 66], facet - 6, true); continue; } // chewed bare wood
-      if (x < 74) { set(x, y, [62, 86, 64], facet + (hash(302, x >> 3, y) < 0.08 ? -6 : 0), true); continue; } // green paint, a scratch or two
-      if (x < 76) { set(x, y, [44, 60, 46], facet - 6, true); continue; } // the paint's edge
-      const taper = (L - x) / (L - 76); // 1 … 0 to the point
-      if (Math.abs(across) > taper * 1.05) continue;
-      if (x > L - 6) set(x, y, [70, 68, 66], facet + 4, true); // the lead
-      else set(x, y, [214, 182, 132], facet + Math.round(((x * 7) % 5) - 2) * 3, true); // shaved wood, in knife-cut facets
+/** A pencil, well used: a hexagonal barrel in green paint, from above showing three facets (the top and bottom
+ * ones lit and shaded by which way they face, a lit ridge between), the paint worn off along the ridges and dented,
+ * HB stamped in gold foil half rubbed away; one end whittled with a knife (the paint's edge scalloped where each
+ * cut stopped, the cedar in facets, a short stub of graphite with a glint), the other cut flat, dented by teeth. Thin, so in whole
+ * tones. `turn`: how it will lie, so its light still falls from the top-left of the screen. */
+export function pencil(turn = 0): Px {
+  const L = 114, H = 9, CY = 4.5, R = 3.5; // R: the barrel's half-width
+  const PAINT: RGB = [62, 86, 64], CEDAR: RGB = [214, 182, 132], BARE: RGB = [170, 136, 88], LEAD: RGB = [70, 68, 66], FOIL: RGB = [196, 174, 96];
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  const PAINTED = 94, LEAD0 = 108, TIP = 112; // where the paint stops, where the lead begins, its tip
+  return toned(L, H, (set) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < L; x++) {
+      const a = (y + 0.5 - CY) / R; // −1 … 1 across the barrel
+      const facet = a < -0.42 ? -1 : a > 0.42 ? 1 : 0; // top, middle, bottom facets as seen from above
+      const face = facet ? litT(0, facet) * 22 : 0;
+      const ridge = Math.abs(Math.abs(a) - 0.42) < 0.16; // the edges between the facets
+      // The point: a taper whittled down to the lead, in uneven knife cuts.
+      const cut = Math.floor((x + Math.abs(y - CY) * 1.6 + hash(301, Math.floor(x / 5), 0) * 3) / 5); // which knife cut
+      const scallop = PAINTED + Math.round(Math.cos((a + hash(302, 0, Math.floor((a + 1) * 1.6)) ) * 3.1) * 2); // the paint's edge, one scallop per facet
+      if (x >= scallop) {
+        if (x > TIP) continue;
+        const taper = x < LEAD0 ? 1 - ((x + 0.5 - scallop) / (LEAD0 - scallop)) * 0.68 : 0.32 - ((x + 0.5 - LEAD0) / (TIP + 1 - LEAD0)) * 0.18; // a short cone, then a stub of lead, a touch blunt
+        if (Math.abs(a) > taper + 0.1) continue;
+        if (x >= LEAD0) { set(x, y, LEAD, (a < 0 ? litT(0, -1) : litT(0, 1)) * 10 + (Math.abs(a) < 0.12 && x < L - 3 ? 10 : 0), true); continue; } // the graphite, its glint
+        set(x, y, CEDAR, face * 0.6 + (cut % 2 ? 6 : -8) + (x > LEAD0 - 3 ? -12 : 0), true); // cedar, cut in facets; greyed by graphite at the tip
+        continue;
+      }
+      if (Math.abs(a) > 1) continue;
+      // The back: cut flat, a sliver of bare wood at its end, the paint dented by teeth just behind it.
+      if (x === 0) { set(x, y, BARE, face * 0.7 - 4, true); continue; }
+      if (x >= 2 && x <= 9 && (x === 3 || x === 6 || x === 8) && facet !== 0) { set(x, y, PAINT, face - 12, true); continue; } // tooth marks across the facets
+      // The paint: worn off along the ridges in places, a few dents, the foil lettering half gone.
+      const worn = ridge && valueNoise(305, x / 3, a < 0 ? 0 : 9) > 0.8; // only here and there, in short nicks
+      if (worn) { set(x, y, CEDAR, face * 0.7 - 4, true); continue; }
+      const dent = hash(306, Math.floor(x / 2), y) < 0.025 ? -10 : 0;
+      set(x, y, PAINT, face + (ridge ? Math.max(0, litT(0, Math.sign(a))) * 18 : 0) + dent, true);
     }
-    letters(set, 30, 2, 'HB', [196, 174, 96], 0);
+    letters(set, 30, 2, 'HB', FOIL, 0);
+    for (let k = 0; k < 6; k++) set(30 + hash(307, k, 1) * 7, 2 + hash(307, k, 2) * 5, PAINT, 0, true); // the foil rubbed off in places
   });
 }
 
-/** A fountain pen: black vulcanite, chased with a fine wave, a gold clip and band on the cap, a two-tone nib. */
-export function pen(): Px {
-  return toned(84, 9, (set) => {
-    rod(set, 2, 4.5, 64, 4.5, 3.6, (t, a, s) => [BLACK, s * 18 + (Math.abs(a) < 0.25 && t > 0.03 ? 6 : 0) + (Math.sin(t * 120 + a * 3) > 0.85 ? 6 : 0), true]);
-    rod(set, 64, 4.5, 72, 4.5, 2.6, (_t, _a, s) => [BLACK, s * 14 - 4, true]); // the section
-    for (let x = 72; x < 82; x++) { const h = (82 - x) / 10 * 2.4; for (let y = Math.ceil(4.5 - h); y <= 4.5 + h; y++) set(x, y, x > 76 ? [196, 160, 80] : [212, 176, 96], y < 4.5 ? 6 : -6, true); }
-    set(81, 4, [80, 64, 40], 0, true);
-    for (let y = 1; y <= 7; y++) for (const x of [22, 23]) set(x, y, BRASS, y < 4 ? 12 : -2, true); // the band
-    for (let x = 6; x < 26; x++) set(x, 1, BRASS, x < 10 ? 14 : 4, true); // the clip
-    set(6, 2, BRASS, 6, true);
-  });
-}
-
-/** A flat tin of pipe tobacco: embossed lid, printed in red and gold, the enamel chipped and scuffed. */
-export function tobaccoTin(): Px {
-  return toned(54, 36, (set) => {
-    for (let y = 0; y < 36; y++) for (let x = 0; x < 54; x++) {
-      const e = Math.min(x, y, 53 - x, 35 - y);
-      if (e < 2 && (x < 2 || x > 51) && (y < 2 || y > 33) && Math.hypot(Math.min(x, 53 - x) - 2, Math.min(y, 35 - y) - 2) > 2.2) continue; // rounded corners
-      const rim = e < 2 ? (x + y < 40 ? 14 : -14) : 0;
-      const chip = fbm(311, x / 5, y / 5, 2) > 0.72 && e < 6; // enamel knocked off round the edge: bare tin
-      set(x, y, chip ? NICKEL : e < 4 ? [116, 34, 28] : [150, 44, 34], rim + (chip ? 4 : 0) + (fbm(312, x / 9, y / 9, 2) - 0.5) * 10);
+/** A fountain pen, uncapped, the cap pushed on over its end: blue celluloid (to go with the ink), marbled faintly
+ * along its length, round and glossy, so shaded across (a bright stripe on the side towards the light, dark on the
+ * far side, as the pencil's facets are); a gold clip and band on the cap; the black section; the gold nib, its slit
+ * and breather hole, wet with blue-black ink at the tip. Thin, so in whole tones. `turn`: how it will lie. */
+export function pen(turn = 0): Px {
+  const L = 120, H = 12, CY = 5.5;
+  const BLUE: RGB = mute([54, 84, 150], 0.75), BLACK_: RGB = [40, 38, 40], GOLD: RGB = mute([206, 168, 82], 0.8), INK: RGB = [26, 30, 46];
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  const up = litT(0, -1) >= litT(0, 1) ? -1 : 1; // which side of the pen (across it) faces the light
+  /** The pen's radius along its length: the cap's rounded end, the cap, its band, the barrel, the section, the nib. */
+  const radius = (x: number) => x < 3 ? 3.6 + x * 0.6 : x < 46 ? 5.4 : x < 86 ? 4.6 : x < 98 ? 4 - (x - 86) * 0.08 : 0;
+  return toned(L, H, (set) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < L; x++) {
+      const px = x + 0.5, py = y + 0.5, a = (py - CY) / Math.max(0.1, radius(px)); // −1 … 1 across
+      if (px < 98) { // the round parts: shaded across like a glossy cylinder
+        if (Math.abs(a) > 1) continue;
+        const l = Math.sign(a) === up ? Math.abs(a) : -Math.abs(a); // towards the light +, away −
+        const stripe = l > 0.35 && l < 0.7; // the gloss, a bright stripe
+        const shade = Math.abs(a) > 0.85 ? (l > 0 ? 4 : -22) : stripe ? 22 : l < -0.3 ? -12 : 0;
+        const part = px < 46 ? 'cap' : px < 86 ? 'barrel' : 'section';
+        const band = part === 'cap' && px > 40 && px < 44; // the cap's gold band
+        const marble = part !== 'section' && valueNoise(301, px / 6, a * 2) > 0.7 ? -8 : 0;
+        set(x, y, band ? GOLD : part === 'section' ? BLACK_ : BLUE, shade + (band ? 0 : marble) + (px < 1.5 ? -8 : 0), true);
+        continue;
+      }
+      // The nib: gold, tapering to its point, with its slit down the middle and the breather hole; inky at the tip.
+      const t = (px - 98) / (L - 98), half = 3.4 * (1 - t) ** 1.3; // a shoulder, then a long point
+      if (Math.abs(py - CY) > half + 0.2) continue;
+      const slit = Math.abs(py - CY) < 0.5 && t > 0.42 && t < 0.62, hole = Math.hypot(px - 105, py - CY) < 1;
+      const inky = t > 0.6 + (hash(302, x, y) - 0.5) * 0.1; // the point, dipped: blue-black ink
+      set(x, y, hole || slit ? BLACK_ : inky ? INK : GOLD, hole || slit ? 0 : inky ? (Math.sign(py - CY) === up ? 18 : 0) : Math.sign(py - CY) === up ? 14 : -10, true); // (the wet ink catches the light on its lit side)
     }
-    for (let y = 6; y < 30; y++) for (let x = 6; x < 48; x++) if (Math.min(x - 6, y - 6, 47 - x, 29 - y) < 1) set(x, y, BRASS, x + y < 40 ? 10 : -4, true); // the gold panel
-    letters(set, centre(54, 'NAVY CUT'), 10, 'NAVY CUT', [222, 196, 110], 6);
-    letters(set, centre(54, 'TOBACCO'), 19, 'TOBACCO', CREAM, 0);
-    for (let k = 0; k < 9; k++) { const x0 = 4 + hash(313, k, 1) * 44, y0 = 3 + hash(313, k, 2) * 30; for (let j = 0; j < 5; j++) set(x0 + j, y0 + j * 0.3, [186, 120, 104], 0, true); } // scratches
+    // The clip along the cap, on the side towards the light, a ball at its end.
+    const cy = Math.round(CY + up * 2.6);
+    for (let x = 8; x < 38; x++) set(x, cy, GOLD, x === 8 || x === 37 ? -6 : 10, true);
+    set(8, cy - up, GOLD, -6, true); set(37, cy + up, GOLD, 4, true);
+    set(L - 1, Math.round(CY), INK, 10, true); // a bead of ink on the point
   });
 }
 
-/** A box of matches, from above: the printed label (a swan), the striker down one side, a match half out. */
-export function matchbox(): Px {
-  return toned(44, 26, (set) => {
-    for (let y = 1; y < 25; y++) for (let x = 0; x < 38; x++) {
-      const e = Math.min(x, y - 1, 37 - x, 24 - y);
-      set(x, y, e < 1 ? [150, 110, 60] : [214, 182, 110], e < 1 ? (x + y < 30 ? 10 : -10) : (fbm(321, x / 6, y / 6, 2) - 0.5) * 8);
+/** A 2 oz tin of Player's Navy Cut from above, carried in a pocket for a year: the bare tin's edge lit on the
+ * top-left and dark on the bottom-right as the desk's metal is, the lid's rolled rim inside it; the lid printed
+ * flat (no light on print): navy, a gold double border, PLAYER'S and NAVY CUT in cream, the bearded sailor in his
+ * lifebuoy, red and white. The paint rubbed through to the tin at the corners and along the edges, scratched,
+ * a dent, the hinge's knuckles along one side. `turn`: how it will lie, so its light still falls top-left. */
+export function tobaccoTin(turn = 0): Px {
+  const W = 80, H = 56, RC = 6, CX = 40, CY = 27; // RC: the corners' radius; the lifebuoy's centre
+  const NAVY: RGB = mute([40, 52, 88]), GOLD: RGB = mute([196, 164, 84]), CREAMP: RGB = mute([226, 214, 178]), RED: RGB = mute([168, 44, 36]), WHITE: RGB = mute([228, 224, 212]);
+  const SKIN: RGB = mute([214, 168, 128]), BEARD: RGB = mute([92, 64, 44]), TIN: RGB = [0x9c, 0x98, 0x82], LITM_: RGB = [0xe2, 0xe0, 0xd6], DARKM_: RGB = [0x56, 0x54, 0x49];
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  /** How far in from the tin's rounded edge (x, y) is, and the edge's outward normal there. */
+  const inner = (x: number, y: number) => {
+    const qx = Math.max(RC - (x + 0.5), 0, x + 0.5 - (W - RC)), qy = Math.max(RC - (y + 0.5), 0, y + 0.5 - (H - RC));
+    if (qx > 0 && qy > 0) { const d = Math.hypot(qx, qy); return { e: RC - d, nx: (x + 0.5 < W / 2 ? -qx : qx) / d, ny: (y + 0.5 < H / 2 ? -qy : qy) / d }; }
+    const ex = Math.min(x + 0.5, W - x - 0.5), ey = Math.min(y + 0.5, H - y - 0.5);
+    return ex < ey ? { e: ex, nx: x + 0.5 < W / 2 ? -1 : 1, ny: 0 } : { e: ey, nx: 0, ny: y + 0.5 < H / 2 ? -1 : 1 };
+  };
+  return toned(W, H, (set) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const { e, nx, ny } = inner(x, y);
+      if (e <= 0) continue;
+      const l = litT(nx, ny);
+      // Worn through to the tin: at the corners and along the edges where it rubs in a pocket, and in a few scratches.
+      const near = Math.min(x, W - 1 - x, y, H - 1 - y);
+      const corner = Math.hypot(Math.min(x, W - 1 - x), Math.min(y, H - 1 - y)); // how far from the nearest corner
+      const rubbed = (corner < 10 && fbm(311, x / 3, y / 3, 2) > 0.44 + corner * 0.025) || (near < 4 && fbm(314, x / 2, y / 2, 2) > 0.74); // worn at the corners, a few rubs along the edges
+      const dent = Math.hypot(x + 0.5 - 62, y + 0.5 - 38) < 3.2 ? -litT((x + 0.5 - 62) / 3.2, (y + 0.5 - 38) / 3.2) * 10 : 0; // a dent: lit on its far side
+      if (e < 1.2) { set(x, y, l > 0.35 ? LITM_ : l < -0.35 ? DARKM_ : TIN, l > 0.35 || l < -0.35 ? 0 : -4, true); continue; } // the tin's very edge
+      if (e < 3.4) { set(x, y, rubbed ? TIN : NAVY, (l > 0.3 ? 12 : l < -0.3 ? -14 : 0) + (rubbed ? 4 : 0), true); continue; } // the rolled rim of the lid
+      if (y < 5 && x % 6 === 2) { set(x, y, TIN, -6, true); continue; } // the hinge's knuckles, along the back
+      // The print: navy ground, a gold double border, the lifebuoy, the lettering (on top, below).
+      const ix = Math.min(x - 4, W - 5 - x), iy = Math.min(y - 4, H - 5 - y);
+      const border = ix === 1 || iy === 1 || ix === 3 || iy === 3;
+      const r = Math.hypot(x + 0.5 - CX, y + 0.5 - CY), seg = Math.floor(((Math.atan2(y + 0.5 - CY, x + 0.5 - CX) + Math.PI) / (Math.PI * 2)) * 8);
+      let c: RGB = NAVY;
+      if (border && ix >= 1 && iy >= 1) c = GOLD;
+      if (r < 13.5 && r >= 10) c = seg % 2 ? RED : WHITE; // the lifebuoy
+      else if (r < 10) { // the sailor, in the ring: sky behind; his white cap with its band, face, full beard, a blue collar
+        const fx = x + 0.5 - CX, fy = y + 0.5 - CY, face = Math.hypot(fx / 4.2, (fy + 0.2) / 5) < 1;
+        c = mute([126, 150, 170]);
+        if (fy > 5.2) c = NAVY; // his jumper and collar
+        else if (fy < -4 && Math.abs(fx) < 5.2 - (fy < -6 ? 1.5 : 0)) c = WHITE; // the cap's crown
+        else if (fy >= -4 && fy < -3 && Math.abs(fx) < 5) c = NAVY; // its band
+        else if (face) c = fy > 0.6 ? BEARD : SKIN; // beard over the lower half
+        if (face && fy > -2.2 && fy < -1.2 && Math.abs(Math.abs(fx) - 1.6) < 0.5) c = BEARD; // his eyes
+        if (fy > 0.2 && fy < 1 && Math.abs(fx) < 2.2) c = mute([70, 48, 34]); // the moustache
+      }
+      if (rubbed) c = TIN;
+      const scratch = valueNoise(312, (x + y * 0.4) / 1.2, Math.floor((y - x * 0.3) / 7)) > 0.93; // fine scratches, one way
+      set(x, y, c, dent + (rubbed ? 4 : 0) + (scratch ? 8 : 0) + (c === NAVY ? (fbm(313, x / 8, y / 8, 2) - 0.5) * 4 : 0), true);
     }
-    for (let y = 1; y < 4; y++) for (let x = 0; x < 38; x++) set(x, y, [92, 58, 42], (hash(322, x, y) - 0.5) * 18); // the striker
-    for (let y = 6; y < 23; y++) for (let x = 3; x < 35; x++) if (Math.min(x - 3, y - 6, 34 - x, 22 - y) < 1) set(x, y, [44, 70, 110], 0, true); // blue border
-    letters(set, centre(38, 'SWAN'), 15, 'SWAN', [44, 70, 110], 0);
-    blob(set, 19, 10, 5, 2.4, 0, (d, nx, ny) => [[236, 232, 222], lit(nx, ny) * 10 * d, true]); // the swan
-    set(23, 9, [236, 232, 222], 0, true); set(24, 8, [236, 232, 222], 0, true); set(25, 8, [200, 120, 40], 0, true);
-    rod(set, 30, 18, 43, 21, 1.2, (t, _a, s) => (t > 0.82 ? [[150, 44, 32], s * 10, true] : [[226, 196, 140], s * 10, true])); // a match half out
+    letters(set, CX - Math.floor(textWidth("PLAYER'S") / 2), 9, "PLAYER'S", CREAMP, 0);
+    letters(set, CX - Math.floor(textWidth('NAVY CUT') / 2), 41, 'NAVY CUT', CREAMP, 0);
   });
 }
 
-/** A spent match, its head burned black and the stick charred and bent at the end. */
-export function spentMatch(n = 0): Px {
-  return toned(26, 6, (set) => {
-    const bend = (hash(331, n, 1) - 0.5) * 2;
-    rod(set, 1, 3, 18, 3, 1.1, (t, _a, s) => [t > 0.7 ? [70, 54, 40] : [222, 194, 140], s * 10, true]);
-    rod(set, 18, 3, 23, 3 + bend, 1.1, (_t, _a, s) => [CHAR, s * 8, true]);
-    blob(set, 23.5, 3 + bend, 1.8, 1.5, 0, (_d, nx, ny) => [CHAR, lit(nx, ny) * 8 + 4, true]);
-  });
-}
-
-/** A cigarette end, the paper crumpled where it was put out, a tip of ash. */
-export function cigaretteEnd(n = 0): Px {
-  return toned(16, 6, (set) => {
-    rod(set, 1, 3, 11, 3 + (hash(341, n, 1) - 0.5), 2, (t, a, s) => [t > 0.88 ? CHAR : [234, 228, 214], s * 12 + (Math.abs(a) > 0.7 && hash(342, t * 40, a * 3) < 0.4 ? -8 : 0), true]);
-    for (let k = 0; k < 6; k++) set(11 + hash(343, n, k) * 4, 1.5 + hash(344, n, k) * 3, ASH, (hash(345, n, k) - 0.5) * 20, true);
-  });
-}
-
-/** An ashtray made from the base of a shell case (trench art): a thick brass ring, the struck primer in the
- * middle seen through the ash, two ends stubbed out in it. */
-export function shellAshtray(): Px {
-  return toned(48, 48, (set) => {
-    blob(set, 24, 24, 22, 22, 0, (d, nx, ny, x, y) => {
-      if (d > 0.82) return [BRASS, lit(nx, ny) * 22 * (d > 0.93 ? 1 : 0.5) + (fbm(351, x / 4, y / 4, 2) - 0.5) * 8, false]; // the rim, rounded
-      if (d > 0.74) return [BRASS, -lit(nx, ny) * 14 - 10, true]; // the inner wall, lit on its far side
-      const ash = fbm(352, x / 3, y / 3, 3);
-      if (d < 0.2) return [[160, 120, 60], lit(nx, ny) * 8 - (d < 0.08 ? 16 : 0), true]; // the primer, struck
-      return [ash > 0.55 ? ASH : [96, 88, 80], (ash - 0.5) * 30, false];
-    });
-    rod(set, 10, 20, 22, 26, 1.8, (t, _a, s) => [t < 0.2 ? CHAR : [228, 220, 204], s * 10 - 4, true]);
-    rod(set, 30, 34, 38, 28, 1.8, (t, _a, s) => [t > 0.85 ? CHAR : [228, 220, 204], s * 10 - 4, true]);
-    letters(set, 15, 38, '18PR', [120, 86, 36], 0); // stamped on the base: an 18-pounder
-  });
-}
-
-/** Two .303 rounds: brass cases, rimmed, cupro-nickel bullets, the cordite crimp. */
-export function cartridge(n = 0): Px {
-  return toned(34, 7, (set) => {
-    rod(set, 2, 3.5, 22, 3.5, 3, (t, _a, s) => [BRASS, s * 20 + (t > 0.94 ? -8 : 0), true]); // the case
-    rod(set, 0.5, 3.5, 2.5, 3.5, 3.4, (_t, _a, s) => [BRASS, s * 20 - 6, true]); // the rim
-    rod(set, 22, 3.5, 25, 3.5, 2, (_t, _a, s) => [BRASS, s * 16 - 2, true]); // the neck
-    rod(set, 25, 3.5, 33, 3.5, 1.9, (t, _a, s) => [NICKEL, s * 22 - t * 8, true]); // the bullet, tapering
-    set(33, 3, NICKEL, -10, true);
-    if (n % 2) set(10, 2, [150, 100, 40], 0, true); // a thumb-tarnish
-  });
-}
-
-/** A newspaper folded in four, a few days old: the masthead, the columns of close print, a headline, a
- * photograph block, the fold creased dark. */
-export function newspaper(): Px {
-  return toned(76, 98, (set) => {
-    for (let y = 0; y < 98; y++) for (let x = 0; x < 76; x++) {
-      const e = Math.min(x, y, 75 - x, 97 - y);
-      const fold = Math.abs(y - 49) < 1;
-      set(x, y, [206, 200, 180], (fold ? -14 : 0) + (e < 1 ? -10 : 0) + (fbm(471, x / 12, y / 12, 2) - 0.5) * 10 + (x + y < 40 ? 4 : 0));
+/** A box of Swan Vestas from above, a little the worse for a pocket: the printed label on the sleeve (a white swan
+ * in a blue oval, the name in blue, a blue rule round it), scuffed pale at the corners and creased across; the
+ * sleeve's edges lit on the top-left and dark on the bottom-right, as the desk's cards are; the tray pushed half
+ * out, a row of matches in it with their red heads, the sleeve's edge casting a hard shadow into it.
+ * `turn`: how it will lie, so its light still falls from the top-left of the screen. */
+export function matchbox(turn = 0): Px {
+  const W = 60, H = 34, SX1 = 48, TX1 = 59, TY0 = 3, TY1 = 30; // the sleeve ends at x 48; the tray, out to 59
+  const LABEL: RGB = mute([214, 188, 112]), BLUE: RGB = mute([44, 70, 120]), SWAN: RGB = mute([236, 232, 222]), TRAY: RGB = mute([176, 146, 96]);
+  const STICK: RGB = mute([222, 194, 140]), HEAD: RGB = mute([150, 44, 32]);
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  const TLx = -(lc + ls) / Math.SQRT2, TLy = (ls - lc) / Math.SQRT2; // towards the screen's top-left, in the drawing
+  const inSleeve = (x: number, y: number) => x >= 0 && x < SX1 && y >= 1 && y < H - 1;
+  /** An edge pixel's tone: one step up where its side faces the light, two down where it faces away. */
+  const edge = (nx: number, ny: number) => { const l = litT(nx, ny); return l > 0.3 ? 8 : l < -0.3 ? -14 : -3; };
+  return toned(W, H, (set) => {
+    // The tray, pushed out: its card walls, the floor in the sleeve's shadow, the matches lying in it.
+    for (let y = TY0; y < TY1; y++) for (let x = SX1; x <= TX1; x++) {
+      const wall = y === TY0 ? [0, -1] : y === TY1 - 1 ? [0, 1] : x === TX1 ? [1, 0] : null;
+      if (wall) { set(x, y, TRAY, edge(wall[0], wall[1]), true); continue; }
+      const shade = inSleeve(Math.floor(x + TLx * 3), Math.floor(y + TLy * 3)) ? -18 : 0; // the sleeve's hard shadow
+      const m = (y - TY0 - 1) % 3; // the matches, side by side: stick, stick, the gap between
+      if (m === 2 || y >= TY1 - 2) { set(x, y, TRAY, shade - 10, true); continue; }
+      const head = x >= TX1 - 4 - ((y >> 2) % 2); // their heads, all at the open end, not quite in line
+      set(x, y, head ? HEAD : STICK, shade + (m === 0 ? litT(0, -1) * 8 : litT(0, 1) * 8) + (head && x === TX1 - 2 && m === 0 ? 10 : 0), true);
     }
-    letters(set, centre(76, 'DAILY MAIL'), 4, 'DAILY MAIL', [36, 34, 32], 0);
-    for (let x = 4; x < 72; x++) { set(x, 11, [60, 58, 54], 0, true); set(x, 13, [60, 58, 54], 0, true); }
-    letters(set, 4, 16, 'GAINS AT YPRES', [36, 34, 32], 0);
-    for (let y = 28; y < 46; y++) for (let x = 4; x < 32; x++) set(x, y, [120, 114, 102], (fbm(472, x / 3, y / 3, 2) - 0.5) * 30); // the photograph
-    for (let col = 0; col < 3; col++) for (let y = 24; y < 95; y += 2) { // the print, too small to read
-      const x0 = 4 + col * 23;
-      if (col === 0 && y < 47) continue;
-      for (let x = x0; x < x0 + 20; x++) if (hash(473, x >> 1, y) < 0.7) set(x, y, [96, 92, 86], 0, true);
+    // The sleeve: the label printed on it, its edges, the wear.
+    for (let y = 1; y < H - 1; y++) for (let x = 0; x < SX1; x++) {
+      const e = Math.min(x, y - 1, SX1 - 1 - x, H - 2 - y);
+      const corner = Math.hypot(Math.max(0, 2 - Math.min(x, SX1 - 1 - x)), Math.max(0, 2 - Math.min(y - 1, H - 2 - y))) > 1.8;
+      if (corner) continue;
+      if (e < 1) { set(x, y, LABEL, edge(x === 0 ? -1 : x === SX1 - 1 ? 1 : 0, y === 1 ? -1 : y === H - 2 ? 1 : 0) - 4, true); continue; }
+      const scuff = fbm(321, x / 3, y / 3, 2) > 0.62 && (Math.min(x, SX1 - 1 - x) < 7 || Math.min(y, H - 1 - y) < 5); // rubbed pale near the edges
+      const crease = Math.abs(x - 30 - (y - 17) * 0.3) < 0.6 ? -8 : 0; // a crease across the label
+      const rule = e === 2 || (Math.hypot((x + 0.5 - 24) / 11, (y + 0.5 - 12) / 7.5) | 0) === 1 && Math.hypot((x + 0.5 - 24) / 11, (y + 0.5 - 12) / 7.5) < 1.13; // the blue rule, the oval's ring
+      const oval = Math.hypot((x + 0.5 - 24) / 11, (y + 0.5 - 12) / 7.5) < 1;
+      if (rule) { const worn = scuff && hash(323, x, y) < 0.3; set(x, y, worn ? LABEL : BLUE, worn ? 6 : crease, true); continue; } // rubbed through here and there
+      set(x, y, oval ? BLUE : LABEL, (scuff ? 8 : 0) + crease + (oval ? 0 : (fbm(322, x / 6, y / 6, 2) - 0.5) * 6), oval);
     }
+    // The swan on the oval: its body, the curve of its neck, its head and orange beak.
+    blob(set, 22, 14, 6, 2.6, 0, (_d, nx, ny) => [SWAN, lit(nx, ny) > 0.5 ? 4 : lit(nx, ny) < -0.5 ? -8 : 0, true]);
+    for (const [x, y] of [[17, 13], [16, 12], [16, 11], [16, 10], [17, 9], [18, 9]]) set(x, y, SWAN, 0, true); // the neck, curving up and over at the front
+    set(19, 9, mute([210, 120, 40]), 0, true); // the beak
+    set(27, 13, SWAN, 4, true); set(28, 12, SWAN, 4, true); // the tail, cocked up
+    letters(set, 24 - Math.floor(textWidth('SWAN') / 2), 21, 'SWAN', BLUE, 0);
   });
 }
 
-/** A ball of paper, screwed up and thrown at the bin: facets lit and shaded, a few lines of writing showing. */
-export function paperBall(): Px {
-  return toned(24, 22, (set) => {
-    blob(set, 12, 11, 11, 10, 0, (_d, nx, ny, x, y) => {
-      const facet = Math.floor(valueNoise(481, x / 3, y / 3) * 4);
-      return [[220, 210, 176], lit(nx, ny) * 10 + (facet - 1.5) * 8 + (hash(482, x, y >> 1) < 0.06 ? -20 : 0), true];
-    });
+/** A spent match: a pale wooden stick, burnt brown and then black towards the end, the head a black knob, the
+ * charred end bent where it curled in the flame. Round, so shaded across. `turn`: how it will lie. */
+export function spentMatch(n = 0, turn = 0): Px {
+  const L = 26, H = 7, CY = 3.5, lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2;
+  const up = litT(0, -1) >= litT(0, 1) ? -1 : 1, bend = (hash(331, n, 1) - 0.5) * 2.4, burnt = 0.45 + hash(331, n, 2) * 0.3;
+  const STICK: RGB = mute([214, 186, 134], 0.8), BROWN: RGB = [104, 78, 52];
+  return toned(L, H, (set) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < L - 3; x++) {
+      const t = (x + 0.5) / (L - 3), cy = CY + (t > 0.7 ? ((t - 0.7) / 0.3) ** 2 * bend : 0), a = (y + 0.5 - cy) / (t > burnt ? 0.9 : 1.1);
+      if (Math.abs(a) > 1) continue;
+      const side = Math.sign(a) === up ? 1 : -1;
+      set(x, y, t > burnt + 0.12 ? CHAR : t > burnt ? BROWN : STICK, side > 0 ? 8 : -8, true);
+    }
+    blob(set, L - 3, CY + bend, 2, 1.7, 0, (_d, nx, ny) => [CHAR, litT(nx, ny) > 0.3 ? 8 : -2, true]); // the head, burnt
   });
 }
 
-/** A pocket knife, closed: horn scales riveted, nickel bolsters, the nail nick on its blade. */
-export function pocketKnife(): Px {
-  return toned(48, 12, (set) => {
-    rod(set, 6, 6, 42, 6, 4.6, (t, _a, s) => [t < 0.12 || t > 0.88 ? NICKEL : [92, 70, 52], s * 20 + (t > 0.12 && t < 0.88 ? (fbm(491, t * 30, 0, 2) - 0.5) * 14 : 0), true]);
-    for (const x of [14, 34]) set(x, 6, BRASS, 8, true); // rivets
-    for (let x = 18; x < 30; x++) set(x, 2, NICKEL, 10, true); // the blade's back, showing
-    set(22, 3, CHAR, 0, true);
-  });
-}
-
-/** A drawing pin, brass head, lit on its dome. */
-export function drawingPin(): Px {
-  return toned(9, 9, (set) => blob(set, 4.5, 4.5, 4.2, 4.2, 0, (d, nx, ny) => [BRASS, lit(nx, ny) * 22 * d + (d < 0.3 ? 10 : 0), true]));
-}
-
-/** An Army biscuit, hard as a tile: the square, its docking holes in rows, a corner bitten off. */
-export function biscuit(): Px {
-  return toned(34, 34, (set) => {
-    for (let y = 0; y < 34; y++) for (let x = 0; x < 34; x++) {
-      if (x + y > 58 && Math.hypot(x - 33, y - 33) < 9 + valueNoise(501, x, y) * 3) continue; // the bite
-      const e = Math.min(x, y, 33 - x, 33 - y);
-      const hole = x % 7 === 3 && y % 7 === 3 && e > 2;
-      set(x, y, [196, 160, 104], hole ? -30 : (e < 2 ? (x + y < 34 ? 10 : -12) : 0) + (fbm(502, x / 5, y / 5, 2) - 0.5) * 14);
+/** A cigarette end, put out: the white paper (its seam a faint line, shaded across), the stained mouth end showing
+ * its tobacco, the other end pinched and charred, a curl of ash on it. `turn`: how it will lie. */
+export function cigaretteEnd(n = 0, turn = 0): Px {
+  const L = 18, H = 7, CY = 3.5, lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2;
+  const up = litT(0, -1) >= litT(0, 1) ? -1 : 1, len = 11 + Math.round(hash(341, n, 1) * 4);
+  const PAPER_: RGB = mute([234, 228, 214], 0.8), STAIN: RGB = mute([196, 164, 112], 0.8), TOBACCO: RGB = mute([118, 80, 44], 0.8), FLAKE: RGB = [198, 194, 184];
+  return toned(L, H, (set) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < len; x++) {
+      const t = (x + 0.5) / len, r = 2.3 * (0.6 + 0.4 * Math.min(1, (1 - t) / 0.25)), a = (y + 0.5 - CY) / r; // pinched at the burnt end
+      if (Math.abs(a) > 1) continue;
+      const side = Math.sign(a) === up ? 1 : -1, rag = hash(342, n * 31 + x, y);
+      if (t > 0.9 + rag * 0.06) { set(x, y, rag < 0.4 ? FLAKE : ASH, 0, true); continue; } // ash on the tip
+      if (t > 0.8 + rag * 0.05) { set(x, y, CHAR, 0, true); continue; } // the charred ring
+      if (x === 0) { set(x, y, Math.abs(a) < 0.5 ? TOBACCO : STAIN, -4, true); continue; } // the mouth end, its tobacco
+      const seam = Math.abs(a - 0.35 * up) < 0.2;
+      set(x, y, t < 0.22 ? STAIN : PAPER_, (side > 0 ? 4 : -12) + (seam ? -6 : 0) + (t > 0.7 ? -6 : 0), true);
     }
   });
 }
 
-/** A briar pipe on its side: the bowl, its dottle of charred tobacco, the vulcanite stem and its lip. */
-export function pipe(): Px {
-  return toned(52, 26, (set) => {
-    rod(set, 20, 13, 49, 9, 2.3, (t, _a, s) => [t < 0.35 ? [110, 66, 38] : BLACK, s * 18 + (t > 0.95 ? 6 : 0), true]);
-    blob(set, 13, 13, 12, 11, 0, (d, nx, ny, x, y) => {
-      if (d > 0.62) return [[112, 64, 34], lit(nx, ny) * 22 + (fbm(361, x / 3, y / 2, 2) - 0.5) * 14, false]; // the bowl's rim and grain
-      return [hash(362, x, y) < 0.3 ? [120, 92, 60] : [56, 40, 30], (hash(363, x, y) - 0.5) * 20 - 4, true]; // the dottle
-    });
-  });
-}
-
-/** A square bottle of ink, the glass showing the ink's level dark inside, a cork stopper, a paper label. */
-export function inkBottle(): Px {
-  return toned(30, 30, (set) => {
-    for (let y = 0; y < 30; y++) for (let x = 0; x < 30; x++) {
-      const e = Math.min(x, y, 29 - x, 29 - y);
-      if (e < 2 && Math.hypot(Math.max(0, 3 - x, x - 26), Math.max(0, 3 - y, y - 26)) > 3) continue;
-      set(x, y, e < 3 ? [92, 110, 112] : [30, 38, 54], e < 3 ? (x + y < 30 ? 18 : -10) : (e < 5 && x + y < 26 ? 14 : 0), e < 3);
+/** An ashtray cut from the base of an 18-pounder shell case (trench art), from above, well used. The case's cut
+ * rim in brass, shaded as the desk's metal is (its outer edge lit on the top-left and dark on the bottom-right, the
+ * cut top in whole tones, the inside wall lit on its far side); the floor dull brass, with the rim's shadow cast
+ * hard across it on the lit side, as the desk's own shadows are. In it: a heap of ash and a smaller one, flaked
+ * pale and dark with cinders, dust spread over the floor, a spent match, and five cigarette ends (seamed paper,
+ * the burnt end pinched and charred, the mouth end stained and showing its tobacco), one bent where it was
+ * stubbed out, one left across the rim; each casts its own small shadow. A little bigger than the mug.
+ * `turn`: how it will lie, so its light still falls from the top-left of the screen. */
+export function shellAshtray(turn = 0): Px {
+  const W = 98, H = 84, C = 40, CY = 42, R = 39, RIN = R - 5.5; // the case's outside radius; its inside wall
+  const BRIGHT: RGB = [236, 204, 128], DARKB: RGB = [112, 80, 36], FLOOR: RGB = [116, 86, 44], PAPER_: RGB = [234, 228, 214];
+  const STAIN: RGB = [196, 164, 112], TOBACCO: RGB = [118, 80, 44], FLAKE: RGB = [198, 194, 184], CINDER: RGB = [74, 68, 62];
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  const TLx = -(lc + ls) / Math.SQRT2, TLy = (ls - lc) / Math.SQRT2; // towards the screen's top-left, in the drawing
+  // The cigarette ends, as polylines (from the burnt end) so one can be bent; r = the paper's radius.
+  const ends = [
+    { p: [[34, 44], [47, 37]], r: 2.3, salt: 1 }, // stubbed out in the heap
+    { p: [[36, 58], [42, 60], [50, 57]], r: 2.3, salt: 2 }, // bent, crushed out
+    { p: [[24, 30], [37, 31]], r: 2.2, salt: 3 },
+    { p: [[52, 24], [58, 33]], r: 2.1, salt: 4 }, // a short one, smoked down
+    { p: [[50, 46], [77, 54]], r: 2.4, salt: 5 }, // left resting on the rim, its mouth end just over the edge
+  ];
+  /** Where (x, y) falls on a cigarette end: its along (0 at the burnt end … 1), across (−1 … 1), or null. */
+  const onEnd = (x: number, y: number) => {
+    for (const e of ends) {
+      const segs = e.p.slice(1).map((q, i) => [e.p[i], q]), total = segs.reduce((q, [a, b]) => q + Math.hypot(b[0] - a[0], b[1] - a[1]), 0);
+      let before = 0;
+      for (const [a, b] of segs) {
+        const vx = b[0] - a[0], vy = b[1] - a[1], L = Math.hypot(vx, vy), t = ((x - a[0]) * vx + (y - a[1]) * vy) / (L * L);
+        const u = (before + Math.max(0, Math.min(1, t)) * L) / total;
+        const r = e.r * (0.55 + 0.45 * Math.min(1, u / 0.3)); // pinched where it was stubbed out
+        const across = ((x - a[0]) * -vy + (y - a[1]) * vx) / L / r;
+        if (t >= -0.05 && t <= 1.05 && Math.abs(across) <= 1) return { e, u, across, nx: -vy / L, ny: vx / L };
+        before += L;
+      }
     }
-    blob(set, 15, 15, 7, 7, 0, (d, nx, ny, x, y) => [[164, 124, 82], lit(nx, ny) * 14 * d + (hash(371, x, y) - 0.5) * 16, false]); // the cork
-    for (let y = 22; y < 28; y++) for (let x = 6; x < 24; x++) set(x, y, CREAM, y === 22 ? 6 : 0, true);
-    letters(set, 7, 22, 'BLUE', [44, 52, 90], 0);
+    return null;
+  };
+  return toned(W, H, (set) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const px = x + 0.5, py = y + 0.5, dx = px - C, dy = py - CY, r = Math.hypot(dx, dy);
+      const end = onEnd(px, py);
+      if (end) { // the paper: shaded across, its seam, the stained mouth end and its tobacco, the burnt end charred and ragged
+        const { e, u, across, nx, ny } = end, l = litT(nx * Math.sign(across), ny * Math.sign(across)) * Math.abs(across);
+        const rag = hash(360 + e.salt, x, y);
+        if (u < 0.08 + rag * 0.05) { set(x, y, rag < 0.35 ? FLAKE : ASH, 0, true); continue; } // the ash still on its tip
+        if (u < 0.17 + rag * 0.04) { set(x, y, CHAR, rag < 0.2 ? 6 : 0, true); continue; } // the charred ring, ragged
+        if (u > 0.94) { set(x, y, Math.abs(across) < 0.5 ? TOBACCO : STAIN, -4, true); continue; } // the open end, its tobacco
+        const seam = Math.abs(across - 0.35) < 0.22;
+        set(x, y, u > 0.8 ? STAIN : PAPER_, (l > 0.45 ? 4 : l < -0.45 ? -14 : -2) + (seam ? -6 : 0) + (u < 0.24 ? -6 : 0), true); // (scorched near the burn)
+        continue;
+      }
+      if (r > R) continue;
+      const l = litT(dx / r, dy / r); // how the outward-facing side here faces the light
+      if (r > R - 1.2) { set(x, y, l > 0.4 ? BRIGHT : l < -0.4 ? DARKB : BRASS, l > 0.4 || l < -0.4 ? 0 : -4, true); continue; } // the very edge
+      if (r > R - 3) { set(x, y, BRASS, l > 0.3 ? 14 : l < -0.3 ? -16 : l > -0.05 ? 4 : -6, true); continue; } // the cut top of the case
+      if (r > RIN) { set(x, y, BRASS, -l > 0.3 ? 8 : -l < -0.3 ? -22 : -10, true); continue; } // the inside wall: lit on its far side
+      // The floor, and what lies on it, with hard shadows: the rim's (6 px deep), and each end's (1–2 px).
+      const rim = Math.hypot(px + TLx * 6 - C, py + TLy * 6 - CY) > RIN;
+      const under = !!onEnd(px + TLx * 1.6, py + TLy * 1.6);
+      const shade = rim || under ? -26 : 0;
+      const heap = Math.min(Math.hypot(dx - 2, (dy + 1) * 1.15) / 18, Math.hypot(dx + 14, dy - 12) / 8) + (valueNoise(352, px / 3, py / 3) - 0.5) * 0.35; // < 1: in a heap
+      const g = hash(354, x, y);
+      if (heap < 1) {
+        const top = (1 - heap) * 12; // mounded: palest on top
+        if (g < 0.05) set(x, y, CINDER, shade, true); // cinders and burnt shreds
+        else if (g < 0.13) set(x, y, FLAKE, shade + (heap < 0.6 ? 2 : -4), true); // pale flakes
+        else set(x, y, ASH, top - 6 + shade + (fbm(353, px / 4, py / 4, 2) - 0.5) * 10); // the ash, crumbly
+        continue;
+      }
+      if (g < 0.008 + Math.max(0, 1.5 - heap) * 0.16) { set(x, y, g < 0.02 ? CINDER : ASH, shade - 2, true); continue; } // dust and specks spread over the floor
+      set(x, y, FLOOR, shade - 4 + (fbm(351, px / 9, py / 9, 2) - 0.5) * 6 + (fbm(355, px / 5, py / 5, 2) > 0.66 ? -6 : 0)); // dull brass, sooted in patches
+    }
+    rod(set, 18, 50, 31, 57, 0.9, (t) => [t < 0.18 ? CHAR : [70, 54, 40], t < 0.18 ? 0 : -4, true]); // a spent match, burnt down its length
   });
 }
 
-/** A picture postcard face up: a view of a town square, the printed caption, a corner bent up. */
+/** Two .303 rounds lying together, from above: rimmed brass cases, round so shaded across as the pen is (a bright
+ * stripe on the side towards the light, the far side dark, the very edge lit or dark by which way it faces), the
+ * shoulder and neck, the cupro-nickel bullets pointed, the headstamp's primer ring at the base; a thumb's tarnish.
+ * About 66 px long at the desk's scale. `turn`: how they will lie, so their light still falls from the top-left. */
+export function cartridges(turn = 0): Px {
+  const W = 72, H = 30;
+  const CASE: RGB = mute([196, 156, 76], 0.8), CNI: RGB = mute([170, 166, 150], 0.8), TARN: RGB = mute([130, 96, 48], 0.8);
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  /** One round from (x0, y0) along angle `a`: its radius along its length (0 at the base … 66 at the point). */
+  const radius = (u: number) => u < 1.6 ? 4.9 : u < 2.6 ? 4 : u < 44 ? 4.5 - u * 0.012 : u < 49 ? 3.95 - (u - 44) * 0.36 : u < 52 ? 2.2 : u < 66 ? 2.2 * Math.sqrt(Math.max(0, 1 - ((u - 52) / 14) ** 2.2)) : 0;
+  const round = (set: Set, x0: number, y0: number, a: number, salt: number) => {
+    const c = Math.cos(a), n = Math.sin(a), up = litT(-n, c) >= litT(n, -c) ? 1 : -1; // which side, across it, faces the light
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const dx = x + 0.5 - x0, dy = y + 0.5 - y0, u = dx * c + dy * n, v = -dx * n + dy * c, r = radius(u);
+      if (u < 0 || u >= 66 || Math.abs(v) > r) continue;
+      const q = v / r, l = Math.sign(q) === up ? Math.abs(q) : -Math.abs(q); // towards the light +, away −
+      const shade = Math.abs(q) > 0.8 ? (l > 0 ? 8 : -22) : l > 0.3 && l < 0.65 ? 18 : l < -0.3 ? -12 : 0;
+      const bullet = u >= 50;
+      const groove = u >= 1.6 && u < 2.6; // the extractor groove, behind the rim
+      const crimp = Math.abs(u - 50) < 0.6; // the case's mouth crimped on the bullet
+      const tarnish = !bullet && u > 8 && u < 40 && Math.abs(q) < 0.7 && valueNoise(360 + salt, u / 3, q * 2) > 0.82 && hash(361 + salt, x, y) < 0.6; // a thumb's tarnish, a few specks
+      set(x, y, bullet ? CNI : tarnish ? TARN : CASE, shade + (groove || crimp ? -14 : 0) + (u < 1.6 && Math.abs(q) < 0.3 ? -10 : 0), true); // (the primer, at the base)
+    }
+  };
+  return toned(W, H, (set) => {
+    round(set, 2, 7, 0.03, 1);
+    round(set, 5, 22, -0.06, 2); // the second, a little apart from the first, not quite in line
+  });
+}
+
+/** A soldier's clasp knife, closed, from above: polished walnut scales (rounded, lit along the side towards the
+ * light, the grain in long fine lines), two rivets and a little nickel shield set in them; nickel
+ * bolsters at both ends in the desk's metal shading; the blade's steel back along one edge with its nail nick;
+ * the lanyard shackle at the end. `turn`: how it will lie, so its light still falls from the top-left. */
+export function pocketKnife(turn = 0): Px {
+  const W = 96, H = 22, L = 84, CY = 10; // L: the knife's length (the shackle beyond it)
+  const WOOD: RGB = mute([118, 80, 52], 0.8);
+  const METAL: RGB = [0x9c, 0x98, 0x82], DARKM: RGB = [0x56, 0x54, 0x49], LITM: RGB = [0xe2, 0xe0, 0xd6], GLINT: RGB = [0xf2, 0xee, 0xe2];
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  const top = (x: number) => CY - 6.5 + ((x - L / 2) / (L / 2)) ** 2 * 1.2; // the back: nearly straight
+  const bot = (x: number) => CY + 7.5 - ((x - L / 2) / (L / 2)) ** 2 * 3.2; // the belly: rounder
+  return toned(W, H, (set) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < L; x++) {
+      const px = x + 0.5, py = y + 0.5, t = top(px), b = bot(px);
+      const endR = Math.min(px, L - px); // rounded ends
+      const half = (b - t) / 2, mid = (t + b) / 2, round = endR < half ? Math.sqrt(Math.max(0, half * half - (half - endR) ** 2)) : half;
+      if (Math.abs(py - mid) > round) continue;
+      const e = Math.min(round - Math.abs(py - mid), endR); // px in from the edge
+      const nx = endR < half ? (px < L / 2 ? -1 : 1) * (half - endR) / half : 0, ny = Math.sign(py - mid) * (1 - Math.abs(nx));
+      const l = litT(nx, ny);
+      const bolster = px < 13 || px > L - 11;
+      if (bolster) { // nickel: the very edge lit or dark, a step in, the flat dithered; the bolster's end against the horn
+        if (e < 1.2) set(x, y, l > 0.35 ? LITM : l < -0.35 ? DARKM : METAL, l > 0.35 || l < -0.35 ? 0 : -4, true);
+        else if (Math.abs(px - 13) < 1 || Math.abs(px - (L - 11)) < 1) set(x, y, METAL, litT(px < L / 2 ? 1 : -1, 0) * 14, true);
+        else set(x, y, METAL, e < 2.6 ? (l > 0.3 ? 14 : l < -0.3 ? -16 : 0) : litT(0, (py - mid) / half) * 6 + 4, e < 2.6);
+        continue;
+      }
+      if (py < t + 1.6) { set(x, y, py < t + 0.8 ? [150, 150, 142] : [96, 96, 90], (litT(0, -1) > 0 ? 6 : -6) + (Math.abs(px - 22) < 1.5 ? -24 : 0), true); continue; } // the blade's steel back: a bright edge, a dark one; its nail nick
+      // The wooden scales: polished walnut, rounded across (lit along the side towards the light, a soft sheen,
+      // darker towards the far edge), the grain in long fine lines running its length, gently wavering.
+      const q = (py - mid) / half, side = Math.sign(q) === (litT(0, -1) >= litT(0, 1) ? -1 : 1) ? Math.abs(q) : -Math.abs(q);
+      const grain = Math.sin((py + (fbm(493, px / 24, 0, 2) - 0.5) * 6) * 1.9) > 0.86 ? -6 : 0; // a fine darker line every few px
+      const sheen = side > 0.25 && side < 0.6 ? 8 : 0;
+      set(x, y, WOOD, (side > 0 ? side * 6 : side * 12) + sheen + grain + (fbm(494, px / 18, py / 6, 2) - 0.5) * 4 + (e < 1.5 ? (l > 0.3 ? 4 : l < -0.3 ? -12 : -2) : 0), true);
+    }
+    // Two rivets and the shield: nickel, a glint on the lit corner.
+    const lit = (dx: number, dy: number) => litT(dx, dy) > 0.3;
+    for (const rx of [19, L - 17]) for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) set(rx + dx, CY + dy, lit(-1 + dx * 2, -1 + dy * 2) ? GLINT : !lit(1 - dx * 2, 1 - dy * 2) ? METAL : DARKM, 0, true);
+    for (let y = CY - 1; y <= CY + 2; y++) for (let x = 38; x <= 47; x++) {
+      const d = Math.hypot((x + 0.5 - 42.5) / 5, (y + 0.5 - (CY + 0.5)) / 2);
+      if (d > 1) continue;
+      set(x, y, d > 0.7 ? (litT((x + 0.5 - 42.5) / 5, (y - CY) / 2) > 0.2 ? LITM : DARKM) : METAL, 2, true);
+    }
+    // The shackle: a nickel ring through the end bolster, the desk showing through it.
+    for (let y = 0; y < H; y++) for (let x = L - 2; x < W; x++) {
+      const dx = x + 0.5 - (L + 4.5), dy = y + 0.5 - CY, r = Math.hypot(dx, dy);
+      if (r < 3.2 || r > 5.4 || x < L - 1) continue;
+      const ln = litT(dx / r, dy / r);
+      set(x, y, r > 4.6 ? (ln > 0.35 ? LITM : ln < -0.35 ? DARKM : METAL) : (-ln > 0.3 ? METAL : DARKM), 0, true);
+    }
+  });
+}
+
+/** A square bottle of Stephens' blue-black ink from above: thick glass, its edges lit on the top-left and dark on
+ * the bottom-right, the ink near black inside it and blue where the glass is thin, the window's glint on the
+ * shoulder; the round neck, a cork pushed into it, stained with ink, and a dried run of ink down the shoulder.
+ * `turn`: how it will lie, so its light still falls from the top-left of the screen. */
+export function inkBottle(turn = 0): Px {
+  const S = 46, C = 23, RC = 7, NECK = 10, CORK = 7; // the bottle's side, its corners' radius; the neck's and cork's radii
+  const GLASS: RGB = [150, 168, 166], INK: RGB = [24, 30, 48], THIN: RGB = mute([52, 70, 104]), CORKC: RGB = [158, 120, 80];
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  const TLx = -(lc + ls) / Math.SQRT2, TLy = (ls - lc) / Math.SQRT2; // towards the screen's top-left, in the drawing
+  return toned(S, S, (set) => {
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const px = x + 0.5, py = y + 0.5, dx = px - C, dy = py - C, r = Math.hypot(dx, dy);
+      // How far in from the bottle's rounded square edge, and which way that edge faces.
+      const qx = Math.max(Math.abs(dx) - (C - RC), 0), qy = Math.max(Math.abs(dy) - (C - RC), 0), corner = qx > 0 && qy > 0;
+      const e = corner ? RC - Math.hypot(qx, qy) : C - Math.max(Math.abs(dx), Math.abs(dy));
+      if (e <= 0) continue;
+      const nx = corner ? Math.sign(dx) * qx / Math.hypot(qx, qy) : Math.abs(dx) > Math.abs(dy) ? Math.sign(dx) : 0, ny = corner ? Math.sign(dy) * qy / Math.hypot(qx, qy) : Math.abs(dx) > Math.abs(dy) ? 0 : Math.sign(dy);
+      const l = litT(nx, ny);
+      if (r < CORK) { // the cork: its grain, its top lit gently, ink soaked into one side
+        const stain = Math.hypot(dx - 2.2, dy - 2.4) < 2.4 + (valueNoise(371, px, py) - 0.5) * 1.2; // a blot of ink soaked in
+        set(x, y, stain ? INK : CORKC, stain ? 4 : litT(dx / CORK, dy / CORK) * (r > CORK - 1.2 ? 12 : 4) + (hash(372, x, y) < 0.18 ? -10 : 0) + (fbm(373, px / 2, py / 2, 2) - 0.5) * 8, true);
+        continue;
+      }
+      if (r < NECK) { // the neck's glass lip round it: lit where it faces the light, the cork's shadow inside on the far side
+        const out = r > NECK - 1.4, ln = litT(dx / r, dy / r);
+        set(x, y, out ? GLASS : THIN, out ? (ln > 0.35 ? 16 : ln < -0.35 ? -16 : 0) : (-ln > 0.3 ? 6 : -10), true);
+        continue;
+      }
+      if (e < 1.2) { set(x, y, l < -0.35 ? THIN : GLASS, l > 0.35 ? 20 : l < -0.35 ? -8 : -2, true); continue; } // the glass's very edge: bright where it faces the light, gone dark on the far side
+      if (e < 3.2) { set(x, y, THIN, l > 0.3 ? 12 : l < -0.3 ? -10 : 0, true); continue; } // thick glass: the ink shows blue through it
+      // The shoulder: ink seen through the glass, darkest in the middle; the window's glint; a dried run of ink.
+      // The shoulder slopes up from the edge to the neck, so it catches the light on the side facing it: lit there,
+      // darker on the far side, most where it curves up into the neck.
+      const up = Math.max(0, 1 - (r - NECK) / 8), slope = litT(dx / r, dy / r);
+      const toward = (dx * TLx + dy * TLy) / r; // 1: this side of the neck faces the light
+      if (toward > 0.97 && r > NECK + 1.2 && r < NECK + 2.6) { set(x, y, [232, 236, 232], 0, true); continue; } // the window's glint, where the shoulder turns up: a few pixels
+      if (toward > 0.9 && r > NECK + 0.8 && r < NECK + 3.2) { set(x, y, GLASS, 4, true); continue; } // and the paler glass round it
+      const run = Math.abs(dx - 4 - Math.sin(dy / 3) * 0.8) < 1 && dy > NECK - 2 && dy < 18;
+      set(x, y, run ? INK : THIN, run ? -6 : -12 + slope * (6 + up * 12) - Math.min(8, (C - e) * 0.4) + (fbm(374, px / 7, py / 7, 2) - 0.5) * 6);
+    }
+  });
+}
+
+/** A picture postcard face up: the Cloth Hall at Ypres as on the cards sold before the war (Les Halles), the
+ * caption printed across the sky; the card handled and creased, a corner bent up. */
 export function postcard(): Px {
   const W = 104, H = 70, F = 12; // F: how big the bent-up corner is
+  const PX = 4, PY = 4, PW = 96, PH = 58; // the picture
   return toned(W, H, (set) => {
     const SEPIA_LIGHT: RGB = [184, 182, 174], STONE: RGB = [128, 126, 119], SLATE: RGB = [77, 76, 72], DARKW: RGB = [50, 49, 47], STREET: RGB = [95, 94, 88], BORDER: RGB = [198, 196, 187], FLAP: RGB = [176, 173, 166];
-    const photo = (px: number, py: number): [RGB, number] => { // the picture, in its own coordinates (94 × 46)
+    const HZ = 48; // the foot of the building: the square begins
+    /** A spire: a narrow slate cone from `top` to `base`, `half` wide at its foot, shaded on its right. */
+    const spire = (px: number, py: number, cx: number, top: number, base: number, half: number): [RGB, number] | null =>
+      py >= top && py < base && Math.abs(px + 0.5 - cx) <= ((py - top + 0.5) / (base - top)) * half ? [SLATE, px + 0.5 > cx ? -6 : 2] : null;
+    const photo = (px: number, py: number): [RGB, number] => { // the picture, in its own coordinates (96 × 58)
       const grain = (hash(381, px, py) - 0.5) * 3;
-      const e = Math.min(px, py, 93 - px, 45 - py), vig = -Math.max(0, 7 - e) * 1.4; // darker towards the edges, as a print is
-      const HZ = 34; // the street begins
-      // The belfry and its spire.
-      if (px >= 41 && px <= 53) {
-        if (py >= 8 && py < 21) {
-          const dark = py >= 11 && py <= 15 && px >= 45 && px <= 49; // the louvres
-          return dark ? [DARKW, 0] : [STONE, (px > 50 ? -9 : px < 43 ? 5 : 0) + grain + vig];
-        }
-        if (py < 8 && Math.abs(px - 47) <= py * 0.8 + 0.3) return [SLATE, (px > 47 ? -6 : 2) + grain]; // the spire
+      const e = Math.min(px, py, PW - 1 - px, PH - 1 - py), vig = -Math.max(0, 7 - e) * 1.4; // darker towards the edges, as a print is
+      const stone = (v: number): [RGB, number] => [STONE, v + (fbm(383, px / 3, py / 3, 2) - 0.5) * 3 + grain + vig];
+      // The belfry, left of centre: a square tower, its louvred openings, a pinnacle at each corner, its spire.
+      const s0 = spire(px, py, 22.5, 8, 17, 2.4) ?? spire(px, py, 16.5, 12, 17, 0.9) ?? spire(px, py, 28.5, 12, 17, 0.9);
+      if (s0) return [s0[0], s0[1] + grain];
+      if (px >= 16 && px <= 28 && py >= 17 && py < HZ) {
+        if (py >= 20 && py <= 29 && (px === 19 || px === 20 || px === 24 || px === 25)) return [DARKW, 0]; // the tall louvres
+        if (py >= 32 && py <= 35 && (px === 19 || px === 25)) return [DARKW, 0];
+        return stone((py === 17 ? 5 : py === 31 ? -4 : 0) + (px >= 27 ? -8 : px === 16 ? 4 : 0));
       }
-      // The corner turrets and their spires.
-      for (const tx of [8, 81]) {
-        if (px >= tx && px <= tx + 5) {
-          if (py >= 10 && py < 21) return [STONE, (px >= tx + 4 ? -9 : px === tx ? 5 : 0) + grain + vig];
-          if (py >= 5 && py < 10 && Math.abs(px - (tx + 2.5)) <= (py - 5) * 0.6 + 0.3) return [SLATE, (px > tx + 2 ? -6 : 2) + grain];
-        }
-      }
-      if (px >= 8 && px <= 86) {
-        if (py >= 16 && py < 21) { // the long roof, with dormers
-          const dormer = (px % 12 === 4 || px % 12 === 5) && py < 18;
-          return [SLATE, (py === 16 ? 6 : py === 20 ? -8 : 0) + (dormer ? 5 : 0) + grain + vig];
-        }
-        if (py >= 13 && py < 16 && px % 12 >= 3 && px % 12 <= 6 && Math.abs(px % 12 - 4.5) <= (py - 13) * 0.6 + 0.8) return [SLATE, 2 + grain]; // dormer gables
-        if (py >= 21 && py < HZ) {
-          const wy = py >= 22 && py <= 26 && (px - 11) % 5 < 3 && (px - 11) % 5 >= 0 && !(py === 22 && (px - 11) % 5 !== 1); // pointed upper windows
-          if (wy) return [DARKW, 0];
-          if (py >= 28) { // the arcade: pillars between dark arches
-            const bx = (px - 10 + 600) % 6;
-            if ((bx >= 2 && py >= 28) || (bx >= 3 && bx <= 4 && py === 27)) return [DARKW, py > 31 ? -2 : 0];
-          }
-          return [STONE, (py === 21 ? 4 : py === 27 ? -2 : 0) + (px > 82 ? -2 : 0) + (fbm(383, px / 3, py / 3, 2) - 0.5) * 3 + grain + vig];
+      // The spires along the roof, the Nieuwerck's tower and spire, and the turret at the far left.
+      const s1 = spire(px, py, 52, 10, 21, 2) ?? spire(px, py, 57, 18, 28, 1.2) ?? spire(px, py, 69, 8, 18, 2) ?? spire(px, py, 1.5, 22, 30, 1.4);
+      if (s1) return [s1[0], s1[1] + grain];
+      if (px >= 50 && px <= 54 && py >= 21 && py < 28) return stone(px >= 53 ? -8 : 2);
+      if (px >= 67 && px <= 71 && py >= 18 && py < 35) return py >= 22 && py <= 25 && px === 69 ? [DARKW, 0] : stone(px >= 70 ? -8 : 2);
+      if (px <= 2 && py >= 30 && py < HZ) return stone(px === 2 ? -6 : 3);
+      // The hall: a long steep slate roof with little dormers, a row of tall windows, a ledge, the arcade below.
+      if (px >= 3 && px <= 76) {
+        if (py >= 28 && py < 35) return [SLATE, (py === 28 ? 6 : py === 34 ? -8 : 0) + (px % 7 === 3 && py >= 30 && py <= 31 ? 10 : 0) + grain + vig];
+        if (py >= 35 && py < HZ) {
+          if (py >= 37 && py <= 41 && px % 3 === 1) return [DARKW, 0];
+          if (py === 42) return stone(5);
+          if (py === 43) return stone(-4);
+          if (py >= 44 && px % 3 !== 0 && !(py === 44 && px % 3 === 2)) return [DARKW, py > 45 ? -2 : 0];
+          return stone(px > 72 ? -3 : 0);
         }
       }
-      // The street: rubble and ruts, with a few small figures, a cart and a lamp.
+      // The houses closing the right of the square: stepped gables, rows of windows.
+      for (const [x0, x1, pk] of [[77, 85, 25], [86, 91, 31], [92, 95, 28]]) {
+        if (px < x0 || px > x1) continue;
+        const mid = (x0 + x1) / 2, top = pk + Math.floor(Math.abs(px - mid) * 0.7) * 2;
+        if (py < top || py >= HZ) break;
+        if (py > pk + 5 && (px - x0) % 3 === 1 && (py - pk - 6) % 5 >= 1 && (py - pk - 6) % 5 <= 3) return [DARKW, 0];
+        return stone((py === top ? 6 : 0) + (x0 === 86 ? -6 : 0) + (px === x1 ? -6 : 0));
+      }
+      // The square: wide and empty, a few people crossing it, a shadow across its near corner.
       if (py >= HZ) {
-        const fig = (fx: number, fy: number) => px === fx && py >= fy && py <= fy + 3 || (px === fx && py === fy - 1);
-        if (fig(26, 36) || fig(31, 37) || fig(62, 36) || fig(66, 37) || (px >= 73 && px <= 79 && py >= 37 && py <= 38) || (px === 6 && py >= 24 && py <= 38)) return [DARKW, 0];
-        const rut = (py - HZ) % 5 === 3 ? -5 : 0;
-        return [STREET, (rut < 0 ? rut * 0.5 : rut) + (fbm(384, px / 5, py / 3, 3) - 0.5) * 8 + grain + vig - (py - HZ) * 0.2];
+        if ([[34, 50], [41, 51], [62, 49], [83, 50]].some(([fx, fy]) => px === fx && py >= fy && py <= fy + 2)) return [DARKW, 0];
+        return [STREET, (py - HZ) * -0.3 + (py > 52 && px < 44 - (py - 52) * 2 ? -10 : 0) + (fbm(384, px / 5, py / 3, 3) - 0.5) * 6 + grain + vig];
       }
-      // The sky: pale at the horizon, a little cloud.
-      const cloud = fbm(385, px / 11, py / 6, 3);
-      return [SEPIA_LIGHT, (HZ - py) * 0.3 - 2 + (cloud - 0.5) * 10 + grain + vig];
+      // The sky: plain, a touch paler at the horizon.
+      return [SEPIA_LIGHT, (HZ - py) * -0.08 + 2 + (fbm(385, px / 11, py / 6, 3) - 0.5) * 6 + grain + vig];
     };
     const CRACK: RGB = [238, 237, 230], FIBRE: RGB = [234, 232, 224];
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -327,14 +573,14 @@ export function postcard(): Px {
         set(x, y, FLAP, u === y ? -8 : (y - u) < 2 ? -3 : 2 - (y - u) * 0.2 + (fbm(389, x / 3, y / 3, 2) - 0.5) * 6, true);
         continue;
       }
-      const inPic = x >= 5 && x < 99 && y >= 5 && y < 51;
+      const inPic = x >= PX && x < PX + PW && y >= PY && y < PY + PH;
       if (inPic) {
-        let [c, v] = photo(x - 5, y - 5);
+        let [c, v] = photo(x - PX, y - PY);
         const d = u - y; // distance from the fold line (negative = on the card)
         if (d > -4 && d <= 0 && hash(390, x, y) < 0.55 - Math.abs(d) * 0.12) { c = CRACK; v = 8; } // the emulsion cracked white along the fold
-        const fy = 33 + Math.round((valueNoise(391, x / 6, 0) - 0.5) * 3); // a long crease across the picture, cracked here and there
-        if (Math.abs(y - 5 - fy) < 1 && x > 8 && x < 96) { if (hash(392, x, y) < 0.35) { c = CRACK; v = 6; } else v -= 6; }
-        else if (y - 5 === fy + 1 && x > 8 && x < 96 && hash(393, x, y) < 0.5) v += 5;
+        const fy = 40 + Math.round((valueNoise(391, x / 6, 0) - 0.5) * 3); // a long crease across the picture, cracked here and there
+        if (Math.abs(y - PY - fy) < 1 && x > 8 && x < 96) { if (hash(392, x, y) < 0.35) { c = CRACK; v = 6; } else v -= 6; }
+        else if (y - PY === fy + 1 && x > 8 && x < 96 && hash(393, x, y) < 0.5) v += 5;
         set(x, y, c, v);
         continue;
       }
@@ -343,70 +589,126 @@ export function postcard(): Px {
       if (e < 1.5 && hash(394, x, y) < 0.5) { set(x, y, FIBRE, 6, true); continue; }
       set(x, y, BORDER, (fbm(386, x / 7, y / 7, 2) - 0.5) * 8 + (x + y < 22 ? 5 : 0) - grime - (fbm(395, x / 4, y / 4, 2) > 0.66 ? 6 : 0), e < 1);
     }
-    letters(set, centre(W, 'YPRES - LES HALLES'), 58, 'YPRES - LES HALLES', [70, 68, 64], 0);
-    for (let x = 30; x < W - 30; x++) set(x, 65, [194, 192, 184], -2, true); // a pencilled line under it, as on a card sent home
+    letters(set, PX + centre(PW, 'YPRES - LES HALLES'), PY + 1, 'YPRES - LES HALLES', [70, 68, 64], 0); // printed across the sky
   });
 }
 
-/** A pewter hip flask, curved to the hip: its broad lit face, the screw cap on its chain, a dent. */
-export function hipFlask(): Px {
-  return toned(44, 62, (set) => {
-    for (let y = 10; y < 62; y++) for (let x = 0; x < 44; x++) {
-      const r = Math.min(x, 43 - x, y - 10, 61 - y);
-      if (r < 6 && Math.hypot(Math.max(0, 6 - Math.min(x, 43 - x)), Math.max(0, 6 - Math.min(y - 10, 61 - y))) > 6) continue;
-      const across = (x - 22) / 22;
-      set(x, y, [150, 152, 146], -across * 18 + (r < 2 ? (x + y < 40 ? 12 : -14) : 0) + (Math.hypot(x - 30, y - 44) < 4 ? -10 : 0)); // the curve, a dent
-    }
-    blob(set, 22, 7, 6, 6, 0, (d, nx, ny) => [[150, 152, 146], lit(nx, ny) * 16 * d + 6, true]); // the cap
-    for (let k = 0; k < 6; k++) set(28 + k, 9 + k * 0.6, STEEL, k % 2 ? -8 : 8, true); // its chain
-    for (let y = 26; y < 48; y++) for (let x = 2; x < 42; x++) if (y % 3 === 0) set(x, y, LEATHER, -4, false); else if (y > 27 && y < 46) set(x, y, LEATHER, (hash(391, x, y) - 0.5) * 10 - Math.abs((x - 22) / 22) * 14);
-  });
-}
-
-/** An RFC field-service cap, folded flat: khaki serge, the lit crown, the cap badge, the curtain turned up. */
-export function sideCap(): Px {
-  return toned(78, 36, (set) => {
-    for (let y = 0; y < 36; y++) for (let x = 0; x < 78; x++) {
-      const run = Math.abs(x - 39) / 39, top = 4 + run ** 2 * 14, bottom = 33 - run ** 1.5 * 12; // the boat shape, folded to a point at each end
-      if (y < top || y > bottom || x < 2 || x > 76) continue;
-      const fold = y > 19 ? -10 : 6; // the turned-up curtain sits lower
-      const weave = (x + y) % 2 ? 2 : -2;
-      set(x, y, KHAKI, fold + weave + (fbm(401, x / 10, y / 8, 2) - 0.5) * 12 + (y === 19 || y === 20 ? -14 : 0));
-    }
-    blob(set, 16, 26, 4, 4, 0, (d, nx, ny) => [BRASS, lit(nx, ny) * 18 * d + 6, true]); // the badge: a crown over the wings, in brass
-    for (let x = 9; x < 24; x++) set(x, 26 + (x < 16 ? (16 - x) * 0.1 : (x - 16) * 0.1), BRASS, 0, true);
-    for (let k = 0; k < 2; k++) blob(set, 66, 23 + k * 5, 1.6, 1.6, 0, (_d, nx, ny) => [BRASS, lit(nx, ny) * 16, true]); // the two buttons
-  });
-}
-
-/** A pair of leather flying gauntlets thrown down, one over the other: long flared cuffs with fleece showing
- * at their mouths, the hand with its four fingers together and the thumb out, seams stitched in a paler thread. */
-export function gauntlets(): Px {
-  return toned(96, 78, (set) => {
-    const glove = (cx: number, cy: number, turn: number, seed: number, flip: number) => {
-      const c = Math.cos(turn), s = Math.sin(turn);
-      const at = (u: number, v: number): [number, number] => [cx + c * u - s * v * flip, cy + s * u + c * v * flip];
-      // The cuff: a flared trapezoid, wide at its mouth (u = -34) and narrowing to the wrist (u = -6).
-      for (let u = -34; u <= -4; u += 0.5) {
-        const half = 8 + (-4 - u) * 0.28;
-        for (let v = -half; v <= half; v += 0.5) {
-          const [x, y] = at(u, v);
-          const edge = half - Math.abs(v) < 1.2;
-          set(x, y, u < -32 ? [224, 210, 178] : LEATHER, u < -32 ? -4 : lit(-s * flip, c * flip) * (v / half) * 16 + (edge ? -12 : 0) + (fbm(seed, x / 5, y / 5, 2) - 0.5) * 12);
-        }
+/** A pewter hip flask from above, curved to fit the hip: its broad face shaded across the curve (lit on the side
+ * that faces the light, as the spanner's handle is), the edge in the desk's metal shading; a raised band of pebbled
+ * brown leather round its middle, worn smooth where it's handled, saddle-stitched along both edges and down the seam
+ * where it overlaps, a maker's oval stamped in it, a scuff or two; a bayonet cap on a short chain at the shoulder, a dent, the soft
+ * scratches of a pocket. Pewter is duller than nickel: a step darker, a little blue. `turn`: how it will lie. */
+export function hipFlask(turn = 0): Px {
+  const W = 52, H = 74, T = 14, RC = 9; // the body from y 14 (the shoulder above it); its corners' radius
+  const PEWTER: RGB = mute([138, 140, 140], 0.7), PLIT: RGB = mute([200, 202, 198], 0.7), PDARK: RGB = mute([74, 76, 78], 0.7);
+  const LEATH: RGB = mute([110, 72, 44], 0.75), THREAD: RGB = mute([190, 160, 112], 0.75), METAL: RGB = [0x9c, 0x98, 0x82], LITM: RGB = [0xe2, 0xe0, 0xd6], DARKM: RGB = [0x56, 0x54, 0x49];
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  const B0 = 34, B1 = 54; // the leather band
+  return toned(W, H, (set) => {
+    // The body: a rounded oblong, with a shoulder narrowing to the neck at the top.
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const px = x + 0.5, py = y + 0.5;
+      let e: number, nx = 0, ny = 0;
+      if (py >= T) {
+        const qx = Math.max(RC - px, 0, px - (W - RC)), qy = Math.max(RC - (py - T), 0, py - (H - RC));
+        if (qx > 0 && qy > 0) { const d = Math.hypot(qx, qy); e = RC - d; nx = (px < W / 2 ? -qx : qx) / d; ny = (py < H / 2 ? -qy : qy) / d; }
+        else { const ex = Math.min(px, W - px), ey = Math.min(py - T, H - py); e = Math.min(ex, ey); if (ex < ey) nx = px < W / 2 ? -1 : 1; else ny = py < H / 2 ? -1 : 1; }
+      } else { // the shoulder: a narrowing collar up to the neck
+        const half = 7 + (py - 6) * 1.2;
+        if (py < 6 || Math.abs(px - W / 2) > half) continue;
+        e = Math.min(half - Math.abs(px - W / 2), py - 6); nx = px < W / 2 ? -1 : 1; ny = -0.6;
       }
-      // The hand: the palm, then four fingers together, rounded at the tips.
-      blob(set, ...at(6, 0), 12, 9, turn, (d, nx, ny, x, y) => [LEATHER, lit(nx, ny) * 18 * d + (fbm(seed + 1, x / 5, y / 5, 2) - 0.5) * 10 + (d > 0.92 ? -10 : 0), false]);
-      for (let f = 0; f < 4; f++) {
-        const v = (f - 1.5) * 4.2;
-        rod(set, ...at(14, v), ...at(30 - Math.abs(f - 1.5) * 3, v * 1.08), 2.3, (_t, a, sh) => [LEATHER, sh * 16 + (Math.abs(a) > 0.8 ? -10 : 0), true]);
+      if (e <= 0) continue;
+      const l = litT(nx, ny);
+      if (py >= B0 && py < B1 && e > 1.2) { // the leather band: raised, its edges lit and shaded; pebbled grain, worn smooth where handled
+        const top = py < B0 + 1, bottom = py >= B1 - 1, faceTop = litT(0, -1) > litT(0, 1);
+        if (top || bottom) { set(x, y, LEATH, (top === faceTop ? 10 : -18), true); continue; } // the band's thickness
+        const row = Math.abs(py - B0 - 2.5) < 0.5 || Math.abs(py - B1 + 2.5) < 0.5; // the stitch lines, 2 px in from each edge
+        const seamX = W - 14, seam = Math.abs(px - seamX) < 0.6, seamStitch = Math.abs(px - seamX - 2.5) < 0.5; // where the leather overlaps, stitched down
+        if (row || seamStitch) { const k = Math.floor(row ? px : py) % 3; set(x, y, k === 2 ? mute([56, 36, 22], 0.75) : THREAD, k === 2 ? 0 : k === 0 ? 6 : -2, true); continue; } // saddle stitch: thread, thread, hole
+        if (seam) { set(x, y, LEATH, -16, true); continue; }
+        const worn = fbm(395, px / 7, py / 5, 2) > 0.6; // rubbed smooth and pale
+        const pebble = worn ? 0 : (valueNoise(396, px / 1.4, py / 1.4) - 0.5) * 10; // the grain
+        const sx = px - 22, sy = py - (B0 + B1) / 2, oval = Math.abs(Math.hypot(sx / 6, sy / 3.4) - 1) < 0.16; // a maker's oval, blind-stamped
+        const scuff = [[10, 41, 0.5], [32, 47, -0.4]].some(([cx, cy, sl]) => Math.abs(px - cx - (py - cy) / sl) < 0.6 && Math.abs(py - cy) < 2.2);
+        set(x, y, LEATH, litT((px - W / 2) / (W / 2), 0) * 8 + pebble + (worn ? 7 : 0) + (oval ? -12 : 0) + (scuff ? 12 : 0) + (hash(392, x, y) < 0.04 ? -8 : 0), oval || scuff);
+        continue;
       }
-      rod(set, ...at(4, 9 * 1), ...at(16, 16), 2.6, (_t, a, sh) => [LEATHER, sh * 16 + (Math.abs(a) > 0.8 ? -10 : 0), true]); // the thumb
-      for (let u = -30; u < -6; u += 3) { const [x, y] = at(u, 0); set(x, y, [176, 134, 84], 0, true); } // a seam down the cuff
-      for (let u = -2; u < 14; u += 3) { const [x, y] = at(u, -9); set(x, y, [176, 134, 84], 0, true); }
+      if (e < 1.2) { set(x, y, l > 0.35 ? PLIT : l < -0.35 ? PDARK : PEWTER, l > 0.35 || l < -0.35 ? 0 : -4, true); continue; } // the very edge
+      if (e < 2.6) { set(x, y, PEWTER, l > 0.3 ? 12 : l < -0.3 ? -14 : 0, true); continue; } // a step in
+      // The face: curved across, so lit on the side towards the light; a dent; scratches.
+      const across = (px - W / 2) / (W / 2), dent = Math.hypot(px - 34, py - 62) < 3.6;
+      const scratch = valueNoise(393, (px * 0.9 + py * 0.5) / 1.1, Math.floor((py - px * 0.6) / 9)) > 0.94;
+      set(x, y, PEWTER, litT(across, 0) * 18 * Math.abs(across) ** 0.6 + (dent ? -litT((px - 34) / 3.6, (py - 62) / 3.6) * 12 : 0) + (scratch ? 7 : 0) + (fbm(394, px / 9, py / 9, 2) - 0.5) * 4);
+    }
+    // The cap: a domed nickel cap on the neck, its knurled edge, and the short chain to the shoulder.
+    blob(set, W / 2, 6, 6, 6, 0, (d, nx, ny) => {
+      const l = litT(nx, ny);
+      if (d > 0.8) return [l > 0.35 ? LITM : l < -0.35 ? DARKM : METAL, Math.floor((Math.atan2(ny, nx) + Math.PI) * 4) % 2 ? 0 : -8, true]; // the knurled rim, ridged round
+      if (d < 0.35) return [METAL, l > 0.3 ? 10 : 2, true]; // the dome's top
+      return [METAL, l > 0.3 ? 6 : l < -0.3 ? -10 : -2, true];
+    });
+    for (let k = 0; k < 5; k++) { const x = W / 2 + 6 + k * 1.6, y = 8 + k * 1.3; set(x, y, k % 2 ? DARKM : METAL, 0, true); set(x + 1, y, k % 2 ? METAL : LITM, 0, true); } // the chain
+  });
+}
+
+/** A letter from home, not yet opened, as the post brought it to a squadron in France: a cream laid-paper envelope
+ * (the flaps on its back showing faintly through), a George V penny stamp in scarlet (its perforated edge, the
+ * king's head in an oval), cancelled by a circular postmark in black with the machine's wavy lines beside it; the
+ * address in blue-black ink in a careful hand, in the form of the day: rank, flight, squadron, R.F.C., B.E.F.,
+ * France. Handled on the way: a crease, the corners softened, a spot of foxing. Paper, so dithered broad and whole
+ * tones in the fine parts. */
+export function sealedLetter(): Px {
+  const W = 128, H = 82;
+  const ENV: RGB = mute([226, 216, 184], 0.85), STAMP: RGB = mute([184, 48, 42], 0.8), STAMPLIT: RGB = mute([220, 130, 110], 0.8), PM: RGB = [62, 60, 64], INKC: RGB = [40, 46, 72];
+  return toned(W, H, (set, has) => {
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const e = Math.min(x, y, W - 1 - x, H - 1 - y);
+      if (e < 2 && Math.hypot(Math.max(0, 2 - Math.min(x, W - 1 - x)), Math.max(0, 2 - Math.min(y, H - 1 - y))) > 2) continue; // softened corners
+      // The back's flaps, seen through: from each corner in to the middle, as the envelope is folded.
+      const u = (x + 0.5) / W, v = (y + 0.5) / H;
+      const flap = Math.abs(v - Math.min(u, 1 - u) * 1.1) < 0.012 || (v > 0.5 && Math.abs((1 - v) - Math.min(u, 1 - u) * 0.95) < 0.012);
+      const crease = Math.abs(x - 84 - (y - 40) * 0.05) < 0.6; // folded once in a pocket
+      const fox = Math.hypot(x - 18, y - 66) < 2.5 + valueNoise(470, x / 2, y / 2) * 1.5;
+      set(x, y, ENV, (e < 1 ? -10 : 0) + (flap ? -4 : 0) + (crease ? -8 : x === Math.round(85 + (y - 40) * 0.05) ? 4 : 0) + (fox ? -8 : 0) + (x % 7 === 3 ? -2 : 0) + (fbm(471, x / 9, y / 9, 2) - 0.5) * 6 + (x + y < 30 ? 3 : 0), e < 1 || crease);
+    }
+    // The penny stamp, top right: perforated edge, a frame, the king's head in a pale oval, the value at the foot.
+    const SX = 104, SY = 4, SW = 18, SH = 22;
+    for (let y = SY - 1; y < SY + SH + 1; y++) for (let x = SX - 1; x < SX + SW + 1; x++) {
+      const out = x < SX || y < SY || x >= SX + SW || y >= SY + SH;
+      if (out) { if ((x + y) % 2 === 0) set(x, y, STAMP, -6, true); continue; } // the perforated teeth round its edge
+      const fx = x + 0.5 - (SX + SW / 2), fy = y + 0.5 - (SY + 9);
+      const oval = Math.hypot(fx / 6, fy / 7.2) < 1, ring = oval && Math.hypot(fx / 6, fy / 7.2) > 0.82;
+      // His head, facing left: the back of the skull and neck, the brow, nose and beard, in the oval's pale ground.
+      const head = Math.hypot((fx - 0.8) / 3, (fy + 1) / 3.6) < 1 || (fy > 1.5 && fy < 5.6 && fx > -1.2 && fx < 2.6) || (Math.abs(fy + 0.8) < 0.8 && fx < -2 && fx > -3.6);
+      set(x, y, ring ? STAMP : oval ? (head ? STAMP : STAMPLIT) : STAMP, ring ? -8 : 0, true);
+    }
+    for (let x = SX + 2; x < SX + SW - 2; x++) set(x, SY + SH - 4, STAMPLIT, -4, true); // the value tablet: ONE PENNY, too small to read
+    // The postmark: a ring of black ink half over the stamp, the town and date too small to read, the wavy lines.
+    const PX = 100, PY = 16, PR = 9;
+    for (let y = 0; y < H; y++) for (let x = 60; x < W; x++) {
+      const r = Math.hypot(x + 0.5 - PX, y + 0.5 - PY), worn = hash(472, x, y) < 0.25;
+      if (worn || !has(x, y)) continue;
+      if (Math.abs(r - PR) < 0.6 || (r < PR - 2 && (Math.abs(y + 0.5 - PY + 2) < 0.6 || Math.abs(y + 0.5 - PY - 2) < 0.6) && x % 3 !== 0)) set(x, y, PM, 0, true); // the ring; the town and the date across it
+      else if (x < PX - PR - 2 && x > 62 && [8, 12, 16, 20, 24].some((wy) => Math.abs(y + 0.5 - wy - Math.sin(x / 3) * 1.2) < 0.55)) set(x, y, PM, 0, true); // the wavy lines
+    }
+    // The address, in ink: the game's letters each nudged a little, as a pen would.
+    const hand = (s: string, x0: number, y0: number, salt: number) => {
+      let x = x0;
+      for (const [i, ch] of [...s].entries()) {
+        const t = createPx(Math.max(1, textWidth(ch)), 5);
+        text(t, 0, 0, ch, [255, 255, 255, 255]);
+        const dy = hash(473 + salt, i, 1) < 0.25 ? -1 : 0;
+        for (let j = 0; j < 5; j++) for (let k = 0; k < t.w; k++) if (t.data[(j * t.w + k) * 4 + 3]) set(x + k, y0 + j + dy, INKC, 0, true);
+        x += textWidth(ch) + 1 + (hash(473 + salt, i, 2) < 0.2 ? 1 : 0);
+      }
     };
-    glove(44, 30, 0.35, 411, 1);
-    glove(54, 50, -0.25, 412, -1);
+    hand('2ND LIEUT.', 18, 36, 1);
+    hand("'A' FLIGHT, NO. 6 SQDN.,", 24, 45, 2);
+    hand('ROYAL FLYING CORPS,', 30, 54, 3);
+    hand('B.E.F., FRANCE.', 36, 63, 4);
+    for (let x = 36; x < 92; x++) if (x % 9 !== 0) set(x, 70 + (x % 13 === 0 ? 1 : 0), INKC, 0, true); // underlined, as many did
   });
 }
 
@@ -424,18 +726,6 @@ export function messagePad(): Px {
     notes.forEach((s, i) => letters(set, 6 + (hash(422, i, 1) < 0.3 ? 1 : 0), 20 + i * 7, s, [96, 92, 88], 0));
   });
 }
-/** A KLG sparking plug, out of the engine for cleaning: the brown porcelain, the hex, the sooted points. */
-export function sparkPlug(): Px {
-  return toned(46, 14, (set) => {
-    rod(set, 2, 7, 22, 7, 4, (_t, _a, s) => [[150, 96, 60], s * 22 + 4, true]); // the porcelain
-    for (let x = 0; x < 3; x++) for (let y = 5; y < 10; y++) set(x, y, STEEL, 8, true); // the terminal
-    for (let x = 22; x < 30; x++) for (let y = 0; y < 14; y++) set(x, y, STEEL, y < 4 ? 18 : y > 10 ? -14 : 0, true); // the hex
-    rod(set, 30, 7, 40, 7, 3, (t, _a, s) => [STEEL, s * 18 + (Math.floor(t * 12) % 2 ? -10 : 0), true]); // the thread
-    rod(set, 40, 7, 45, 7, 1.4, (_t, _a, s) => [CHAR, s * 8, true]); // sooted points
-    letters(set, 6, 5, 'KLG', [236, 220, 190], 0);
-  });
-}
-
 /** A combination spanner from the rigger's roll (7/16 and 3/8 Whitworth): a ring with a hex hole at one end, an
  * open jaw at the other (turned 15° off the handle, as they are), the sizes stamped in the handle. The nickel of
  * the goggles' rims and the orders' clip, shaded the same way: its edges in whole tones (the outermost catching
@@ -479,75 +769,68 @@ export function spanner(turn = 0): Px {
   });
 }
 
-/** A candle end stuck in an enamel saucer by its own wax: a blue rim, chipped to black iron; the stub, its
- * melted cup and black wick; drips run out and gone hard on the saucer. */
-export function candle(): Px {
-  return toned(42, 42, (set) => {
-    blob(set, 21, 21, 20, 20, 0, (d, nx, ny, x, y) => {
-      if (d > 0.9) return fbm(440, x / 3, y / 3, 2) > 0.72 ? [[44, 42, 44], 0, true] : [[52, 76, 122], lit(nx, ny) * 16, true]; // the blue rim, chipped
-      return [[226, 226, 218], (d > 0.78 ? -lit(nx, ny) * 8 : 0) + (fbm(441, x / 7, y / 7, 2) - 0.5) * 8, false]; // the white enamel well
-    });
-    for (let k = 0; k < 7; k++) { const a = hash(442, k, 1) * 6.283, r = 8 + hash(442, k, 2) * 4; rod(set, 21 + Math.cos(a) * 7, 21 + Math.sin(a) * 7, 21 + Math.cos(a) * r, 21 + Math.sin(a) * r, 1.6, (_t, _a2, sh) => [[238, 226, 192], sh * 10, true]); } // drips
-    blob(set, 21, 21, 7.5, 7.5, 0, (d, nx, ny) => (d > 0.6 ? [[244, 234, 204], lit(nx, ny) * 14, true] : [[214, 198, 156], -lit(nx, ny) * 8 - 4, true])); // the stub, its melted cup
-    set(21, 21, CHAR, 0, true); set(22, 20, CHAR, 0, true); set(20, 21, [120, 100, 80], 0, true);
-  });
-}
-
-/** A greasy rag dropped in a heap: cotton waste, folded over on itself in ridges (lit on the top-left side of
- * each, shaded on the other), threads frayed at its edge, blotched with oil. */
-export function rag(): Px {
-  return toned(66, 48, (set, has) => {
-    blob(set, 33, 24, 31, 21, 0.25, (d, _nx, _ny, x, y) => {
-      if (d > 0.8 + (valueNoise(461, x / 5, y / 5) - 0.5) * 0.45) return null;
-      const f = fbm(462, x / 14, y / 10, 2) * 9 + x / 9 + y / 14; // the folds run in ridges across it
-      const ridge = Math.sin(f * 2.2), slope = Math.cos(f * 2.2);
-      const oil = fbm(463, x / 7, y / 7, 3);
-      const col: RGB = oil > 0.66 ? [92, 82, 66] : oil > 0.58 ? [142, 130, 108] : [196, 188, 166];
-      return [col, ridge * 10 + slope * 12 + (d > 0.72 ? -6 : 0), false];
-    });
-    for (let k = 0; k < 18; k++) { // frayed threads
-      const a = hash(464, k, 1) * 6.283, x0 = 33 + Math.cos(a) * 26, y0 = 24 + Math.sin(a) * 17;
-      if (!has(x0, y0)) continue;
-      for (let j = 1; j < 4 + hash(464, k, 2) * 4; j++) set(x0 + Math.cos(a) * j, y0 + Math.sin(a) * j, [184, 176, 154], -4, true);
+/** A candle end stuck in an enamel saucer by its own wax, from above, well burnt down. The saucer: white enamel
+ * gone grey with use, its rolled rim in green, chipped through to black iron; the rim lit on the side that faces
+ * the light, the well's wall on the far side, as the ashtray's is, the rim's shadow cast hard across the well on
+ * the lit side and a little of the stub's own; old wax spilt hard on it and a spent match.
+ * The candle: a stub with its top melted into a cup, the rim of the cup lit, the pool of wax inside it, a burnt
+ * black wick; drips run down its side and pooled where they met the saucer. `turn`: how it will lie. */
+export function candle(turn = 0): Px {
+  const S = 60, C = 30, R = 29, RIM = 25.5, CR = 9; // the saucer, its rim's inner edge, the candle
+  const RIMC: RGB = mute([62, 92, 64], 0.7), IRON: RGB = [44, 42, 44], ENAMEL: RGB = mute([212, 212, 204], 0.8), WAX: RGB = mute([232, 222, 190], 0.8), POOL: RGB = mute([214, 198, 156], 0.8);
+  const lc = Math.cos(turn), ls = Math.sin(turn);
+  const litT = (nx: number, ny: number) => -((nx * lc - ny * ls) + (nx * ls + ny * lc)) / Math.SQRT2; // 1: faces the screen's top-left
+  const TLx = -(lc + ls) / Math.SQRT2, TLy = (ls - lc) / Math.SQRT2; // towards the screen's top-left, in the drawing
+  // Where the wax ran: drips out from the candle, the way it leant.
+  const drips = Array.from({ length: 4 }, (_, k) => { const a = hash(442, k, 1) * Math.PI * 2; return { a, len: 3 + hash(442, k, 2) * 6, w: 1.4 + hash(442, k, 3) * 1.2 }; });
+  const onDrip = (dx: number, dy: number) => { const r = Math.hypot(dx, dy), a = Math.atan2(dy, dx); return r > CR - 1 && drips.some((d) => { const da = Math.abs(((a - d.a + Math.PI * 3) % (Math.PI * 2)) - Math.PI); return r < CR + d.len && da * r < d.w * (1 - (r - CR) / (d.len + 1) * 0.5); }); };
+  return toned(S, S, (set) => {
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const px = x + 0.5, py = y + 0.5, dx = px - C, dy = py - C, r = Math.hypot(dx, dy);
+      if (r > R) continue;
+      const l = litT(dx / r, dy / r); // the outward side here, towards the light?
+      if (r < CR) { // the candle's top: the melted cup's rim lit, the pool inside, the wick
+        if (r < 1.3) { set(x, y, CHAR, 0, true); continue; } // the wick, burnt black
+        if (r < 2.2 && hash(443, x, y) < 0.5) { set(x, y, [70, 60, 48], 0, true); continue; } // soot round it
+        if (r > CR - 1.2) { set(x, y, WAX, l > 0.3 ? 16 : l < -0.3 ? -22 : -4, true); continue; } // the candle's edge, round: lit towards the light, dark away
+        if (r > CR - 2.6) { set(x, y, WAX, l > 0.3 ? 8 : l < -0.3 ? -6 : 4, true); continue; } // the cup's rim
+        set(x, y, POOL, -l * 12 - 8 + (fbm(444, px / 3, py / 3, 2) - 0.5) * 4, true); // the pool of wax, sunk: its far side lit
+        continue;
+      }
+      // The candle's hard shadow on the saucer (it stands up), then the saucer itself.
+      const rimShade = Math.hypot(px + TLx * 5 - C, py + TLy * 5 - C) > RIM - 2; // the rim's hard shadow, on the well by the lit side, as in the ashtray
+      const shade = rimShade ? -20 : Math.hypot(px + TLx * 3 - C, py + TLy * 3 - C) < CR ? -12 : 0; // and a little of the stub's own
+      if (onDrip(dx, dy)) { set(x, y, WAX, (l > 0.3 ? 6 : l < -0.3 ? -12 : -2) + shade * 0.5, true); continue; } // wax run down the side and set
+      if (r > R - 1.2) { set(x, y, l > 0.35 ? mute([124, 160, 118], 0.7) : l < -0.35 ? mute([30, 46, 32], 0.7) : RIMC, 0, true); continue; } // the rim's very edge
+      if (r > RIM) {
+        const chip = fbm(440, px / 3, py / 3, 2) > 0.7; // chipped to black iron
+        set(x, y, chip ? IRON : RIMC, chip ? 0 : l > 0.3 ? 10 : l < -0.3 ? -12 : 0, true);
+        continue;
+      }
+      if (r > RIM - 2) { set(x, y, ENAMEL, (-l > 0.3 ? 6 : -l < -0.3 ? -14 : -4) + (rimShade && -l < 0 ? -6 : 0), true); continue; } // the well's wall, lit on its far side
+      const spill = Math.hypot(px - 40, py - 40) < 3.4 + valueNoise(445, px, py) || Math.hypot(px - 19, py - 22) < 2.2 + valueNoise(445, px, py); // two old spills of wax, gone hard
+      const wear = fbm(441, px / 6, py / 6, 2) > 0.6 ? -6 : 0; // the enamel gone grey where it's been scrubbed
+      set(x, y, spill ? WAX : ENAMEL, shade + (spill ? -4 : wear) + (fbm(446, px / 9, py / 9, 2) - 0.5) * 4);
     }
+    rod(set, 12, 40, 21, 46, 0.9, (t) => [t < 0.2 ? CHAR : [70, 54, 40], t < 0.2 ? 0 : -4, true]); // a spent match in the saucer
   });
 }
 
-/** A coil of twine, from the rigger's stores: loops of hemp, lit where each strand turns over. */
-export function twine(): Px {
-  return toned(34, 34, (set) => {
-    for (let k = 0; k < 4; k++) blob(set, 17 + k * 0.6, 17 - k * 0.4, 15 - k * 2.6, 14 - k * 2.6, 0, (d, nx, ny, x, y) => (d > 0.7 ? [[176, 150, 104], lit(nx, ny) * 16 + ((x + y) % 3 ? 0 : -10), true] : null));
-    rod(set, 28, 24, 33, 32, 1.2, (_t, _a, s) => [[176, 150, 104], s * 10, true]); // the loose end
-  });
-}
-
-/** Clutter as the desk draws it: each kind's drawing, and how many of it lie about (the small things, more).
+/** Clutter as the desk draws it: each kind's drawing, and how it lies.
  * `z`: how high it lies (barn-art.ts `Z`; default under everything you use), `depth`: its shadow's drop,
- * `spin`: turned every way to find where it fits best (and drawn lit for the way it lies). */
-export const CLUTTER: readonly { name: string; art: (turn?: number) => Px; count: number; turn?: number; z?: number; depth?: number; spin?: boolean }[] = [
-  { name: 'gauntlets', art: gauntlets, count: 1 },
-  { name: 'sideCap', art: sideCap, count: 1 },
-  { name: 'postcard', art: postcard, count: 1, turn: -0.3 }, // laid nearly upright, to be read
-  { name: 'rag', art: rag, count: 1 },
-  { name: 'newspaper', art: newspaper, count: 1 },
-  { name: 'biscuit', art: biscuit, count: 1 },
-  { name: 'paperBall', art: paperBall, count: 1 },
-  { name: 'knife', art: pocketKnife, count: 1 },
-  { name: 'flask', art: hipFlask, count: 1 },
-  { name: 'ashtray', art: shellAshtray, count: 1 },
-  { name: 'tin', art: tobaccoTin, count: 1 },
-  { name: 'candle', art: candle, count: 1 },
-  { name: 'pipe', art: pipe, count: 1 },
-  { name: 'ink', art: inkBottle, count: 1 },
-  { name: 'spanner', art: spanner, count: 1, z: 8.7, depth: 5, spin: true }, // heavy: dropped on top of almost anything (only the orders above it)
-  { name: 'twine', art: twine, count: 1 },
-  { name: 'matches', art: matchbox, count: 1 },
-  { name: 'plug', art: sparkPlug, count: 1 },
-  { name: 'pencil', art: pencil, count: 1 },
-  { name: 'pen', art: pen, count: 1 },
-  { name: 'cartridge0', art: () => cartridge(0), count: 1 },
-  { name: 'cartridge1', art: () => cartridge(1), count: 1 },
-  ...[0, 1, 2, 3].map((n) => ({ name: `match${n}`, art: () => spentMatch(n), count: 1 })),
-  ...[0, 1, 2].map((n) => ({ name: `end${n}`, art: () => cigaretteEnd(n), count: 1 })),
-  ...[0, 1, 2, 3].map((n) => ({ name: `pin${n}`, art: drawingPin, count: 1 })),
+ * `spin`: turned every way to find where it fits best (and drawn lit for the way it lies), `bears`: whether
+ * anything may lie on top of it (flat, soft things: yes; anything round, tall or that would tip: no). */
+export const CLUTTER: readonly { name: string; art: (turn?: number) => Px; turn?: number; z?: number; depth?: number; spin?: boolean; bears: boolean }[] = [
+  { name: 'postcard', art: postcard, bears: true, turn: -0.3 }, // laid nearly upright, to be read
+  { name: 'knife', art: pocketKnife, bears: false, z: 8.4, depth: 3, spin: true }, // nothing balances on it; over the papers; lit for the way it lies
+  { name: 'flask', art: hipFlask, bears: false, z: 8.4, depth: 5, spin: true }, // curved: nothing balances on it; over the papers; lit for the way it lies
+  { name: 'ashtray', art: shellAshtray, bears: false, z: 8.6, depth: 4, spin: true }, // heavy brass: on top of the papers, lit for the way it lies
+  { name: 'tin', art: tobaccoTin, bears: false, z: 8.4, depth: 5, spin: true }, // a solid tin: nothing on it, it lies over the papers; lit for the way it lies
+  { name: 'candle', art: candle, bears: false, z: 8.4, depth: 5, spin: true }, // it stands up: nothing on it; over the papers; lit for the way it lies
+  { name: 'ink', art: inkBottle, bears: false, z: 8.4, depth: 6, spin: true }, // a tall bottle: nothing on it, over the papers, a deep shadow; lit for the way it lies
+  { name: 'spanner', art: spanner, bears: false, z: 8.7, depth: 5, spin: true }, // heavy: dropped on top of almost anything (only the orders above it)
+  { name: 'matches', art: matchbox, bears: false, z: 8.4, depth: 5, spin: true }, // a box that would tip: nothing on it, it lies over the papers; lit for the way it lies
+  { name: 'pencil', art: pencil, bears: false, spin: true }, // turned every way to fit a gap, lit for the way it lies
+  { name: 'pen', art: pen, bears: false, z: 8.4, depth: 3, spin: true }, // round: nothing balances on it; over the papers; lit for the way it lies
+  { name: 'rounds', art: cartridges, bears: false, z: 8.4, depth: 3, spin: true }, // round: nothing balances on them; over the papers; lit for the way they lie
 ];

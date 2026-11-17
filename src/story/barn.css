@@ -16,3 +16,9 @@
 .barn-held-plates { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(3 * var(--ui-px, 2px)); }
 .barn .pause-item { padding: 0; border: 0; background: transparent; cursor: pointer; touch-action: manipulation; }
 .barn .pause-item:focus-visible { outline: 2px solid #ead695; outline-offset: 3px; }
+.barn-covers { position: absolute; left: 0; top: 0; pointer-events: none; }
+.barn-covers[hidden] { display: none; }
+/* The barn's loading screen: the desk's own brown, its message and the first load's three pulsing pixels. */
+.barn-loading { --u: var(--ui-px, 2px); position: absolute; inset: 0; z-index: 2; background: rgb(76 65 56); }
+.barn-loading[hidden] { display: none; }
+.barn-loading-message { width: calc(var(--w, 0) * var(--u)); height: calc(var(--h, 0) * var(--u)); }

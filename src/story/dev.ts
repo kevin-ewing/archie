@@ -1,5 +1,5 @@
 // Development only: the Story desk on its own, no game behind it (story.html, `npm run dev:story`).
-// Query: `?day=N` the campaign day, `?hours=H` freeze the watch (default: it runs on the device's clock), `?sortie=N`, `?resume`, `?log=N` fake logbook entries.
+// Query: `?boxes` draws the layout's boxes over the desk, `?mail` a letter from home on it, `?day=N` the campaign day, `?hours=H` freeze the watch (default: it runs on the device's clock), `?sortie=N`, `?resume`, `?log=N` fake logbook entries.
 import { fitView } from '../render/display.ts';
 import { campaignDate } from '../game/state.ts';
 import { dayOfYear, sunsetHour } from '../sim/daylight.ts';
@@ -18,10 +18,12 @@ const open = () =>
   openBarn({
     info: {
       day: date, month: MONTHS[month - 1], year, sortie, date: `${date} ${MONTHS[month - 1]} ${year}`,
+      mail: q.has('mail'),
       hours: num('hours', now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600), sunset: sunsetHour(dayOfYear({ day, hours: 0 })),
     },
     now: q.has('hours') ? () => num('hours', 0) : undefined, // `?hours=` freezes the watch; otherwise it runs
     resuming: q.has('resume'),
+    debugBoxes: q.has('boxes'),
     log: Array.from({ length: Math.floor(num('log', 0)) }, (_, i) => ({ sortie: i + 1, date: `${date} ${MONTHS[month - 1]} ${year}`, minutes: 12 + i })),
     uiPx: () => view().uiScale / (devicePixelRatio || 1),
     gamePx: () => view().scale / (devicePixelRatio || 1),
