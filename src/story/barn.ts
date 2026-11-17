@@ -25,6 +25,8 @@ export type BarnOptions = {
   debugBoxes?: boolean;
   /** What each thing is, on hover (ui/tooltip.ts). */
   tips?: Tooltips;
+  /** Development: report time spent on the desk (painting, laying out) to the frame profiler. */
+  measure?: (name: string, ms: number) => void;
   onFly: () => void;
   onSettings: (back: () => void) => void;
   onClose: () => void;
@@ -403,6 +405,10 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
    * (nearest-neighbour, in a 1-px transparent border so the canvas's antialiased edge stays off its pixels).
    * The watch has no seconds hand, so the desk is redrawn only when its minute hand moves. */
   function paint() {
+    const t0 = performance.now();
+    try { paintNow(); } finally { o.measure?.('desk paint', performance.now() - t0); }
+  }
+  function paintNow() {
     if (!scene) return;
     const s = scale;
     const ctx = art.getContext('2d')!;
@@ -432,6 +438,10 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
   let spots: Spot[] = [];
   let key = '';
   function layout() {
+    const t0 = performance.now();
+    try { layoutNow(); } finally { o.measure?.('desk layout', performance.now() - t0); }
+  }
+  function layoutNow() {
     const g = o.gamePx();
     const W = Math.max(80, Math.ceil(innerWidth / g));
     const H = Math.max(80, Math.ceil(innerHeight / g));

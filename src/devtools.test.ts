@@ -37,7 +37,7 @@ test('the console delegates session controls and rejects bad speeds before the s
       state: () => ({}), setHours: () => {}, setSpeed: (k) => speeds.push(k), goto: () => {},
       pause: () => { pauses++; }, resume: () => { resumes++; }, session: () => ({ version: 1 }),
       toggles: [{ id: 'military', on: true }], onToggle: (id, on) => worldChanges.push([id, on]), complete: () => true, canvases: [],
-      prof: { start() {}, mark() {}, end() {}, history: () => [] },
+      prof: { start() {}, mark() {}, end() {}, add() {}, history: () => [] },
     });
     const api = (globalThis.window as unknown as { archie: { pause(): void; resume(): void; session(): unknown; speed(k: number | null): void; toggle(id: string, on?: boolean): boolean } }).archie;
     api.pause(); api.resume(); api.speed(0); api.speed(null);

@@ -9,8 +9,8 @@ import { wrapWords } from './voice.ts';
 
 export type Tip = { title: string; body?: string };
 
-const DELAY_MS = 380; // pointing at something this long shows its tip …
-const HOLD_MS = 450; // … as does pressing and holding it (touch)
+const DELAY_MS = 650; // pointing at something this long shows its tip …
+const HOLD_MS = 550; // … as does pressing and holding it (touch)
 
 /** The tip as a plate (UI px): its title, a rule, and the body wrapped to `width`. Pure. */
 export function tipPlate(tip: Tip, width = 120) {

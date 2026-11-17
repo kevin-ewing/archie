@@ -14,13 +14,15 @@ export type Profiler = {
   start: (timing?: RenderTiming) => void;
   mark: (name: string) => void;
   end: () => void;
+  /** Work done outside the frame (a click's or a timer's: the Story desk's painting, say): counted as a stage of the next frame. */
+  add: (name: string, ms: number) => void;
   /** The last few hundred frames, oldest first (for tools: see src/devtools.ts). Empty when disabled. */
   history: () => readonly FrameTimes[];
 };
 const HISTORY = 600; // ~5–10 s of frames
 
 export function createProfiler(enabled: boolean, show: (text: string) => void): Profiler {
-  if (!enabled) return { start: () => {}, mark: () => {}, end: () => {}, history: () => [] };
+  if (!enabled) return { start: () => {}, mark: () => {}, end: () => {}, add: () => {}, history: () => [] };
   const history: FrameTimes[] = [];
   const totals = new Map<string, number>();
   let cur = new Map<string, number>(); // this frame's stage times
@@ -37,12 +39,14 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
   let worst = 0;
   const causes = new Map<string, number>(); // "js: clouds" / "external" → drops
   const gaps: number[] = []; // time between frame ends, this window
+  const outside = new Map<string, number>(); // work done since the last frame, outside it
   return {
     start(next) {
       timing = next;
       last = performance.now();
       frameStart = last - (timing?.simulationMs ?? 0);
       cur = new Map();
+      for (const [k, v] of outside) { cur.set(k, v); totals.set(k, (totals.get(k) ?? 0) + v); }
       if (timing) {
         cur.set('simulation', timing.simulationMs);
         totals.set('simulation', (totals.get('simulation') ?? 0) + timing.simulationMs);
@@ -57,7 +61,10 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
     },
     end() {
       const now = performance.now();
-      const work = now - frameStart;
+      let away = 0;
+      for (const v of outside.values()) away += v;
+      outside.clear();
+      const work = now - frameStart + away;
       totals.set('frame', (totals.get('frame') ?? 0) + work);
       frames++;
       const frameGap = timing?.gap ?? (prevEnd ? now - prevEnd : 0);
@@ -97,6 +104,9 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
       worst = 0;
       frames = 0;
       windowStart = now;
+    },
+    add(name, ms) {
+      outside.set(name, (outside.get(name) ?? 0) + ms);
     },
     history: () => history,
   };

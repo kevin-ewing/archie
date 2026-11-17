@@ -372,12 +372,15 @@ const smoke = createSmoke();
 const debugPanel = document.getElementById('debug');
 const debugSong = `song      ${progression.id}`;
 const debugRequested = new URLSearchParams(location.search).has('debug');
+let screen = 'loading'; // which screen is up, for the debug panel (set each frame, in render)
 const debugDetails = () => {
   const view = display.view();
   const sun = sunNow(state.clock);
   if (view.mobile) return `seed      ${state.seed}\nposition  x ${plane.x.toFixed(1)}  y ${plane.y.toFixed(1)}`;
   const heading = ((plane.heading * 180) / Math.PI + 360) % 360;
+  if (!screen.startsWith('flight')) return `screen    ${screen}\nviewport  ${innerWidth}x${innerHeight} css  dpr ${devicePixelRatio || 1}`;
   return [
+    `screen    ${screen}`,
     ...(IS_DEV ? [debugSong] : []),
     `seed      ${state.seed}`,
     `position  x ${plane.x.toFixed(1)}  y ${plane.y.toFixed(1)} world px`,
@@ -403,7 +406,8 @@ const prof = createProfiler(IS_DEV || debugRequested, (text) => {
   const view = display.view();
   const mobile = view.mobile;
   debugPanel.style.fontSize = mobile ? '9px' : '';
-  const portrait = mobile && view.uiH > view.uiW;
+  // Bottom-left on an upright phone, and off the flight (the menu's and the desk's plates are top-right).
+  const portrait = (mobile && view.uiH > view.uiW) || !screen.startsWith('flight');
   debugPanel.style.top = portrait ? 'auto' : '';
   debugPanel.style.bottom = portrait ? '8px' : '';
   debugPanel.style.left = portrait ? '8px' : '';
@@ -416,7 +420,7 @@ const prof = createProfiler(IS_DEV || debugRequested, (text) => {
 let controlsLayoutKey = '';
 let hudLightNow = '';
 const hudGrade = document.getElementById('hud-grade-matrix');
-for (const el of [holdButton, audioControl, musicControl]) if (el) el.style.filter = 'url(#hud-grade)'; // the HUD and the DOM controls
+if (holdButton) holdButton.style.filter = 'url(#hud-grade)'; // the HUD's DOM control takes the light of the hour (the volume sliders, in the settings panel, don't)
 let radiumNow = -1;
 let glowDrawn = false;
 let lastComplete = false; // every visible tile ready in the last frame (for archie.ready())
@@ -600,6 +604,7 @@ const openStory = () => {
     log: save.data.log,
     uiPx: () => display.view().uiScale / (window.devicePixelRatio || 1),
     gamePx: storyGamePx, // flight's pixel size
+    measure: IS_DEV || debugRequested ? (name, ms) => prof.add(name, ms) : undefined,
     onSettings: (back) => settings.open(back),
     onFly: () => {
       barn?.close();
@@ -655,9 +660,23 @@ function drawLanding(c: HTMLCanvasElement, at: number) {
 }
 
 function render(alpha: number, timing: RenderTiming) {
-    if (barn?.isOpen()) return;
+    screen = barn?.isOpen() ? 'story desk' : landing.terrain() ? 'main menu' : state.phase === 'paused' ? 'flight (paused)' : 'flight';
+    // The frame profiler (development, ?debug) measures every screen, so dropped frames show wherever they
+    // happen: at the desk the frame itself does nothing (the desk paints on its own: its work is counted in
+    // through `prof.add`); on the main menu it's the terrain window.
+    if (barn?.isOpen()) {
+      prof.start(timing);
+      prof.end();
+      return;
+    }
     const terrain = landing.terrain();
-    if (terrain) return drawLanding(terrain, timing.at);
+    if (terrain) {
+      prof.start(timing);
+      drawLanding(terrain, timing.at);
+      prof.mark('menu view');
+      prof.end();
+      return;
+    }
     // Tiles are generated in Web Workers and appear when ready (see render/tilegen.ts).
     prof.start(timing);
     const p = blend(prevPlane, plane, alpha, ['heading']);
@@ -738,7 +757,7 @@ function render(alpha: number, timing: RenderTiming) {
     if (light !== hudLightNow) {
       hudLightNow = light;
       hudGrade?.setAttribute('values', light);
-      for (const el of [holdButton, audioControl, musicControl]) if (el) el.style.filter = instrumentLight ? 'url(#hud-grade)' : 'none';
+      if (holdButton) holdButton.style.filter = instrumentLight ? 'url(#hud-grade)' : 'none';
     }
     prof.mark('hud');
     prof.end();
