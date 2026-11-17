@@ -47,6 +47,9 @@ export function createTooltips(uiPx: () => number) {
   document.body.append(el);
   let showingAt = 0, timer = 0;
   let current: Tip | null = null;
+  // Where the pointer is now: a tip waiting to show goes there, not where the pointer first came onto the thing.
+  let pointer = { x: -1, y: -1 };
+  addEventListener('pointermove', (e) => { pointer = { x: e.clientX, y: e.clientY }; }, { capture: true, passive: true });
 
   function show(tip: Tip, at: { x: number; y: number }) {
     const u = uiPx();
@@ -71,12 +74,14 @@ export function createTooltips(uiPx: () => number) {
     el.hidden = true;
     current = null;
   }
-  /** Show `tip` after the usual pause (at once if another was just showing). */
-  function soon(tip: Tip | null, at: { x: number; y: number }, wait = DELAY_MS) {
+  /** Show `tip` after the usual pause (at once if another was just showing), by the pointer as it is then
+   * (or at `at`, for a keyboard focus). */
+  function soon(tip: Tip | null, at: { x: number; y: number }, wait = DELAY_MS, byPointer = true) {
     clearTimeout(timer);
     if (!tip) return hide();
-    if (!el.hidden || performance.now() - showingAt < 300) return show(tip, at);
-    timer = window.setTimeout(() => show(tip, at), wait);
+    const where = () => (byPointer && pointer.x >= 0 ? pointer : at);
+    if (!el.hidden || performance.now() - showingAt < 300) return show(tip, where());
+    timer = window.setTimeout(() => show(tip, where()), wait);
   }
   // A long press shows it on touch screens; the finger moving (a drag: steering, say) cancels it.
   const press = (e: PointerEvent, tip: () => Tip | null) => {
@@ -103,7 +108,7 @@ export function createTooltips(uiPx: () => number) {
       const enter = (e: PointerEvent) => { if (e.pointerType !== 'touch') soon(get(), { x: e.clientX, y: e.clientY }); };
       const move = (e: PointerEvent) => { if (e.pointerType !== 'touch' && !el.hidden) show(current ?? get()!, { x: e.clientX, y: e.clientY }); };
       const down = (e: PointerEvent) => press(e, get);
-      const focus = () => { if (!target.matches(':focus-visible')) return; const r = target.getBoundingClientRect(); soon(get(), { x: r.left, y: r.bottom - 6 }, 150); };
+      const focus = () => { if (!target.matches(':focus-visible')) return; const r = target.getBoundingClientRect(); soon(get(), { x: r.left, y: r.bottom - 6 }, 150, false); };
       const ls: [string, EventListener][] = [['pointerenter', enter as EventListener], ['pointermove', move as EventListener], ['pointerleave', hide], ['pointerdown', down as EventListener], ['focus', focus], ['blur', hide], ['click', hide]];
       for (const [k, f] of ls) target.addEventListener(k, f);
       return () => { for (const [k, f] of ls) target.removeEventListener(k, f); hide(); };

@@ -139,7 +139,7 @@ function barnLoading() {
   const say = () => {
     const s = BARN_LOADING[Math.floor(Math.random() * BARN_LOADING.length)];
     const px = createPx(textWidth(s), 5);
-    text(px, 0, 0, s, [20, 19, 15, 255]);
+    text(px, 0, 0, s, [236, 230, 214, 255]); // white on the desk's brown
     msg.width = px.w;
     msg.height = px.h;
     msg.getContext('2d')!.putImageData(new ImageData(px.data, px.w, px.h), 0, 0);
@@ -265,6 +265,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
    * dimming behind it; then its note and what you can do with it appear under it. */
   function pickUp(id: I.ItemId, button: HTMLElement | null) {
     from = button;
+    o.tips?.hide(); // picked up: its tip goes (it's held up close now)
     stop();
     const covered = drawCovers(id); // what lies on it now, before it comes to the top of its pile
     const i = order.indexOf(id);
@@ -449,6 +450,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     maps = new Map();
     paint();
     spots = scene.spots;
+    o.tips?.hide(); // (its thing's button is about to be replaced)
     things.replaceChildren(...spots.map((s) => {
       const b = document.createElement('button');
       b.type = 'button';

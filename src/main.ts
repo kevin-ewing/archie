@@ -360,8 +360,7 @@ const refreshMapBearing = () => {
   mapBearing = trenchBearing(state.seed, plane.x, plane.y);
   if (!mapButton) return;
   const fix = mapBearing === null ? 'No trench found on this map' : `Trench bearing ${String(Math.round((mapBearing * 180 / Math.PI + 360) % 360) % 360).padStart(3, '0')} degrees saved`;
-  mapButton.title = `${fix}. Tap compass to consult map again.`;
-  mapButton.setAttribute('aria-label', mapButton.title);
+  mapButton.setAttribute('aria-label', `${fix}. Tap compass to consult map again.`); // (no title: the game's own tooltip shows instead)
 };
 refreshMapBearing();
 mapButton?.addEventListener('click', () => {
@@ -515,7 +514,6 @@ const guardBack = () => {
 };
 const launch = () => {
   voices.setScene('flight');
-  voices.say({ speaker: 'observer', text: 'ALL CLEAR BEHIND. LETS GO AND FIND THAT BATTERY.', delay: 2.5 }); // (a sample line, for now)
   if (!loading?.isConnected) return;
   if (navigator.userActivation?.isActive) enterGameMode(); // only straight after a click (the landing page's)
   audio.start();
@@ -595,7 +593,6 @@ const openStory = () => {
   if (page) page.inert = true;
   const saved = save.data.story;
   voices.setScene('base');
-  voices.say({ speaker: 'rigger', text: 'SHE IS FUELLED AND READY WHEN YOU ARE SIR.', delay: 1.5 }); // (a sample line, for now)
   barn = openBarn({
     tips,
     info: storyInfo(),

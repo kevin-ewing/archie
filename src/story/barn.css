@@ -22,3 +22,4 @@
 .barn-loading { --u: var(--ui-px, 2px); position: absolute; inset: 0; z-index: 2; background: rgb(76 65 56); }
 .barn-loading[hidden] { display: none; }
 .barn-loading-message { width: calc(var(--w, 0) * var(--u)); height: calc(var(--h, 0) * var(--u)); }
+.barn-loading .landing-wait i { background: #ece6d6; } /* the pulsing pixels, white like the words */
