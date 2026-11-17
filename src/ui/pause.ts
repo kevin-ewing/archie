@@ -225,6 +225,7 @@ export function createPauseUi(opts: {
     bar.hidden = !on;
     button.hidden = on;
     if (on) {
+      document.querySelector<HTMLElement>('.tooltip')?.setAttribute('hidden', '');
       hidden = opts.hideForPhoto().filter((e): e is HTMLElement => !!e).map((e) => ({ e, v: e.style.visibility }));
       for (const h of hidden) h.e.style.visibility = 'hidden';
     } else {

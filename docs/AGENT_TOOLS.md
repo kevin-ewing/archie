@@ -118,6 +118,7 @@ From the browser console, or an agent's JavaScript-in-page tool. `archie.help()`
 | `archie.goto(x, y, deg?)` | Move the plane and camera to a world point, optionally with a heading. |
 | `archie.toggle(id, on?)` | Flip (or set) a debug toggle. Returns its new state. |
 | `await archie.ready(timeoutMs = 10000)` | Resolves `true` once every visible tile has been generated for 10 frames in a row (`false` on timeout). Call it after `goto`, `time`, toggles or a reload, before you look or measure. |
+| `archie.say(who, text, scene?)` | Pop up an offscreen voice's line (`observer`, `major`, `recording`, `rigger`, `mechanic`, `pilot`). It waits for its scene (`flight` or `base`). |
 | `archie.snapshot()` | The current frame (game + HUD) as a PNG data URL, at device resolution. |
 | `await archie.photo(path, canvas?)` | Dev server only: save the frame (or any canvas you pass) as a PNG at `path` inside the project (`vite.config.ts`). For real game photos with the plane, clouds and HUD. |
 

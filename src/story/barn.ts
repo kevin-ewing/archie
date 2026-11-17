@@ -9,6 +9,7 @@ import { menuItem, MENU_W, sizeFaces } from '../ui/pause.ts';
 import { BARN_LOADING, barnScene, drawing, logbookDrawing, ordersDrawing, Z, type BarnInfo, type BarnScene, type Spot } from './barn-art.ts';
 import * as I from './desk-items.ts';
 import { messagePad, sealedLetter } from './clutter.ts';
+import type { Tooltips } from '../ui/tooltip.ts';
 import './barn.css';
 
 export type LogEntry = { sortie: number; date: string; minutes: number };
@@ -22,6 +23,8 @@ export type BarnOptions = {
   now?: () => number;
   /** Draw the layout's boxes over the desk (barn-art.ts `DebugBox`): for working on the arrangement. */
   debugBoxes?: boolean;
+  /** What each thing is, on hover (ui/tooltip.ts). */
+  tips?: Tooltips;
   onFly: () => void;
   onSettings: (back: () => void) => void;
   onClose: () => void;
@@ -30,6 +33,20 @@ export type BarnOptions = {
 const INK: RGBA = I.P.ink;
 const PAPER: RGBA = I.P.cream;
 const EDGE: RGBA = I.P.paperShade;
+/** What each thing is, in its tooltip (the game's lettering: no commas or apostrophes). */
+const ABOUT: Record<I.ItemId, string> = {
+  orders: 'TODAY: WHAT TO FLY AND WHERE. PICK THEM UP TO TAKE OFF.',
+  chart: 'THE SECTOR. THE GERMAN LINE IN RED. OURS IN BLUE.',
+  letters: 'POST FROM HOME.',
+  logbook: 'EVERY FLIGHT YOU MAKE. WRITTEN UP WHEN YOU COME BACK.',
+  clockcode: 'HOW TO TELL THE GUNS WHERE THEIR SHELLS FELL.',
+  calendar: 'THE DAY. IT ONLY MOVES WHEN YOU FLY.',
+  mug: 'MESS COFFEE. COLD.',
+  watch: 'THE TIME. THE RED MARK IS SUNSET.',
+  goggles: 'YOUR FLYING GOGGLES. PICK THEM UP TO TAKE OFF.',
+  pad: 'NOTES FROM THE LAST SHOOT.',
+  coin: 'A SIXPENCE ON A CORD. FOR LUCK.',
+};
 const LABEL: Record<I.ItemId, string> = { orders: 'ORDERS', chart: 'CHART', letters: 'LETTER', logbook: 'LOG BOOK', clockcode: 'CLOCK CODE', calendar: 'CALENDAR', mug: 'COFFEE', watch: 'WATCH', goggles: 'GOGGLES', pad: 'MESSAGE PAD', coin: 'SIXPENCE' };
 
 /** Words wrapped to `w` px in the game's lettering ('' = a blank line). */
@@ -446,6 +463,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
       b.addEventListener('focus', () => { if (!quiet) lift(true); });
       b.addEventListener('blur', () => lift(false));
       b.addEventListener('click', () => pickUp(s.id, b));
+      o.tips?.attach(b, { title: LABEL[s.id], body: ABOUT[s.id] });
       return b;
     }));
     sizeFaces([things, plates], o.uiPx());
@@ -491,6 +509,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     clearTimeout(settle);
     removeEventListener('keydown', keys, true);
     room.remove();
+    o.tips?.hide();
     if (notify) o.onClose();
   }
   (plates.firstElementChild as HTMLElement | null)?.focus();

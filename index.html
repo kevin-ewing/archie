@@ -106,6 +106,12 @@
       #landing .landing-item .on, #landing .landing-item:hover .off, #landing .landing-item:focus-visible .off { display: none; }
       #landing .landing-item:hover .on, #landing .landing-item:focus-visible .on { display: block; }
       .landing-item:focus-visible { outline: 2px solid #ead695; outline-offset: 3px; }
+      /* Offscreen voices (src/ui/voice.ts) and tooltips (src/ui/tooltip.ts), in whole UI pixels. */
+      .voice { position: fixed; left: 50%; z-index: 116; display: flex; flex-direction: column; align-items: flex-start; gap: calc(1 * var(--ui-px, 2px)); transform: translateX(-50%); pointer-events: none; }
+      .voice[hidden] { display: none; }
+      .voice canvas, .tooltip { display: block; image-rendering: pixelated; }
+      .tooltip { position: fixed; z-index: 130; pointer-events: none; }
+      .tooltip[hidden] { display: none; }
       .menu-panel { position: fixed; inset: 0; z-index: 120; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(3 * var(--ui-px, 2px)); background: rgb(14 13 10 / 0.55); }
       .menu-panel[hidden] { display: none; }
       .menu-panel canvas { display: block; image-rendering: pixelated; }

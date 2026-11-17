@@ -256,3 +256,15 @@ Biggest remaining cost: the sunlight layer's cross-fades (~0.4–0.8 ms), since 
 ## Fast iteration (for agents and people)
 
 See **[AGENT_TOOLS.md](AGENT_TOOLS.md)**: `npm run snap` (any patch of the world to a PNG from Node), `npm run fingerprint` (prove output unchanged), URL scenarios (`?seed= ?time= ?x= ?y= ?heading= ?speed= ?off= ?on=`), and the `archie` console API in the running game (`src/devtools.ts`).
+
+### Offscreen voices and tooltips (implemented)
+
+- **Voices** (`game/voices.ts`, pure; `ui/voice.ts`, the pop-up). Someone you can't see speaks: the observer in flight, and the squadron at base (the Major, the Recording Officer, the Flight Sergeant, an air mechanic, a pilot). They're roles until the cast is settled. Each speaker belongs to scenes, and a line waits for its own scene. So something said for you at base is held through a flight and spoken in the barn.
+  - Higher priority goes first, `interrupt` cuts in at once, and `delay` waits.
+  - Each line is typed out at its speaker's pace and held long enough to read.
+  - It shows as text only, for now: a riveted name plate over a slip, dark above the instruments in flight, paper at the foot of the screen at base.
+  - `voices.say({ speaker, text })` speaks. `voices.setScene('flight' | 'base')` is called on take-off and when the barn opens. In development, `archie.say(who, text, scene?)` tries a line out. The text uses the game's lettering, so no commas or apostrophes.
+- **Tooltips** (`ui/tooltip.ts`): a nickel-edged plate with a name and a line or two, shown on hover, on keyboard focus, or on a long press on touch. A moving finger cancels the long press, so steering isn't affected.
+  - `tips.attach(element, tip)` works for controls: the compass, the Hold switch and the things on the desk.
+  - `tips.area(element, hit)` works for areas of a canvas: the instruments, hit-tested against the board's last layout.
+  - Photo mode hides both.

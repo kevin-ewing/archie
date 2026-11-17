@@ -24,6 +24,8 @@ export type DevHooks = {
   session: () => unknown;
   setSpeed: (speed: number | null) => void;
   goto: (x: number, y: number, headingDeg?: number) => void;
+  /** Pop up an offscreen voice's line (game/voices.ts): speaker id, the words, and optionally the scene. */
+  say?: (speaker: string, text: string, scene?: 'flight' | 'base') => void;
   toggles: { id: string; on: boolean }[];
   onToggle?: (id: string, on: boolean) => void;
   /** Whether the last frame had every visible tile. */
@@ -73,6 +75,7 @@ export function installDevApi(h: DevHooks): void {
       h.setSpeed(k);
     },
     goto: (x: number, y: number, headingDeg?: number) => h.goto(x, y, headingDeg),
+    say: (speaker: string, text: string, scene?: 'flight' | 'base') => h.say?.(speaker, text, scene),
     toggle(id: string, on?: boolean) {
       const t = h.toggles.find((g) => g.id === id);
       if (!t) throw new Error(`No toggle '${id}': ${h.toggles.map((g) => g.id).join(', ')}`);
@@ -121,6 +124,7 @@ const HELP = `archie: development console API
   archie.time(hours)           set the solar time
   archie.speed(k)              clock speed override (0 freezes time; null = back to the toggles)
   archie.goto(x, y, deg?)      move the plane to a world point (and heading, degrees)
+  archie.say(who, text, scene?) pop up a voice: observer, major, recording, rigger, mechanic, pilot
   archie.toggle(id, on?)       flip a debug toggle
   await archie.ready()         wait until every visible tile is generated
   archie.snapshot()            PNG data URL of the frame (game + HUD)

@@ -23,6 +23,9 @@ import { installDevApi } from './devtools.ts';
 import { createPauseUi, createSettings, drawVolumePlate, GAME_URL, MENU_W } from './ui/pause.ts';
 import { wireLanding } from './ui/landing.ts';
 import { openBarn } from './story/barn.ts';
+import { createVoices } from './game/voices.ts';
+import { createVoiceBox } from './ui/voice.ts';
+import { createTooltips, type Tip } from './ui/tooltip.ts';
 import { barnScene, type BarnInfo } from './story/barn-art.ts';
 import { LOGBOOK_START } from './story/desk-items.ts';
 import { createSave } from './game/save.ts';
@@ -194,7 +197,7 @@ const pauseUi = createPauseUi({
     syncSession();
   },
   settings,
-  hideForPhoto: () => [display.hud.canvas, display.glow.canvas, holdButton, document.getElementById('map-bearing'), document.getElementById('debug')],
+  hideForPhoto: () => [voices.el, display.hud.canvas, display.glow.canvas, holdButton, document.getElementById('map-bearing'), document.getElementById('debug')],
   photo: () => {
     // The frame at device resolution, with a small Archie mark and the game's address, bottom-right.
     const view = display.view();
@@ -320,6 +323,35 @@ const instruments = createInstruments(plane);
 let mapBearing: number | null = null;
 const hud = createHud(() => mapBearing);
 const mapButton = document.getElementById('map-bearing');
+// Tooltips (ui/tooltip.ts): the instruments are drawn, so they're areas of the screen, hit-tested against the
+// board's last layout; the compass and the Hold switch are controls of their own.
+const uiPxNow = () => display.view().uiScale / (window.devicePixelRatio || 1);
+const tips = createTooltips(uiPxNow);
+let boardSlots: readonly { x: number; y: number; w: number; h: number }[] = [];
+// In the board's order (ui/hud.ts createHud): compass, altimeter, MPH, petrol, RPM, temp, pressure, clinometer.
+const INSTRUMENT_TIPS: readonly Tip[] = [
+  { title: 'COMPASS', body: 'YOUR HEADING. THE GOLD WEDGE IS THE TRENCH BEARING FROM THE MAP. TAP IT FOR A FRESH ONE.' },
+  { title: 'ALTIMETER', body: 'HEIGHT IN THOUSANDS OF FEET.' },
+  { title: 'AIRSPEED', body: 'MILES AN HOUR.' },
+  { title: 'PETROL', body: 'EMPTY TO FULL. LOW IN THE RED.' },
+  { title: 'REV COUNTER', body: 'ENGINE SPEED. KEEP HER OUT OF THE RED.' },
+  { title: 'ENGINE TEMPERATURE', body: 'TOO HOT AND SHE LOSES POWER UNTIL SHE COOLS.' },
+  { title: 'PRESSURE', body: 'THE PETROL TANK. AT ZERO THE ENGINE STARVES.' },
+  { title: 'CLINOMETER', body: 'HOW FAR SHE IS BANKED.' },
+];
+tips.area(canvas, (cx, cy) => {
+  const u = uiPxNow(), x = cx / u, y = cy / u;
+  const i = boardSlots.findIndex((r) => x >= r.x && y >= r.y && x < r.x + r.w && y < r.y + r.h);
+  return i > 0 ? INSTRUMENT_TIPS[i] ?? null : null; // (the compass has its own control, over it)
+});
+if (mapButton) tips.attach(mapButton, () => INSTRUMENT_TIPS[0]);
+if (holdButton) tips.attach(holdButton, { title: 'HOLD STEADY', body: 'LET GO OF THE STICK: SHE FLIES STRAIGHT AND LEVEL. T' });
+// Offscreen voices (game/voices.ts, ui/voice.ts): the observer in flight, the squadron at base, as text.
+const voices = createVoiceBox(createVoices('base'), {
+  uiPx: uiPxNow,
+  paused: () => state.phase === 'paused',
+  place: (scene) => (scene === 'flight' && boardSlots.length ? Math.round((display.view().uiH - Math.min(...boardSlots.map((r) => r.y)) + 8) * uiPxNow()) : 16),
+});
 const refreshMapBearing = () => {
   DEV.density = scene.features.density ?? 1;
   DEV.fronts = scene.features.military;
@@ -391,6 +423,7 @@ let glowDrawn = false;
 let lastComplete = false; // every visible tile ready in the last frame (for archie.ready())
 if (IS_DEV || debugRequested) {
   installDevApi({
+    say: (speaker, text, scene) => voices.say({ speaker: speaker as Parameters<typeof voices.say>[0]['speaker'], text: text.toUpperCase(), scene }),
     state: () => ({
       seed: state.seed,
       phase: state.phase,
@@ -481,6 +514,8 @@ const guardBack = () => {
   }
 };
 const launch = () => {
+  voices.setScene('flight');
+  voices.say({ speaker: 'observer', text: 'ALL CLEAR BEHIND. LETS GO AND FIND THAT BATTERY.', delay: 2.5 }); // (a sample line, for now)
   if (!loading?.isConnected) return;
   if (navigator.userActivation?.isActive) enterGameMode(); // only straight after a click (the landing page's)
   audio.start();
@@ -559,7 +594,10 @@ const openStory = () => {
   const page = document.getElementById('landing');
   if (page) page.inert = true;
   const saved = save.data.story;
+  voices.setScene('base');
+  voices.say({ speaker: 'rigger', text: 'SHE IS FUELLED AND READY WHEN YOU ARE SIR.', delay: 1.5 }); // (a sample line, for now)
   barn = openBarn({
+    tips,
     info: storyInfo(),
     resuming: !!saved,
     log: save.data.log,
@@ -655,6 +693,7 @@ function render(alpha: number, timing: RenderTiming) {
     const light = gradeMatrix(scene.hourLight);
     const instrumentLight = hudLight(light);
     const board = drawHud(hudCtx, view, hud, instruments, warning, state.elapsedSeconds, glow, instrumentLight);
+    boardSlots = board.slots;
     const layoutKey = `${view.devW}:${view.devH}:${view.uiScale}`;
     const layoutChanged = layoutKey !== controlsLayoutKey;
     controlsLayoutKey = layoutKey;
