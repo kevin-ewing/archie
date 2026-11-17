@@ -1,7 +1,7 @@
 // The pause button (top-right, or P), its menu, and photo mode. DOM controls with faces painted in the
 // game's own pixels and palette (nickel-edged plates like the toggles), sized to whole UI pixels.
 //
-// Menu: RESUME · SETTINGS (ENGINE and MUSIC volume, LOCAL TIME, FULL SCREEN, CONTROLS: shared with the
+// Menu: RESUME · SETTINGS (ENGINE and MUSIC volume, FULL SCREEN, CONTROLS: shared with the
 // landing page) · PHOTO MODE · MAIN MENU.
 // Photo mode hides everything but the world and offers SAVE PHOTO (the frame at device resolution, with a
 // small Archie mark and the game's address in the bottom-right corner) and BACK.
@@ -109,11 +109,10 @@ export function sizeFaces(roots: readonly Element[], px: number): void {
 export type Settings = { panel: HTMLElement; open: (onBack: () => void) => void; close: () => void; isOpen: () => boolean };
 
 /**
- * The settings panel, shared by the landing page and the pause menu: ENGINE and MUSIC volume, LOCAL TIME
- * (on: flights start at the browser's own time of day), FULL SCREEN, CONTROLS (the controls card), BACK.
+ * The settings panel, shared by the landing page and the pause menu: ENGINE and MUSIC volume, FULL SCREEN, CONTROLS (the controls card), BACK.
  * `volumes` are the volume controls, moved into it.
  */
-export function createSettings(volumes: (HTMLElement | null)[], localTime: { on: () => boolean; set: (on: boolean) => void }): Settings {
+export function createSettings(volumes: (HTMLElement | null)[]): Settings {
   const panel = el('div', 'settings-menu');
   panel.className = 'menu-panel';
   panel.hidden = true;
@@ -129,7 +128,6 @@ export function createSettings(volumes: (HTMLElement | null)[], localTime: { on:
   panel.append(
     title,
     ...volumes.filter((v): v is HTMLElement => !!v),
-    menuItem(() => `LOCAL TIME  ${localTime.on() ? 'ON' : 'OFF'}`, () => localTime.set(!localTime.on())),
     menuItem('FULL SCREEN', () => {
       if (document.fullscreenElement) void document.exitFullscreen();
       else void document.documentElement.requestFullscreen?.({ navigationUI: 'hide' }).catch(() => {});

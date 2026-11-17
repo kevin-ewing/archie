@@ -44,17 +44,12 @@ function numberFromUrl(name: string, ok: (n: number) => boolean): number | undef
 // `?debug`, where every visit starts fresh (see game/save.ts).
 const save = createSave(!import.meta.env.DEV && !new URLSearchParams(location.search).has('debug'));
 const SEED = numberFromUrl('seed', (n) => Number.isInteger(n) && n >= 0 && n < 2 ** 31) ?? save.data.story?.seed ?? Math.floor(Math.random() * 2 ** 31); // which world: `?seed=`, else the story's world (so its tiles load behind the landing page), else random
-// Solar time to start at: `?time=19.5`; else the browser's own time of day, with the LOCAL TIME setting on;
-// else a random time before sunset (drawn through the seeded hash, fed with the session's start time, so
-// each visit differs). (The game's hours are solar; the browser's clock is close enough to stand in.)
+// Solar time to start at: `?time=19.5`; else a random time before sunset (drawn through the seeded hash, fed
+// with the session's start time, so each visit differs).
 const randomStart = hash(SEED, Math.floor(Date.now() / 1000), 77);
 const TIME_PARAM = numberFromUrl('time', (n) => n >= 0 && n < 24);
 const RANDOM_HOUR = sunsetHour(DAYLIGHT.startDayOfYear) - (1.75 + randomStart * 0.5); // 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
-const localHour = () => {
-  const d = new Date();
-  return d.getHours() + d.getMinutes() / 60;
-};
-const START_HOUR = TIME_PARAM ?? (save.data.settings.localTime ? localHour() : RANDOM_HOUR);
+const START_HOUR = TIME_PARAM ?? RANDOM_HOUR;
 
 const trenchParam = new URLSearchParams(location.search).get('trench');
 const TRENCH_STYLE: TrenchStyle = (TRENCH_STYLES as readonly string[]).includes(trenchParam ?? '') ? (trenchParam as TrenchStyle) : 'hasty';
@@ -170,13 +165,7 @@ document.addEventListener('visibilitychange', () => {
   syncSession();
 });
 // Settings (volumes, full screen, controls): one panel, opened from the landing page and the pause menu.
-const settings = createSettings([audioControl, musicControl], {
-  on: () => save.data.settings.localTime,
-  set: (on) => {
-    save.settings({ localTime: on });
-    if (!chosen && TIME_PARAM === undefined) game.setTime(on ? localHour() : RANDOM_HOUR); // the next flight (and the landing's view) starts then
-  },
-});
+const settings = createSettings([audioControl, musicControl]);
 // The pause button (top-right) and menu, P to open; photo mode inside it (src/ui/pause.ts).
 const pauseUi = createPauseUi({
   // Back to the landing page (it shows at once).
@@ -665,6 +654,7 @@ function render(alpha: number, timing: RenderTiming) {
     // happen: at the desk the frame itself does nothing (the desk paints on its own: its work is counted in
     // through `prof.add`); on the main menu it's the terrain window.
     if (barn?.isOpen()) {
+      pauseUi.layout(display.view()); // the UI pixel size, for the settings panel over the desk (cheap: only on a change)
       prof.start(timing);
       prof.end();
       return;

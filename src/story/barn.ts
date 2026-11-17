@@ -183,6 +183,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
   room.append(art, things, plates, held, covers, loading.el);
   document.body.append(room);
 
+  let settingsOpen = false;
   const flyLabel = () => (o.resuming ? 'CONTINUE' : o.info.sortie > 1 ? `SORTIE ${o.info.sortie}` : 'FIRST SORTIE');
   const fly = () => o.onFly();
   const order: I.ItemId[] = []; // things picked up, in the order they were: the last is on top
@@ -337,9 +338,13 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     menuItem(flyLabel(), fly),
     menuItem('LOG BOOK', () => pickUp('logbook', plates.children[1] as HTMLElement)),
     menuItem('SETTINGS', () => {
-      room.hidden = true;
+      // Over the desk (it stays in view, still, behind the panel): not hidden, which would show the main menu.
+      settingsOpen = true;
+      room.inert = true;
+      o.tips?.hide();
       o.onSettings(() => {
-        room.hidden = false;
+        settingsOpen = false;
+        room.inert = false;
         (plates.children[2] as HTMLElement).focus();
       });
     }),
@@ -502,7 +507,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
   const relayout = () => arrangeBehind(180); // once the window has been still for a moment
   addEventListener('resize', relayout);
   const keys = (e: KeyboardEvent) => {
-    if (room.hidden || e.code !== 'Escape') return;
+    if (room.hidden || settingsOpen || e.code !== 'Escape') return; // (with the settings open, Esc is theirs)
     e.preventDefault();
     e.stopImmediatePropagation();
     if (!held.hidden) putDown();

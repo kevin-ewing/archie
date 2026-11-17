@@ -10,7 +10,7 @@ const memory = () => {
 test('settings and story progress survive a reload; bad or missing data falls back to defaults', () => {
   const store = memory();
   const a = createSave(true, store);
-  a.settings({ engine: 0.8, localTime: true });
+  a.settings({ engine: 0.8 });
   a.story({ seed: 7, day: 2, hours: 9.5, level: 1, sortie: 3, plane: { x: 10, y: -4, heading: 1 } });
   a.log({ sortie: 1, date: '10 MAY 1915', minutes: 12 });
   const b = createSave(true, store);
@@ -18,8 +18,6 @@ test('settings and story progress survive a reload; bad or missing data falls ba
   assert.deepEqual(readSave(JSON.stringify({ log: [{ sortie: 'x' }] })).log, [], 'a malformed log entry is dropped');
   assert.equal(b.data.settings.engine, 0.8);
   assert.equal(b.data.settings.music, DEFAULT_SETTINGS.music);
-  assert.equal(b.data.settings.localTime, true);
-  assert.equal(readSave(JSON.stringify({ settings: { localTime: 'yes' } })).settings.localTime, false, 'only a real true');
   assert.deepEqual(b.data.story?.plane, { x: 10, y: -4, heading: 1 });
   assert.deepEqual(readSave('not json'), readSave(null));
   assert.equal(readSave(JSON.stringify({ settings: { engine: 9 } })).settings.engine, 1, 'clamped');

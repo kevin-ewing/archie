@@ -3,12 +3,12 @@
 // `?debug` (`enabled` false): there every visit starts fresh, so testing can't be skewed by an old save.
 // Storage can be missing or full (private browsing, quotas): every read and write fails quietly.
 
-export type Settings = { engine: number; music: number; localTime: boolean }; // volumes, 0 … 1; start at the browser's own time of day
+export type Settings = { engine: number; music: number }; // volumes, 0 … 1
 export type StoryProgress = { seed: number; day: number; hours: number; level: number; sortie: number; plane: { x: number; y: number; heading: number } };
 export type LogEntry = { sortie: number; date: string; minutes: number }; // a story flight, written up in the logbook
 export type SaveData = { version: 1; settings: Settings; story: StoryProgress | null; log: LogEntry[] };
 
-export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({ engine: 0.4, music: 0.4, localTime: false });
+export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({ engine: 0.4, music: 0.4 });
 const KEY = 'archie.save';
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -32,7 +32,7 @@ export function readSave(raw: string | null): SaveData {
   const log = Array.isArray(v.log)
     ? (v.log as Record<string, unknown>[]).filter((e) => e && finite(e.sortie) && typeof e.date === 'string' && finite(e.minutes)).map((e) => ({ sortie: e.sortie as number, date: (e.date as string).slice(0, 24), minutes: e.minutes as number }))
     : [];
-  return { version: 1, log, settings: { engine: unit(s.engine, DEFAULT_SETTINGS.engine), music: unit(s.music, DEFAULT_SETTINGS.music), localTime: s.localTime === true }, story };
+  return { version: 1, log, settings: { engine: unit(s.engine, DEFAULT_SETTINGS.engine), music: unit(s.music, DEFAULT_SETTINGS.music) }, story };
 }
 
 export type Save = { data: SaveData; settings: (patch: Partial<Settings>) => void; story: (progress: StoryProgress | null) => void; log: (entry: LogEntry) => void };
