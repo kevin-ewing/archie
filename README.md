@@ -1,16 +1,29 @@
 # Archie
 
-![Archie in flight](public/social-card.png)
+**Fly low over the Western Front. Be home by dark.**
 
-*Archie* is a top-down story game about flying an RFC observation aircraft over the Western Front in 1915–16. You are not a fighter ace: you are the eyes of the artillery, circling above an evolving landscape and communicating by one-way Morse with a wireless operator on the ground.
+![Archie in flight over Flanders](public/social-card.png)
 
-Across 20–25 sorties in Flanders and the Somme, routine signals become a friendship carried through cloth panels, transcripts, and letters. Every flight ends at sunset. Failure changes the story rather than ending it, and the land retains the scars of the campaign.
+**[Play Archie in your browser](https://kevin-ewing.github.io/archie/)**
 
-The finished game is intended to be a 4–6 hour, historically grounded experience built around patient flying, observation, communication, and the quiet cost of the air war. It uses crisp procedural pixel art and a continuous synthesised soundtrack, and is designed equally for desktop and mobile browsers.
+*Archie* is a top-down flying game set over the Western Front in 1915–16. Take the controls of a Royal Flying Corps B.E.2c, bank over trenches and farms, and watch the light change across the fields below.
+
+## What you can play today
+
+- **Free Fly.** Explore seeded countryside from a heading-up cockpit. Keep an eye on fuel and engine heat, use the compass to find the lines, or let the aircraft settle into hands-off flight. Fly with keyboard, mouse, or touch.
+- **The Story desk.** Start at Rook Field, lift the chart, look through the orders and letters, and pick up the photograph from home. The desk is playable now. Its take-off leads into free flight while the campaign is in development.
+
+![The story desk at Rook Field, with a folded chart, logbook, letters, and flying equipment](public/screenshots/rook-field.webp)
+
+## The story in development
+
+You’re Tom Bell, an RFC pilot flying with an observer to help the guns find their targets. In Flanders, Arthur Vale shows you how to read the ground. In 1916, the squadron moves to the Somme and rookie observer Ned Pike takes his seat. Below, a battery contact receives your Morse and answers in cloth panels and letters. The planned campaign follows those relationships through the work of spotting for artillery, the things men send each other, and the lives they left at home.
+
+![The B.E.2c crossing the trench lines in Free Fly](public/screenshots/over-the-lines.webp)
 
 ## Development
 
-Requires Node.js 22 or later.
+Requires Node.js 22.12 or later.
 
 ```sh
 npm install

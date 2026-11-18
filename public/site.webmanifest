@@ -1,7 +1,7 @@
 {
-  "name": "Play Archie",
+  "name": "Archie — A First World War Flying Game",
   "short_name": "Archie",
-  "description": "Fly a fragile biplane across a living 1915 landscape.",
+  "description": "Fly a B.E.2c over the Western Front in a top-down pixel-art flying game set in 1915–16.",
   "start_url": "./",
   "display": "fullscreen",
   "background_color": "#14130f",
@@ -10,12 +10,14 @@
     {
       "src": "./icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "./icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
