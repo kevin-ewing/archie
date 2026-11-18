@@ -1,0 +1,77 @@
+{
+  "course_description": "MIT students are challenged daily to solve for x, to complete four problem sets, two papers, and prepare for an exam worth 30% of their grade... all in one night. When they do stop to breathe, it's for a shower or a meal. What does this have to do with creative writing? Everything. Creative writing and MIT go together better than you might imagine.\n",
+  "course_description_html": "MIT students are challenged daily to solve for x, to complete four problem sets, two papers, and prepare for an exam worth 30% of their grade&hellip; all in one night. When they do stop to breathe, it&rsquo;s for a shower or a meal. What does this have to do with creative writing? Everything. Creative writing and MIT go together better than you might imagine.",
+  "course_image": {
+    "content": "79cfc52b-8de4-5ecd-e960-30fe19d142d8",
+    "website": "es-292-writing-workshop-spring-2008"
+  },
+  "course_image_metadata": {
+    "content_type": "resource",
+    "description": "A person writing by hand. Image courtesy of Wim Mulder.",
+    "draft": false,
+    "file": "/courses/es-292-writing-workshop-spring-2008/79cfc52b8de45ecde96030fe19d142d8_es-292s08.jpg",
+    "file_size": 26010,
+    "file_type": "image/jpeg",
+    "image_metadata": {
+      "caption": "A person writing by hand. (Image courtesy of {{% resource_link \"235ca17e-a307-4b49-9283-18ad78eb6218\" \"Wim Mulder\" %}}.)",
+      "credit": "Image courtesy of Wim Mulder.",
+      "image-alt": "A hand holding a pen writes out words on a piece of paper."
+    },
+    "iscjklanguage": false,
+    "learning_resource_types": [],
+    "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "ocw_type": "OCWImage",
+    "resourcetype": "Image",
+    "title": "es-292s08.jpg",
+    "uid": "79cfc52b-8de4-5ecd-e960-30fe19d142d8"
+  },
+  "course_image_thumbnail": {
+    "content": "0ef348ee-ea95-dc5d-2fdd-c82b066716d6",
+    "website": "es-292-writing-workshop-spring-2008"
+  },
+  "course_title": "Writing Workshop",
+  "department_numbers": [
+    "ES"
+  ],
+  "extra_course_numbers": "",
+  "image_src": "./static_resources/79cfc52b8de45ecde96030fe19d142d8_es-292s08.jpg",
+  "instructors": [
+    {
+      "first_name": "Jessica",
+      "last_name": "Young",
+      "middle_initial": "",
+      "salutation": "",
+      "title": "Jessica Young",
+      "uid": "d5bcc774-f084-ce30-7a65-92b332f2118a",
+      "url": "https://ocw.mit.edu/search/?q=Jessica+Young"
+    }
+  ],
+  "learning_resource_types": [
+    "Written Assignments with Examples",
+    "Instructor Insights"
+  ],
+  "legacy_uid": "f24ba374-6c54-e14a-0e05-5f099107e387",
+  "level": [
+    "Undergraduate"
+  ],
+  "mit_learn_topics": [
+    [
+      "Humanities",
+      "Literature"
+    ]
+  ],
+  "primary_course_number": "ES.292",
+  "site_short_id": "es.292-spring-2008",
+  "site_uid": "ebfabc21-c289-46c9-85ad-d71697ef2d48",
+  "site_url_path": "courses/es-292-writing-workshop-spring-2008",
+  "term": "Spring",
+  "title": "Course Metadata",
+  "topics": [
+    [
+      "Humanities",
+      "Literature",
+      "Creative Writing"
+    ]
+  ],
+  "year": "2008"
+}

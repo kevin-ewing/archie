@@ -31,3 +31,10 @@ Rules:
 Not lazy about: understanding the problem (read it fully and trace the real flow before picking a rung, a small diff you don't understand is just laziness dressed up as efficiency), input validation at trust boundaries, error handling that prevents data loss, security, accessibility, the calibration real hardware needs (the platform is never the spec ideal, a clock drifts, a sensor reads off), anything explicitly requested. Lazy code without its check is unfinished: non-trivial logic leaves ONE runnable check behind, the smallest thing that fails if the logic breaks (an assert-based demo/self-check or one small test file; no frameworks, no fixtures). Trivial one-liners need no test.
 
 (Yes, this file also applies to agents working on the ponytail repo itself. Especially to them.)
+
+## Archie story work
+
+- For story questions, planning, drafting, or revision at any scale, use the project-wide [Archie story skill](skills/archie-story/SKILL.md). It routes to campaign, sortie, scene, and review guidance and requires the existing character skills for their voices.
+- Start with the [story workshop](docs/story/README.md) for current crew decisions, open questions, and sortie ideas. Use the [story bible](docs/STORY.md) for campaign context. Follow the workshop when an older draft describes single-seat flight or puts the observer roles on the ground.
+- Before writing a character, read their dossier and repo-local writing skill from the [cast and skills index](docs/STORY.md#current-cast-and-writing-references). The skill files can be opened directly from the repo.
+- A dossier records the character immediately before their introduction and ends with one civilian writing sample. Record later events in campaign continuity. Check what each person knows and owns at the date of the scene, especially [the sixpence](docs/STORY.md#the-sixpence).

@@ -1,0 +1,95 @@
+{
+  "course_description": "This course explores the properties of non-sequential, multi-linear, and interactive forms of narratives as they have evolved from print to digital media. Works covered in this course range from the Talmud, classics of non-linear novels, experimental literature, early sound and film experiments to recent multi-linear and interactive films and games. The study of the structural properties of narratives that experiment with digression, multiple points of view, disruptions of time, space, and of storyline is complemented by theoretical texts about authorship/readership, plot/story, properties of digital media and hypertext. Questions that will be addressed in this course include: How can we define ‘non-sequentiality/multi-linearity’, ‘interactivity’, ‘narrative’. To what extend are these aspects determined by the text, the reader, the digital format? What are the roles of the reader and the author? What kinds of narratives are especially suited for a non-linear/interactive format? Are there stories that can only be told in a digital format? What can we learn from early non-digital examples of non-linear and interactive story telling?\n",
+  "course_description_html": "This course explores the properties of non-sequential, multi-linear, and interactive forms of narratives as they have evolved from print to digital media. Works covered in this course range from the Talmud, classics of non-linear novels, experimental literature, early sound and film experiments to recent multi-linear and interactive films and games. The study of the structural properties of narratives that experiment with digression, multiple points of view, disruptions of time, space, and of storyline is complemented by theoretical texts about authorship/readership, plot/story, properties of digital media and hypertext. Questions that will be addressed in this course include: How can we define ‘non-sequentiality/multi-linearity’, ‘interactivity’, ‘narrative’. To what extend are these aspects determined by the text, the reader, the digital format? What are the roles of the reader and the author? What kinds of narratives are especially suited for a non-linear/interactive format? Are there stories that can only be told in a digital format? What can we learn from early non-digital examples of non-linear and interactive story telling?",
+  "course_image": {
+    "content": "a3a6ea49-1655-a7fc-1fd5-889b1a4eb85b",
+    "website": "21l-708-technologies-of-humanism-spring-2003"
+  },
+  "course_image_metadata": {
+    "content_type": "resource",
+    "description": "",
+    "draft": false,
+    "file": "/courses/21l-708-technologies-of-humanism-spring-2003/a3a6ea491655a7fc1fd5889b1a4eb85b_21l-708s03.jpg",
+    "file_size": 125166,
+    "file_type": "image/jpeg",
+    "image_metadata": {
+      "caption": "Image of the Talmud and Hypertext. (Image courtesy of Daniel Bersak.)",
+      "credit": "",
+      "image-alt": "Image of the Talmud with a HTML overlay."
+    },
+    "iscjklanguage": false,
+    "learning_resource_types": [],
+    "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "ocw_type": "OCWImage",
+    "resourcetype": "Image",
+    "title": "21l-708s03.jpg",
+    "uid": "a3a6ea49-1655-a7fc-1fd5-889b1a4eb85b"
+  },
+  "course_image_thumbnail": {
+    "content": "cb703c4d-850b-31ec-95e7-825ae7846ad0",
+    "website": "21l-708-technologies-of-humanism-spring-2003"
+  },
+  "course_title": "Technologies of Humanism",
+  "department_numbers": [
+    "21L"
+  ],
+  "extra_course_numbers": "CMS.910",
+  "image_src": "./static_resources/a3a6ea491655a7fc1fd5889b1a4eb85b_21l-708s03.jpg",
+  "instructors": [
+    {
+      "first_name": "Kurt",
+      "last_name": "Fendt",
+      "middle_initial": "",
+      "salutation": "Dr.",
+      "title": "Dr. Kurt Fendt",
+      "uid": "930d9ee4-d5f8-02bf-619f-821d0ac7fe0f",
+      "url": "https://ocw.mit.edu/search/?q=Dr.+Kurt+Fendt"
+    }
+  ],
+  "learning_resource_types": [
+    "Projects",
+    "Written Assignments"
+  ],
+  "legacy_uid": "3eb6bf49-0db9-1230-5535-b9848db14a90",
+  "level": [
+    "Undergraduate"
+  ],
+  "mit_learn_topics": [
+    [
+      "Humanities",
+      "Literature"
+    ],
+    [
+      "Art, Design & Architecture",
+      "Media Studies"
+    ]
+  ],
+  "primary_course_number": "21L.708",
+  "site_short_id": "21l.708-spring-2003",
+  "site_uid": "e5982293-d3e2-4398-b983-d06db7710950",
+  "site_url_path": "courses/21l-708-technologies-of-humanism-spring-2003",
+  "term": "Spring",
+  "title": "Course Metadata",
+  "topics": [
+    [
+      "Fine Arts",
+      "Media Studies"
+    ],
+    [
+      "Fine Arts",
+      "Media Studies",
+      "Digital Media"
+    ],
+    [
+      "Humanities",
+      "Literature",
+      "Criticism"
+    ],
+    [
+      "Humanities",
+      "Literature",
+      "Fiction"
+    ]
+  ],
+  "year": "2003"
+}

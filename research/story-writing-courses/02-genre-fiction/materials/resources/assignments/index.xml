@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Assignments on MIT OpenCourseWare</title>
+    <link>/resources/assignments/</link>
+    <description>Recent content in Assignments on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/assignments/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Assignments and Student Work</title>
+      <link>/pages/assignments-and-student-work/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/assignments-and-student-work/data.json</guid>
+      <description>&lt;p&gt;You will write three major pieces for this class. They may be either complete short stories or chapters of a longer work. Two pieces will be in different sub genres of the genre of your choice, or may be in two different genres entirely. The third work will combine (at least) two different genres. &lt;strong&gt;All work submitted to this class shall be new and produced for this class only. Please do not submit work you have previously written for your own pleasure or for another class. If you have any questions about this, please speak to me.&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Deliberately – first draft</title>
+      <link>/resources/mit21w_758s13_del-fr_drft/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_del-fr_drft/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding deliberately by Irina Onoprienko.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Deliberately – revised</title>
+      <link>/resources/mit21w_758s13_del-fn_drft/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_del-fn_drft/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding deliberately by Irina Onoprienko.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>High Caliber Men – first draft</title>
+      <link>/resources/mit21w_758s13_hcm-fr_drft/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_hcm-fr_drft/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding high caliber men.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>High Caliber Men – revised</title>
+      <link>/resources/mit21w_758s13_hcm-rev/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_hcm-rev/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding high caliber men.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How to Start a Zombie Apocalypse – first draft</title>
+      <link>/resources/mit21w_758s13_htsa-fr_drft/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_htsa-fr_drft/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding how to start a zombie apocalypse.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How to Start a Zombie Apocalypse – revised</title>
+      <link>/resources/mit21w_758s13_htsza-rev/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_htsza-rev/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding how to start a zombie apocalypse.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>The Haunting of Belfer – first draft</title>
+      <link>/resources/mit21w_758s13_aka-fr_drft/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_aka-fr_drft/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding the haunting of belfer.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>The Haunting of Belfer – revised</title>
+      <link>/resources/mit21w_758s13_aka-fn_drft/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_aka-fn_drft/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding the haunting of belfer.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

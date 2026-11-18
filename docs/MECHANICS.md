@@ -12,6 +12,8 @@
 > Companion docs: [`STORY.md`](STORY.md) (narrative bible). A technical design doc will follow.
 > Items marked **[VERIFY]** are historical details to confirm before they ship. Items marked **[DECIDE]** are open design questions.
 
+> **Current story continuity:** see the [story workshop](story/README.md) and [cast and writing references](STORY.md#current-cast-and-writing-references). Tom flies with Vale in 1915 and Pike in 1916. They are airborne observers. Will Rooke is the artillery contact on the ground. The single-seat premise and ground-operator handoff described in this mechanics draft belong to the earlier story. The workshop also tracks the unresolved division of wireless duties.
+
 ---
 
 ## 1. Design pillars
@@ -231,7 +233,7 @@ Changing band takes several seconds and can't be done instantly.
 - Smoke drifting across the target can hide the next burst, so you reposition upwind.
 
 ### 4.3b Hands off (built)
-- **Historically grounded:** WWI aircraft had no autopilot, but the BE.2c was designed at the Royal Aircraft Factory to be **inherently stable**, and its test pilots demonstrated flying it with hands off the controls **[VERIFY: Edward Busk's 1914 hands-off flights]**. So "Hands off" simply lets go of the stick.
+- **Historically grounded:** WWI aircraft had no autopilot, but the BE.2c was designed at the Royal Aircraft Factory to be **inherently stable**. Raleigh records Busk releasing the controls during an **R.E.1** stability test and separately describes his experimental B.E.2c flight. The game’s Hands off function is a [control aid inspired by that stability work](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk).
 - **Effect:** the wings level, the engine returns to cruise, and the plane **holds the heading it rolls out on**, with gentle corrections, so engaging mid-turn doesn't swing it back. The mouse is free, so you can click UI without jerking the plane.
 - Lives in its own flight-aids module (`sim/aids.ts`), a small tested state machine (off ⇄ hold), ready for more aids such as the hold circuit.
 - **The game starts in Hold.**
@@ -287,7 +289,7 @@ Morning orders → In flight over the lines → Find target → Signal battery "
 - A missed observation means sending **"not observed"**, which costs time and fuel.
 
 ### 5.4 Reading the clock code
-Based on the RFC clock code **[VERIFY exact ring values]**:
+The rings and true-north reference come from the [RFC clock code documented by Raleigh](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk).
 
 - Imaginary rings centred on the target. **12 o'clock = north.**
 - Rings by distance:
@@ -297,12 +299,12 @@ Based on the RFC clock code **[VERIFY exact ring values]**:
 | Yards | 10 | 25 | 50 | 100 | 200 | 300 | 400 | 500 |
 
 - A burst 100 yards east → **B3**. 200 yards south-south-west → **C7**.
-- Hold **Tab** to overlay a translucent clock-code disc on the target (historically observers carried a celluloid disc **[VERIFY]**).
+- Hold **Tab** to overlay a translucent clock-code disc on the target (based on a documented [celluloid chart overlay](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk)).
 - Click or tap where the burst landed. The game snaps it to the nearest ring and hour.
 
 ### 5.5 Accuracy matters
 - Your reported correction is what the battery uses. **A wrong reading moves the next shell the wrong way.** You'll see your mistake land.
-- Bursts inside the **Y/Z** ring count as "on target". You send **OK**, and the battery fires for effect.
+- For play, bursts inside the **Y/Z** ring count as "on target". The [historical example](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk) uses O.K. for a direct hit. You send **OK**, and the battery fires for effect.
 - Target types have different "kill" thresholds: a trench junction needs a few hits, a gun pit needs a direct hit.
 
 ### 5.6 Multiple batteries (later)
@@ -601,7 +603,7 @@ Detailed in the technical doc, but these shape the mechanics:
 | The ground station was manned by RFC wireless operators (air mechanics) | The central character | Story |
 | Morse operators recognised each other's "fist" | Mechanic and story hook | Story |
 
-**[VERIFY] list:** clock-code ring values, real RFC message abbreviations, ground-panel shapes, celluloid disc usage, dusk aerodrome flares, BE.2c single-seat armament, 1915–16 camera types, zone-call timing, frequency of friendly-shell hits.
+**[VERIFY] list:** additional RFC message abbreviations, the exact ground-panel alphabet, dusk aerodrome flares, BE.2c single-seat armament, 1915–16 camera types, zone-call timing, frequency of friendly-shell hits.
 
 ---
 

@@ -1,0 +1,43 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains information regarding Character Exercises.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains information regarding Character Exercises.",
+  "draft": false,
+  "file": "/courses/21w-755-writing-and-reading-short-stories-spring-2012/cb18d53108d2c9901427ea132b8d75eb_MIT21W_755S12_character.pdf",
+  "file_size": 73654,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "language": "en",
+  "learning_resource_types": [
+    "Written Assignments"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "locale": "",
+  "ocw_type": "OCWFile",
+  "parent_title": "Assignments",
+  "parent_type": "CourseSection",
+  "parent_uid": "cd406018-7c26-7e88-95fb-db929c4186f6",
+  "resourcetype": "Document",
+  "title": "Character Exercises",
+  "uid": "cb18d531-08d2-c990-1427-ea132b8d75eb",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_resources": [],
+    "video_thumbnail_file": "",
+    "video_transcript_resources": []
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

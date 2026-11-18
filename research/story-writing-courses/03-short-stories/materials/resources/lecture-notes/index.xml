@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Lecture Notes on MIT OpenCourseWare</title>
+    <link>/resources/lecture-notes/</link>
+    <description>Recent content in Lecture Notes on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/lecture-notes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Lecture Notes</title>
+      <link>/pages/lecture-notes/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/lecture-notes/data.json</guid>
+      <description>&lt;p&gt;Please note: Though this section features lecture notes for the majority of class sessions, notes are not available for every single session. Furthermore, please consult the &lt;a href=&#34;../../pages/readings/index.html&#34;&gt;readings&lt;/a&gt;, as many of the notes reference them.&lt;/p&gt;&#xA;&#xA;    &lt;h3 id=&#34;acknowledgement&#34;&gt;Acknowledgement&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;Many of the exercises below were inspired by the following text:&lt;/p&gt;&#xA;&lt;p&gt;Bernays, Anne, and Pamela Painter. &lt;em&gt;What If? Writing Exercises For Fiction Writers&lt;/em&gt;. 2nd ed. Longman, 2003. ISBN: 9780321107176.&lt;/p&gt;&#xA;&#xA;    &lt;h3 id=&#34;lecture-notes&#34;&gt;Lecture Notes&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;&lt;table&gt;&#xA;&#xA;&lt;thead&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;SES #&#xA;&lt;/th&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;TOPICS&#xA;&lt;/th&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;LECTURE NOTES&#xA;&lt;/th&gt;&#xA;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Points of View Exercise</title>
+      <link>/resources/mit21w_755s12_ses12/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses12/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding exercise on point of view.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Potential Scenarios</title>
+      <link>/resources/mit21w_755s12_ses3_scnario/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses3_scnario/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding biography, slice of life, and the use of real life in creating a story.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 1: Course Introduction</title>
+      <link>/resources/mit21w_755s12_ses1/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses1/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding introduction and discussion of the process and the nature of the story.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 10: Reality</title>
+      <link>/resources/mit21w_755s12_ses10/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses10/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding the real as the basis for the unreal.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 11: Point of View</title>
+      <link>/resources/mit21w_755s12_ses11/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses11/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding examination of the idea and usage of point of view.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 13: Description</title>
+      <link>/resources/mit21w_755s12_ses13/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses13/data.json</guid>
+      <description>&lt;p&gt;Lecture notes on description as a central element and metaphor, free writing, exposition, and context.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 14: Description</title>
+      <link>/resources/mit21w_755s12_ses14/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses14/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding exercise with description.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 15: Revealing Information</title>
+      <link>/resources/mit21w_755s12_ses15/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses15/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding workshop: the forms and methods of revelation.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 2: What is the Short Story?</title>
+      <link>/resources/mit21w_755s12_ses2/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses2/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding discussion of readings and exploration into the notion of what makes a short story.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 20: Place</title>
+      <link>/resources/mit21w_755s12_ses20/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses20/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding place as both reality and metaphor.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 23: The Life of the Writer</title>
+      <link>/resources/mit21w_755s12_ses23/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses23/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding the way a professional writer works in the world.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 3: The Seeds of Story</title>
+      <link>/resources/mit21w_755s12_ses3_seeds/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses3_seeds/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding biography, slice of life, and the use of real life in creating a story 2.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 4: Emotional Truth, Discussion of readings</title>
+      <link>/resources/mit21w_755s12_ses4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses4/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding exercise in developing story from incident and life.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 5: Detail</title>
+      <link>/resources/mit21w_755s12_ses5/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses5/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding workshop incident/emotion sketches, begin discussion of character, character as the center of the story.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 6: Character</title>
+      <link>/resources/mit21w_755s12_ses6/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses6/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding creating character.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 7: Central questions for ANY story (not experimental)</title>
+      <link>/resources/mit21w_755s12_ses7/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses7/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding exercise/workshop in character creation (bring in a character sketch).&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 7: Character Creation/Sketch</title>
+      <link>/resources/mit21w_755s12_ses7_sketch/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses7_sketch/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding exercise/workshop in character creation (bring in a character sketch)&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 8: Plot</title>
+      <link>/resources/mit21w_755s12_ses8/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses8/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding what is a plot and how can it be constructed?&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Session 9: Creating Plot</title>
+      <link>/resources/mit21w_755s12_ses9/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses9/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding exercise in creating plot.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Sessions 17 and 18: Where to Start</title>
+      <link>/resources/mit21w_755s12_ses1718/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses1718/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding making the decision where to begin and workshop (story 1).&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Sessions 21 and 22: Rewriting</title>
+      <link>/resources/mit21w_755s12_ses2122/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_ses2122/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding workshop rewriting.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Workshops</title>
+      <link>/resources/mit21w_755s12_workshops/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_workshops/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding workshops&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

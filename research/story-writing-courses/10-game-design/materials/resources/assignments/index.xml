@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Assignments on MIT OpenCourseWare</title>
+    <link>/resources/assignments/</link>
+    <description>Recent content in Assignments on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/assignments/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Assignments</title>
+      <link>/pages/assignments/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/assignments/data.json</guid>
+      <description>&lt;p&gt;All student work presented on this page is published with permission of the authors.&lt;/p&gt;&#xA;&#xA;    &lt;h3 id=&#34;first-assignment-card-game&#34;&gt;First Assignment: Card Game&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;Design a simple competitive or cooperative card game using only a deck of identically-sized cards (no tokens, dice, variations in card sizes, etc.) that can be set up and played between 5 minutes and 10 minutes. Design your cards to emphasize legibility, clarity, and ease-of-use. Visual artistry may be appreciated but will not be graded. We encourage using tools that speed up iteration. You only need to design and test the game for a fixed number of players: two, three, or four players. If your game accommodates different-sized groups, state any rule changes necessary.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p1g1_cards.pdf</title>
+      <link>/resources/mitcms_608f10_p1g1_cards/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p1g1_cards/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to a wizard did It: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p1g1_rules.pdf</title>
+      <link>/resources/mitcms_608f10_p1g1_rules/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p1g1_rules/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to a wizard did It: rules.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p1g3_cards.pdf</title>
+      <link>/resources/mitcms_608f10_p1g3_cards/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p1g3_cards/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to the game of conquest: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p1g3_rules.pdf</title>
+      <link>/resources/mitcms_608f10_p1g3_rules/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p1g3_rules/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to the game of conquest: rules.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p1g4_cards_a.pdf</title>
+      <link>/resources/mitcms_608f10_p1g4_cards_a/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p1g4_cards_a/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to family dysfunction: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p1g4_cards_b.pdf</title>
+      <link>/resources/mitcms_608f10_p1g4_cards_b/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p1g4_cards_b/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to family dysfunction: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p1g4_rules.pdf</title>
+      <link>/resources/mitcms_608f10_p1g4_rules/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p1g4_rules/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to family dysfunction: rules.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p2g1_board.pdf</title>
+      <link>/resources/mitcms_608f10_p2g1_board/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p2g1_board/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to black hat: board.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p2g1_cards.pdf</title>
+      <link>/resources/mitcms_608f10_p2g1_cards/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p2g1_cards/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to black hat: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p2g1_rules.pdf</title>
+      <link>/resources/mitcms_608f10_p2g1_rules/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p2g1_rules/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to black hat: rules.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p2g2_cards.pdf</title>
+      <link>/resources/mitcms_608f10_p2g2_cards/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p2g2_cards/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to tough luck, dodo: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p2g2_rules.pdf</title>
+      <link>/resources/mitcms_608f10_p2g2_rules/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p2g2_rules/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to tough luck, dodo: rules.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p3g1_cards.pdf</title>
+      <link>/resources/mitcms_608f10_p3g1_cards/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p3g1_cards/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to patience with patients: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p3g1_chars.pdf</title>
+      <link>/resources/mitcms_608f10_p3g1_chars/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p3g1_chars/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to patience with patients: chars.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p3g1_rules.pdf</title>
+      <link>/resources/mitcms_608f10_p3g1_rules/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p3g1_rules/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to patience With patients: rules.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p3g1_words.pdf</title>
+      <link>/resources/mitcms_608f10_p3g1_words/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p3g1_words/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to patience with patients: words.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p3g2_cards_a.pdf</title>
+      <link>/resources/mitcms_608f10_p3g2_cards_a/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p3g2_cards_a/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to I can&amp;rsquo;t get no satisfaction: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p3g2_cards_b.pdf</title>
+      <link>/resources/mitcms_608f10_p3g2_cards_b/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p3g2_cards_b/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to I can&amp;rsquo;t get no satisfaction: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p3g2_rules.pdf</title>
+      <link>/resources/mitcms_608f10_p3g2_rules/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p3g2_rules/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to I can&amp;rsquo;t get no satisfaction: rules.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p3g3_cards.pdf</title>
+      <link>/resources/mitcms_608f10_p3g3_cards/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p3g3_cards/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to keep your cool: cards.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>MITCMS_608F10_p3g3_rules.pdf</title>
+      <link>/resources/mitcms_608f10_p3g3_rules/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10_p3g3_rules/data.json</guid>
+      <description>&lt;p&gt;This resource contains information related to keep your cool: rules.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

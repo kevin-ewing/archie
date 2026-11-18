@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Readings on MIT OpenCourseWare</title>
+    <link>/resources/readings/</link>
+    <description>Recent content in Readings on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/readings/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Additional Notes</title>
+      <link>/resources/mit21w_758s13_add_notes/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_add_notes/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding additional notes.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Calendar and Readings</title>
+      <link>/pages/calendar-and-readings/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/calendar-and-readings/data.json</guid>
+      <description>&lt;p&gt;&lt;table&gt;&#xA;&#xA;&lt;thead&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;SES #&#xA;&lt;/th&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;TOPICS&#xA;&lt;/th&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;READINGS&#xA;&lt;/th&gt;&#xA;&lt;/p&gt;&#xA;&lt;/tr&gt;&#xA;&#xA;&lt;p&gt;&lt;/thead&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;1&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;What is genre fiction? Is it something real and specific or simply a marketing category? What genres particularly interest the members of this class?&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../../resources/mit21w_758s13_class_1/index.html&#34;&gt;Instructor&amp;rsquo;s notes (PDF)&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA; &#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/tr&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;2&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;How do we recognize an individual work as belonging to a particular genre? How do we define the edges of the genres?&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../../resources/mit21w_758s13_class_2/index.html&#34;&gt;Instructor&amp;rsquo;s notes (PDF)&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Laetz, Brian, and Joshua J. Johnston. &amp;ldquo;&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://dx.doi.org/10.1353/phl.0.0013&#34;  aria-label=&#34;What is Fantasy? (opens in a new tab)&#34;  &gt;What is Fantasy?&lt;/a&gt;&amp;rdquo; &lt;em&gt;Philosophy and Literature&lt;/em&gt; 32, no. 1 (2008): 161–72.&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Class 1</title>
+      <link>/resources/mit21w_758s13_class_1/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_class_1/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding class 1.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Class 2</title>
+      <link>/resources/mit21w_758s13_class_2/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_class_2/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding class 2.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Class 3</title>
+      <link>/resources/mit21w_758s13_class_3/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_class_3/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding class 3.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Class 4</title>
+      <link>/resources/mit21w_758s13_class_4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_class_4/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding class 4.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Class 5</title>
+      <link>/resources/mit21w_758s13_class_5/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_class_5/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding class 5.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Class 6</title>
+      <link>/resources/mit21w_758s13_class_6/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_class_6/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding class 6.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Class 7</title>
+      <link>/resources/mit21w_758s13_class_7/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_class_7/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding class 7.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Instructor’s Notes</title>
+      <link>/resources/mit21w_758s13_notes-org/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_notes-org/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding instructor’s notes.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Workshopping: The Rules of Engagement &amp; The Mechanics</title>
+      <link>/resources/mit21w_758s13_workshopping/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_758s13_workshopping/data.json</guid>
+      <description>&lt;p&gt;This resource contains information on workshopping: the rules of engagement &amp;amp; the mechanics.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

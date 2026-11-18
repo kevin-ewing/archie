@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Readings on MIT OpenCourseWare</title>
+    <link>/resources/readings/</link>
+    <description>Recent content in Readings on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/readings/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Readings</title>
+      <link>/pages/readings/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/readings/data.json</guid>
+      <description>&lt;h3 id=&#34;required-books&#34;&gt;Required Books&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;Students should buy new editions of these texts and bring &lt;em&gt;Fields of Reading&lt;/em&gt; or &lt;em&gt;On Writing Short Stories&lt;/em&gt; with them to class as required. Students should also have on hand a college dictionary and thesaurus. For a general writing reference, also see &lt;em&gt;Easy Writer&lt;/em&gt;.&lt;/p&gt;&#xA;&lt;p&gt;Many of the listed readings in the table below refer to the following course texts:&lt;/p&gt;&#xA;&lt;p&gt;Comley, Nancy R., et. al., eds. &lt;em&gt;Fields of Reading: Motives for Writing&lt;/em&gt;. 7th ed. Boston, MA: Bedford/St. Martin&amp;rsquo;s Press, 2003. ISBN: 9780312412579.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

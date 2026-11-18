@@ -1,0 +1,647 @@
+
+{
+  "content": "<p>Recordings of selected lectures are available below. All guest lectures are used with permission. Assigned readings and lecture slides (if any) for these sessions are listed under the Related Resources tab of each recording. A full schedule of reading assignments is given on the <a href=\"../../pages/study-materials/index.html\">Study Materials</a> page.</p>\n<h2 id=\"textbook\">Textbook</h2>\n<p>[CGD] = Brathwaite, Brenda, and Ian Schreiber. <em>Challenges for Game Designers: Non-Digital Exercises for Video Game Designers</em>. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.</p>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec02_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/bXSSQgtF9zA/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 2: Iterative Design</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec03_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/_NvBNFDldV4/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 3: Where Do Game Ideas Come From?</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec04_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/FsebUJfOvGg/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 4: Prototyping</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec05_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/HNDawwNfu5w/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 5: Assignment 1 Brainstorming and Team Formation</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec06_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/DuQ4oPMF_8w/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 6: The Social Function of Games</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec08_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/rDYv7L2uhE0/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 8: Strategy, Skill, and Chance, Part 1</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec09_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/QV1eMUMpOCo/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 9: Strategy, Skill, and Chance, Part 2</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec12_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/V3plr-Sn-g0/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 12: Knowing Your Players</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec18_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/0x4Jf6hBr-k/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 18: Puzzles</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec19_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/mu3B0KQ6YdE/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 19: Abstraction and Simulation</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec20_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/gvMZWAhws3c/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 20: What is Intellectual Property?</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec21_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/s45Go2tlHmo/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 21: Games as Teaching Tools</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec23_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/ep_Hd5cxcWQ/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 23: Creating Sequels</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec25_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/GzCceq97ZcU/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 25: Fiction and Stories in Games</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec27_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/yI4E3ieyu9o/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 27: Games as Art</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec30_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/R7DmsL-T2Ag/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 30: Clients for Assignment 3 Visit</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec31_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/kOe3fGU_l3k/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 31: Assignment 3 Brainstorming and Team Formation</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec32_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/RbeY5CT9Go4/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 32: Live Action Games</h5>\n      </div>\n    </div>\n  </a>\n</div>\n<div class=\"mb-2 border-gray rounded video-gallery-card\">\n  <a class=\"video-link\" href=\"../../resources/mitcms_608f10lec33_mp4/index.html\">\n    <div class=\"inner-container\">\n      <div class=\"left-col\"><img class=\"thumbnail\" src=\"https://img.youtube.com/vi/RcDErxzZpcs/default.jpg\" alt=\"\" /></div>\n      <div class=\"right-col\">\n        <h5 class=\"video-title\">Lecture 33: Ethics in Games</h5>\n      </div>\n    </div>\n  </a>\n</div>\n\n\n",
+  "content_type": "video_gallery",
+  "description": "This page contains audio recordings of most lecture sessions.",
+  "draft": false,
+  "is_media_gallery": true,
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Lecture Audio"
+  ],
+  "ocw_type": "CourseSection",
+  "title": "Audio Lectures",
+  "uid": "b59d2755-2347-0682-9e3a-24e5519f79f0",
+  "videos": [
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec02_360p_16_9.mp4",
+      "file_size": 64875393,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 2: Iterative Design",
+      "uid": "8aa84692-3bf1-47b8-bb78-882f52820a79",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec02_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/bXSSQgtF9zA/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec02_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010, dynamic, game design, mechanic, optimization, playtesting",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nThis lecture begins by exploring what a game is (and isn't) and defining the terms \"mechanic\" and \"dynamic\". Designers identify the core mechanic and dynamic of a game to help guide iterative playtesting and optimization.\n\nRelated Resources:\n[CGD] Chapter 1.\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\nZimmerman, Eric. \"Play as Research: The Iterative Design Process.\" July 8, 2003.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "bXSSQgtF9zA"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec03_360p_16_9.mp4",
+      "file_size": 67643694,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 3: Where Do Game Ideas Come From?",
+      "uid": "76161a2c-984a-4af1-b811-5a4f7e3f0925",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec03_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/_NvBNFDldV4/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec03_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nThe assigned readings introduced two frameworks for designing games: formal abstract design and MDA (Mechanics-Dynamics-Aesthetics). Students play a primitive board game and apply these analytic tools, then modify the rules and repeat the exercise.\n\nRelated Resources:\nThis section contains documents that are inaccessible to screen reader software. A \"#\" symbol is used to denote such documents.\n[CGD] Chapter 2\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\nHunicke, Robin, Marc LeBlanc, and Robert Zubek. \"MDA: A Formal Approach to Game Design and Game Research.\" In Proceedings of the Challenges in Game AI Workshop at the 19th National Conference on Artificial Intelligence. San Jose, CA: AAAI Press, 2004. (PDF)#\nChurch, Doug. \"Formal Abstract Design Tools.\" Gamasutra, July 16 1999.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "_NvBNFDldV4"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec04_360p_16_9.mp4",
+      "file_size": 46041317,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 4: Prototyping",
+      "uid": "6402f3bb-776f-438f-bc04-85d4c6f4fd89",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec04_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/FsebUJfOvGg/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec04_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy, Sara Verrilli (Singapore-MIT GAMBIT Game Lab)\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nBefore games come to market, they undergo several tests: Are there technical glitches? Can players easily get started? Is the gameplay what the designers intended? Sara Verrilli discusses how and why to conduct focus testing.\n\nRelated Resources:\nFullerton, Tracy. \"Playtesting.\" Chapter 8 in Game Design Workshop. Boston, MA: Morgan Kaufmann, 2008. ISBN: 9780240809748.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "FsebUJfOvGg"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec05_360p_16_9.mp4",
+      "file_size": 112920806,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 5: Assignment 1 Brainstorming and Team Formation",
+      "uid": "f74cd9db-fc21-4246-8295-8fb5dcd0adcb",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec05_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/HNDawwNfu5w/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec05_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy, Abe Stein (Singapore-MIT GAMBIT Game Lab)\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nAbe Stein talks about how to brainstorm constructively, despite social pressure and interpersonal dynamics. Students practice generating ideas individually and in groups, ending with concepts for the first team project, a card game for 2-4 players.\n\nRelated Resources:\nOsborn, Alex F. \"Creative Collaboration by Groups.\" Chapter 12 in Applied Imagination. New York, NY: Scribner, 1953. ISBN: 9780930222734.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "HNDawwNfu5w"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec06_360p_16_9.mp4",
+      "file_size": 83185392,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 6: The Social Function of Games",
+      "uid": "03ad113e-6293-4c08-a021-e8749efc6cb4",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec06_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/DuQ4oPMF_8w/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec06_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nToday's reading, by theorist Roger Caillois, examines the various interactions between players and spectators of games. Students then brainstorm ideas for their first team project: designing a card game for 2-4 players.\n\nRelated Resources:\nChurch, Doug. \"Formal Abstract Design Tools.\" Gamasutra, July 16, 1999.\nCaillois, Roger. \"The Social Function of Games.\" Chapter 3 in Man, Play, and Games. Urbana, IL: University of Illinois Press, 2001. ISBN: 9780252070334.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "DuQ4oPMF_8w"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec08_360p_16_9.mp4",
+      "file_size": 124905353,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 8: Strategy, Skill, and Chance, Part 1",
+      "uid": "f7995324-6757-4fe7-8c89-f045836d9b92",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec08_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/rDYv7L2uhE0/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec08_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nGames contain various skill requirements, chance elements, and information availability, which guide strategy development. Changing the balance between these factors can create very different player experiences.\n\nRelated Resources:\n[CGD] Chapter 6\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\nPoundstone, William. \"Game Theory.\" The Game Design Reader: A Rules of Play Anthology. Edited by Katie Salen and Eric Zimmerman. Cambridge, MA: MIT Press, 2005. ISBN: 9780262195362.\n\nCredits:\nContent © the respective copyright holders, all rights reserved, excluded from our Creative Commons license. For more information, see http://ocw.mit.edu/fairuse.\nRecording of celebrating Red Sox fans, 2004. © source unknown.\nSegment from Britain’s Got Talent 2009, Episode 10 (Semi-Final 3), © ITV.\nsoftypapa. \"Japan Festival Car - Mikoshi Portable Shinto Shrine.\" July 11, 2008. YouTube. Accessed May 20, 2011. \nhttp://www.youtube.com/watch?v=fRgq03p5L-0 © Kurt Bell.\nwbal. \"Student Turns Millionaire With Scratch-Off Ticket.\" August 6, 2007. YouTube. Accessed May 20, 2011. \nhttp://www.youtube.com/watch?v=ROLQcJXcJE4 © WBAL TV, Baltimore, MD.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "rDYv7L2uhE0"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec09_360p_16_9.mp4",
+      "file_size": 96082472,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 9: Strategy, Skill, and Chance, Part 2",
+      "uid": "45c61cd9-d14c-4dfb-8e15-dbb75d03a431",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec09_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/QV1eMUMpOCo/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec09_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nThis lecture reviews the concepts of information flow and uncertainty, analyzing well-known games in these terms. Examples include Scrabble, Go Fish, Mario Kart, Monopoly, chess, poker, War, and Settlers of Catan. Next, students consider feedback loops.\n\nRelated Resources:\n[CGD] Chapters 7 and 8\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "QV1eMUMpOCo"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec12_360p_16_9.mp4",
+      "file_size": 99511307,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 12: Knowing Your Players",
+      "uid": "8ed5f799-7b41-491a-ba33-4b625e147e27",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec12_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/V3plr-Sn-g0/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec12_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nToday's reading analyzes user motivation along two axes: interest in the world vs. fellow players, gaining knowledge vs. proficiency. Students discuss the utility of this taxonomy, how games encourage these interactions, and come up with their own frames.\n\nRelated Resources:\n[CGD] Chapter 11\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\nBartle, Richard. \"Hearts, Clubs, Diamonds, Spades: Players Who Suit MUDs.\" April 1996.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "V3plr-Sn-g0"
+      }
+    },
+    {
+      "audience": [],
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec18_360p_16_9.mp4",
+      "file_size": 102458929,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "level": [],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 18: Puzzles",
+      "uid": "13c74397-e90b-4d90-b995-a6cc9946971a",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec18_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/0x4Jf6hBr-k/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec18_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nPuzzles are a popular type of game, characterized by a strict ruleset and (ideally) a single solution. They may appear on their own or embedded into a larger narrative, sometimes representing a similar real-life mechanism (e.g. unlocking a door).\n\nRelated Resources:\n[CGD] Chapter 3\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\nKim, Scott. \"What is a Puzzle?\" ( http://www.scottkim.com.previewc40.carrierzone.com/thinkinggames/whatisapuzzle/index.html )\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "0x4Jf6hBr-k"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec19_360p_16_9.mp4",
+      "file_size": 113354991,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 19: Abstraction and Simulation",
+      "uid": "9d978de2-87b3-49b2-9fba-f3f286889de9",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec19_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/mu3B0KQ6YdE/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec19_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nTo build a good simulation, identify relevant features in the source and assumptions in the resulting model. Students explore the meaning of games' choices about what to include, simplify, and abstract, and generate ideas for their next assignment.\n\nRelated Resources:\nStarr, Paul. \"Seductions of Sim; Policy as a Simulation Game.\" The American Prospect, March 21, 1994.\n\nCredits:\nContent © the respective copyright holders, all rights reserved, excluded from our Creative Commons license. For more information, see http://ocw.mit.edu/fairuse.\nAudio from September 12. Newsgaming.com, 2003. \nhttp://www.newsgaming.com/games/index12.htm\nAudio from Every day the same dream. Molleindustria/Jesse Stiles, 2009. \nhttp://www.molleindustria.org/everydaythesamedream/everydaythesamedream.html\nAudio from Super Chick Sisters. PETA, 2007. \nhttp://www.kentuckyfriedcruelty.com/superchicksisters/index.asp\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "mu3B0KQ6YdE"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec20_360p_16_9.mp4",
+      "file_size": 81647716,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 20: What is Intellectual Property?",
+      "uid": "3f7ef85c-4259-4953-b873-6c6ae139a68f",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec20_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/gvMZWAhws3c/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec20_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nAfter feedback on the first assignment, the class covers the basics of intellectual property in the gaming industry. Successful adaptations often incorporate popular elements and distinctive aesthetics from the original media.\n\nRelated Resources:\n[CGD] Chapter 9\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "gvMZWAhws3c"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec21_360p_16_9.mp4",
+      "file_size": 120266745,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 21: Games as Teaching Tools",
+      "uid": "c8ddad2f-d523-4353-95ad-728aa9dcc693",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec21_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/s45Go2tlHmo/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec21_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip Tan, Jason Begy, Konstantin Mitgutsch, Dan Roy, Scot Osterweil\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nA panel of game developers from the Education Arcade and Learning Games Network talk about their research, effectively connecting learning and games, engaging a target audience, defining and evaluating success, and common design pitfalls.\n\nRelated Resources:\n[CGD] Chapters 18 and 19\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\n\nCredits:\nContent © the respective copyright holders, all rights reserved, excluded from our Creative Commons license. For more information, see http://ocw.mit.edu/fairuse.\nSegments from Lure of the Labyrinth. The Education Arcade/Learning Games to Go, 2007. http://labyrinth.thinkport.org/www/\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "s45Go2tlHmo"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec23_360p_16_9.mp4",
+      "file_size": 58121842,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 23: Creating Sequels",
+      "uid": "5d75f502-75b0-4113-8b84-b5df1055d209",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec23_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/ep_Hd5cxcWQ/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec23_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip Tan, Jason Begy, Sara Verrilli (Singapore-MIT GAMBIT Game Lab)\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nSequels can improve on the original: fixing problems, adding new features, targeting an established fanbase, etc. This connection can also constrain the sequel concept and discourage new users. Sara Verrilli describes her experiences with the Thief games.\n\nRelated Resources:\n[CGD] Chapter 10\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "ep_Hd5cxcWQ"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec25_360p_16_9.mp4",
+      "file_size": 118839208,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 25: Fiction and Stories in Games",
+      "uid": "b882b615-142d-4e60-bec9-6a866d9d0b2b",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec25_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/GzCceq97ZcU/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec25_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip Tan, Jason Begy, Clara Fernandez-Vara (Singapore-MIT GAMBIT Game Lab)\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nMany games incorporate story elements, to drive the plot, set the scene, create engaging characters, etc. Some even use player actions to build an open-ended adventure. Clara Fernandez-Vara talks about how and why to use stories in games.\n\nRelated Resources\nLecture Notes (PDF - 2.0MB)\nJohnson, Soren. \"Theme Is Not Meaning.\" Part I, Part II. Designer Notes, June 2010.\nJuul, Jesper. \"Fiction.\" Chapter 4 in Half-Real. Cambridge, MA: MIT Press, 2005. ISBN: 9780262101103.\n\nCredits:\nThe following content was removed from this lecture due to copyright restrictions. Please see:\nvideogamecentral. \"Soul Calibur 4 Match Gameplay Video – Sophitia VS Cassandra.\" July 29, 2008. YouTube. Accessed May 24, 2011. \nhttp://www.youtube.com/watch?v=NLYty4dkKLY\nTrailer for Uplink. Introversion Software, 2001. \nhttp://www.introversion.co.uk/uplink/\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "GzCceq97ZcU"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec27_360p_16_9.mp4",
+      "file_size": 110216248,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 27: Games as Art",
+      "uid": "e2d65bf4-aebe-48fd-ab56-32dfad9b9879",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec27_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/yI4E3ieyu9o/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec27_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip Tan, Jason Begy, Abe Stein (Singapore-MIT GAMBIT Game Lab)\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nGames have emerged in recent decades as a rich artistic medium, combining elements from audiovisual, interactive, and performance art traditions. Abe Stein talks about aesthetics and meaning in games, and their relation to various modern art movements.\n\nRelated Resources:\n[CGD] Chapter 17\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\nFrasca, Gonzalo. \"Videogames Of The Oppressed.\" Electronic Book Review, June 24, 2004.\n\nCredits:\nContent © the respective copyright holders, all rights reserved, excluded from our Creative Commons license. For more information, see http://ocw.mit.edu/fairuse.\nAudio from Gravitation. Jason Rohrer, 2008. \nhttp://hcsoftware.sourceforge.net/gravitation/\nAudio from Memory Reloaded. Molleindustria/POF! Champagne, 2010. \nhttp://www.molleindustria.org/memory/memory_reloaded.html\nAudio from Loved. Alexander Ocias, 2010. \nhttp://www.alexanderocias.com/loved.php\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "yI4E3ieyu9o"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec30_360p_16_9.mp4",
+      "file_size": 122620008,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 30: Clients for Assignment 3 Visit",
+      "uid": "c4005390-7200-4e9e-a88a-a36578751711",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec30_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/R7DmsL-T2Ag/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec30_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip Tan, Jason Begy, Cezar Cimpeanu, James Cartreine\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nThe 3rd team assignment is to design a simulation for psychiatry residents interacting with agitated patients. Dr. Cezar Cimpeanu and Dr. James Cartreine present an overview of the problem and discuss their research on effective conflict resolution.\n\nRelated Resources:\nLecture Notes (PDF - 1.1MB)\nRueve, Marie, and Randon S. Welton. \"Violence and Mental Illness.\" Psychiatry 5 (May 2008): 34-48.\nSchwartz, Thomas L., and Tricia L. Park. \"Assaults by Patients on Psychiatric Residents: A Survey and Training Recommendations.\" Psychiatric Services 50 (March 1999): 381-383.\nOgloff, James R. P., and Michael Daffern. \"The Dynamic Appraisal of Situational Aggression: An Instrument to Assess Risk for Imminent Aggression in Psychiatric Inpatients.\" Behavioral Sciences and the Law 24 (2006): 799-813.\nAntonius, Daniel, et al. \"Psychiatric Assessment of Aggressive Patients: A Violent Attack on a Resident.\" American Journal of Psychiatry 167 (March 2010): 253-259.\nDSM-IV Criteria for Substance Use Disorders. \"Schizophrenia.\" DSM-IV-TR #295.1-295.3, 295.90.\n\nCredits:\nContent © the respective copyright holders, all rights reserved, excluded from our Creative Commons license. For more information, see http://ocw.mit.edu/fairuse.\nAudio from Virtual Space Station. NASA/NSBRI, 2008.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "R7DmsL-T2Ag"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec31_360p_16_9.mp4",
+      "file_size": 69238634,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 31: Assignment 3 Brainstorming and Team Formation",
+      "uid": "a623a5d8-11b4-4816-aaee-869618608ea0",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec31_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/kOe3fGU_l3k/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec31_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nFollowing last lecture's presentation of the final project assignment, a conflict mediation training simulation for psychiatric student doctors, students brainstorm their ideas for game concepts, mechanics, and abstraction models.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "kOe3fGU_l3k"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec32_360p_16_9.mp4",
+      "file_size": 118484474,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 32: Live Action Games",
+      "uid": "2a6c043b-0705-49f0-af65-a99d75492cbe",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec32_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/RbeY5CT9Go4/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec32_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\n\"Live action\" describes a wide range of activities, from sports, to real-time roleplaying, to playground/party games. Careful choices about mechanics, abstraction, and communication help create an engaging experience without physical or emotional harm.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "RbeY5CT9Go4"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec33_360p_16_9.mp4",
+      "file_size": 89679939,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Audio"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 33: Ethics in Games",
+      "uid": "91c0ae25-1e2e-4fde-92d0-00899eae0a8c",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec33_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/RcDErxzZpcs/default.jpg",
+        "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec33_transcript.pdf"
+      },
+      "video_metadata": {
+        "video_speakers": "",
+        "video_tags": "cms-608-game-design-fall-2010",
+        "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip Tan, Jason Begy, Mia Consalvo (Comparative Media Studies)\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nMia Consalvo asks students for examples illustrating how game designers construct ethical systems, how users act within those systems, and the role of community norms. How do players connect behavioral standards inside and outside the game world?\n\nRelated Resources:\nSicart, Miguel. \"The Ethics of Game Design.\" Chapter 7 in The Ethics of Computer Games. Cambridge, MA: MIT Press, 2009. ISBN: 9780262012652.\n\nCredits:\nThe following content was removed from this lecture due to copyright restrictions. Please see:\nxCheezbrgr. \"Call of Duty Modern Warfare 2 – No Russian – Airport Mission Uncut – Veteran – High Quality.\" November 10, 2009. YouTube. Accessed on May 25, 2011. \nhttp://www.youtube.com/watch?v=gXBDkevx5lM\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "RcDErxzZpcs"
+      }
+    }
+  ]
+}
+

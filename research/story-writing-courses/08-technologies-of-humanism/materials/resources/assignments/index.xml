@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Assignments on MIT OpenCourseWare</title>
+    <link>/resources/assignments/</link>
+    <description>Recent content in Assignments on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/assignments/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>assignment1.pdf</title>
+      <link>/resources/assignment1/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment1/data.json</guid>
+      <description>&lt;p&gt;Assignment 1&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment10.pdf</title>
+      <link>/resources/assignment10/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment10/data.json</guid>
+      <description>&lt;p&gt;Assignment 10&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment11.pdf</title>
+      <link>/resources/assignment11/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment11/data.json</guid>
+      <description>&lt;p&gt;Assignment 14: Games and Narratives&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment2.pdf</title>
+      <link>/resources/assignment2/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment2/data.json</guid>
+      <description>&lt;p&gt;Assignment 2&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment3.pdf</title>
+      <link>/resources/assignment3/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment3/data.json</guid>
+      <description>&lt;p&gt;Assignment 3&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment4.pdf</title>
+      <link>/resources/assignment4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment4/data.json</guid>
+      <description>&lt;p&gt;Assignment 4&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment5.pdf</title>
+      <link>/resources/assignment5/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment5/data.json</guid>
+      <description>&lt;p&gt;Assignment 5&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment6.pdf</title>
+      <link>/resources/assignment6/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment6/data.json</guid>
+      <description>&lt;p&gt;Assignment 6: First Writing Assignment&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment7.pdf</title>
+      <link>/resources/assignment7/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment7/data.json</guid>
+      <description>&lt;p&gt;Assignment 7: Soundscapes&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment8.pdf</title>
+      <link>/resources/assignment8/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment8/data.json</guid>
+      <description>&lt;p&gt;Assignment 8&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignment9.pdf</title>
+      <link>/resources/assignment9/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignment9/data.json</guid>
+      <description>&lt;p&gt;Assignment 9&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>assignmentfinalproject.pdf</title>
+      <link>/resources/assignmentfinalproject/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignmentfinalproject/data.json</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Assignments</title>
+      <link>/pages/assignments/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/assignments/data.json</guid>
+      <description>&lt;p&gt;Assignment 1 (&lt;a href=&#34;../../resources/assignment1/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 2 (&lt;a href=&#34;../../resources/assignment2/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 3 (&lt;a href=&#34;../../resources/assignment3/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 4 (&lt;a href=&#34;../../resources/assignment4/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 5 (&lt;a href=&#34;../../resources/assignment5/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 6 (&lt;a href=&#34;../../resources/assignment6/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 7 (&lt;a href=&#34;../../resources/assignment7/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 8 (&lt;a href=&#34;../../resources/assignment8/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 9 (&lt;a href=&#34;../../resources/assignment9/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 10 (&lt;a href=&#34;../../resources/assignment10/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Assignment 11 (&lt;a href=&#34;../../resources/assignment11/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swassignment5borgescomments1.pdf</title>
+      <link>/resources/swassignment5borgescomments1/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swassignment5borgescomments1/data.json</guid>
+      <description>&lt;p&gt;Borges - The Garden of the Forking Paths&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swassignment8elizaswh.pdf</title>
+      <link>/resources/swassignment8elizaswh/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swassignment8elizaswh/data.json</guid>
+      <description>&lt;p&gt;Assignment 8: ELIZA&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swcesarvillarreal.pdf</title>
+      <link>/resources/swcesarvillarreal/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swcesarvillarreal/data.json</guid>
+      <description>&lt;p&gt;Zettels Traum, 1. Kapitel&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swdanielewskiassgn4.pdf</title>
+      <link>/resources/swdanielewskiassgn4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swdanielewskiassgn4/data.json</guid>
+      <description>&lt;p&gt;On Mark Z. Danielwski&amp;rsquo;s House of Leaves&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swrunlolarun.pdf</title>
+      <link>/resources/swrunlolarun/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swrunlolarun/data.json</guid>
+      <description>&lt;p&gt;&amp;ldquo;Run Lola Run&amp;rdquo;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swrunlolaruncritique.pdf</title>
+      <link>/resources/swrunlolaruncritique/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swrunlolaruncritique/data.json</guid>
+      <description>&lt;p&gt;Critique of &amp;ldquo;Run Lola Run&amp;rdquo;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swslidingdoorssummary.pdf</title>
+      <link>/resources/swslidingdoorssummary/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swslidingdoorssummary/data.json</guid>
+      <description>&lt;p&gt;&amp;ldquo;Sliding Doors&amp;rdquo; Summary&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swstephenharsany.pdf</title>
+      <link>/resources/swstephenharsany/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swstephenharsany/data.json</guid>
+      <description>&lt;p&gt;In response to &amp;ldquo;Zettels Traum, 1. Kapitel&amp;rdquo;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swstephenharsanyass5.pdf</title>
+      <link>/resources/swstephenharsanyass5/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swstephenharsanyass5/data.json</guid>
+      <description>&lt;p&gt;Notes on &amp;ldquo;The Circular Ruins&amp;rdquo; by Jorge Luis Borges&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swstephenharsanyassgn4.pdf</title>
+      <link>/resources/swstephenharsanyassgn4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swstephenharsanyassgn4/data.json</guid>
+      <description>&lt;p&gt;In Regards to HOPSCOTCH by Julio Cortazar&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swtenderlovingcare.pdf</title>
+      <link>/resources/swtenderlovingcare/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swtenderlovingcare/data.json</guid>
+      <description>&lt;p&gt;Tender Loving Care&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>swtenderlovingcarereview.pdf</title>
+      <link>/resources/swtenderlovingcarereview/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/swtenderlovingcarereview/data.json</guid>
+      <description>&lt;p&gt;Tender Loving Care&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

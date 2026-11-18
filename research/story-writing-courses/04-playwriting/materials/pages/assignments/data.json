@@ -1,0 +1,16 @@
+
+{
+  "content": "<p><table>\n\n<thead>\n\n<tr>\n\n<th>\n\nWEEK #\n</th>\n\n<th>\n\nASSIGNMENTS\n</th>\n</p>\n</tr>\n\n<p></thead>\n\n<tr>\n\n<td>\n\n2\n</td>\n\n<td>\n\nPlaywriting Exercise 1 (<a href=\"../../resources/week2/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n3\n</td>\n\n<td>\n\nPlaywriting Exercise 2 (<a href=\"../../resources/week3_revised/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n4\n</td>\n\n<td>\n\nPlaywriting Exercise 3 (<a href=\"../../resources/week4/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n5\n</td>\n\n<td>\n\nPlaywriting Exercise 4 (<a href=\"../../resources/week5_revised/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n6\n</td>\n\n<td>\n\nPlaywriting Exercise 5 (<a href=\"../../resources/week6/index.html\">PDF 1</a>) (<a href=\"../../resources/week6b/index.html\">PDF 2</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n7\n</td>\n\n<td>\n\nPlaywriting Exercise 6 (<a href=\"../../resources/week7/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n8\n</td>\n\n<td>\n\nPlaywriting Exercise 7 (<a href=\"../../resources/week8/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n9\n</td>\n\n<td>\n\nPlaywriting Exercise 8 (<a href=\"../../resources/week9/index.html\">PDF</a>)\n</td>\n</p>\n</tr>\n\n</table>\n\n<p>The last two weeks of the course were devoted to workshopping students&rsquo; final projects.</p>\n",
+  "content_type": "page",
+  "description": "This section contains assignments for various weeks.",
+  "draft": false,
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Assignments"
+  ],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "CourseSection",
+  "title": "Assignments",
+  "uid": "da8e0fd5-70ce-ca5f-5997-cd6e4ed1e488"
+}
+

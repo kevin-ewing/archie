@@ -1,0 +1,5328 @@
+WEBVTT
+
+00:00:00.040 --> 00:00:02.470
+The following content is
+provided under a Creative
+
+00:00:02.470 --> 00:00:03.890
+Commons license.
+
+00:00:03.890 --> 00:00:06.920
+Your support will help MIT
+OpenCourseWare continue to
+
+00:00:06.920 --> 00:00:10.570
+offer high quality educational
+resources for free.
+
+00:00:10.570 --> 00:00:13.470
+To make a donation or view
+additional materials from
+
+00:00:13.470 --> 00:00:17.400
+hundreds of MIT courses, visit
+MIT OpenCourseWare at
+
+00:00:17.400 --> 00:00:18.650
+ocw.mit.edu.
+
+00:00:20.790 --> 00:00:24.290
+Some content in this audio is
+not covered under a Creative
+
+00:00:24.290 --> 00:00:25.785
+Commons license.
+
+00:00:25.785 --> 00:00:29.790
+For more information, see the
+course materials on the MIT
+
+00:00:29.790 --> 00:00:32.729
+OpenCourseWare website.
+
+00:00:32.729 --> 00:00:35.594
+TA: A bunch of puzzles.
+
+00:00:35.594 --> 00:00:37.954
+AUDIENCE: The first one's easy,
+and then everything
+
+00:00:37.954 --> 00:00:41.270
+after that is such a scam.
+
+00:00:41.270 --> 00:00:44.820
+TA: Is it like a series,
+or is it just one book?
+
+00:00:44.820 --> 00:00:47.056
+AUDIENCE: I don't know.
+
+00:00:47.056 --> 00:00:48.790
+I found it.
+
+00:00:48.790 --> 00:00:50.870
+[LAUGHTER]
+
+00:00:50.870 --> 00:00:53.460
+AUDIENCE: [INAUDIBLE]
+
+00:00:53.460 --> 00:00:56.736
+Everyone's looking at him and
+they're like, you can do a
+
+00:00:56.736 --> 00:00:59.116
+practice leg in a one-person
+[UNINTELLIGIBLE PHRASE].
+
+00:00:59.116 --> 00:01:02.620
+We'll just give you any puzzle
+that gets progressively more
+
+00:01:02.620 --> 00:01:03.870
+impossible.
+
+00:01:07.230 --> 00:01:09.110
+TA: Actually, I want to throw
+out one suggestion.
+
+00:01:09.110 --> 00:01:12.400
+If anybody's having trouble
+thinking about what to put up
+
+00:01:12.400 --> 00:01:15.600
+for a program post, and you
+haven't been able to keep up
+
+00:01:15.600 --> 00:01:17.780
+with your program posts, one
+thing that you might want to
+
+00:01:17.780 --> 00:01:20.375
+attempt is just a quick
+postmortem on
+
+00:01:20.375 --> 00:01:21.200
+the previous project.
+
+00:01:21.200 --> 00:01:27.012
+What went right, what you would
+rather have gone right,
+
+00:01:27.012 --> 00:01:30.770
+what went wrong, and just a
+couple of other points.
+
+00:01:30.770 --> 00:01:36.250
+Just sort of a reflection, just
+thinking about what you
+
+00:01:36.250 --> 00:01:39.280
+might want to try to change or
+what you want to make sure
+
+00:01:39.280 --> 00:01:42.280
+that you keep doing for
+the next project.
+
+00:01:42.280 --> 00:01:44.080
+That's just a good idea.
+
+00:01:44.080 --> 00:01:47.580
+So if you could do
+that next week.
+
+00:01:47.580 --> 00:01:51.717
+It will be done today, so after
+this week's program
+
+00:01:51.717 --> 00:01:53.945
+post, you might want to try
+to do the exercise.
+
+00:01:58.410 --> 00:02:01.205
+PROFESSOR: So today, well first
+of all I want to say if
+
+00:02:01.205 --> 00:02:04.414
+you can't see the screen, you
+might want to position
+
+00:02:04.414 --> 00:02:07.114
+yourself so that you can,
+because most of everything is
+
+00:02:07.114 --> 00:02:10.070
+going to be up here for today.
+
+00:02:10.070 --> 00:02:15.780
+So I don't know if, for those
+of you who have taken or are
+
+00:02:15.780 --> 00:02:20.206
+taking video game studies, how
+much you're going into this.
+
+00:02:20.206 --> 00:02:22.940
+But some of today's talk is
+definitely going to be more on
+
+00:02:22.940 --> 00:02:26.850
+the video games studies
+theoretical side.
+
+00:02:26.850 --> 00:02:28.810
+And we're not actually requiring
+you to implement
+
+00:02:28.810 --> 00:02:30.530
+this stuff, so a lot what we are
+going to be talking about
+
+00:02:30.530 --> 00:02:33.830
+today is rhetoric and meaning
+and how that relates to
+
+00:02:33.830 --> 00:02:35.750
+simulation.
+
+00:02:35.750 --> 00:02:37.985
+If you're not conscious of this,
+or you don't put this in
+
+00:02:37.985 --> 00:02:39.020
+your game, that's fine.
+
+00:02:39.020 --> 00:02:41.310
+This is just something that I
+think is really interesting,
+
+00:02:41.310 --> 00:02:42.960
+and I hope you guys
+will as well.
+
+00:02:45.970 --> 00:02:51.570
+So, first of all, I want to
+talk about what simulation
+
+00:02:51.570 --> 00:02:54.880
+means, and it would help if
+I did this correctly.
+
+00:03:03.628 --> 00:03:04.114
+There we go.
+
+00:03:04.114 --> 00:03:06.560
+OK.
+
+00:03:06.560 --> 00:03:10.360
+So, Gonzalo Frasca says, to
+simulate is to model a source
+
+00:03:10.360 --> 00:03:13.370
+system or different system which
+maintains for someone
+
+00:03:13.370 --> 00:03:17.280
+some of the behaviors of
+the original system.
+
+00:03:17.280 --> 00:03:19.970
+And so to me, this definition
+is really important for a
+
+00:03:19.970 --> 00:03:21.900
+couple of reasons.
+
+00:03:21.900 --> 00:03:25.150
+First of all, he puts source
+in parentheses.
+
+00:03:25.150 --> 00:03:28.715
+For him and in his writing, he
+doesn't necessarily think you
+
+00:03:28.715 --> 00:03:31.549
+need one, which is a whole other
+argument all together.
+
+00:03:31.549 --> 00:03:33.691
+I want to point out that all of
+this will assume that there
+
+00:03:33.691 --> 00:03:37.430
+is a star system and that the
+design is consciousness.
+
+00:03:37.430 --> 00:03:40.648
+That's part of the board game
+assignment, to make a game
+
+00:03:40.648 --> 00:03:42.640
+based on a real world system.
+
+00:03:42.640 --> 00:03:46.960
+But this technician has
+a lot of space in it.
+
+00:03:46.960 --> 00:03:50.381
+It maintains for somebody
+some of the behaviors.
+
+00:03:50.381 --> 00:03:54.160
+It's intentionally very loose.
+
+00:03:54.160 --> 00:03:58.430
+And this'll come into to play
+shortly, because a big part we
+
+00:03:58.430 --> 00:04:00.560
+are going to talk about today
+is the relationship with
+
+00:04:00.560 --> 00:04:05.560
+subjectivity and simulation,
+which I hope you guys saw a
+
+00:04:05.560 --> 00:04:08.140
+little bit of in the
+reading for today.
+
+00:04:10.920 --> 00:04:14.805
+So to give a more rigorous
+definition, this is a model
+
+00:04:14.805 --> 00:04:18.410
+taken from an extremely dry
+textbook called Theory of
+
+00:04:18.410 --> 00:04:21.260
+Modeling and Simulation.
+
+00:04:21.260 --> 00:04:22.915
+Zeigler and all have
+[UNINTELLIGIBLE] of what it
+
+00:04:22.915 --> 00:04:24.350
+offers, and basically
+they present a
+
+00:04:24.350 --> 00:04:25.960
+simulation that's like this.
+
+00:04:25.960 --> 00:04:30.820
+So the idea is, you have a star
+system that exists within
+
+00:04:30.820 --> 00:04:32.460
+the experimental frame.
+
+00:04:32.460 --> 00:04:36.160
+This frame refers to, these are
+the conditions under which
+
+00:04:36.160 --> 00:04:38.250
+we are interested in
+the star system.
+
+00:04:38.250 --> 00:04:38.580
+Right?
+
+00:04:38.580 --> 00:04:42.720
+So if you want to make a game,
+say about life at MIT, there's
+
+00:04:42.720 --> 00:04:44.335
+some things you are going to
+include, some things you're
+
+00:04:44.335 --> 00:04:45.250
+going to exclude, right?
+
+00:04:45.250 --> 00:04:48.184
+You probably don't care about
+the effect of the moon's
+
+00:04:48.184 --> 00:04:51.420
+gravity on the campus,
+for example.
+
+00:04:51.420 --> 00:04:53.280
+And so then there's the
+modelling relation.
+
+00:04:53.280 --> 00:04:56.365
+So we observed the star system
+under certain conditions, and
+
+00:04:56.365 --> 00:04:59.955
+then we focused on the elements
+that are important to
+
+00:04:59.955 --> 00:05:02.630
+us, and from that we construct
+the model.
+
+00:05:02.630 --> 00:05:06.680
+And you notice, here they
+distinguish between a
+
+00:05:06.680 --> 00:05:09.850
+simulator and a model, which is
+not something that I think
+
+00:05:09.850 --> 00:05:12.540
+we do necessarily.
+
+00:05:12.540 --> 00:05:15.500
+Because we tend to think that
+simulations are complex
+
+00:05:15.500 --> 00:05:19.560
+technological software
+entities.
+
+00:05:19.560 --> 00:05:25.430
+So separating this indicates
+that multiple
+
+00:05:25.430 --> 00:05:27.380
+things can be a simulator.
+
+00:05:27.380 --> 00:05:31.330
+For example, in terms
+of games, you can
+
+00:05:31.330 --> 00:05:32.395
+have a board game.
+
+00:05:32.395 --> 00:05:33.085
+You can have a video game.
+
+00:05:33.085 --> 00:05:34.950
+And these could be based on the
+same model, or they could
+
+00:05:34.950 --> 00:05:38.510
+be derived from the same system,
+but the simulator
+
+00:05:38.510 --> 00:05:41.380
+exactly can be a couple
+of different things.
+
+00:05:41.380 --> 00:05:44.320
+And so this is a sort
+of technical way
+
+00:05:44.320 --> 00:05:46.840
+of looking at it.
+
+00:05:46.840 --> 00:05:50.070
+What I want to talk about
+specifically is what I refer
+
+00:05:50.070 --> 00:05:52.870
+to in my writing as
+a simulation gap.
+
+00:05:52.870 --> 00:05:55.522
+And this is another way of
+looking at the elements in a
+
+00:05:55.522 --> 00:05:57.000
+simulation.
+
+00:05:57.000 --> 00:06:00.150
+So, major components such as
+star system, the simulation,
+
+00:06:00.150 --> 00:06:04.850
+the user, and I have all of
+these super intuitive arrows.
+
+00:06:04.850 --> 00:06:06.070
+So we'll go through
+them quickly.
+
+00:06:06.070 --> 00:06:08.210
+So the arrow at A,
+this is kind of
+
+00:06:08.210 --> 00:06:09.700
+the abstraction process.
+
+00:06:09.700 --> 00:06:13.030
+We are looking at a star system
+we're considering,
+
+00:06:13.030 --> 00:06:15.620
+presumably within some sort of
+experimental frame that we
+
+00:06:15.620 --> 00:06:16.470
+care about.
+
+00:06:16.470 --> 00:06:18.870
+And then from that we derive
+behaviors and rules for what
+
+00:06:18.870 --> 00:06:22.880
+we want to implement into
+the simulation.
+
+00:06:22.880 --> 00:06:25.320
+So the arrow with B represents
+the user.
+
+00:06:25.320 --> 00:06:26.240
+So this might be me.
+
+00:06:26.240 --> 00:06:28.015
+And this is me interacting
+with the game.
+
+00:06:28.015 --> 00:06:30.190
+This is me playing with it,
+seeing how the simulation
+
+00:06:30.190 --> 00:06:33.050
+works, watching it run.
+
+00:06:33.050 --> 00:06:39.860
+But then, importantly, there's
+also arrow C my recognition
+
+00:06:39.860 --> 00:06:42.120
+that it's based on something.
+
+00:06:42.120 --> 00:06:45.776
+If you can't tell that
+simulation has a star system,
+
+00:06:45.776 --> 00:06:49.040
+you're going to think of it very
+differently than if you
+
+00:06:49.040 --> 00:06:51.520
+know where that star
+system is.
+
+00:06:51.520 --> 00:06:55.420
+And so D, then, is the
+proverbial simulation gap.
+
+00:06:55.420 --> 00:06:59.950
+And this is the space in
+between all of them.
+
+00:06:59.950 --> 00:07:04.120
+And this is a model of how
+users, in working with a
+
+00:07:04.120 --> 00:07:06.680
+simulation, can create
+a subjective
+
+00:07:06.680 --> 00:07:07.570
+interpretation of it.
+
+00:07:07.570 --> 00:07:09.090
+They assign values to it.
+
+00:07:09.090 --> 00:07:12.750
+They look at are there value
+judgments in the game.
+
+00:07:12.750 --> 00:07:15.355
+They may consider various parts
+of the game to have
+
+00:07:15.355 --> 00:07:18.080
+certain meaning or express
+certain ideas.
+
+00:07:18.080 --> 00:07:20.900
+And this arises from
+understanding the difference
+
+00:07:20.900 --> 00:07:25.020
+between the star system
+and the simulation.
+
+00:07:25.020 --> 00:07:28.820
+I wasn't able to compress the
+quote down into a slide, but
+
+00:07:28.820 --> 00:07:33.150
+Ian Bogost said that the
+simulation gap is kind of--
+
+00:07:33.150 --> 00:07:36.349
+a user's interpretation of a
+simulation converges-- all
+
+00:07:36.349 --> 00:07:39.120
+right, let's see if I
+can get this right.
+
+00:07:39.120 --> 00:07:40.805
+It's horribly wordy
+in the book.
+
+00:07:40.805 --> 00:07:44.120
+But he's basically saying your
+interpretation is based on
+
+00:07:44.120 --> 00:07:47.920
+what the simulation includes as
+much as what it excludes.
+
+00:07:47.920 --> 00:07:50.920
+We look at these design
+decisions as having meaning.
+
+00:07:54.010 --> 00:07:57.750
+And so we saw this in
+the star article.
+
+00:07:57.750 --> 00:07:59.220
+I'm sorry, this picture
+is lo-res,
+
+00:07:59.220 --> 00:08:03.180
+but the game is lo-res.
+
+00:08:03.180 --> 00:08:04.220
+I don't know if you
+remember this.
+
+00:08:04.220 --> 00:08:08.600
+There's this key point in the
+article for today when
+
+00:08:08.600 --> 00:08:12.070
+[? Star ?] is talking about
+discussing SimCity 2000 with
+
+00:08:12.070 --> 00:08:13.400
+his daughter.
+
+00:08:13.400 --> 00:08:18.800
+And if you remember, he and his
+daughter react differently
+
+00:08:18.800 --> 00:08:24.150
+to the game's exclusion
+of mixed-use field.
+
+00:08:24.150 --> 00:08:26.070
+Actually, I probably
+want to check.
+
+00:08:26.070 --> 00:08:27.480
+Has anyone not played SimCity?
+
+00:08:27.480 --> 00:08:29.340
+Any of the versions?
+
+00:08:29.340 --> 00:08:30.450
+No experience?
+
+00:08:30.450 --> 00:08:30.980
+OK.
+
+00:08:30.980 --> 00:08:34.070
+So SimCity basically is a--
+
+00:08:34.070 --> 00:08:35.380
+he's called it a software toy.
+
+00:08:35.380 --> 00:08:36.770
+It's a simulation of a city.
+
+00:08:36.770 --> 00:08:37.630
+That's the name.
+
+00:08:37.630 --> 00:08:42.230
+And the idea is you start with
+an empty space, and are trying
+
+00:08:42.230 --> 00:08:43.460
+to build it up into
+a burgeoning
+
+00:08:43.460 --> 00:08:45.230
+metropolis, or whatever.
+
+00:08:45.230 --> 00:08:46.765
+One of the defining features
+of the games
+
+00:08:46.765 --> 00:08:47.630
+is it's very open.
+
+00:08:47.630 --> 00:08:49.240
+There's no real set goals.
+
+00:08:49.240 --> 00:08:52.190
+And this is primarily
+done through zoning.
+
+00:08:52.190 --> 00:08:55.940
+And zoning is designating
+land for specific uses.
+
+00:08:55.940 --> 00:08:59.520
+So the main zones in the game,
+and in actual urban planning
+
+00:08:59.520 --> 00:09:02.290
+are residential, commercial,
+and industrial.
+
+00:09:02.290 --> 00:09:05.130
+So to mark a segment of land
+as residential means, this
+
+00:09:05.130 --> 00:09:09.834
+land is approved for building
+housing, basically apartments,
+
+00:09:09.834 --> 00:09:11.670
+houses, etc.
+
+00:09:11.670 --> 00:09:15.790
+Commercial zones are things
+like commerce, offices,
+
+00:09:15.790 --> 00:09:18.540
+retailers, those kind of things,
+whereas industry is
+
+00:09:18.540 --> 00:09:21.450
+manufacturing, mostly.
+
+00:09:21.450 --> 00:09:23.940
+And so in the game, you can
+basically say this chunk of
+
+00:09:23.940 --> 00:09:25.340
+land is for this use.
+
+00:09:25.340 --> 00:09:28.470
+But in reality, it's usually
+not that cut and dry.
+
+00:09:28.470 --> 00:09:32.110
+And so mixed-use development is
+a particular kind of zoning
+
+00:09:32.110 --> 00:09:34.345
+where you're saying this land
+can be used for multiple
+
+00:09:34.345 --> 00:09:35.470
+things at the same time.
+
+00:09:35.470 --> 00:09:37.430
+And you see this a lot,
+actually, in Boston,
+
+00:09:37.430 --> 00:09:41.180
+especially down Newbury Street,
+Back Bay, where the
+
+00:09:41.180 --> 00:09:43.410
+ground levels of these apartment
+buildings are
+
+00:09:43.410 --> 00:09:45.030
+restaurants or stores.
+
+00:09:45.030 --> 00:09:47.597
+And then there's space
+to let apartments
+
+00:09:47.597 --> 00:09:48.940
+built right above them.
+
+00:09:48.940 --> 00:09:51.170
+And that's not possible
+in any SimCity.
+
+00:09:51.170 --> 00:09:55.130
+And so to get back to the
+article then, the author is
+
+00:09:55.130 --> 00:09:57.810
+saying that he thinks the
+simulation is prejudiced
+
+00:09:57.810 --> 00:09:58.800
+against this kind.
+
+00:09:58.800 --> 00:10:02.623
+It's against having this kind
+of zoning because the game
+
+00:10:02.623 --> 00:10:03.920
+just leaves it out.
+
+00:10:03.920 --> 00:10:07.740
+Whereas his daughter
+says, well this
+
+00:10:07.740 --> 00:10:09.530
+is just how it works.
+
+00:10:09.530 --> 00:10:12.600
+So for the two of them, they
+both interpret this exclusion
+
+00:10:12.600 --> 00:10:12.950
+differently.
+
+00:10:12.950 --> 00:10:16.120
+The daughter thinks, well, OK,
+this is just how the game is.
+
+00:10:16.120 --> 00:10:17.960
+It's not important.
+
+00:10:17.960 --> 00:10:19.570
+And again the author
+says well this is
+
+00:10:19.570 --> 00:10:22.450
+actually a political decision.
+
+00:10:22.450 --> 00:10:25.360
+So if any of you are familiar
+with the game, can you think
+
+00:10:25.360 --> 00:10:26.650
+of other games that
+are examples
+
+00:10:26.650 --> 00:10:28.680
+of politics in SimCity?
+
+00:10:28.680 --> 00:10:31.405
+It's written about a fair
+amount, actually.
+
+00:10:31.405 --> 00:10:34.375
+AUDIENCE: There's the energy
+scope, where you can choose
+
+00:10:34.375 --> 00:10:37.345
+between coal or nuclear
+and whatnot.
+
+00:10:37.345 --> 00:10:39.325
+I think when you do get to the
+[UNINTELLIGIBLE PHRASE].
+
+00:10:44.503 --> 00:10:44.996
+PROFESSOR: Yeah.
+
+00:10:44.996 --> 00:10:46.968
+They had their own agendas,
+certainly.
+
+00:10:46.968 --> 00:10:48.940
+AUDIENCE: Well, it's
+not only that.
+
+00:10:48.940 --> 00:10:52.884
+I think it's cheaper to build a
+hydroelectric plant than it
+
+00:10:52.884 --> 00:10:53.870
+is to build a nuclear plant.
+
+00:10:53.870 --> 00:10:55.842
+Because the material
+cost of building it
+
+00:10:55.842 --> 00:10:58.307
+in SimCity is cheaper.
+
+00:10:58.307 --> 00:10:59.786
+PROFESSOR: That's certainly
+part of it.
+
+00:10:59.786 --> 00:11:02.744
+Although it's interesting to
+know that in the game, I think
+
+00:11:02.744 --> 00:11:05.702
+part of that is that the hydro
+plants don't generate as much,
+
+00:11:05.702 --> 00:11:07.181
+so you need a lot of them.
+
+00:11:07.181 --> 00:11:07.674
+AUDIENCE: Maybe.
+
+00:11:07.674 --> 00:11:09.646
+I haven't played
+in a long time.
+
+00:11:09.646 --> 00:11:10.139
+PROFESSOR: Yes.
+
+00:11:10.139 --> 00:11:13.140
+I think they took the hydro
+plants out in 2000.
+
+00:11:13.140 --> 00:11:16.360
+AUDIENCE: Oftentimes it's
+a lot of rules, anyways.
+
+00:11:16.360 --> 00:11:20.465
+It was often to your interest to
+build industrial zones near
+
+00:11:20.465 --> 00:11:23.360
+a border of your city, so
+that your city wouldn't
+
+00:11:23.360 --> 00:11:24.340
+be polluted as much.
+
+00:11:24.340 --> 00:11:26.649
+[UNINTELLIGIBLE PHRASE].
+
+00:11:26.649 --> 00:11:27.102
+PROFESSOR: Yeah.
+
+00:11:27.102 --> 00:11:29.890
+And it's a result of the
+pollution model.
+
+00:11:29.890 --> 00:11:33.150
+The industrial zones pollute in
+a circle, so if you pollute
+
+00:11:33.150 --> 00:11:36.862
+on the edge of the map, half
+that circle is non-existent.
+
+00:11:36.862 --> 00:11:39.190
+But there's a question.
+
+00:11:39.190 --> 00:11:42.200
+Is the simulation arguing that
+you should send your pollution
+
+00:11:42.200 --> 00:11:44.640
+to other cities, or is it just
+a result of how it works?
+
+00:11:48.996 --> 00:11:49.480
+Jason?
+
+00:11:49.480 --> 00:11:51.715
+AUDIENCE: The decision on how
+to follow things like how
+
+00:11:51.715 --> 00:11:54.590
+taxes affect group
+rates, and how
+
+00:11:54.590 --> 00:11:57.160
+different sections interact.
+
+00:11:57.160 --> 00:12:00.230
+All those types of things
+definitely have models from
+
+00:12:00.230 --> 00:12:03.830
+what they come from, which have
+certain slightly bigger
+
+00:12:03.830 --> 00:12:05.080
+political slants to them.
+
+00:12:09.248 --> 00:12:10.706
+AUDIENCE: I was just
+wondering.
+
+00:12:10.706 --> 00:12:13.136
+I think the difference in how
+the father and the daughter
+
+00:12:13.136 --> 00:12:16.052
+viewed the system is that
+the father already had a
+
+00:12:16.052 --> 00:12:18.160
+preconception of what the
+city should be like.
+
+00:12:18.160 --> 00:12:21.075
+But the kid wouldn't necessarily
+know because they
+
+00:12:21.075 --> 00:12:22.450
+haven't been exposed
+to all of this.
+
+00:12:22.450 --> 00:12:24.250
+So to them, it's like oh, OK,
+this is how it works.
+
+00:12:24.250 --> 00:12:27.894
+But the father knows that there
+are other things in the
+
+00:12:27.894 --> 00:12:30.680
+model system as opposed
+to the simulation.
+
+00:12:30.680 --> 00:12:31.090
+PROFESSOR: Yeah.
+
+00:12:31.090 --> 00:12:35.078
+And that's, again, emphasizing
+the fact that the user has
+
+00:12:35.078 --> 00:12:36.569
+their own subjectivity.
+
+00:12:36.569 --> 00:12:39.551
+Different people are going to
+assign different values to
+
+00:12:39.551 --> 00:12:40.545
+these things.
+
+00:12:40.545 --> 00:12:44.024
+AUDIENCE: Mass transit in
+SimCity is universally
+
+00:12:44.024 --> 00:12:46.509
+considered to be a part of the
+[UNINTELLIGIBLE PHRASE].
+
+00:12:56.946 --> 00:12:58.934
+AUDIENCE: In some games they'll
+complain about the
+
+00:12:58.934 --> 00:13:01.419
+lack of roads, but they don't
+do anything about it.
+
+00:13:01.419 --> 00:13:03.904
+They keep moving in.
+
+00:13:03.904 --> 00:13:05.892
+AUDIENCE: How are
+they moving in?
+
+00:13:12.880 --> 00:13:13.160
+PROFESSOR: Yeah.
+
+00:13:13.160 --> 00:13:14.860
+And actually, in the
+first one, you
+
+00:13:14.860 --> 00:13:16.430
+could just have trains.
+
+00:13:16.430 --> 00:13:18.390
+You could just have rail lines,
+and there weren't even
+
+00:13:18.390 --> 00:13:20.065
+train stations.
+
+00:13:20.065 --> 00:13:22.110
+Everything was built up
+against the tracks.
+
+00:13:22.110 --> 00:13:24.692
+Which in reality, I've
+lived next to the
+
+00:13:24.692 --> 00:13:25.614
+commuter rail lines.
+
+00:13:25.614 --> 00:13:27.915
+It's not pleasant.
+
+00:13:27.915 --> 00:13:30.802
+AUDIENCE: In come cities, a
+significant portion of the
+
+00:13:30.802 --> 00:13:34.310
+population does make do with
+only public transport, and you
+
+00:13:34.310 --> 00:13:35.702
+can get a taxi.
+
+00:13:41.180 --> 00:13:42.200
+PROFESSOR: Just one
+final point.
+
+00:13:42.200 --> 00:13:44.510
+It's a very small detail, but
+a lot of the games will let
+
+00:13:44.510 --> 00:13:49.090
+you declare your city a
+nuclear-free zone, which just
+
+00:13:49.090 --> 00:13:52.590
+basically means you can't build
+a nuclear power plant.
+
+00:13:52.590 --> 00:13:54.550
+But that stimulates growth.
+
+00:13:54.550 --> 00:13:57.490
+People want to move there more
+because there's no nuclear
+
+00:13:57.490 --> 00:13:58.970
+power plants.
+
+00:13:58.970 --> 00:14:03.260
+So I want to go through a few
+more really short examples.
+
+00:14:03.260 --> 00:14:06.830
+Civilization Revolution is
+more like a stripped down
+
+00:14:06.830 --> 00:14:08.210
+Civilization.
+
+00:14:08.210 --> 00:14:11.550
+Is anyone familiar with
+this version?
+
+00:14:11.550 --> 00:14:14.210
+Now, specifically are you
+familiar with the DS version?
+
+00:14:14.210 --> 00:14:17.680
+That's the only one I've played
+that's actually based
+
+00:14:17.680 --> 00:14:19.122
+in [INAUDIBLE].
+
+00:14:19.122 --> 00:14:20.700
+AUDIENCE: It's on iPhone, too.
+
+00:14:20.700 --> 00:14:22.460
+PROFESSOR: Oh yeah, it's
+probably the same
+
+00:14:22.460 --> 00:14:24.080
+thing on the iPhone.
+
+00:14:24.080 --> 00:14:26.940
+So I've noticed, having played
+this game a lot, in the game,
+
+00:14:26.940 --> 00:14:28.290
+they have all these different
+civilizations, and all
+
+00:14:28.290 --> 00:14:30.685
+represented by a
+famous leader.
+
+00:14:30.685 --> 00:14:34.315
+So the Indians are lead by
+Gandhi for however many
+
+00:14:34.315 --> 00:14:36.303
+thousands of years
+the game goes on.
+
+00:14:36.303 --> 00:14:40.110
+And I've noticed that Gandhi
+is incredibly aggressive.
+
+00:14:40.110 --> 00:14:43.371
+Almost to the point where he
+declares war on someone.
+
+00:14:43.371 --> 00:14:45.319
+He will stay at war
+the whole time.
+
+00:14:45.319 --> 00:14:46.780
+I usually end up back
+again, honestly.
+
+00:14:50.200 --> 00:14:52.410
+And you can try to make peace,
+and they'll never do it.
+
+00:14:52.410 --> 00:14:53.780
+They'll say, oh yeah,
+we'll be friends.
+
+00:14:53.780 --> 00:14:57.730
+And then three turns later,
+they're declaring war.
+
+00:14:57.730 --> 00:15:00.410
+But on the other hand, Alexander
+the Great, who
+
+00:15:00.410 --> 00:15:02.750
+conquered much of Greece and
+Macedonia, and was very
+
+00:15:02.750 --> 00:15:04.880
+expansionist, is a
+total pacifist.
+
+00:15:04.880 --> 00:15:05.800
+He'll never fight you.
+
+00:15:05.800 --> 00:15:07.850
+He never wants to declare war.
+
+00:15:07.850 --> 00:15:10.200
+And not only that, but
+he never expands.
+
+00:15:10.200 --> 00:15:13.005
+They almost always just have
+their one city, and they never
+
+00:15:13.005 --> 00:15:15.038
+try to grow and spread,
+which is totally not
+
+00:15:15.038 --> 00:15:17.440
+what the Greeks did.
+
+00:15:17.440 --> 00:15:18.612
+So there's this question here.
+
+00:15:18.612 --> 00:15:22.260
+Is this the result, then, of
+bias in the simulation?
+
+00:15:22.260 --> 00:15:27.214
+Do the designers just think,
+is it bad history?
+
+00:15:27.214 --> 00:15:29.470
+AUDIENCE: I think that's
+backwards.
+
+00:15:29.470 --> 00:15:30.752
+Wrong pointer.
+
+00:15:30.752 --> 00:15:33.110
+AUDIENCE: That might be it,
+because in, for example,
+
+00:15:33.110 --> 00:15:36.560
+Civilization 4, and I think 5,
+they have the same characters,
+
+00:15:36.560 --> 00:15:41.920
+where if you're being India,
+your player can be Gandhian.
+
+00:15:41.920 --> 00:15:44.810
+He's pacifistic in that.
+
+00:15:44.810 --> 00:15:47.740
+And I'm pretty sure Alexander
+the Great is probably also
+
+00:15:47.740 --> 00:15:48.190
+expansionist.
+
+00:15:48.190 --> 00:15:50.900
+I'm not sure why they did
+that in this version.
+
+00:15:50.900 --> 00:15:52.854
+PROFESSOR: Maybe
+they messed up.
+
+00:15:52.854 --> 00:15:57.060
+AUDIENCE: Gandhi, in number 5,
+is still really aggressive.
+
+00:15:57.060 --> 00:16:01.660
+AUDIENCE: Maybe they just
+thought it was funny.
+
+00:16:01.660 --> 00:16:03.660
+AUDIENCE: Maybe they
+like irony.
+
+00:16:03.660 --> 00:16:06.170
+PROFESSOR: I actually have
+my own theory on this.
+
+00:16:06.170 --> 00:16:08.880
+Part of the game is your
+civilization has a certain
+
+00:16:08.880 --> 00:16:11.526
+government, and governments
+get different benefits.
+
+00:16:11.526 --> 00:16:12.910
+Actually, [UNINTELLIGIBLE]
+
+00:16:12.910 --> 00:16:15.730
+benefit in this game.
+
+00:16:15.730 --> 00:16:18.220
+Indians start with
+fundamentalism, which gives
+
+00:16:18.220 --> 00:16:20.240
+you a bonus to attack.
+
+00:16:20.240 --> 00:16:22.740
+Whereas the Greeks start with
+a democracy, and then a
+
+00:16:22.740 --> 00:16:25.120
+democracy that people won't
+declare war in.
+
+00:16:25.120 --> 00:16:28.160
+So there's this kind of weird,
+and my theory is that Indians
+
+00:16:28.160 --> 00:16:30.960
+always attack you because they
+always have an attack bonus.
+
+00:16:30.960 --> 00:16:32.180
+And the Greeks never attack you
+
+00:16:32.180 --> 00:16:34.420
+because they're a democracy.
+
+00:16:34.420 --> 00:16:39.090
+As we know, democracies aren't
+necessarily pacifistic.
+
+00:16:39.090 --> 00:16:41.880
+And again this is my
+thinking on it.
+
+00:16:41.880 --> 00:16:45.694
+This understanding the rules of
+the system, and then I kind
+
+00:16:45.694 --> 00:16:47.340
+of infer this AI behavior
+based on that.
+
+00:16:47.340 --> 00:16:49.380
+But again, this is
+my position.
+
+00:16:49.380 --> 00:16:52.305
+It's easy to find people
+complaining about historical
+
+00:16:52.305 --> 00:16:53.760
+inaccuracies in Civilization.
+
+00:16:53.760 --> 00:16:56.190
+There's always this question.
+
+00:16:56.190 --> 00:16:57.740
+Is it part of the system?
+
+00:16:57.740 --> 00:16:59.880
+Is the system just behaving in
+a certain way because of
+
+00:16:59.880 --> 00:17:00.810
+certain properties?
+
+00:17:00.810 --> 00:17:04.170
+Is there another intent there?
+
+00:17:04.170 --> 00:17:06.940
+We can infer all these different
+meanings from what
+
+00:17:06.940 --> 00:17:11.260
+the simulation includes
+and what it excludes.
+
+00:17:11.260 --> 00:17:15.619
+So I want to ask, has anyone
+not played September 12?
+
+00:17:15.619 --> 00:17:17.910
+Can I get a volunteer to play?
+
+00:17:17.910 --> 00:17:20.918
+AUDIENCE: Go for it, Jeremy.
+
+00:17:20.918 --> 00:17:22.394
+PROFESSOR: Do you
+want to play?
+
+00:17:32.750 --> 00:17:34.948
+So you can control
+with the mouse.
+
+00:17:37.882 --> 00:17:39.838
+Can everyone read this OK?
+
+00:17:39.838 --> 00:17:41.305
+Should I read it.
+
+00:17:41.305 --> 00:17:42.772
+It's not a game.
+
+00:17:42.772 --> 00:17:43.750
+You can't win or lose.
+
+00:17:43.750 --> 00:17:44.728
+It's a simulation.
+
+00:17:44.728 --> 00:17:45.706
+It has no ending.
+
+00:17:45.706 --> 00:17:46.195
+It's already begun.
+
+00:17:46.195 --> 00:17:47.173
+And here it goes.
+
+00:17:47.173 --> 00:17:48.640
+So, all you can do is--
+
+00:17:48.640 --> 00:17:49.890
+[INTERPOSING  VOICES]
+
+00:17:54.019 --> 00:17:57.798
+PROFESSOR: So do you see what's
+happening to the people
+
+00:17:57.798 --> 00:18:02.244
+that you just hit with this?
+
+00:18:02.244 --> 00:18:15.582
+[VIDEO GAME SOUNDS]
+
+00:18:15.582 --> 00:18:17.558
+[UNINTELLIGIBLE] --turn
+into errors.
+
+00:18:21.550 --> 00:18:23.330
+PROFESSOR: You can read in the
+intro screen that this is
+
+00:18:23.330 --> 00:18:25.480
+meant to be a simulation
+of the United
+
+00:18:25.480 --> 00:18:34.914
+States' response to 9/11.
+
+00:18:34.914 --> 00:18:35.400
+AUDIENCE: There's a puppy!
+
+00:18:35.400 --> 00:18:38.458
+PROFESSOR: Do you think you're
+making things better?
+
+00:18:38.458 --> 00:18:43.710
+[PLAYING VIDEO GAME]
+
+00:18:43.710 --> 00:18:44.960
+[INTERPOSING VOICES]
+
+00:18:49.820 --> 00:18:51.157
+AUDIENCE: -- just to
+kill the puppy?
+
+00:18:58.312 --> 00:19:00.630
+AUDIENCE: That is
+one crazy dog.
+
+00:19:00.630 --> 00:19:01.320
+AUDIENCE: What the heck?
+
+00:19:01.320 --> 00:19:03.080
+PROFESSOR: Do you notice
+anything about when you
+
+00:19:03.080 --> 00:19:04.330
+[UNINTELLIGIBLE]?
+
+00:19:07.950 --> 00:19:09.200
+Anything unusual?
+
+00:19:17.210 --> 00:19:20.946
+So apparently as soon as you
+click, there is a delay.
+
+00:19:20.946 --> 00:19:23.310
+You can never specifically
+target.
+
+00:19:23.310 --> 00:19:27.075
+Even if you say, I want to get
+these terrorists, the delay
+
+00:19:27.075 --> 00:19:30.294
+means the odds are you're
+not going to.
+
+00:19:30.294 --> 00:19:31.544
+Because they're going
+to move away.
+
+00:19:39.042 --> 00:19:41.472
+AUDIENCE: Did you bomb
+the other terrorists?
+
+00:19:41.472 --> 00:19:41.958
+AUDIENCE: No.
+
+00:19:41.958 --> 00:19:45.664
+If you kill a terrorist, you
+don't bomb more terrorists.
+
+00:19:45.664 --> 00:19:46.914
+AUDIENCE: Oh really?
+
+00:19:51.170 --> 00:19:52.800
+AUDIENCE: Leopard terrorists.
+
+00:19:52.800 --> 00:19:56.285
+AUDIENCE: Ooh, it's a kid.
+
+00:19:56.285 --> 00:19:58.217
+AUDIENCE: It's a
+kid terrorist?
+
+00:20:01.580 --> 00:20:03.020
+AUDIENCE: You shouldn't have
+brought adult terrorists.
+
+00:20:06.380 --> 00:20:07.950
+AUDIENCE: Great strategy.
+
+00:20:07.950 --> 00:20:12.025
+If you turn all of the regular
+civilians into terrorists,
+
+00:20:12.025 --> 00:20:13.909
+then you can just
+kill everyone.
+
+00:20:13.909 --> 00:20:16.990
+[LAUGHTER]
+
+00:20:16.990 --> 00:20:20.630
+AUDIENCE: I think they also come
+in from the side there.
+
+00:20:20.630 --> 00:20:22.590
+AUDIENCE: Well you've got
+to kill them faster.
+
+00:20:27.000 --> 00:20:29.820
+AUDIENCE: Last night, someone
+figured out that if you camped
+
+00:20:29.820 --> 00:20:32.180
+out in the corner, eventually
+one would wander into the
+
+00:20:32.180 --> 00:20:34.310
+corner without any
+[UNINTELLIGIBLE] on it and you
+
+00:20:34.310 --> 00:20:36.140
+completely could probably
+kill only terrorists
+
+00:20:36.140 --> 00:20:37.595
+in the entire game.
+
+00:20:40.505 --> 00:20:43.900
+AUDIENCE: That's boring.
+
+00:20:43.900 --> 00:20:45.820
+AUDIENCE: How about just kill
+everyone, become terrorists
+
+00:20:45.820 --> 00:20:47.470
+and then chase them.
+
+00:20:47.470 --> 00:20:49.525
+PROFESSOR: So I want to say that
+this game has received a
+
+00:20:49.525 --> 00:20:50.870
+lot of criticism.
+
+00:20:50.870 --> 00:20:53.620
+So this is actually Gonzalo
+Frasca's game, if you still
+
+00:20:53.620 --> 00:20:56.800
+remember the quote from
+the beginning.
+
+00:20:56.800 --> 00:20:58.940
+Notable designer Greg
+Costikyan has really
+
+00:20:58.940 --> 00:21:00.670
+criticized this, saying
+this is really harsh.
+
+00:21:00.670 --> 00:21:03.090
+How can you call this
+a simulation.
+
+00:21:03.090 --> 00:21:04.010
+This is so insensitive.
+
+00:21:04.010 --> 00:21:08.115
+And you notice that this game
+leaves out a lot of the
+
+00:21:08.115 --> 00:21:11.380
+aspects of terrorism and how
+peaceful interactions work.
+
+00:21:11.380 --> 00:21:16.030
+You don't see 9/11
+happening here.
+
+00:21:16.030 --> 00:21:19.030
+It really simplifies the
+act of what makes
+
+00:21:19.030 --> 00:21:21.565
+someone become a terrorist.
+
+00:21:21.565 --> 00:21:24.962
+You don't have all of the other
+pressures in the region,
+
+00:21:24.962 --> 00:21:26.826
+all of the other countries'
+influences.
+
+00:21:26.826 --> 00:21:30.100
+It's very stripped down.
+
+00:21:30.100 --> 00:21:33.570
+And I think Frasca talked about
+part of the point here
+
+00:21:33.570 --> 00:21:34.630
+is that it's ignoring so much.
+
+00:21:34.630 --> 00:21:36.600
+Because that seems to be
+the way that the US
+
+00:21:36.600 --> 00:21:38.140
+government has responded.
+
+00:21:38.140 --> 00:21:41.200
+It's like this happened, and now
+we're just going to start
+
+00:21:41.200 --> 00:21:42.710
+bombing them.
+
+00:21:42.710 --> 00:21:47.760
+And so this is a really great
+example of how what has been
+
+00:21:47.760 --> 00:21:50.600
+stripped out and what's been
+left in really creates a
+
+00:21:50.600 --> 00:21:51.295
+strong statement.
+
+00:21:51.295 --> 00:21:55.110
+And you can interpret it in
+a lot of different ways.
+
+00:21:55.110 --> 00:21:57.760
+I personally think that what
+he's going for is this idea
+
+00:21:57.760 --> 00:22:01.922
+that the rhetoric surrounding
+the War on Terror and the
+
+00:22:01.922 --> 00:22:05.550
+political actions are ignoring
+a lot of factors, including
+
+00:22:05.550 --> 00:22:08.080
+our own role in the
+region of attack.
+
+00:22:08.080 --> 00:22:13.020
+But anyways, I don't mean to
+turn this into a subplot.
+
+00:22:13.020 --> 00:22:15.330
+Does anyone else have any other
+observations or anything
+
+00:22:15.330 --> 00:22:18.809
+to say about it?
+
+00:22:18.809 --> 00:22:22.288
+AUDIENCE: I know that, as a
+result of this, or inspired by
+
+00:22:22.288 --> 00:22:24.773
+this, there is a great
+[UNINTELLIGIBLE] article.
+
+00:22:24.773 --> 00:22:27.750
+That tells us we can expect
+a new mother of all bombs
+
+00:22:27.750 --> 00:22:32.280
+developed generates 10,000
+terrorists with every blast.
+
+00:22:37.520 --> 00:22:40.405
+PROFESSOR: So another example,
+has anyone not played Every
+
+00:22:40.405 --> 00:22:42.120
+Day the Same Dream?
+
+00:22:45.070 --> 00:22:46.990
+Does anyone want to play?
+
+00:22:46.990 --> 00:22:47.937
+AUDIENCE: I'll try.
+
+00:22:47.937 --> 00:22:49.187
+PROFESSOR: OK.
+
+00:23:01.573 --> 00:23:02.547
+AUDIENCE: [INAUDIBLE]
+
+00:23:02.547 --> 00:23:05.400
+Gandhi is not part
+of the system.
+
+00:23:05.400 --> 00:23:07.086
+Gandhi is just not like
+a player, he's
+
+00:23:07.086 --> 00:23:07.736
+not part the system.
+
+00:23:07.736 --> 00:23:09.480
+PROFESSOR: In Civilization?
+
+00:23:09.480 --> 00:23:10.988
+Well, the AI controls him.
+
+00:23:14.690 --> 00:23:17.136
+AUDIENCE: There was
+some music.
+
+00:23:17.136 --> 00:24:12.543
+[MUSIC PLAYING]
+
+00:24:12.543 --> 00:24:14.040
+AUDIENCE: Did you hit a car?
+
+00:24:24.020 --> 00:24:28.012
+AUDIENCE: Aw, you can't jump?
+
+00:24:28.012 --> 00:24:45.170
+[LAUGHTER]
+
+00:24:45.170 --> 00:24:46.420
+AUDIENCE: [UNINTELLIGIBLE]
+a cubicle!
+
+00:25:03.430 --> 00:25:05.084
+AUDIENCE: What is the biggest
+cubicle in this room?
+
+00:25:12.042 --> 00:25:13.533
+AUDIENCE: Computer science.
+
+00:25:13.533 --> 00:25:14.783
+Software.
+
+00:25:19.497 --> 00:25:20.365
+AUDIENCE: I get it.
+
+00:25:20.365 --> 00:25:21.615
+Anything more to it?
+
+00:25:24.386 --> 00:25:26.370
+AUDIENCE: You probably won't
+have enough time to do
+
+00:25:26.370 --> 00:25:27.620
+everything.
+
+00:25:41.156 --> 00:25:42.400
+AUDIENCE: Keep going forward.
+
+00:25:42.400 --> 00:25:44.390
+You can just keep
+going forward.
+
+00:25:47.130 --> 00:25:48.576
+AUDIENCE: Oh, you [INAUDIBLE].
+
+00:25:55.548 --> 00:25:56.798
+AUDIENCE: Oh my god!
+
+00:26:02.348 --> 00:26:03.598
+AUDIENCE: [INAUDIBLE]
+
+00:26:05.827 --> 00:26:06.821
+Go left, go left.
+
+00:26:06.821 --> 00:26:08.071
+AUDIENCE: Left, left?
+
+00:26:26.660 --> 00:26:27.910
+AUDIENCE: [INAUDIBLE]
+spent a day.
+
+00:26:30.874 --> 00:26:32.593
+AUDIENCE: You guys don't usually
+spend a day with a
+
+00:26:32.593 --> 00:26:34.157
+homeless guy in the graveyard?
+
+00:26:34.157 --> 00:26:34.885
+AUDIENCE: Why wouldn't you?
+
+00:26:34.885 --> 00:26:35.983
+It's cool.
+
+00:26:35.983 --> 00:26:37.400
+AUDIENCE: Don't get dressed.
+
+00:26:37.400 --> 00:26:39.060
+AUDIENCE: Next time don't
+put your clothes on.
+
+00:26:45.456 --> 00:26:47.424
+AUDIENCE: I'm going to get
+dressed like a homeless guy.
+
+00:27:00.250 --> 00:27:01.500
+AUDIENCE: Wow!
+
+00:27:04.630 --> 00:27:08.380
+AUDIENCE: OK, do I crash
+the car, or do I--
+
+00:27:08.380 --> 00:27:11.980
+AUDIENCE: Dude, get
+out of the car.
+
+00:27:11.980 --> 00:27:13.128
+AUDIENCE: Let's power
+through it.
+
+00:27:13.128 --> 00:27:14.622
+Just get out of the car.
+
+00:27:20.100 --> 00:27:21.096
+Just get out.
+
+00:27:21.096 --> 00:27:24.084
+Go left.
+
+00:27:24.084 --> 00:27:25.080
+AUDIENCE: See that guy.
+
+00:27:25.080 --> 00:27:27.570
+He abandoned his car.
+
+00:27:27.570 --> 00:27:28.580
+AUDIENCE: Oh, a cow.
+
+00:27:28.580 --> 00:27:29.830
+Sweet.
+
+00:27:51.073 --> 00:27:51.566
+AUDIENCE: I can't?
+
+00:27:51.566 --> 00:27:52.552
+Aww.
+
+00:27:52.552 --> 00:27:56.496
+AUDIENCE: Hold up traffic,
+[? Kev. ?]
+
+00:27:56.496 --> 00:27:57.000
+Aw.
+
+00:27:57.000 --> 00:27:58.300
+Leaf is gone.
+
+00:27:58.300 --> 00:27:59.650
+AUDIENCE: I want to see what
+my boss is going to say.
+
+00:27:59.650 --> 00:28:00.900
+[UNINTELLIGIBLE].
+
+00:28:00.900 --> 00:28:02.460
+What?
+
+00:28:02.460 --> 00:28:03.930
+AUDIENCE: You can't go left.
+
+00:28:03.930 --> 00:28:05.400
+AUDIENCE: You can't go left?
+
+00:28:05.400 --> 00:28:06.380
+AUDIENCE: I think you can.
+
+00:28:06.380 --> 00:28:07.360
+I think there's a car there.
+
+00:28:07.360 --> 00:28:09.810
+[LAUGHTER]
+
+00:28:09.810 --> 00:28:10.790
+AUDIENCE: Car's are inside--
+
+00:28:10.790 --> 00:28:12.040
+[INTERPOSING VOICES]
+
+00:28:14.130 --> 00:28:15.240
+AUDIENCE: You are late?
+
+00:28:15.240 --> 00:28:18.300
+He didn't notice I missed
+day of work?
+
+00:28:18.300 --> 00:28:20.430
+AUDIENCE: This is
+why you're late.
+
+00:28:20.430 --> 00:28:21.730
+AUDIENCE: The [? graphic's ?]
+going down.
+
+00:28:21.730 --> 00:28:23.470
+AUDIENCE: It's all your fault.
+
+00:28:23.470 --> 00:28:23.760
+AUDIENCE: Oh.
+
+00:28:23.760 --> 00:28:26.292
+I'm going to get fired because
+the company is going to go
+
+00:28:26.292 --> 00:28:26.786
+down the drain.
+
+00:28:26.786 --> 00:28:27.774
+In three days.
+
+00:28:27.774 --> 00:28:29.750
+AUDIENCE: Walk past
+your office.
+
+00:28:29.750 --> 00:28:30.244
+AUDIENCE: Hmm?
+
+00:28:30.244 --> 00:28:31.726
+PROFESSOR: Walk past
+your office.
+
+00:28:31.726 --> 00:28:32.976
+Or your cubicle, around it.
+
+00:28:41.190 --> 00:28:43.050
+The experience of the game is a
+little bit stronger when you
+
+00:28:43.050 --> 00:28:45.026
+don't have people talking.
+
+00:28:45.026 --> 00:28:47.496
+We don't have enough
+time [INAUDIBLE].
+
+00:28:59.352 --> 00:29:00.340
+[LAUGHTER]
+
+00:29:00.340 --> 00:29:01.328
+AUDIENCE: Push it.
+
+00:29:01.328 --> 00:29:02.316
+AUDIENCE: Should I?
+
+00:29:02.316 --> 00:29:02.810
+AUDIENCE: Do it.
+
+00:29:02.810 --> 00:29:04.292
+AUDIENCE: Do it.
+
+00:29:04.292 --> 00:29:06.268
+AUDIENCE: All I see
+is [INAUDIBLE].
+
+00:29:09.232 --> 00:29:10.750
+AUDIENCE: I told you I
+was going forward.
+
+00:29:15.730 --> 00:29:16.726
+AUDIENCE: What?
+
+00:29:16.726 --> 00:29:18.718
+AUDIENCE: It's Groundhog's
+Day.
+
+00:29:18.718 --> 00:29:19.714
+AUDIENCE: It is the Matrix.
+
+00:29:19.714 --> 00:29:20.212
+All right.
+
+00:29:20.212 --> 00:29:23.698
+We're going naked this time.
+
+00:29:23.698 --> 00:29:25.690
+AUDIENCE: You're still
+wearing underwear.
+
+00:29:32.190 --> 00:29:33.000
+There, I watched TV.
+
+00:29:33.000 --> 00:29:35.268
+Now we've got feeling this
+[UNINTELLIGIBLE]?
+
+00:29:35.268 --> 00:29:36.518
+I guess not.
+
+00:29:54.154 --> 00:29:56.142
+AUDIENCE: Did this skip, too?
+
+00:29:56.142 --> 00:29:57.633
+AUDIENCE: Yeah, because we--
+
+00:29:57.633 --> 00:30:00.615
+[INTERPOSING VOICES]
+
+00:30:00.615 --> 00:30:03.100
+AUDIENCE: Everything different
+you do is another step.
+
+00:30:03.100 --> 00:30:05.088
+AUDIENCE: So this is
+the last step then.
+
+00:30:08.567 --> 00:30:09.064
+AUDIENCE: Naked.
+
+00:30:09.064 --> 00:30:10.058
+Naked.
+
+00:30:10.058 --> 00:30:12.922
+AUDIENCE: HIt a car.
+
+00:30:12.922 --> 00:30:14.866
+AUDIENCE: I can't.
+
+00:30:14.866 --> 00:30:17.296
+AUDIENCE: You can't hit it?
+
+00:30:17.296 --> 00:30:19.726
+AUDIENCE: I'm jamming it.
+
+00:30:19.726 --> 00:30:23.614
+AUDIENCE: Are the cars
+the same everyday?
+
+00:30:23.614 --> 00:30:25.590
+PROFESSOR: And the leap
+was something, too.
+
+00:30:29.558 --> 00:30:35.510
+[LAUGHTER]
+
+00:30:35.510 --> 00:30:37.494
+AUDIENCE: Now what?
+
+00:30:37.494 --> 00:30:41.462
+AUDIENCE: I assume you have to
+go past your office again.
+
+00:30:41.462 --> 00:30:43.611
+But you're going to want to get
+dressed, or you're going
+
+00:30:43.611 --> 00:30:45.680
+to get fired again.
+
+00:30:45.680 --> 00:30:46.710
+AUDIENCE: No, he won't.
+
+00:30:46.710 --> 00:30:49.100
+AUDIENCE: No, I won't.
+
+00:30:49.100 --> 00:30:51.270
+AUDIENCE: Oh, right.
+
+00:30:51.270 --> 00:30:52.520
+AUDIENCE: [UNINTELLIGIBLE]
+left me.
+
+00:30:57.280 --> 00:30:58.550
+AUDIENCE: You keep
+on reminding me,
+
+00:30:58.550 --> 00:30:59.800
+because I had a job.
+
+00:31:02.471 --> 00:31:03.417
+AUDIENCE: Where are you going?
+
+00:31:03.417 --> 00:31:04.840
+You're fired.
+
+00:31:04.840 --> 00:31:06.790
+AUDIENCE: I'm going to
+go postal at work.
+
+00:31:06.790 --> 00:31:07.610
+Don't worry about it.
+
+00:31:07.610 --> 00:31:08.860
+AUDIENCE: He's going
+to kill himself.
+
+00:31:11.830 --> 00:31:14.305
+AUDIENCE: Am I doing the
+right thing here?
+
+00:31:14.305 --> 00:31:15.790
+AUDIENCE: Yeah.
+
+00:31:15.790 --> 00:31:19.255
+AUDIENCE: We're the
+homeless guys.
+
+00:31:19.255 --> 00:31:20.505
+AUDIENCE: It's Saturday!
+
+00:31:24.205 --> 00:31:25.455
+AUDIENCE: Good call.
+
+00:31:35.590 --> 00:31:36.085
+AUDIENCE: Yeah.
+
+00:31:36.085 --> 00:31:37.075
+He got fired, too.
+
+00:31:37.075 --> 00:31:40.045
+Ha ha.
+
+00:31:40.045 --> 00:31:41.530
+I can't crash cars now.
+
+00:31:50.510 --> 00:31:52.474
+Really not one's going out
+because day 6 is Saturday.
+
+00:31:52.474 --> 00:31:53.965
+So no one's going to work.
+
+00:32:01.420 --> 00:32:03.408
+AUDIENCE: Are we not supposed
+to get up yet?
+
+00:32:06.910 --> 00:32:07.820
+AUDIENCE: Oh, look.
+
+00:32:07.820 --> 00:32:09.290
+You have no cubicle anymore.
+
+00:32:09.290 --> 00:32:10.540
+AUDIENCE: You're retired.
+
+00:32:14.090 --> 00:32:16.560
+AUDIENCE: That would be funny.
+
+00:32:16.560 --> 00:32:17.940
+AUDIENCE: You finished
+the program.
+
+00:32:17.940 --> 00:32:19.320
+AUDIENCE: That's you.
+
+00:32:19.320 --> 00:32:20.240
+AUDIENCE: I don't know.
+
+00:32:20.240 --> 00:32:21.170
+Everyone else looks the same.
+
+00:32:21.170 --> 00:32:22.420
+AUDIENCE: Yeah, they
+all look the same.
+
+00:32:29.380 --> 00:32:30.190
+AUDIENCE: Deep.
+
+00:32:30.190 --> 00:32:36.082
+[LAUGHTER]
+
+00:32:36.082 --> 00:32:38.560
+AUDIENCE: It reminds me of that
+one game where you walk
+
+00:32:38.560 --> 00:32:39.546
+into a bar that's right
+across, and you
+
+00:32:39.546 --> 00:32:42.450
+can pick up a wife.
+
+00:32:42.450 --> 00:32:43.130
+AUDIENCE: Oh, Passage.
+
+00:32:43.130 --> 00:32:44.490
+That's a weird game.
+
+00:32:44.490 --> 00:32:45.740
+AUDIENCE: It reminds me
+of that game a lot.
+
+00:33:03.130 --> 00:33:06.074
+PROFESSOR: So there's a couple
+things that I want to say
+
+00:33:06.074 --> 00:33:07.050
+about this game.
+
+00:33:07.050 --> 00:33:08.690
+First of all, if you remember
+[? Prospect's ?]
+
+00:33:08.690 --> 00:33:10.425
+definition of a simulation,
+it's talking about
+
+00:33:10.425 --> 00:33:12.990
+the space in it.
+
+00:33:12.990 --> 00:33:15.000
+And I would consider
+this a simulation.
+
+00:33:15.000 --> 00:33:16.300
+This is based on a
+source system.
+
+00:33:16.300 --> 00:33:20.764
+But it's not the kind of number
+crunching CS thing that
+
+00:33:20.764 --> 00:33:24.732
+we associate with the word.
+
+00:33:24.732 --> 00:33:27.880
+For me, personally, I worked
+a pretty horrible dead-end
+
+00:33:27.880 --> 00:33:31.910
+cubicle job for about 18 months,
+before I came in here.
+
+00:33:31.910 --> 00:33:33.980
+For me, this game really
+resonates, because it really
+
+00:33:33.980 --> 00:33:36.280
+closely matches the
+experience.
+
+00:33:36.280 --> 00:33:38.840
+You're just doing the same thing
+every day, and any sort
+
+00:33:38.840 --> 00:33:44.900
+of deviation from the
+norm stands out.
+
+00:33:44.900 --> 00:33:49.990
+But in terms of exclusion
+inclusion, one of the
+
+00:33:49.990 --> 00:33:51.660
+interesting things about this
+game, [UNINTELLIGIBLE]
+
+00:33:51.660 --> 00:33:52.090
+makes its point.
+
+00:33:52.090 --> 00:33:53.660
+There is nothing else.
+
+00:33:53.660 --> 00:33:55.320
+It's all a workday.
+
+00:33:55.320 --> 00:33:56.860
+There is no weekend.
+
+00:33:56.860 --> 00:34:01.950
+There's no I got home and
+there's something different.
+
+00:34:01.950 --> 00:34:05.790
+And that's the limited
+agency in the game.
+
+00:34:05.790 --> 00:34:11.200
+By that I mean it can be easy to
+forget about, especially in
+
+00:34:11.200 --> 00:34:13.639
+a place like MIT, but a lot of
+people I know end up in these
+
+00:34:13.639 --> 00:34:14.577
+very dead-end jobs.
+
+00:34:14.577 --> 00:34:19.094
+This is a huge part of
+any major economy.
+
+00:34:19.094 --> 00:34:21.046
+There are people who
+just go to their
+
+00:34:21.046 --> 00:34:22.860
+cubicle day after day.
+
+00:34:22.860 --> 00:34:24.710
+When I was at that crap job, I
+knew people who had been there
+
+00:34:24.710 --> 00:34:26.980
+for 40 years.
+
+00:34:26.980 --> 00:34:28.260
+AUDIENCE: What kind
+of job was it?
+
+00:34:28.260 --> 00:34:30.024
+PROFESSOR: It was for
+a mutual fund
+
+00:34:30.024 --> 00:34:31.920
+subsidiary at Bank of America.
+
+00:34:31.920 --> 00:34:34.764
+Back in the financial
+district.
+
+00:34:34.764 --> 00:34:37.100
+I'm not sure if it would have
+been better for me to stay,
+
+00:34:37.100 --> 00:34:40.588
+given the whole, you know, we
+tanked the economy but we
+
+00:34:40.588 --> 00:34:42.580
+awarded ourselves billions
+of dollars.
+
+00:34:42.580 --> 00:34:45.570
+Maybe I should have
+stuck around.
+
+00:34:45.570 --> 00:34:48.379
+PROFESSOR: So it was a well-paid
+type of job.
+
+00:34:48.379 --> 00:34:51.801
+I mean, in this climate, it
+might have become well-paid.
+
+00:34:51.801 --> 00:34:56.370
+But it wasn't at the time.
+
+00:34:56.370 --> 00:34:59.444
+It was actually, a lot of what
+I did was trade corrections.
+
+00:34:59.444 --> 00:35:01.834
+This is kind of a tangent,
+but it drives me bonkers.
+
+00:35:01.834 --> 00:35:04.343
+Financial representatives and
+advisers make an obscene
+
+00:35:04.343 --> 00:35:06.150
+amount of money, yet most of
+them don't know the difference
+
+00:35:06.150 --> 00:35:09.320
+between dollars and
+shares in stock.
+
+00:35:09.320 --> 00:35:13.240
+And most of my job is correcting
+that for them.
+
+00:35:13.240 --> 00:35:14.220
+It's unbelievable.
+
+00:35:14.220 --> 00:35:15.690
+And it's no surprise to
+me that the thing
+
+00:35:15.690 --> 00:35:17.290
+is all fucked up.
+
+00:35:17.290 --> 00:35:19.330
+Anyway, so any other reactions
+to this game or
+
+00:35:19.330 --> 00:35:22.978
+thoughts about this game?
+
+00:35:22.978 --> 00:35:25.880
+AUDIENCE: The color
+[UNINTELLIGIBLE].
+
+00:35:25.880 --> 00:35:29.220
+PROFESSOR: What do
+you mean color?
+
+00:35:29.220 --> 00:35:30.470
+AUDIENCE:
+[UNINTELLIGIBLE PHRASE]
+
+00:35:35.940 --> 00:35:37.046
+PROFESSOR: There's also nothing
+meaningful on the
+
+00:35:37.046 --> 00:35:38.296
+screen, right?
+
+00:35:41.100 --> 00:35:43.980
+AUDIENCE: There was some kind
+of static noise, right?
+
+00:35:43.980 --> 00:35:46.390
+But you turned it off?
+
+00:35:46.390 --> 00:35:46.790
+PROFESSOR: I think so.
+
+00:35:46.790 --> 00:35:50.260
+I forgot to close the September
+12 window, so there
+
+00:35:50.260 --> 00:35:51.510
+was some noise from that.
+
+00:35:54.140 --> 00:35:56.080
+AUDIENCE: The use of color, just
+in general, was really
+
+00:35:56.080 --> 00:35:57.540
+interesting.
+
+00:35:57.540 --> 00:36:01.040
+In particular, the only thing at
+your work that is colorful
+
+00:36:01.040 --> 00:36:04.800
+is the plumbing stock sign, the
+exit sign which tells you
+
+00:36:04.800 --> 00:36:06.050
+where to go kill yourself.
+
+00:36:10.710 --> 00:36:11.960
+The leap is colorful.
+
+00:36:14.500 --> 00:36:16.700
+AUDIENCE: I think the cows.
+
+00:36:16.700 --> 00:36:17.950
+And the hobos.
+
+00:36:22.320 --> 00:36:23.310
+I think it's interesting.
+
+00:36:23.310 --> 00:36:26.280
+It's kind of from the heritage
+of the game Another World.
+
+00:36:26.280 --> 00:36:30.848
+Because sort of an early
+[UNINTELLIGIBLE] look at what
+
+00:36:30.848 --> 00:36:32.820
+it would be like to be
+a human transplant
+
+00:36:32.820 --> 00:36:34.299
+onto another planet.
+
+00:36:34.299 --> 00:36:37.503
+You know [UNINTELLIGIBLE] that,
+in the beginning your
+
+00:36:37.503 --> 00:36:38.489
+character is extremely
+vulnerable
+
+00:36:38.489 --> 00:36:39.722
+and slow and clumsy.
+
+00:36:39.722 --> 00:36:42.680
+And it uses the same control
+schemes on the same
+
+00:36:42.680 --> 00:36:46.131
+[UNINTELLIGIBLE] channel
+endings.
+
+00:36:46.131 --> 00:36:50.075
+And by the same token, you're
+playing an ordinary person.
+
+00:36:50.075 --> 00:36:51.554
+It's not the boss.
+
+00:36:51.554 --> 00:36:52.540
+Not this person coming in.
+
+00:36:52.540 --> 00:36:54.512
+And you don't go into a
+
+00:36:54.512 --> 00:36:55.991
+postal-style power trip, either.
+
+00:37:01.470 --> 00:37:04.682
+PROFESSOR: And so, I just wanted
+to say, I actually
+
+00:37:04.682 --> 00:37:08.350
+haven't seen the talk, but
+apparently, someone has argued
+
+00:37:08.350 --> 00:37:09.800
+that this game is just
+a critique of
+
+00:37:09.800 --> 00:37:11.568
+the art game movement.
+
+00:37:11.568 --> 00:37:13.470
+Right, that it's making
+fun of the whole
+
+00:37:13.470 --> 00:37:14.750
+pretentiousness of that.
+
+00:37:14.750 --> 00:37:18.220
+I don't really see that, but
+again, it's subjectivity.
+
+00:37:18.220 --> 00:37:20.180
+Like where does this
+actually go.
+
+00:37:20.180 --> 00:37:22.140
+AUDIENCE: Well, what do the
+creators say to that?
+
+00:37:25.570 --> 00:37:27.366
+AUDIENCE: You'll find that
+really creative people like
+
+00:37:27.366 --> 00:37:29.490
+that never want to
+talk about it.
+
+00:37:29.490 --> 00:37:30.630
+AUDIENCE: I thought there
+was an artist
+
+00:37:30.630 --> 00:37:31.630
+statement on the website.
+
+00:37:31.630 --> 00:37:33.626
+PROFESSOR: I'm sorry?
+
+00:37:33.626 --> 00:37:35.123
+PROFESSOR: I thought
+there was an artist
+
+00:37:35.123 --> 00:37:36.620
+statement for this somewhere.
+
+00:37:36.620 --> 00:37:37.119
+PROFESSOR: There could be.
+
+00:37:37.119 --> 00:37:40.030
+I honestly haven't
+looked it up.
+
+00:37:40.030 --> 00:37:43.700
+OK, so moving on.
+
+00:37:43.700 --> 00:37:47.070
+So anyway, good theory.
+
+00:37:47.070 --> 00:37:49.865
+If you have a theory about how
+things work, the best way to
+
+00:37:49.865 --> 00:37:53.150
+test it is to figure out what's
+a horrible example.
+
+00:37:53.150 --> 00:37:55.100
+So we've been talking about
+simulations and subjectivity,
+
+00:37:55.100 --> 00:37:59.018
+and saying, OK, how does this
+model explain the way meaning
+
+00:37:59.018 --> 00:38:03.760
+gets invented in a game and
+Mario is a really good example
+
+00:38:03.760 --> 00:38:05.090
+to throw with that.
+
+00:38:07.754 --> 00:38:09.600
+So what are some things that
+are abstracted into the
+
+00:38:09.600 --> 00:38:10.010
+simulation?
+
+00:38:10.010 --> 00:38:11.090
+Like what's here?
+
+00:38:11.090 --> 00:38:13.350
+What's not?
+
+00:38:13.350 --> 00:38:14.010
+AUDIENCE: It's physics.
+
+00:38:14.010 --> 00:38:15.400
+You can jump to the moon.
+
+00:38:15.400 --> 00:38:19.250
+AUDIENCE: You can
+move in mid-air.
+
+00:38:19.250 --> 00:38:21.629
+You can slam against extremely
+hard things and break them.
+
+00:38:21.629 --> 00:38:23.625
+AUDIENCE: [UNINTELLIGIBLE]
+things and kill them.
+
+00:38:23.625 --> 00:38:27.120
+Technically [INAUDIBLE].
+
+00:38:27.120 --> 00:38:30.730
+AUDIENCE: You can punch hard
+things and breaking them.
+
+00:38:30.730 --> 00:38:31.620
+PROFESSOR: You can get bigger.
+
+00:38:31.620 --> 00:38:33.490
+You can shoot fire
+out of your hand.
+
+00:38:33.490 --> 00:38:35.646
+AUDIENCE: Still, the plumbers
+don't seem to
+
+00:38:35.646 --> 00:38:39.074
+really do any work.
+
+00:38:39.074 --> 00:38:42.567
+They do get out of fights and
+clean up coins here and there,
+
+00:38:42.567 --> 00:38:47.560
+so that technically
+counts as points.
+
+00:38:47.560 --> 00:38:48.450
+AUDIENCE: Why is it
+
+00:38:48.450 --> 00:38:49.935
+significant that he's a plumber?
+
+00:38:49.935 --> 00:38:52.410
+Is it so he can clean pipes?
+
+00:38:52.410 --> 00:38:55.880
+AUDIENCE:He was the one
+who [UNINTELLIGIBLE].
+
+00:38:55.880 --> 00:38:58.780
+PROFESSOR: And this
+is the point.
+
+00:38:58.780 --> 00:39:00.340
+He's an Italian, and
+he's the plumber.
+
+00:39:00.340 --> 00:39:02.710
+So if you focus on him,
+what can we say
+
+00:39:02.710 --> 00:39:04.350
+this game is arguing?
+
+00:39:04.350 --> 00:39:07.770
+That Italian plumbers
+have hard heads?
+
+00:39:07.770 --> 00:39:08.810
+He doesn't even eat.
+
+00:39:08.810 --> 00:39:10.200
+Do they not need to eat?
+
+00:39:10.200 --> 00:39:12.630
+How do you--?
+
+00:39:12.630 --> 00:39:14.230
+AUDIENCE: He eats mushrooms.
+
+00:39:14.230 --> 00:39:16.680
+PROFESSOR: So to me, Mario is
+a really interesting example
+
+00:39:16.680 --> 00:39:18.740
+because we think of
+it as a simulation
+
+00:39:18.740 --> 00:39:20.110
+because it has physics.
+
+00:39:20.110 --> 00:39:22.323
+When it came out, it had the
+most advanced jumping physics
+
+00:39:22.323 --> 00:39:23.573
+ever designed.
+
+00:39:25.400 --> 00:39:26.650
+It's interesting.
+
+00:39:28.660 --> 00:39:30.460
+So there's a couple
+of things here.
+
+00:39:30.460 --> 00:39:31.650
+There's so many of the
+fantastical elements.
+
+00:39:31.650 --> 00:39:32.560
+Like walking mushrooms-
+
+00:39:32.560 --> 00:39:33.070
+AUDIENCE: He can jump
+like five times.
+
+00:39:33.070 --> 00:39:35.120
+PROFESSOR: -and flying
+turtles and stuff.
+
+00:39:35.120 --> 00:39:35.280
+Yeah.
+
+00:39:35.280 --> 00:39:38.740
+Just the way that he jumps.
+
+00:39:38.740 --> 00:39:41.880
+You also notice that unlike the
+other games, it's hard to
+
+00:39:41.880 --> 00:39:44.820
+find anything political
+in Mario.
+
+00:39:44.820 --> 00:39:46.610
+You could say he's
+hoarding money.
+
+00:39:46.610 --> 00:39:49.550
+Maybe he's a capitalist.
+
+00:39:49.550 --> 00:39:51.780
+AUDIENCE: There's this
+whole long essay
+
+00:39:51.780 --> 00:39:53.730
+about how he's a communist.
+
+00:39:53.730 --> 00:39:54.796
+PROFESSOR: Interesting.
+
+00:39:54.796 --> 00:39:56.700
+Could you post that
+on the forum?
+
+00:39:56.700 --> 00:39:59.960
+AUDIENCE: I will.
+
+00:39:59.960 --> 00:40:01.420
+PROFESSOR: One thing again,
+just [UNINTELLIGIBLE] to
+
+00:40:01.420 --> 00:40:03.240
+notice is it's gender
+politics.
+
+00:40:03.240 --> 00:40:06.490
+So the only female
+is the princess.
+
+00:40:06.490 --> 00:40:07.426
+And what does she do?
+
+00:40:07.426 --> 00:40:08.362
+She sits and waits.
+
+00:40:08.362 --> 00:40:10.180
+She has no agency, and it's
+all about the masculine.
+
+00:40:10.180 --> 00:40:12.875
+So you can have a feminist
+reading.
+
+00:40:16.930 --> 00:40:18.180
+AUDIENCE: Is Bowser masculine?
+
+00:40:21.357 --> 00:40:22.740
+PROFESSOR: That's an interesting
+question.
+
+00:40:22.740 --> 00:40:26.130
+Because it's also how much do
+you bring in other elements?
+
+00:40:26.130 --> 00:40:28.412
+Do you think about the cartoon
+when you think about this?
+
+00:40:28.412 --> 00:40:29.864
+Do you think about
+the other games?
+
+00:40:29.864 --> 00:40:33.252
+Do you just look at Mario
+as an isolated event?
+
+00:40:33.252 --> 00:40:34.704
+AUDIENCE: Peach kicks
+ass, man.
+
+00:40:34.704 --> 00:40:36.640
+AUDIENCE: That's true.
+
+00:40:36.640 --> 00:40:37.890
+AUDIENCE: [INAUDIBLE]
+
+00:40:41.010 --> 00:40:43.952
+AUDIENCE: Well there's
+the Super
+
+00:40:43.952 --> 00:40:46.200
+Princess Peach, actually.
+
+00:40:46.200 --> 00:40:47.450
+But her [UNINTELLIGIBLE PHRASE].
+
+00:40:52.950 --> 00:40:54.411
+AUDIENCE: She gets very upset.
+
+00:40:54.411 --> 00:40:55.661
+She cries.
+
+00:40:57.820 --> 00:40:59.070
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:41:02.700 --> 00:41:04.846
+AUDIENCE: [INAUDIBLE]
+competitive development.
+
+00:41:04.846 --> 00:41:08.248
+I think there's something you
+said about the idea that
+
+00:41:08.248 --> 00:41:10.810
+snappers-- is that
+a Braunembaun?
+
+00:41:10.810 --> 00:41:11.420
+AUDIENCE: It's Powell.
+
+00:41:11.420 --> 00:41:12.326
+AUDIENCE: Powell and
+
+00:41:12.326 --> 00:41:13.960
+Braunembaun are working together.
+
+00:41:13.960 --> 00:41:16.150
+Then [UNINTELLIGIBLE]
+
+00:41:16.150 --> 00:41:22.190
+but has Nintendo ever made
+a proper Peach game?
+
+00:41:22.190 --> 00:41:24.515
+I don't think so.
+
+00:41:24.515 --> 00:41:27.425
+PROFESSOR: Especially in the
+American Super Mario II, when
+
+00:41:27.425 --> 00:41:28.480
+you can control Peach.
+
+00:41:28.480 --> 00:41:32.050
+And she is popular because
+she floats.
+
+00:41:32.050 --> 00:41:37.230
+So I mean again, this is
+to say that this theory
+
+00:41:37.230 --> 00:41:38.550
+emphasizes subjectivity.
+
+00:41:38.550 --> 00:41:41.410
+There's just no lacking here
+that we would find meaningful
+
+00:41:41.410 --> 00:41:45.518
+or that we would actually
+pick apart.
+
+00:41:45.518 --> 00:41:48.530
+With that said, I certainly
+think it works, especially
+
+00:41:48.530 --> 00:41:49.880
+with more political
+games, games that
+
+00:41:49.880 --> 00:41:52.750
+have more of a message.
+
+00:41:52.750 --> 00:41:54.610
+And again, this is all
+stuff to think about.
+
+00:41:54.610 --> 00:41:57.538
+It's not something we're
+necessarily looking for.
+
+00:41:57.538 --> 00:42:00.470
+So anything else with
+[UNINTELLIGIBLE] in there?
+
+00:42:00.470 --> 00:42:03.495
+AUDIENCE: There's one probable
+reason why Mario's club--
+
+00:42:03.495 --> 00:42:07.083
+actually the original pre-Super
+Mario Brothers where
+
+00:42:07.083 --> 00:42:10.425
+basically there is one screen,
+and all this bad stuff is
+
+00:42:10.425 --> 00:42:11.910
+coming out of pipes.
+
+00:42:14.880 --> 00:42:18.345
+And the idea is that you are
+trying to clear all the pipes
+
+00:42:18.345 --> 00:42:20.820
+of all the bad stuff.
+
+00:42:20.820 --> 00:42:23.790
+AUDIENCE: I never got
+that from it.
+
+00:42:23.790 --> 00:42:26.290
+AUDIENCE: The pipes are there.
+
+00:42:26.290 --> 00:42:29.876
+AUDIENCE: I guess in that case
+what you are asking what do I
+
+00:42:29.876 --> 00:42:30.681
+bring from outside.
+
+00:42:30.681 --> 00:42:34.062
+And I recall the typing from
+that being a big point of what
+
+00:42:34.062 --> 00:42:35.312
+[INAUDIBLE].
+
+00:42:39.860 --> 00:42:41.590
+PROFESSOR: So it's like a
+Donkey Kong, Mario was
+
+00:42:41.590 --> 00:42:42.823
+actually originally
+a carpenter.
+
+00:42:42.823 --> 00:42:46.070
+And they retroactively changed
+him into a plumber because
+
+00:42:46.070 --> 00:42:48.990
+Mario Brothers, the original,
+was about plumbing.
+
+00:42:48.990 --> 00:42:53.067
+But they wanted to keep the
+character the same.
+
+00:42:53.067 --> 00:42:55.869
+AUDIENCE: Mario's
+in Donkey Kong?
+
+00:42:55.869 --> 00:42:57.119
+AUDIENCE: Yes.
+
+00:43:01.340 --> 00:43:03.440
+PROFESSOR: They retroactively
+changed his name and his
+
+00:43:03.440 --> 00:43:04.690
+profession.
+
+00:43:07.864 --> 00:43:09.840
+AUDIENCE: --Donkey Kong
+on Super Nintendo.
+
+00:43:12.804 --> 00:43:14.286
+PROFESSOR: So that's
+the example.
+
+00:43:17.270 --> 00:43:19.144
+Anyone not played this one?
+
+00:43:19.144 --> 00:43:20.394
+You want to give it a shot?
+
+00:43:26.554 --> 00:43:27.048
+AUDIENCE: Surprise.
+
+00:43:27.048 --> 00:43:28.530
+You have to play this
+game again.
+
+00:43:31.494 --> 00:43:34.770
+PROFESSOR: Do you want
+to shoot, Jeremy?
+
+00:43:34.770 --> 00:43:36.630
+AUDIENCE: I was actually just
+thinking of their Cooking Mama
+
+00:43:36.630 --> 00:43:38.276
+simulation that started this.
+
+00:43:50.722 --> 00:43:53.157
+PROFESSOR: Oh, gosh.
+
+00:43:53.157 --> 00:43:55.910
+Princess Pamela Andersen has
+been captured by evil Ronald
+
+00:43:55.910 --> 00:43:58.590
+McDonald, who plans on making
+her a part of his Unhappy
+
+00:43:58.590 --> 00:44:00.910
+Meals, along with the chickens
+who are tortured for
+
+00:44:00.910 --> 00:44:02.164
+McDonald's Restaurants.
+
+00:44:02.164 --> 00:44:03.670
+Help save the princess,
+blah blah blah.
+
+00:44:03.670 --> 00:44:07.380
+Arrow key is move, space
+bar to jump.
+
+00:44:07.380 --> 00:44:09.274
+To beat enemies, jumping
+on their heads.
+
+00:44:09.274 --> 00:44:12.718
+You can also hit the down arrow
+to do the proverbial
+
+00:44:12.718 --> 00:44:13.968
+heads thing.
+
+00:44:16.162 --> 00:44:17.638
+[LAUGHTER]
+
+00:44:17.638 --> 00:44:18.130
+AUDIENCE: Ah.
+
+00:44:18.130 --> 00:44:19.380
+Pamela Andersen.
+
+00:44:22.558 --> 00:44:24.060
+AUDIENCE: I thought they
+weren't nuggets.
+
+00:44:24.060 --> 00:44:27.320
+[MUSIC]
+
+00:44:27.320 --> 00:44:29.836
+[LAUGHTER]
+
+00:44:29.836 --> 00:44:31.701
+PROFESSOR: I want to thank all
+of you for being here for the
+
+00:44:31.701 --> 00:44:33.365
+opening of my new vegetarian
+restaurant, [UNINTELLIGIBLE].
+
+00:44:33.365 --> 00:44:34.363
+Ronald McDonald--
+
+00:44:34.363 --> 00:44:39.353
+Finally I've found the perfect
+toy for my next Unhappy Meal.
+
+00:44:39.353 --> 00:44:40.603
+[INAUDIBLE]
+
+00:44:45.341 --> 00:44:47.337
+Looks like we have to take
+the princess once again
+
+00:44:47.337 --> 00:44:47.836
+[UNINTELLIGIBLE].
+
+00:44:47.836 --> 00:44:49.086
+Let's go.
+
+00:44:53.830 --> 00:45:02.140
+[LAUGHTER]
+
+00:45:02.140 --> 00:45:03.390
+AUDIENCE: Wow.
+
+00:45:08.920 --> 00:45:10.545
+PROFESSOR: Did you know
+McDonald's is one of the
+
+00:45:10.545 --> 00:45:11.990
+biggest sellers of
+chicken flesh?
+
+00:45:11.990 --> 00:45:13.692
+And they use an outdated method
+of slaughter that leads
+
+00:45:13.692 --> 00:45:16.510
+to extreme suffering
+for birds.
+
+00:45:16.510 --> 00:45:18.040
+AUDIENCE: So.
+
+00:45:18.040 --> 00:45:19.290
+Wow.
+
+00:45:21.800 --> 00:45:25.014
+It's not obvious at all
+that it's from PETA.
+
+00:45:25.014 --> 00:45:27.370
+PROFESSOR: You think
+it's from PETA?
+
+00:45:27.370 --> 00:45:29.792
+AUDIENCE: Yeah.
+
+00:45:29.792 --> 00:45:31.042
+AUDIENCE: Ooh, a kitten.
+
+00:45:37.112 --> 00:45:38.576
+They're cooking hamburgers.
+
+00:45:38.576 --> 00:45:42.968
+AUDIENCE: Are you getting any
+carnivorous responses?
+
+00:45:42.968 --> 00:45:44.218
+[INTERPOSING VOICES]
+
+00:45:51.180 --> 00:45:53.361
+AUDIENCE: I think Super Meat
+Boy is a response.
+
+00:45:55.995 --> 00:45:57.245
+AUDIENCE: You worried about
+[UNINTELLIGIBLE]?
+
+00:46:11.100 --> 00:46:12.870
+AUDIENCE: What was
+that, spinach?
+
+00:46:12.870 --> 00:46:13.995
+AUDIENCE: I like growth
+hormones as
+
+00:46:13.995 --> 00:46:15.245
+the reason for that.
+
+00:46:28.520 --> 00:46:29.770
+AUDIENCE: There it is.
+
+00:46:33.556 --> 00:46:35.548
+I don't know if this
+goes against one of
+
+00:46:35.548 --> 00:46:37.540
+PETA's earlier ads.
+
+00:46:37.540 --> 00:46:40.235
+It was a sticker that had a
+chick that looked like that
+
+00:46:40.235 --> 00:46:42.592
+and it said I'm not a nugget.
+
+00:46:42.592 --> 00:46:45.900
+This character's
+name is Nugget.
+
+00:46:45.900 --> 00:46:47.635
+PROFESSOR: There's also
+a KFC version of this.
+
+00:46:47.635 --> 00:46:48.970
+But I think this one has more.
+
+00:46:59.178 --> 00:47:00.160
+[INTERPOSING VOICES]
+
+00:47:00.160 --> 00:47:02.124
+AUDIENCE: Not really.
+
+00:47:02.124 --> 00:47:03.374
+[UNINTELLIGIBLE]
+
+00:47:10.962 --> 00:47:12.926
+PROFESSOR: You are the best
+Super Chicken Sisters player.
+
+00:47:17.836 --> 00:47:19.590
+OK.
+
+00:47:19.590 --> 00:47:20.120
+didn't
+
+00:47:20.120 --> 00:47:21.220
+AUDIENCE: Even the
+mustache odds.
+
+00:47:21.220 --> 00:47:24.500
+Wait, why is Wario a bad guy?
+
+00:47:24.500 --> 00:47:28.460
+AUDIENCE: What do they have
+against mustaches?
+
+00:47:28.460 --> 00:47:29.450
+PROFESSOR: OK, anyways.
+
+00:47:29.450 --> 00:47:30.700
+That goes on.
+
+00:47:32.920 --> 00:47:37.610
+So this game is really different
+than the other games
+
+00:47:37.610 --> 00:47:38.912
+we've looked at.
+
+00:47:38.912 --> 00:47:41.690
+Does anyone have a sense
+of that as well?
+
+00:47:41.690 --> 00:47:44.985
+AUDIENCE: Slightly political.
+
+00:47:44.985 --> 00:47:46.780
+AUDIENCE: Not subtle.
+
+00:47:46.780 --> 00:47:49.250
+AUDIENCE: For the most part
+it's just a re-skinning.
+
+00:47:49.250 --> 00:47:54.270
+And so we were discussing this
+in our other class, about Ian
+
+00:47:54.270 --> 00:47:57.880
+Bogost's perspective games.
+
+00:47:57.880 --> 00:48:02.770
+We looked at, what was it
+called, it was Space Invaders.
+
+00:48:02.770 --> 00:48:03.920
+PROFESSOR: Tax Invaders?
+
+00:48:03.920 --> 00:48:04.960
+AUDIENCE: No.
+
+00:48:04.960 --> 00:48:06.420
+It was a McCain ad.
+
+00:48:06.420 --> 00:48:08.220
+And it was about corporal
+spending.
+
+00:48:08.220 --> 00:48:08.625
+PROFESSOR: Oh yeah.
+
+00:48:08.625 --> 00:48:09.770
+I know of that one.
+
+00:48:09.770 --> 00:48:10.030
+AUDIENCE: [? CorpWars, ?]
+
+00:48:10.030 --> 00:48:11.690
+I think it was called.
+
+00:48:11.690 --> 00:48:15.780
+It's just a re-skinning, and
+so they are using the same
+
+00:48:15.780 --> 00:48:21.280
+metaphors to just get people
+to play it, and it's not
+
+00:48:21.280 --> 00:48:25.915
+really improving their point or
+it's not doing anything for
+
+00:48:25.915 --> 00:48:26.750
+their cause.
+
+00:48:26.750 --> 00:48:29.140
+AUDIENCE: The simulation of this
+game seems to not really
+
+00:48:29.140 --> 00:48:32.060
+apply to their point at all.
+
+00:48:32.060 --> 00:48:33.672
+You're really just playing
+Mario, and it
+
+00:48:33.672 --> 00:48:34.470
+happens to look different.
+
+00:48:34.470 --> 00:48:38.200
+As opposed to September 12,
+evolve where the actual
+
+00:48:38.200 --> 00:48:40.551
+simulation itself had meaning
+with what they
+
+00:48:40.551 --> 00:48:43.988
+were trying to say.
+
+00:48:43.988 --> 00:48:44.970
+AUDIENCE: [INAUDIBLE].
+
+00:48:44.970 --> 00:48:47.882
+The mechanics are having to do
+with the political point, or
+
+00:48:47.882 --> 00:48:49.370
+the narrative.
+
+00:48:49.370 --> 00:48:55.390
+AUDIENCE: This is a secondary
+critique of Mario.
+
+00:48:55.390 --> 00:48:56.200
+AUDIENCE: Yeah.
+
+00:48:56.200 --> 00:48:59.160
+What was up with that?
+
+00:48:59.160 --> 00:49:00.680
+AUDIENCE: I don't even know,
+what were they trying to say
+
+00:49:00.680 --> 00:49:02.736
+about Mario?
+
+00:49:02.736 --> 00:49:06.130
+AUDIENCE: They're kind of
+enunciating the fact that it's
+
+00:49:06.130 --> 00:49:08.050
+basically a Mario ripoff.
+
+00:49:08.050 --> 00:49:09.490
+Nintendo [UNINTELLIGIBLE].
+
+00:49:09.490 --> 00:49:12.586
+Yes, we know it's a Mario
+ripoff, so we're going to tell
+
+00:49:12.586 --> 00:49:15.180
+you that we're aware of it.
+
+00:49:15.180 --> 00:49:17.560
+PROFESSOR: PETA also has an
+established problem with
+
+00:49:17.560 --> 00:49:21.525
+Nintendo, with their Cooking
+Mama re-skin.
+
+00:49:25.197 --> 00:49:26.447
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:49:29.109 --> 00:49:32.050
+technically --although Nintendo
+has licenses.
+
+00:49:32.050 --> 00:49:34.930
+PROFESSOR: Well I guess Nintendo
+received the brunt of
+
+00:49:34.930 --> 00:49:39.150
+PETA's wrath, in that
+case anyways.
+
+00:49:39.150 --> 00:49:40.400
+AUDIENCE: What is
+Cooking Mama?
+
+00:49:48.860 --> 00:49:53.870
+AUDIENCE: It's a DS game
+that's about cooking.
+
+00:49:53.870 --> 00:49:54.940
+[UNINTELLIGIBLE] because
+they're working
+
+00:49:54.940 --> 00:49:56.440
+out vegetarian options.
+
+00:49:59.940 --> 00:50:01.500
+AUDIENCE: Wow.
+
+00:50:01.500 --> 00:50:03.750
+AUDIENCE: So they made another
+flash game similar to this one
+
+00:50:03.750 --> 00:50:06.930
+where Cooking Mama kills animals
+and the features are
+
+00:50:06.930 --> 00:50:09.701
+really bloody and slitting
+their throats and stuff.
+
+00:50:09.701 --> 00:50:11.530
+[LAUGHTER]
+
+00:50:11.530 --> 00:50:14.617
+AUDIENCE: Remember we played
+the video game yesterday in
+
+00:50:14.617 --> 00:50:14.769
+[UNINTELLIGIBLE]
+
+00:50:14.769 --> 00:50:15.988
+Video Game Studies?
+
+00:50:15.988 --> 00:50:17.816
+PROFESSOR: Was that a McDonald's
+video game?
+
+00:50:17.816 --> 00:50:18.730
+AUDIENCE: Yeah.
+
+00:50:18.730 --> 00:50:20.400
+It was at videogame.com.
+
+00:50:20.400 --> 00:50:22.550
+And that one is a simulation
+of running McDonald's.
+
+00:50:22.550 --> 00:50:26.359
+And it presents itself as
+serious, and at first, most of
+
+00:50:26.359 --> 00:50:29.285
+us in the class, as I was,
+thought it was produced at
+
+00:50:29.285 --> 00:50:29.650
+McDonald's.
+
+00:50:29.650 --> 00:50:33.990
+And as it goes on, you can
+manage the beef farms and the
+
+00:50:33.990 --> 00:50:37.011
+soy farms, and then your
+slaughterhouse, and then your
+
+00:50:37.011 --> 00:50:39.185
+stores, and then your
+corporate area.
+
+00:50:39.185 --> 00:50:41.720
+And at first it seems like, hey
+we're going to show you
+
+00:50:41.720 --> 00:50:43.740
+how the business at
+McDonald's works.
+
+00:50:43.740 --> 00:50:45.960
+And then you get this farm
+portion, and there's the
+
+00:50:45.960 --> 00:50:47.390
+option to use [UNINTELLIGIBLE]
+crops.
+
+00:50:47.390 --> 00:50:48.220
+And you think, oh
+I can do that.
+
+00:50:48.220 --> 00:50:49.600
+It's a trade off.
+
+00:50:49.600 --> 00:50:52.070
+Then you have to bribe the mayor
+so you can destroy his
+
+00:50:52.070 --> 00:50:52.840
+crops to put yours.
+
+00:50:52.840 --> 00:50:54.500
+And you're like, wait.
+
+00:50:54.500 --> 00:50:56.120
+Then you can choose to
+feed your cows sludge
+
+00:50:56.120 --> 00:50:57.190
+to make them fatter.
+
+00:50:57.190 --> 00:51:00.105
+There's all these little things
+that you can add on.
+
+00:51:00.105 --> 00:51:02.080
+You can bribe a climate expert
+to say that you're
+
+00:51:02.080 --> 00:51:03.330
+environmentally friendly.
+
+00:51:06.280 --> 00:51:10.240
+AUDIENCE: Are these bribes
+based on any fact?
+
+00:51:10.240 --> 00:51:10.970
+AUDIENCE: I don't know.
+
+00:51:10.970 --> 00:51:12.150
+It was a good game, too.
+
+00:51:12.150 --> 00:51:15.308
+We played it, and it was
+really challenging.
+
+00:51:15.308 --> 00:51:17.723
+AUDIENCE:
+[UNINTELLIGIBLE PHRASE]
+
+00:51:17.723 --> 00:51:19.655
+AUDIENCE: You know it's
+the same company.
+
+00:51:19.655 --> 00:51:20.905
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:51:24.002 --> 00:51:26.410
+AUDIENCE: CNS 590, and
+apparently it's almost
+
+00:51:26.410 --> 00:51:27.020
+impossible.
+
+00:51:27.020 --> 00:51:31.098
+They do their own act as they
+corrupt everything.
+
+00:51:31.098 --> 00:51:33.030
+AUDIENCE: And that's advanced
+rhetoric, right?
+
+00:51:33.030 --> 00:51:34.275
+To be successful,
+you have to--
+
+00:51:34.275 --> 00:51:34.950
+AUDIENCE: The guy next to me
+was playing all-natural
+
+00:51:34.950 --> 00:51:36.170
+organic without corrupting
+anyone.
+
+00:51:36.170 --> 00:51:37.610
+And he was--
+
+00:51:37.610 --> 00:51:39.302
+he went to [UNINTELLIGIBLE].
+
+00:51:39.302 --> 00:51:39.776
+AUDIENCE: Yeah.
+
+00:51:39.776 --> 00:51:44.050
+But at least learn the actions
+you're taking in the game.
+
+00:51:44.050 --> 00:51:45.710
+You're supposed to hear when
+you're walking past someone
+
+00:51:45.710 --> 00:51:49.300
+who just talked to you about
+how McDonald's sucks.
+
+00:51:49.300 --> 00:51:50.660
+AUDIENCE: That wasn't
+very effective.
+
+00:51:50.660 --> 00:51:54.194
+This was just like, oh,
+I'm hungry now.
+
+00:51:54.194 --> 00:51:55.525
+AUDIENCE: If it's the
+difference between a
+
+00:51:55.525 --> 00:51:58.890
+simulation and a game, this is
+really more of a game than a
+
+00:51:58.890 --> 00:52:00.036
+real simulation.
+
+00:52:00.036 --> 00:52:03.733
+In a real simulation, the
+mechanics have to relate to
+
+00:52:03.733 --> 00:52:04.480
+whatever it is.
+
+00:52:04.480 --> 00:52:05.960
+PROFESSOR: But again,
+who's to say?
+
+00:52:05.960 --> 00:52:09.290
+This isn't any more or less a
+simulation than Mario was.
+
+00:52:09.290 --> 00:52:11.202
+AUDIENCE: I don't think Mario
+is a simulation either.
+
+00:52:15.040 --> 00:52:17.740
+PROFESSOR: So that's
+exactly what it is.
+
+00:52:17.740 --> 00:52:21.035
+This game has a point to make,
+but it's doing so in a very
+
+00:52:21.035 --> 00:52:22.040
+narrative fictional way.
+
+00:52:22.040 --> 00:52:24.860
+It's not leveraging
+the simulation.
+
+00:52:24.860 --> 00:52:26.340
+And generally speaking,
+these games
+
+00:52:26.340 --> 00:52:27.660
+are just not as effective.
+
+00:52:27.660 --> 00:52:29.540
+And that's one of the cool
+things about simulations.
+
+00:52:29.540 --> 00:52:30.796
+You get to see how it
+works and experience
+
+00:52:30.796 --> 00:52:32.660
+things first hand.
+
+00:52:32.660 --> 00:52:35.480
+Whereas, is this any more or
+less effective than a pamphlet
+
+00:52:35.480 --> 00:52:36.690
+or a brochure?
+
+00:52:36.690 --> 00:52:39.682
+Maybe in terms of exposure.
+
+00:52:39.682 --> 00:52:42.446
+A lot of people can play this
+game, but it's not doing
+
+00:52:42.446 --> 00:52:44.074
+anything that any other type
+of media could do.
+
+00:52:47.002 --> 00:52:48.466
+And that's what I got.
+
+00:52:52.240 --> 00:52:54.400
+So we're going to do some of the
+brainstorm exercise again
+
+00:52:54.400 --> 00:52:57.310
+and talk about projects for
+the next assignment.
+
+00:52:57.310 --> 00:52:59.492
+Does anyone else have anything
+they want to add
+
+00:52:59.492 --> 00:53:01.190
+before we move on.
+
+00:53:01.190 --> 00:53:03.130
+AUDIENCE: There's a lot
+[UNINTELLIGIBLE]
+
+00:53:03.130 --> 00:53:04.585
+the issue of [UNINTELLIGIBLE]
+simulation.
+
+00:53:04.585 --> 00:53:07.520
+I mean we'll be playing games
+that are ostensibly
+
+00:53:07.520 --> 00:53:10.948
+simulations, or at
+least satires.
+
+00:53:10.948 --> 00:53:12.936
+AUDIENCE: Which are a
+different crunch.
+
+00:53:12.936 --> 00:53:14.186
+AUDIENCE:
+[UNINTELLIGIBLE PHRASE]
+
+00:53:18.410 --> 00:53:20.892
+And I want to point out --
+
+00:53:20.892 --> 00:53:22.860
+back to one of the
+earlier points--
+
+00:53:22.860 --> 00:53:23.844
+[INAUDIBLE]
+
+00:53:23.844 --> 00:53:24.336
+system.
+
+00:53:24.336 --> 00:53:27.780
+It doesn't necessarily--
+
+00:53:27.780 --> 00:53:29.748
+it does make a game.
+
+00:53:29.748 --> 00:53:32.044
+[UNINTELLIGIBLE] system doesn't
+have to be a real
+
+00:53:32.044 --> 00:53:32.700
+world focus.
+
+00:53:32.700 --> 00:53:35.160
+It could be any system.
+
+00:53:35.160 --> 00:53:38.112
+[UNINTELLIGIBLE]
+
+00:53:38.112 --> 00:53:43.530
+They're all very much based
+on fictional systems.
+
+00:53:43.530 --> 00:53:47.182
+But Michael's game is
+particularly good, but they're
+
+00:53:47.182 --> 00:53:49.174
+trying to figure out what the
+system is in those storybooks.
+
+00:53:49.174 --> 00:53:52.162
+And make them, relevent
+for those players.
+
+00:53:52.162 --> 00:53:53.412
+[UNINTELLIGIBLE PHRASE].
+
+00:53:57.660 --> 00:54:01.448
+AUDIENCE: So we can do
+fictional systems?
+
+00:54:01.448 --> 00:54:04.436
+PROFESSOR: Not for this
+particular one.
+
+00:54:04.436 --> 00:54:06.428
+Not for the assignment.
+
+00:54:06.428 --> 00:54:07.922
+[INAUDIBLE].
+
+00:54:07.922 --> 00:54:09.914
+AUDIENCE: Does anyone know
+why they came out
+
+00:54:09.914 --> 00:54:11.930
+with Lego Star Wars?
+
+00:54:11.930 --> 00:54:13.934
+[UNINTELLIGIBLE] of
+the Lego games?
+
+00:54:13.934 --> 00:54:15.886
+AUDIENCE: Because
+they're awesome.
+
+00:54:15.886 --> 00:54:17.838
+AUDIENCE: It's a funny idea
+[UNINTELLIGIBLE].
+
+00:54:20.766 --> 00:54:22.880
+PROFESSOR: But I think Lego was
+not doing very well until
+
+00:54:22.880 --> 00:54:26.895
+they got the Star Wars license
+to make actual Lego sets.
+
+00:54:26.895 --> 00:54:28.145
+And that was a big revenue
+[UNINTELLIGIBLE].
+
+00:54:30.960 --> 00:54:31.970
+That was last year.
+
+00:54:31.970 --> 00:54:35.670
+If you have a toy store in
+Europe, it will be half Lego.
+
+00:54:35.670 --> 00:54:38.630
+I've had that experience of,
+wow, I remember when I wanted
+
+00:54:38.630 --> 00:54:39.888
+this when I was six.
+
+00:54:39.888 --> 00:54:41.840
+And you can't get it.
+
+00:54:41.840 --> 00:54:46.720
+Just everything that's sold in
+the US, legal basis kind of--
+
+00:54:46.720 --> 00:54:47.970
+[INTERPOSING VOICES]
+
+00:54:50.136 --> 00:54:52.820
+AUDIENCE: It just seems so funny
+that they have Lego Star
+
+00:54:52.820 --> 00:54:55.530
+Wars video game.
+
+00:54:55.530 --> 00:54:56.390
+AUDIENCE: Well, there's also
+Lego Harry Potter.
+
+00:54:56.390 --> 00:54:57.878
+AUDIENCE: Well, they make
+Lego everything.
+
+00:54:57.878 --> 00:54:59.874
+They have Lego [UNINTELLIGIBLE].
+
+00:54:59.874 --> 00:55:01.371
+AUDIENCE: Indiana Jones.
+
+00:55:01.371 --> 00:55:02.621
+[INTERPOSING VOICES]
+
+00:55:05.363 --> 00:55:08.357
+AUDIENCE: --Lego Star Wars.
+
+00:55:08.357 --> 00:55:11.351
+It's probably more on topic
+for stuff like video game
+
+00:55:11.351 --> 00:55:15.010
+studies, but it probably
+works well with a
+
+00:55:15.010 --> 00:55:16.260
+number of classes offered.
+
+00:55:20.333 --> 00:55:22.828
+that the video game--
+
+00:55:22.828 --> 00:55:24.078
+[UNINTELLIGIBLE]
+
+00:55:26.990 --> 00:55:28.507
+It will talk about different
+licensing.
+
+00:55:28.507 --> 00:55:31.489
+We'll talk about different
+franchises and how we
+
+00:55:31.489 --> 00:55:31.986
+[INAUDIBLE].
+
+00:55:31.986 --> 00:55:43.085
+So if you are interested there
+was another similar point that
+
+00:55:43.085 --> 00:55:44.411
+I wanted to make.
+
+00:55:44.411 --> 00:55:45.830
+Oh, all right, simulations.
+
+00:55:45.830 --> 00:55:50.630
+There's actually a games
+simulations class that's being
+
+00:55:50.630 --> 00:55:54.822
+offered in DUSP here.
+
+00:55:54.822 --> 00:55:56.758
+[UNINTELLIGIBLE] largely
+using simulations
+
+00:55:56.758 --> 00:55:59.178
+for educational games.
+
+00:55:59.178 --> 00:56:01.620
+You saw [INAUDIBLE].
+
+00:56:01.620 --> 00:56:03.200
+It's a really, really
+good class.
+
+00:56:03.200 --> 00:56:07.300
+And he approaches it in
+a very similar way.
+
+00:56:07.300 --> 00:56:08.740
+For instance, let's
+look at a model.
+
+00:56:08.740 --> 00:56:12.280
+Let's look at those assumptions
+and what you're
+
+00:56:12.280 --> 00:56:17.162
+choosing to simulate, what
+you're choosing to leave out.
+
+00:56:17.162 --> 00:56:20.620
+And he'll get to things like
+game play, [INAUDIBLE].
+
+00:56:20.620 --> 00:56:23.748
+He's pretty well equipped after
+taking this class to
+
+00:56:23.748 --> 00:56:24.590
+start thinking about
+those issues.
+
+00:56:24.590 --> 00:56:26.080
+But he looks a lot
+[UNINTELLIGIBLE].
+
+00:56:26.080 --> 00:56:29.482
+How does someone constructing
+[UNINTELLIGIBLE]
+
+00:56:29.482 --> 00:56:33.856
+the basic first step of how
+to release simulation.
+
+00:56:33.856 --> 00:56:35.106
+[INAUDIBLE]
+
+00:56:41.150 --> 00:56:43.630
+PROFESSOR: That's for CNS 590
+Education Exploration for
+
+00:56:43.630 --> 00:56:45.504
+Games and Simulations.
+
+00:56:45.504 --> 00:56:47.860
+AUDIENCE: It's multiple
+courses.
+
+00:56:47.860 --> 00:56:48.660
+PROFESSOR: Yeah.
+
+00:56:48.660 --> 00:56:51.110
+It's definitely crossed
+with 11.
+
+00:56:51.110 --> 00:56:54.547
+I think it's crossed with at
+least one other thing.
+
+00:56:54.547 --> 00:56:55.797
+AUDIENCE: CNS [UNINTELLIGIBLE].
+
+00:57:02.894 --> 00:57:04.367
+TA: Actually we can
+[UNINTELLIGIBLE].
+
+00:57:09.770 --> 00:57:13.130
+So this time I'm going to
+do it is a brainstorming
+
+00:57:13.130 --> 00:57:15.020
+similarly as last time.
+
+00:57:15.020 --> 00:57:20.060
+But instead of brainstorming the
+whole game ideas, which is
+
+00:57:20.060 --> 00:57:24.960
+what we did last time, I want
+people to pull out systems.
+
+00:57:24.960 --> 00:57:29.370
+Pull out the real world systems
+that you might want to
+
+00:57:29.370 --> 00:57:30.370
+write a game about.
+
+00:57:30.370 --> 00:57:32.185
+Because what if [UNINTELLIGIBLE]
+near the end
+
+00:57:32.185 --> 00:57:36.160
+up reciting two models, and
+one of the game play, it's
+
+00:57:36.160 --> 00:57:38.780
+probably going to be
+[UNINTELLIGIBLE] determined by
+
+00:57:38.780 --> 00:57:40.220
+who your teammates are.
+
+00:57:40.220 --> 00:57:45.244
+And who already has a team?
+
+00:57:45.244 --> 00:57:46.670
+AUDIENCE: We do.
+
+00:57:46.670 --> 00:57:48.980
+AUDIENCE: We had a
+different idea.
+
+00:57:48.980 --> 00:57:51.850
+AUDIENCE: I think I have
+an idea for us to do.
+
+00:57:51.850 --> 00:57:53.030
+AUDIENCE: It's possible.
+
+00:57:53.030 --> 00:57:55.755
+So I will recommend
+being friends with
+
+00:57:55.755 --> 00:57:59.770
+it and sharing it.
+
+00:57:59.770 --> 00:58:01.680
+You don't have to.
+
+00:58:01.680 --> 00:58:04.760
+But if you are going to hold
+back, try to contribute a
+
+00:58:04.760 --> 00:58:07.984
+couple of ideas [INAUDIBLE].
+
+00:58:07.984 --> 00:58:10.960
+So, as you know [INAUDIBLE].
+
+00:58:10.960 --> 00:58:12.944
+Anyone or any ideas?
+
+00:58:12.944 --> 00:58:14.432
+[UNINTELLIGIBLE]
+
+00:58:14.432 --> 00:58:16.416
+I'll start with Jeremy
+and then I'll
+
+00:58:16.416 --> 00:58:17.408
+work my way back again.
+
+00:58:17.408 --> 00:58:19.392
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:58:19.392 --> 00:58:20.880
+trying to build a pyramid.
+
+00:58:20.880 --> 00:58:22.864
+AUDIENCE: OK, pyramid
+building.
+
+00:58:26.360 --> 00:58:27.945
+AUDIENCE: I told you the
+green one was good.
+
+00:58:27.945 --> 00:58:29.719
+AUDIENCE: That was a lot
+more than [INAUDIBLE]
+
+00:58:32.713 --> 00:58:33.963
+at MIT.
+
+00:58:39.699 --> 00:58:43.691
+AUDIENCE: Rennaisance Italian
+political machinations.
+
+00:58:43.691 --> 00:58:45.510
+AUDIENCE: OK.
+
+00:58:45.510 --> 00:58:50.574
+Renaissance Italian politics.
+
+00:58:50.574 --> 00:58:53.430
+OK.
+
+00:58:53.430 --> 00:58:54.680
+AUDIENCE: Your four
+years here at MIT.
+
+00:58:59.310 --> 00:59:00.560
+MIT undergrad.
+
+00:59:03.870 --> 00:59:06.490
+AUDIENCE: A real-time tower of
+defense, but let's say you're
+
+00:59:06.490 --> 00:59:08.630
+in a tower.
+
+00:59:08.630 --> 00:59:12.645
+Think of who saw Inglorious
+Basterds.
+
+00:59:12.645 --> 00:59:14.520
+I said think Inglorious
+Basterds.
+
+00:59:14.520 --> 00:59:16.950
+Remember the guy in the tower?
+
+00:59:16.950 --> 00:59:18.200
+Something like that.
+
+00:59:23.210 --> 00:59:24.460
+Sparking a siege or something.
+
+00:59:27.540 --> 00:59:29.863
+AUDIENCE: So American sniper
+or German plot base.
+
+00:59:32.569 --> 00:59:34.010
+AUDIENCE: Like tower
+of defense.
+
+00:59:34.010 --> 00:59:35.670
+Very similar, except you're
+not military.
+
+00:59:39.890 --> 00:59:41.140
+AUDIENCE: Running a marathon?
+
+00:59:49.610 --> 00:59:50.860
+AUDIENCE: National politics.
+
+00:59:54.980 --> 00:59:56.230
+AUDIENCE: From Las Vegas.
+
+01:00:01.300 --> 01:00:02.550
+AUDIENCE: What?
+
+01:00:06.760 --> 01:00:08.260
+AUDIENCE: Surviving the
+Department of Motor Vehicles.
+
+01:00:13.180 --> 01:00:14.744
+AUDIENCE: Middle School
+popularity contest.
+
+01:00:18.210 --> 01:00:19.460
+[INTERPOSING VOICES]
+
+01:00:25.182 --> 01:00:27.174
+AUDIENCE: I'm not supposed
+to make any jokes
+
+01:00:27.174 --> 01:00:28.424
+[UNINTELLIGIBLE].
+
+01:00:32.154 --> 01:00:34.146
+AUDIENCE: Being a cook in a
+really busy restaurant.
+
+01:00:42.250 --> 01:00:43.870
+AUDIENCE: Making nuclear
+fusion work.
+
+01:00:49.465 --> 01:00:52.650
+Finding lab scale scientific
+endeavors.
+
+01:00:52.650 --> 01:00:54.980
+I'm thinking NASA.
+
+01:00:54.980 --> 01:00:56.680
+NASA planning.
+
+01:00:56.680 --> 01:00:58.714
+TA: NASA scale types.
+
+01:01:04.460 --> 01:01:06.525
+AUDIENCE: The immigration
+process to America.
+
+01:01:16.220 --> 01:01:18.618
+AUDIENCE: High school student
+body election or student
+
+01:01:18.618 --> 01:01:19.868
+government.
+
+01:01:27.205 --> 01:01:29.670
+AUDIENCE: Evolution.
+
+01:01:29.670 --> 01:01:31.149
+And also I give--
+
+01:01:31.149 --> 01:01:35.093
+I know I love this idea-- ants
+trying to find their way home.
+
+01:01:41.874 --> 01:01:43.365
+AUDIENCE: Developing
+a music career.
+
+01:01:51.330 --> 01:01:52.510
+AUDIENCE: A career
+in academia.
+
+01:01:52.510 --> 01:01:55.168
+Also immune system.
+
+01:01:55.168 --> 01:01:56.620
+TA: Academia and
+immune system.
+
+01:01:56.620 --> 01:01:57.870
+I like that.
+
+01:02:01.800 --> 01:02:03.760
+AUDIENCE: Give myself
+a fever, ah!
+
+01:02:09.150 --> 01:02:10.400
+AUDIENCE: Auction house.
+
+01:02:25.150 --> 01:02:26.400
+AUDIENCE: Lost in Japan.
+
+01:02:30.150 --> 01:02:31.400
+[INTERPOSING VOICES]
+
+01:02:31.400 --> 01:02:32.650
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:02:42.030 --> 01:02:43.089
+TA: Patrick.
+
+01:02:43.089 --> 01:02:45.045
+AUDIENCE: Making photos
+in a darkroom.
+
+01:02:51.500 --> 01:02:52.750
+AUDIENCE: Culturing bacteria.
+
+01:02:56.720 --> 01:02:58.680
+AUDIENCE: Transfat.
+
+01:02:58.680 --> 01:03:00.910
+AUDIENCE: Similar to the
+immigration to the US,
+
+01:03:00.910 --> 01:03:06.980
+crossing the Caribbean Sea
+in a boat or a raft.
+
+01:03:06.980 --> 01:03:11.040
+AUDIENCE: Or one,
+then the other.
+
+01:03:11.040 --> 01:03:12.900
+TA: How many r's in Caribbean?
+
+01:03:12.900 --> 01:03:14.150
+AUDIENCE: Two.
+
+01:03:16.684 --> 01:03:18.130
+AUDIENCE: I'm pretty
+sure it's one.
+
+01:03:18.130 --> 01:03:24.010
+AUDIENCE: I'm pretty sure it's
+two r's and two- let's see.
+
+01:03:24.010 --> 01:03:24.350
+Oh yeah.
+
+01:03:24.350 --> 01:03:28.660
+It's one r and two b's.
+
+01:03:28.660 --> 01:03:29.616
+Damn.
+
+01:03:29.616 --> 01:03:30.866
+AUDIENCE: Learning
+[INAUDIBLE].
+
+01:03:33.570 --> 01:03:37.305
+AUDIENCE: Westward expansion
+of America.
+
+01:03:37.305 --> 01:03:39.189
+AUDIENCE: Westward expansion.
+
+01:03:39.189 --> 01:03:40.602
+AUDIENCE: Travelers to Oregon.
+
+01:03:40.602 --> 01:03:46.106
+[LAUGHTER]
+
+01:03:46.106 --> 01:03:47.534
+AUDIENCE: The Oregon Trail.
+
+01:03:53.260 --> 01:03:55.090
+AUDIENCE: Tech support.
+
+01:03:55.090 --> 01:03:56.960
+AUDIENCE: Ooh.
+
+01:03:56.960 --> 01:03:58.860
+You have committed suicide.
+
+01:04:01.720 --> 01:04:03.370
+AUDIENCE: Advertising
+executives at Apple.
+
+01:04:09.152 --> 01:04:12.155
+PROFESSOR: I read was this
+article about how Steve Jobs
+
+01:04:12.155 --> 01:04:14.090
+was [UNINTELLIGIBLE].
+
+01:04:14.090 --> 01:04:15.520
+AUDIENCE: I'd think about
+a person's journey of
+
+01:04:15.520 --> 01:04:17.860
+understanding self.
+
+01:04:17.860 --> 01:04:19.070
+TA: Self discovery.
+
+01:04:19.070 --> 01:04:23.180
+AUDIENCE: Also a presidential
+election.
+
+01:04:23.180 --> 01:04:24.650
+TA: A presidential election.
+
+01:04:32.010 --> 01:04:33.260
+AUDIENCE: Shepherding.
+
+01:04:35.210 --> 01:04:36.460
+[INTERPOSING VOICES]
+
+01:04:39.300 --> 01:04:40.230
+AUDIENCE: Mechanics are
+kind of interesting
+
+01:04:40.230 --> 01:04:41.480
+when you look at them.
+
+01:04:44.200 --> 01:04:47.364
+AUDIENCE: Viking colony in the
+new world before they left.
+
+01:04:52.850 --> 01:04:54.995
+AUDIENCE: I don't know if you
+guys still have it, but I made
+
+01:04:54.995 --> 01:04:56.245
+a game [UNINTELLIGIBLE].
+
+01:04:58.895 --> 01:05:00.811
+It's probably indoors
+somewhere.
+
+01:05:04.468 --> 01:05:05.718
+You stole my idea.
+
+01:05:10.210 --> 01:05:12.470
+TA: If two people have the same
+idea, maybe you could
+
+01:05:12.470 --> 01:05:14.255
+work on a team together.
+
+01:05:14.255 --> 01:05:16.850
+AUDIENCE: Making a movie.
+
+01:05:16.850 --> 01:05:18.100
+Like pre-production.
+
+01:05:25.760 --> 01:05:27.245
+AUDIENCE: Being a castaway.
+
+01:05:31.600 --> 01:05:34.608
+AUDIENCE: Running a religious
+industry.
+
+01:05:34.608 --> 01:05:35.858
+[INTERPOSING VOICES]
+
+01:05:45.650 --> 01:05:46.900
+AUDIENCE: Raising a kid?
+
+01:05:51.150 --> 01:05:55.590
+AUDIENCE: Right in the middle
+of that right now.
+
+01:05:55.590 --> 01:05:57.880
+AUDIENCE: Piracy without
+getting caught.
+
+01:05:57.880 --> 01:06:00.826
+AUDIENCE: As in high
+seas piracy?
+
+01:06:00.826 --> 01:06:02.299
+AUDIENCE: No. software piracy.
+
+01:06:17.050 --> 01:06:18.300
+AUDIENCE: Designing
+a board game.
+
+01:06:22.552 --> 01:06:25.192
+AUDIENCE: Brainstorming.
+
+01:06:25.192 --> 01:06:26.442
+AUDIENCE: Building a computer.
+
+01:06:33.480 --> 01:06:34.840
+AUDIENCE: Waking up.
+
+01:06:34.840 --> 01:06:36.090
+TA: Waking up.
+
+01:06:41.340 --> 01:06:42.840
+AUDIENCE: Acknowledging
+a [INAUDIBLE].
+
+01:06:48.240 --> 01:06:48.930
+AUDIENCE: A couple.
+
+01:06:48.930 --> 01:06:50.180
+Imperialism.
+
+01:06:52.330 --> 01:06:54.548
+Well it's another
+religious one.
+
+01:06:54.548 --> 01:06:56.943
+Organizing a mass suicide.
+
+01:06:56.943 --> 01:07:04.250
+[LAUGHTER]
+
+01:07:04.250 --> 01:07:06.640
+AUDIENCE: Filing a divorce
+
+01:07:06.640 --> 01:07:08.486
+TA: I called finding
+a divorce.
+
+01:07:08.486 --> 01:07:10.851
+AUDIENCE: I said finding
+a horse.
+
+01:07:10.851 --> 01:07:12.101
+[INTERPOSING VOICES]
+
+01:07:14.640 --> 01:07:15.890
+AUDIENCE: Running away
+from the police.
+
+01:07:25.320 --> 01:07:26.570
+AUDIENCE: Crime scene
+investigation.
+
+01:07:31.630 --> 01:07:32.880
+AUDIENCE: Firefighting.
+
+01:07:39.780 --> 01:07:42.766
+AUDIENCE: Falling asleep.
+
+01:07:42.766 --> 01:07:43.744
+AUDIENCE: Waking up.
+
+01:07:43.744 --> 01:07:44.994
+Falling asleep.
+
+01:07:50.590 --> 01:07:52.057
+AUDIENCE: Organizing a heist.
+
+01:07:54.991 --> 01:07:56.947
+AUDIENCE: Running the
+Catholic Church.
+
+01:08:03.920 --> 01:08:05.170
+AUDIENCE:
+[UNINTELLIGIBLE PHRASE]
+
+01:08:08.340 --> 01:08:09.080
+AUDIENCE: Money laundering.
+
+01:08:09.080 --> 01:08:10.330
+Tax evasion.
+
+01:08:14.000 --> 01:08:16.410
+AUDIENCE: Mafia.
+
+01:08:16.410 --> 01:08:17.490
+TA: Is that the same idea?
+
+01:08:17.490 --> 01:08:18.790
+AUDIENCE: They could be
+two separate ideas.
+
+01:08:18.790 --> 01:08:20.014
+TA: They could be
+separate ideas.
+
+01:08:20.014 --> 01:08:22.290
+Tax evasion happens small
+scale and large scale.
+
+01:08:24.970 --> 01:08:27.732
+AUDIENCE: Picking up kids flying
+into a summer camp at
+
+01:08:27.732 --> 01:08:31.398
+the airport and not trying
+to lose them.
+
+01:08:31.398 --> 01:08:32.892
+TA: What?
+
+01:08:32.892 --> 01:08:34.386
+Not losing-
+
+01:08:34.386 --> 01:08:36.378
+AUDIENCE: Not losing
+arriving children.
+
+01:08:44.863 --> 01:08:47.660
+TA: I could see that would
+be at an airport
+
+01:08:47.660 --> 01:08:50.100
+meeting kids game.
+
+01:08:50.100 --> 01:08:51.970
+AUDIENCE: A gang or mafia
+organization.
+
+01:08:51.970 --> 01:08:53.220
+TA: Mafia organization.
+
+01:08:59.689 --> 01:09:03.730
+AUDIENCE: The spread of fire
+through different materials.
+
+01:09:03.730 --> 01:09:06.029
+TA: Fire spread.
+
+01:09:06.029 --> 01:09:08.250
+TA: Would probably work
+very well with the
+
+01:09:08.250 --> 01:09:10.630
+firefighting game.
+
+01:09:10.630 --> 01:09:12.229
+AUDIENCE: Carrying
+out a hit with a
+
+01:09:12.229 --> 01:09:13.599
+small team of assassins.
+
+01:09:20.975 --> 01:09:24.310
+Like you go into a hotel
+in Dubai or something.
+
+01:09:24.310 --> 01:09:27.290
+TA: This is the point
+of the game.
+
+01:09:27.290 --> 01:09:27.689
+AUDIENCE: Yeah.
+
+01:09:27.689 --> 01:09:31.220
+Or dot-com boom and bust.
+
+01:09:31.220 --> 01:09:32.470
+TA: Dot-com boom and bust.
+
+01:09:39.180 --> 01:09:40.430
+AUDIENCE: Rescuing
+Chilean miners.
+
+01:09:47.330 --> 01:09:48.580
+AUDIENCE: Running a city.
+
+01:09:50.830 --> 01:09:52.083
+AUDIENCE: We talked about
+[UNINTELLIGIBLE].
+
+01:09:56.030 --> 01:09:58.075
+AUDIENCE: Putting on and
+taking off clothes.
+
+01:09:58.075 --> 01:09:59.500
+Or putting on clothes.
+
+01:10:05.210 --> 01:10:07.400
+AUDIENCE: I'm pretty sure there
+are games where you are
+
+01:10:07.400 --> 01:10:09.360
+taking off your clothes.
+
+01:10:09.360 --> 01:10:10.610
+[INTERPOSING VOICES]
+
+01:10:27.540 --> 01:10:28.790
+AUDIENCE: Hot sauce
+eating contest.
+
+01:10:31.500 --> 01:10:34.640
+AUDIENCE: Which is
+already a game.
+
+01:10:34.640 --> 01:10:35.890
+AUDIENCE: Well, sure.
+
+01:10:40.540 --> 01:10:43.380
+AUDIENCE: Start a company, or
+a Silicon Valley bubble.
+
+01:10:43.380 --> 01:10:46.682
+TA: So Silicon, dot-com
+boom and bust as well.
+
+01:11:02.510 --> 01:11:03.760
+AUDIENCE: Surviving
+a family reunion.
+
+01:11:10.570 --> 01:11:12.180
+AUDIENCE: Containing
+an oil spill.
+
+01:11:18.170 --> 01:11:22.549
+AUDIENCE: Making a
+[UNINTELLIGIBLE] lab.
+
+01:11:22.549 --> 01:11:23.799
+[INTERPOSING VOICES]
+
+01:11:27.840 --> 01:11:28.460
+AUDIENCE: Cooking's a game.
+
+01:11:28.460 --> 01:11:29.710
+There's flavors and such.
+
+01:11:41.030 --> 01:11:42.715
+AUDIENCE: Getting drunk,
+or trying not to.
+
+01:11:56.270 --> 01:11:57.520
+AUDIENCE: Make a
+[UNINTELLIGIBLE].
+
+01:12:10.020 --> 01:12:11.270
+AUDIENCE: Nuclear
+proliferation.
+
+01:12:19.830 --> 01:12:22.944
+AUDIENCE: I mean, bomb making
+plus international diplomacy.
+
+01:12:27.400 --> 01:12:29.210
+AUDIENCE: Living alone
+on an island.
+
+01:12:29.210 --> 01:12:31.280
+TA: That's kind of like
+castaway as well.
+
+01:12:31.280 --> 01:12:32.530
+Yeah, so island.
+
+01:12:37.849 --> 01:12:39.099
+AUDIENCE: [INAUDIBLE]
+
+01:12:54.620 --> 01:12:55.900
+AUDIENCE: So bomb disarming.
+
+01:12:55.900 --> 01:12:59.456
+Also Congress and
+Supreme Court as
+
+01:12:59.456 --> 01:13:01.981
+two separate entities.
+
+01:13:01.981 --> 01:13:04.370
+TA: Sorry, you have
+to repeat that.
+
+01:13:04.370 --> 01:13:05.510
+What now?
+
+01:13:05.510 --> 01:13:07.100
+AUDIENCE: Bomb disarming.
+
+01:13:07.100 --> 01:13:12.670
+Congress and the Supreme Court
+as very separate ideas.
+
+01:13:12.670 --> 01:13:14.080
+TA: Oh.
+
+01:13:14.080 --> 01:13:15.330
+Congress.
+
+01:13:20.714 --> 01:13:23.124
+We've had very many presidents
+in the Congress
+
+01:13:23.124 --> 01:13:25.052
+Supreme Court area.
+
+01:13:25.052 --> 01:13:26.016
+Let's see.
+
+01:13:26.016 --> 01:13:27.462
+I lost track.
+
+01:13:27.462 --> 01:13:28.426
+Calvin.
+
+01:13:28.426 --> 01:13:30.836
+AUDIENCE: Surgery.
+
+01:13:30.836 --> 01:13:33.240
+AUDIENCE: Operation.
+
+01:13:33.240 --> 01:13:36.712
+AUDIENCE: Yeah, I
+love that game.
+
+01:13:36.712 --> 01:13:39.192
+AUDIENCE: Running
+and orphanage.
+
+01:13:39.192 --> 01:13:41.176
+AUDIENCE: If I might,
+running a charity.
+
+01:13:50.104 --> 01:13:53.576
+AUDIENCE: Creating and spreading
+[? means. ?]
+
+01:13:53.576 --> 01:13:56.552
+AUDIENCE: It'd be great if
+you could actually spread
+
+01:13:56.552 --> 01:13:57.802
+[INAUDIBLE].
+
+01:14:00.840 --> 01:14:04.405
+AUDIENCE: Being a tourist
+in Amsterdam.
+
+01:14:04.405 --> 01:14:05.391
+TA: Very specific.
+
+01:14:05.391 --> 01:14:06.377
+OK.
+
+01:14:06.377 --> 01:14:10.814
+[LAUGHTER]
+
+01:14:10.814 --> 01:14:15.251
+AUDIENCE: Basic programs
+at MIT.
+
+01:14:15.251 --> 01:14:16.501
+AUDIENCE: That's worse.
+
+01:14:20.190 --> 01:14:21.440
+AUDIENCE: Playing games.
+
+01:14:26.830 --> 01:14:28.460
+AUDIENCE: Wait, how do
+you imagine that
+
+01:14:28.460 --> 01:14:29.520
+you're playing a game.
+
+01:14:29.520 --> 01:14:31.416
+And you play too many games.
+
+01:14:31.416 --> 01:14:32.590
+And you [UNINTELLIGIBLE].
+
+01:14:32.590 --> 01:14:33.840
+[INTERPOSING VOICES]
+
+01:14:44.084 --> 01:14:45.334
+AUDIENCE: [INAUDIBLE]
+
+01:14:50.580 --> 01:14:51.830
+Being an IPS.
+
+01:14:59.100 --> 01:15:00.350
+AUDIENCE: Twitter.
+
+01:15:07.300 --> 01:15:08.930
+AUDIENCE: Being a pro gamer.
+
+01:15:08.930 --> 01:15:10.536
+TA: The pro gamer game.
+
+01:15:14.650 --> 01:15:16.917
+AUDIENCE: Managing traffic
+intersections.
+
+01:15:16.917 --> 01:15:18.167
+TA: Traffic intersections.
+
+01:15:27.390 --> 01:15:30.428
+AUDIENCE: Being a programmer.
+
+01:15:30.428 --> 01:15:32.416
+A software designer.
+
+01:15:32.416 --> 01:15:34.901
+TA: We have programmer
+and pro gamer.
+
+01:15:34.901 --> 01:15:36.151
+Two different things.
+
+01:15:39.374 --> 01:15:41.859
+AUDIENCE: Fishing.
+
+01:15:41.859 --> 01:15:43.350
+And losing weight.
+
+01:15:52.830 --> 01:15:54.080
+AUDIENCE: The historical
+whaling industry.
+
+01:15:56.800 --> 01:15:59.080
+AUDIENCE: It's not a current
+system, right?
+
+01:16:04.360 --> 01:16:05.610
+[INTERPOSING VOICES]
+
+01:16:09.106 --> 01:16:10.356
+AUDIENCE: Chastity and
+candle making.
+
+01:16:13.646 --> 01:16:16.460
+AUDIENCE: Unicorns.
+
+01:16:16.460 --> 01:16:17.710
+AUDIENCE: Wait, unicorns?
+
+01:16:19.780 --> 01:16:22.095
+AUDIENCE: Maybe we should
+combine that into medieval
+
+01:16:22.095 --> 01:16:23.345
+guild operations.
+
+01:16:26.915 --> 01:16:28.186
+AUDIENCE: Running railroads.
+
+01:16:28.186 --> 01:16:29.436
+TA: Railroads.
+
+01:16:32.890 --> 01:16:34.140
+AUDIENCE: Lumberjacking.
+
+01:16:39.960 --> 01:16:41.210
+AUDIENCE: Spelunking.
+
+01:16:48.610 --> 01:16:49.990
+AUDIENCE: Stock market
+speculation.
+
+01:16:49.990 --> 01:16:51.020
+TA: Stock market?
+
+01:16:51.020 --> 01:16:52.924
+Or speculation in particular.
+
+01:16:58.590 --> 01:17:00.420
+AUDIENCE: Salem witch trials.
+
+01:17:00.420 --> 01:17:01.886
+Or witch hunts in general.
+
+01:17:01.886 --> 01:17:03.136
+TA: Witch hunts.
+
+01:17:10.176 --> 01:17:12.661
+AUDIENCE: Unions.
+
+01:17:12.661 --> 01:17:14.649
+TA: I'm starting to think
+that [UNINTELLIGIBLE].
+
+01:17:22.104 --> 01:17:23.595
+AUDIENCE: Building a house.
+
+01:17:29.062 --> 01:17:30.955
+AUDIENCE: FedEx.
+
+01:17:30.955 --> 01:17:32.205
+TA: FedEx.
+
+01:17:36.795 --> 01:17:40.141
+AUDIENCE: Spreading
+a mass hysteria.
+
+01:17:40.141 --> 01:17:41.391
+Like McCarthy style.
+
+01:17:43.775 --> 01:17:45.230
+TA: Also known as [INAUDIBLE].
+
+01:17:49.890 --> 01:17:52.780
+AUDIENCE: Cold War spying
+and the internet.
+
+01:17:52.780 --> 01:17:54.235
+TA: Cold War espionage.
+
+01:18:00.600 --> 01:18:02.560
+And the internet.
+
+01:18:15.480 --> 01:18:16.730
+AUDIENCE: Communism.
+
+01:18:28.130 --> 01:18:29.380
+AUDIENCE: Computer virus.
+
+01:18:48.408 --> 01:18:49.658
+AUDIENCE: Hurricanes
+and oceans.
+
+01:19:01.310 --> 01:19:02.720
+AUDIENCE: Could you do something
+like astrology,
+
+01:19:02.720 --> 01:19:05.000
+which is not a real-world
+system, but is--
+
+01:19:05.000 --> 01:19:07.170
+[INTERPOSING VOICES]
+
+01:19:07.170 --> 01:19:07.506
+TA: Yes.
+
+01:19:07.506 --> 01:19:09.570
+You can do astrology.
+
+01:19:09.570 --> 01:19:10.840
+AUDIENCE: [INAUDIBLE]
+
+01:19:10.840 --> 01:19:12.300
+virus.
+
+01:19:12.300 --> 01:19:13.340
+AUDIENCE: Yeah.
+
+01:19:13.340 --> 01:19:16.120
+But that would be more
+like a real virus.
+
+01:19:19.390 --> 01:19:23.920
+TA: I would suggest limiting
+yourselves to
+
+01:19:23.920 --> 01:19:24.880
+just the real world.
+
+01:19:24.880 --> 01:19:27.910
+I mean, coming up with things
+like zombie outbreaks, sure
+
+01:19:27.910 --> 01:19:30.250
+there is a system
+you can model.
+
+01:19:30.250 --> 01:19:34.640
+But if you're just trying to
+push on the edges of the
+
+01:19:34.640 --> 01:19:38.570
+constraints, then you're just
+trying to give yourself an
+
+01:19:38.570 --> 01:19:39.290
+easier time.
+
+01:19:39.290 --> 01:19:43.133
+And more often I see the results
+actually turn out to
+
+01:19:43.133 --> 01:19:44.250
+be less interesting because
+people are just
+
+01:19:44.250 --> 01:19:45.910
+going for the ideas.
+
+01:19:45.910 --> 01:19:47.260
+They just [UNINTELLIGIBLE]
+
+01:19:47.260 --> 01:19:48.505
+them really, really quickly.
+
+01:19:48.505 --> 01:19:51.730
+People aren't actually
+trying to work it.
+
+01:19:51.730 --> 01:19:54.820
+But that being said, even with
+a lot of the ideas up here, a
+
+01:19:54.820 --> 01:19:59.180
+lot of them have connections.
+
+01:19:59.180 --> 01:20:01.896
+Even there will be
+the obvious ones.
+
+01:20:01.896 --> 01:20:04.884
+Like oil spill containing and
+oil spill starting could
+
+01:20:04.884 --> 01:20:06.520
+practically be the same thing.
+
+01:20:06.520 --> 01:20:12.210
+Everything with the presidential
+election.
+
+01:20:12.210 --> 01:20:14.150
+Spreading mass hysteria
+[UNINTELLIGIBLE].
+
+01:20:18.310 --> 01:20:21.834
+And these ideas are now
+up on the board.
+
+01:20:21.834 --> 01:20:25.940
+You have until the end
+of Friday, I guess.
+
+01:20:25.940 --> 01:20:28.210
+We don't really need
+to know until the
+
+01:20:28.210 --> 01:20:29.500
+beginning of next week.
+
+01:20:29.500 --> 01:20:34.492
+So actually by the end of
+Friday, you should know who is
+
+01:20:34.492 --> 01:20:38.960
+on your team and what project
+you're working on.
+
+01:20:38.960 --> 01:20:42.580
+Over the weekend, you know
+who's on your team.
+
+01:20:42.580 --> 01:20:45.070
+You know to email people
+on your team.
+
+01:20:47.580 --> 01:20:49.440
+And what idea you're
+starting with.
+
+01:20:49.440 --> 01:20:52.510
+Again, the idea can diverge a
+little bit, but I like the
+
+01:20:52.510 --> 01:20:53.820
+previous project.
+
+01:20:53.820 --> 01:20:56.960
+We do want you to keep with
+whatever you started with and
+
+01:20:56.960 --> 01:20:58.100
+use it as core system.
+
+01:20:58.100 --> 01:21:00.400
+You may choose presidential
+election.
+
+01:21:00.400 --> 01:21:02.670
+It may be something about
+winning votes.
+
+01:21:02.670 --> 01:21:05.085
+And then you decide no, you
+want to make a game of
+
+01:21:05.085 --> 01:21:06.240
+gerrymandering.
+
+01:21:06.240 --> 01:21:07.580
+That's fine.
+
+01:21:07.580 --> 01:21:09.427
+Because it's still keeping
+in with the
+
+01:21:09.427 --> 01:21:11.200
+same core of the system.
+
+01:21:11.200 --> 01:21:14.016
+But say oh, we want to do
+something about winning votes
+
+01:21:14.016 --> 01:21:16.630
+and then instead it became
+about religion or
+
+01:21:16.630 --> 01:21:17.510
+something like that.
+
+01:21:17.510 --> 01:21:20.042
+I could see how you got there,
+but that's not really keeping
+
+01:21:20.042 --> 01:21:23.380
+with the spirit at this
+particular time.
+
+01:21:23.380 --> 01:21:26.558
+So stick with the original
+core system that you're
+
+01:21:26.558 --> 01:21:28.350
+working with.
+
+01:21:28.350 --> 01:21:29.990
+And try to find the fun in it.
+
+01:21:29.990 --> 01:21:32.520
+Don't try to like, oh, this
+is a really dull simulator
+
+01:21:32.520 --> 01:21:34.413
+mechanic, but if we add a bunch
+of [UNINTELLIGIBLE] then
+
+01:21:34.413 --> 01:21:35.260
+it becomes funny.
+
+01:21:35.260 --> 01:21:35.830
+No.
+
+01:21:35.830 --> 01:21:37.690
+Try to find it fun in
+the original system.
+
+01:21:37.690 --> 01:21:40.860
+And if you can't try to pick
+apart the system and find the
+
+01:21:40.860 --> 01:21:42.490
+one component that is fun.
+
+01:21:42.490 --> 01:21:46.605
+So all of bomb making might
+not be so much fun as as
+
+01:21:46.605 --> 01:21:47.170
+[UNINTELLIGIBLE]
+
+01:21:47.170 --> 01:21:47.740
+the blood--
+
+01:21:47.740 --> 01:21:50.060
+Yeah, that might be
+the fun part.
+
+01:21:50.060 --> 01:21:53.350
+The one part, I'll be, oops my
+hand slipped, and therefore I
+
+01:21:53.350 --> 01:21:54.550
+am now dead.
+
+01:21:54.550 --> 01:21:56.950
+That part might be actually kind
+of fun, as opposed to OK,
+
+01:21:56.950 --> 01:21:58.390
+now I need to figure out how
+to get [UNINTELLIGIBLE].
+
+01:22:02.710 --> 01:22:03.670
+Cool.
+
+01:22:03.670 --> 01:22:04.290
+All these ideas are going
+to stay up on
+
+01:22:04.290 --> 01:22:05.540
+the board for a while.

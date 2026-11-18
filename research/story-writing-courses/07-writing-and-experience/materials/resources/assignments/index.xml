@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Assignments on MIT OpenCourseWare</title>
+    <link>/resources/assignments/</link>
+    <description>Recent content in Assignments on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/assignments/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Assignments</title>
+      <link>/pages/assignments/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/assignments/data.json</guid>
+      <description>&lt;h3 id=&#34;overview&#34;&gt;Overview&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;The four major &lt;a href=&#34;#essay_1&#34;&gt;Writing Assignments&lt;/a&gt;, as well as other writing exercises in your &lt;a href=&#34;#reader-writer&#34;&gt;Reader - Writer Notebook/Journal&lt;/a&gt;, are at the center of the course. Each writing assignment will build upon the skills of the previous piece(s) that you&amp;rsquo;ve crafted. In each unit, reading assignments and preliminary writing exercises will prepare you for the essay or short fiction piece that you will be crafting. Over the course of the semester, you will revise each of your pieces after you receive feedback from the instructor and your classmates. Additional writing assignments include response letters to fellow classmates on their work due at the scheduled workshops. You will also keep a typed reader/writer notebook of writing exercises and will give at least one &lt;a href=&#34;#oral_presentation&#34;&gt;Oral Presentation&lt;/a&gt; and a reading from one of your pieces of writing at the end of the term. As the semester ends, you will submit a &lt;a href=&#34;#final_presentation&#34;&gt;Final Portfolio&lt;/a&gt; of all four writing assignments, first versions and revisions. The portfolio is due at the last class with the revision of the fourth piece.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay1_wkshp.pdf</title>
+      <link>/resources/essay1_wkshp/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay1_wkshp/data.json</guid>
+      <description>&lt;p&gt;This file contains instructions for essay workshop groups.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay1.pdf</title>
+      <link>/resources/essay1/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay1/data.json</guid>
+      <description>&lt;p&gt;This file contains deadlines, workshop information and assignment instructions.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay2_prop_rev.pdf</title>
+      <link>/resources/essay2_prop_rev/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay2_prop_rev/data.json</guid>
+      <description>&lt;p&gt;This file contains peer proposal review guidelines.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay2_wkshp.pdf</title>
+      <link>/resources/essay2_wkshp/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay2_wkshp/data.json</guid>
+      <description>&lt;p&gt;This file contains instructions for essay workshop groups.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay2.pdf</title>
+      <link>/resources/essay2/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay2/data.json</guid>
+      <description>&lt;p&gt;This file contains deadlines, workshop information and assignment instructions.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay3_wkshp.pdf</title>
+      <link>/resources/essay3_wkshp/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay3_wkshp/data.json</guid>
+      <description>&lt;p&gt;This file contains instructions for essay workshop groups.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay3.pdf</title>
+      <link>/resources/essay3/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay3/data.json</guid>
+      <description>&lt;p&gt;This file contains deadlines, workshop information and assignment instructions.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay4_nonfic.pdf</title>
+      <link>/resources/essay4_nonfic/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay4_nonfic/data.json</guid>
+      <description>&lt;p&gt;This file contains instructions for essay workshop groups.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay4_shortfic.pdf</title>
+      <link>/resources/essay4_shortfic/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay4_shortfic/data.json</guid>
+      <description>&lt;p&gt;This file contains instructions for short fiction workshop groups.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>essay4.pdf</title>
+      <link>/resources/essay4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/essay4/data.json</guid>
+      <description>&lt;p&gt;This file contains deadlines, workshop information and instructions for assignment&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>exerc_1_1.pdf</title>
+      <link>/resources/exerc_1_1/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/exerc_1_1/data.json</guid>
+      <description>&lt;p&gt;This file contains deadlines, workshop information and instructions for assignment.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>oral_presen.pdf</title>
+      <link>/resources/oral_presen/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/oral_presen/data.json</guid>
+      <description>&lt;p&gt;This file contains deadlines and instructions for oral presentations.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>portfolio731.pdf</title>
+      <link>/resources/portfolio731/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/portfolio731/data.json</guid>
+      <description>&lt;p&gt;This file contains instructions for the final portfolio assignment.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>read_write_nb.pdf</title>
+      <link>/resources/read_write_nb/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/read_write_nb/data.json</guid>
+      <description>&lt;p&gt;This file contains guidelines, instructions and suggestions for journal assignment.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>sample_essay.pdf</title>
+      <link>/resources/sample_essay-1/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/sample_essay-1/data.json</guid>
+      <description>&lt;p&gt;This resource contains a sample title page for the assignment files.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>writers_letter.pdf</title>
+      <link>/resources/writers_letter/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/writers_letter/data.json</guid>
+      <description>&lt;p&gt;This file contains deadlines and instructions for &amp;lsquo;Writer&amp;rsquo;s Letter&amp;rsquo; assignment.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

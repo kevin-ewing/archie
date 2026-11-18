@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Lecture Audio on MIT OpenCourseWare</title>
+    <link>/resources/lecture-audio/</link>
+    <description>Recent content in Lecture Audio on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/lecture-audio/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Audio Lectures</title>
+      <link>/video_galleries/audio-lectures/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/video_galleries/audio-lectures/data.json</guid>
+      <description>&lt;p&gt;Recordings of selected lectures are available below. All guest lectures are used with permission. Assigned readings and lecture slides (if any) for these sessions are listed under the Related Resources tab of each recording. A full schedule of reading assignments is given on the &lt;a href=&#34;../../pages/study-materials/index.html&#34;&gt;Study Materials&lt;/a&gt; page.&lt;/p&gt;&#xA;&lt;h2 id=&#34;textbook&#34;&gt;Textbook&lt;/h2&gt;&#xA;&lt;p&gt;[CGD] = Brathwaite, Brenda, and Ian Schreiber. &lt;em&gt;Challenges for Game Designers: Non-Digital Exercises for Video Game Designers&lt;/em&gt;. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 12: Knowing Your Players</title>
+      <link>/resources/mitcms_608f10lec12_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec12_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Today&amp;rsquo;s reading analyzes user motivation along two axes: interest in the world vs. fellow players, gaining knowledge vs. proficiency. Students discuss the utility of this taxonomy, how games encourage these interactions, and come up with their own frames.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapter 11&lt;/p&gt;&#xA;&lt;p&gt;Bartle, Richard. &amp;ldquo;&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://www.mud.co.uk/richard/hcds.htm&#34;  aria-label=&#34;Hearts, Clubs, Diamonds, Spades: Players Who Suit MUDs (opens in a new tab)&#34;  &gt;Hearts, Clubs, Diamonds, Spades: Players Who Suit MUDs&lt;/a&gt;.&amp;rdquo; April 1996.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 18: Puzzles</title>
+      <link>/resources/mitcms_608f10lec18_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec18_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Puzzles are a popular type of game, characterized by a strict ruleset and (ideally) a single solution. They may appear on their own or embedded into a larger narrative, sometimes representing a similar real-life mechanism (e.g. unlocking a door).&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapter 3&lt;/p&gt;&#xA;&lt;p&gt;Kim, Scott. &amp;ldquo;&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;https://cs.wellesley.edu/~cs215/Lectures/L17-IntroGamesJigsawPuzzle/ScottKim-What_is_a_Puzzle.pdf&#34;  aria-label=&#34;What is a Puzzle? (opens in a new tab)&#34;  &gt;What is a Puzzle?&lt;/a&gt;&amp;rdquo;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 19: Abstraction and Simulation</title>
+      <link>/resources/mitcms_608f10lec19_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec19_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; To build a good simulation, identify relevant features in the source and assumptions in the resulting model. Students explore the meaning of games&amp;rsquo; choices about what to include, simplify, and abstract, and generate ideas for their next assignment.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;Starr, Paul. &amp;ldquo;&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://prospect.org/cs/articles?article=seductions_of_sim#&#34;  aria-label=&#34;Seductions of Sim; Policy as a Simulation Game (opens in a new tab)&#34;  &gt;Seductions of Sim; Policy as a Simulation Game&lt;/a&gt;.&amp;rdquo; &lt;em&gt;The American Prospect&lt;/em&gt;, March 21, 1994.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 2: Iterative Design</title>
+      <link>/resources/mitcms_608f10lec02_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec02_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; This lecture begins by exploring what a game is (and isn&amp;rsquo;t) and defining the terms &amp;ldquo;mechanic&amp;rdquo; and &amp;ldquo;dynamic&amp;rdquo;. Designers identify the core mechanic and dynamic of a game to help guide iterative playtesting and optimization.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapter 1&lt;/p&gt;&#xA;&lt;p&gt;Zimmerman, Eric. &amp;ldquo;&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;https://famst109mg.wordpress.com/2017/01/17/play-as-research-the-iterative-design-process-eric-zimmerman/&#34;  aria-label=&#34;Play as Research: The Iterative Design Process (opens in a new tab)&#34;  &gt;Play as Research: The Iterative Design Process&lt;/a&gt;.&amp;rdquo; July 8, 2003.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 20: What is Intellectual Property?</title>
+      <link>/resources/mitcms_608f10lec20_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec20_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; After feedback on the first assignment, the class covers the basics of intellectual property in the gaming industry. Successful adaptations often incorporate popular elements and distinctive aesthetics from the original media.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapter 9&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 21: Games as Teaching Tools</title>
+      <link>/resources/mitcms_608f10lec21_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec21_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; A panel of game developers from the &lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://www.educationarcade.org/&#34;  aria-label=&#34;Education Arcade (opens in a new tab)&#34;  &gt;Education Arcade&lt;/a&gt; and &lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://www.learninggamesnetwork.org/&#34;  aria-label=&#34;Learning Games Network (opens in a new tab)&#34;  &gt;Learning Games Network&lt;/a&gt; talk about their research, effectively connecting learning and games, engaging a target audience, defining and evaluating success, and common design pitfalls.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy, Konstantin Mitgutsch, Dan Roy, Scot Osterweil&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapters 18 and 19&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 23: Creating Sequels</title>
+      <link>/resources/mitcms_608f10lec23_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec23_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Sequels can improve on the original: fixing problems, adding new features, targeting an established fanbase, etc. This connection can also constrain the sequel concept and discourage new users. Sara Verrilli describes her experiences with the Thief games.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy, Sara Verrilli (&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://gambit.mit.edu/&#34;  aria-label=&#34;Singapore-MIT GAMBIT Game Lab (opens in a new tab)&#34;  &gt;Singapore-MIT GAMBIT Game Lab&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapter 10&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 25: Fiction and Stories in Games</title>
+      <link>/resources/mitcms_608f10lec25_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec25_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Many games incorporate story elements, to drive the plot, set the scene, create engaging characters, etc. Some even use player actions to build an open-ended adventure. Clara Fernandez-Vara talks about how and why to use stories in games.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy, Clara Fernandez-Vara (&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://gambit.mit.edu/&#34;  aria-label=&#34;Singapore-MIT GAMBIT Game Lab (opens in a new tab)&#34;  &gt;Singapore-MIT GAMBIT Game Lab&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;Lecture Notes (&lt;a href=&#34;../../resources/mitcms_608f10_lec25/index.html&#34;&gt;PDF - 2.0MB&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Johnson, Soren. &amp;ldquo;Theme Is Not Meaning.&amp;rdquo; &lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://www.designer-notes.com/?p=237&#34;  aria-label=&#34;Part I (opens in a new tab)&#34;  &gt;Part I&lt;/a&gt;, &lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://www.designer-notes.com/?p=240&#34;  aria-label=&#34;Part II (opens in a new tab)&#34;  &gt;Part II&lt;/a&gt;. &lt;em&gt;Designer Notes&lt;/em&gt;, June 2010.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 27: Games as Art</title>
+      <link>/resources/mitcms_608f10lec27_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec27_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Games have emerged in recent decades as a rich artistic medium, combining elements from audiovisual, interactive, and performance art traditions. Abe Stein talks about aesthetics and meaning in games, and their relation to various modern art movements.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy, Abe Stein (&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://gambit.mit.edu/&#34;  aria-label=&#34;Singapore-MIT GAMBIT Game Lab (opens in a new tab)&#34;  &gt;Singapore-MIT GAMBIT Game Lab&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapter 17&lt;/p&gt;&#xA;&lt;p&gt;Frasca, Gonzalo. &amp;ldquo;&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://www.electronicbookreview.com/thread/firstperson/Boalian&#34;  aria-label=&#34;Videogames Of The Oppressed (opens in a new tab)&#34;  &gt;Videogames Of The Oppressed&lt;/a&gt;.&amp;rdquo; &lt;em&gt;Electronic Book Review&lt;/em&gt;, June 24, 2004.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 3: Where Do Game Ideas Come From?</title>
+      <link>/resources/mitcms_608f10lec03_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec03_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; The assigned readings introduced two frameworks for designing games: formal abstract design and MDA (Mechanics-Dynamics-Aesthetics). Students play a primitive board game and apply these analytic tools, then modify the rules and repeat the exercise.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;This section contains documents that are inaccessible to screen reader software. A &amp;ldquo;#&amp;rdquo; symbol is used to denote such documents.&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapter 2&lt;/p&gt;&#xA;&lt;p&gt;Hunicke, Robin, Marc LeBlanc, and Robert Zubek. &amp;ldquo;MDA: A Formal Approach to Game Design and Game Research.&amp;rdquo; In &lt;em&gt;Proceedings of the Challenges in Game AI Workshop at the 19th National Conference on Artificial Intelligence&lt;/em&gt;. San Jose, CA: AAAI Press, 2004. (&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://www.cs.northwestern.edu/%7Ehunicke/MDA.pdf&#34;  aria-label=&#34;PDF (opens in a new tab)&#34;  &gt;PDF&lt;/a&gt;)#&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 30: Clients for Assignment 3 Visit</title>
+      <link>/resources/mitcms_608f10lec30_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec30_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; The 3rd team assignment is to design a simulation for psychiatry residents interacting with agitated patients. Dr. Cezar Cimpeanu and Dr. James Cartreine present an overview of the problem and discuss their research on effective conflict resolution.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy, Cezar Cimpeanu, James Cartreine&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;Lecture Notes (&lt;a href=&#34;../../resources/mitcms_608f10_lec30/index.html&#34;&gt;PDF - 1.1MB&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;Rueve, Marie, and Randon S. Welton. &amp;ldquo;&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://www.ncbi.nlm.nih.gov/pubmed/19727251&#34;  aria-label=&#34;Violence and Mental Illness (opens in a new tab)&#34;  &gt;Violence and Mental Illness&lt;/a&gt;.&amp;rdquo; &lt;em&gt;Psychiatry&lt;/em&gt; 5 (May 2008): 34-48.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 31: Assignment 3 Brainstorming and Team Formation</title>
+      <link>/resources/mitcms_608f10lec31_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec31_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Following last lecture&amp;rsquo;s presentation of the final project assignment, a conflict mediation training simulation for psychiatric student doctors, students brainstorm their ideas for game concepts, mechanics, and abstraction models.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 32: Live Action Games</title>
+      <link>/resources/mitcms_608f10lec32_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec32_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; &amp;ldquo;Live action&amp;rdquo; describes a wide range of activities, from sports, to real-time roleplaying, to playground/party games. Careful choices about mechanics, abstraction, and communication help create an engaging experience without physical or emotional harm.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 33: Ethics in Games</title>
+      <link>/resources/mitcms_608f10lec33_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec33_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Mia Consalvo asks students for examples illustrating how game designers construct ethical systems, how users act within those systems, and the role of community norms. How do players connect behavioral standards inside and outside the game world?&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy, Mia Consalvo (Comparative Media Studies)&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;Sicart, Miguel. &amp;ldquo;The Ethics of Game Design.&amp;rdquo; Chapter 7 in &lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;https://mitpress.mit.edu/books/ethics-computer-games&#34;  aria-label=&#34;The Ethics of Computer Games (opens in a new tab)&#34;  &gt;&lt;em&gt;The Ethics of Computer Games&lt;/em&gt;&lt;/a&gt;. Cambridge, MA: MIT Press, 2009. ISBN: 9780262012652.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 4: Prototyping</title>
+      <link>/resources/mitcms_608f10lec04_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec04_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Before games come to market, they undergo several tests: Are there technical glitches? Can players easily get started? Is the gameplay what the designers intended? Sara Verrilli discusses how and why to conduct focus testing.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy, Sara Verrilli (&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://gambit.mit.edu/&#34;  aria-label=&#34;Singapore-MIT GAMBIT Game Lab (opens in a new tab)&#34;  &gt;Singapore-MIT GAMBIT Game Lab&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;Fullerton, Tracy. &amp;ldquo;Playtesting.&amp;rdquo; Chapter 8 in &lt;em&gt;Game Design Workshop&lt;/em&gt;. Boston, MA: Morgan Kaufmann, 2008. ISBN: 9780240809748.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 5: Assignment 1 Brainstorming and Team Formation</title>
+      <link>/resources/mitcms_608f10lec05_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec05_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Abe Stein talks about how to brainstorm constructively, despite social pressure and interpersonal dynamics. Students practice generating ideas individually and in groups, ending with concepts for the first team project, a card game for 2-4 players.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy, Abe Stein (&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://gambit.mit.edu/&#34;  aria-label=&#34;Singapore-MIT GAMBIT Game Lab (opens in a new tab)&#34;  &gt;Singapore-MIT GAMBIT Game Lab&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;Osborn, Alex F. &amp;ldquo;Creative Collaboration by Groups.&amp;rdquo; Chapter 12 in &lt;em&gt;Applied Imagination&lt;/em&gt;. New York, NY: Scribner, 1953. ISBN: 9780930222734.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 6: The Social Function of Games</title>
+      <link>/resources/mitcms_608f10lec06_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec06_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Today&amp;rsquo;s reading, by theorist Roger Caillois, examines the various interactions between players and spectators of games. Students then brainstorm ideas for their first team project: designing a card game for 2-4 players.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;Church, Doug. &amp;ldquo;&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://www.gamasutra.com/view/feature/3357/formal_abstract_design_tools.php&#34;  aria-label=&#34;Formal Abstract Design Tools (opens in a new tab)&#34;  &gt;Formal Abstract Design Tools&lt;/a&gt;.&amp;rdquo; &lt;em&gt;Gamasutra&lt;/em&gt;, July 16, 1999.&lt;/p&gt;&#xA;&lt;p&gt;Caillois, Roger. &amp;ldquo;The Social Function of Games.&amp;rdquo; Chapter 3 in &lt;em&gt;Man, Play, and Games&lt;/em&gt;. Urbana, IL: University of Illinois Press, 2001. ISBN: 9780252070334.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 8: Strategy, Skill, and Chance, Part 1</title>
+      <link>/resources/mitcms_608f10lec08_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec08_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; Games contain various skill requirements, chance elements, and information availability, which guide strategy development. Changing the balance between these factors can create very different player experiences.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapter 6&lt;/p&gt;&#xA;&lt;p&gt;Poundstone, William. &amp;ldquo;Game Theory.&amp;rdquo; &lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;https://mitpress.mit.edu/books/game-design-reader&#34;  aria-label=&#34;The Game Design Reader: A Rules of Play Anthology (opens in a new tab)&#34;  &gt;&lt;em&gt;The Game Design Reader: A Rules of Play Anthology&lt;/em&gt;&lt;/a&gt;. Edited by Katie Salen and Eric Zimmerman. Cambridge, MA: MIT Press, 2005. ISBN: 9780262195362.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Lecture 9: Strategy, Skill, and Chance, Part 2</title>
+      <link>/resources/mitcms_608f10lec09_mp4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mitcms_608f10lec09_mp4/data.json</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt; This lecture reviews the concepts of information flow and uncertainty, analyzing well-known games in these terms. Examples include Scrabble, Go Fish, Mario Kart, Monopoly, chess, poker, War, and Settlers of Catan. Next, students consider feedback loops.&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Instructors/speakers:&lt;/strong&gt; Philip Tan, Jason Begy&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Related Resources&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;[CGD] Chapters 7 and 8&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

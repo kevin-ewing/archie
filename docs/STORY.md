@@ -2,8 +2,24 @@
 
 > Status: **Draft v0.8** · Last updated: 2026-11-13
 > We storyboard here together. Mechanics live in [`MECHANICS.md`](MECHANICS.md).
+> The [story workshop](story/README.md) holds the current crew decisions and [character profiles](story/CHARACTERS.md). The older cast and chapter outline below were drafted before the observer and rookie moved into the aircraft.
 
 ---
+
+## Current cast and writing references
+
+Use the [story workshop](story/README.md) for the current crew, open decisions, and sortie seeds. The campaign keeps Tom as pilot across Flanders in 1915 and the Somme in 1916. Vale and Pike are the successive airborne observers. Rooke is the separate artillery contact on the ground. The workshop tracks the open decisions about Vale’s departure, Rooke’s posting, and who keys the wireless.
+
+| Character | Dossier | Writing skill |
+|---|---|---|
+| **Tom Bell**, player pilot | [Opening profile](story/TOM_BELL.md) | [tom-bell](../skills/tom-bell/SKILL.md) |
+| **Arthur Vale**, experienced observer in 1915 | [Opening profile](story/ARTHUR_VALE.md) | [arthur-vale](../skills/arthur-vale/SKILL.md) |
+| **Ned Pike**, rookie observer in 1916 | [Opening profile](story/NED_PIKE.md) | [ned-pike](../skills/ned-pike/SKILL.md) |
+| **Will Rooke**, artillery contact | [Opening profile](story/WILL_ROOKE.md) | [will-rooke](../skills/will-rooke/SKILL.md) |
+
+Each dossier is a snapshot from just before that character’s introduction. It includes their civilian life, relationships, habits, voice guide and one civilian writing sample. Track later events here or in the workshop. [The sixpence](#the-sixpence) records the mailing after Tom’s first artillery sortie and its return after the war. Tom’s interest in collecting, keeping and sending personal objects is established in his dossier and the workshop.
+
+> The older planning sections below preserve the original draft. Wherever they describe single-seat flight, two successive ground operators, or a different crew relationship, use the current cast and workshop above.
 
 ## Locked decisions
 
@@ -109,11 +125,13 @@ With two operators, the ending can land on either relationship, or both (e.g. th
 | D | **The lad is transferred** to a wireless school to train others. He's grown up, and you made him. A promotion that takes him away. | Quietly bittersweet; nobody is hurt. |
 | E | **The new aircraft** (two-seaters with observers) arrive; your machine gets an observer who handles the wireless. You never key to him again. | Historical progress as the thing that separates them. |
 
-## Proposed: the sixpence
+## The sixpence
 
-The charm hanging under the altimeter is **the old hand's lucky sixpence**, drilled through and strung on signal cord. Proposed, not locked. He gives it to the pilot early in Chapter 1, with a dry line about it having seen more of the war than either of them. It stays on screen for the whole game: it swings in every turn, and it's still there in Chapter 2, long after he's only a voice in letters. One possible payoff: in the ending, the pilot posts it back to him, or it comes back with his last letter. **[VERIFY]** Holed and bent coins carried as soldiers' luck pieces.
+After Tom’s first artillery-observation sortie in Flanders, the artillery contact on the ground posts him his lucky sixpence. It’s drilled through and hung on signal cord below the altimeter. Tom carries it through the war and posts it back to the same man after the war. The sender and return are settled. The dates and wording of the accompanying letters are open. A [serviceman’s sixpence pendant](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk) gives the object a period reference. Will’s use of it as a lucky charm is fictional.
 
 ## Loading messages
+
+The [historical research ledger](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk) records verified loading facts and caveats.
 
 The first load shows one of these at random under the loading mark (the list lives in `index.html`).
 The service is always the **Royal Flying Corps** (RFC). The RAF only formed on 1 April 1918, so it never
@@ -123,17 +141,17 @@ appears in player-facing text. (The B.E.2c's engine is the "RAF 1a", where RAF m
 - **Facts:**
   - The B.E.2c was designed at Farnborough (the Royal Aircraft Factory). **[VERIFY]**
   - Most B.E.2cs were built by outside firms. **[VERIFY]**
-  - Its air-cooled V8 made about 90 horsepower. **[VERIFY]**
+  - Period rigging notes list a 90 hp RAF engine. [Training notebook](https://transcribe.awm.gov.au/transcription/item/awm201922242-12)
   - Flat out, it managed about 72 mph. **[VERIFY]**
   - It was stable enough to fly hands off. **[VERIFY]**
   - The observer sat in front of the pilot. **[VERIFY]**
-  - "Archie" was RFC slang for anti-aircraft fire. **[VERIFY]**
-  - The RFC was formed in 1912. **[VERIFY]**
-  - Observers corrected the guns by wireless. **[VERIFY]**
-  - The clock code told gunners where shells fell. **[VERIFY]**
+  - “Archie” was RFC slang for anti-aircraft fire. [Official history, ch. VI](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk)
+  - The RFC was formed in 1912. [RAF Museum chronology](https://www.rafmuseum.org.uk/research/research-enquiries/history-of-aviation-timeline/british-military-aviation/1912-2/)
+  - Observers corrected the guns by wireless. [Official history, ch. VI](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk)
+  - The clock code told gunners where shells fell. [Official history, ch. VI](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk)
   - RFC headquarters sat at St Omer (1914–16). **[VERIFY]**
   - The B.E.2c first flew in 1914. **[VERIFY]**
-  - B.E. stood for Blériot Experimental (a tractor, propeller in front, after Blériot's layout). **[VERIFY]**
+  - B.E. stood for Blériot Experimental. [Official history, ch. III](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk)
   - Geoffrey de Havilland designed the first B.E.2 (1912). **[VERIFY]**
   - Edward Busk worked out the B.E.2c's inherent stability. **[VERIFY]**
   - More than 3,000 B.E.2s of all kinds were built (about 3,500). **[VERIFY]**
@@ -148,11 +166,11 @@ appears in player-facing text. (The B.E.2c's engine is the "RAF 1a", where RAF m
   - In 1914 crews carried rifles and pistols. **[VERIFY]**
   - Crews called the B.E.2c "Fokker fodder". **[VERIFY]**
   - The "Fokker Scourge" began in summer 1915. **[VERIFY]**
-  - The Fokker Eindecker fired through its propeller (synchronised gun). **[VERIFY]**
+  - The Fokker Eindecker’s synchronised gun fired between the propeller blades. [Museum of Flight](https://www.museumofflight.org/exhibits-and-events/aircraft/fokker-eiii-reproduction)
   - RFC aeroplane crews were not given parachutes. **[VERIFY]**
   - Some new pilots reached France with under 20 hours solo. **[VERIFY]**
   - Many pilots were barely twenty. **[VERIFY]**
-  - The RFC went to France in August 1914. **[VERIFY]**
+  - The RFC went to France in August 1914. [RAF Museum](https://www.rafmuseum.org.uk/blog/a-few-of-the-first-the-rfc-august-1914/)
   - RFC reconnaissance saw von Kluck's army turn before the Marne (September 1914). **[VERIFY]**
   - The RFC's naval wing became the Royal Naval Air Service in 1914. **[VERIFY]**
   - Hugh Trenchard took command of the RFC in France in August 1915. **[VERIFY]**
@@ -161,16 +179,16 @@ appears in player-facing text. (The B.E.2c's engine is the "RAF 1a", where RAF m
   - Signallers said "Ack Ack" for anti-aircraft (A.A.). **[VERIFY]**
   - Observers tapped out Morse on a key. **[VERIFY]**
   - Spotting aircraft could send by wireless but not receive. **[VERIFY]**
-  - Batteries replied with white cloth strips laid on the ground. **[VERIFY]**
-  - In the clock code, twelve o'clock was true north. **[VERIFY]**
-  - In the clock code, lettered rings showed how far a shell fell from the target. **[VERIFY]**
-  - Trench maps were split into lettered, numbered squares. **[VERIFY]**
+  - Ground stations replied with white strips laid out in coded arrangements. [Official history, ch. VI](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk)
+  - In the clock code, twelve o’clock was true north. [Official history, ch. VI](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk)
+  - In the clock code, lettered rings showed how far a shell fell from the target. [Official history, ch. VI](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk)
+  - British trench maps used numbered squares with lettered subdivisions. [National Archives](https://www.nationalarchives.gov.uk/help-with-your-research/research-guides/military-maps-first-world-war)
   - The Neuve Chapelle attack (March 1915) was planned from air photographs. **[VERIFY]**
   - The A-type camera (1915) was held over the side by hand. **[VERIFY]**
   - Aerodromes were often just farm fields. **[VERIFY]**
   - Crews billeted in tents, huts and farmhouses. **[VERIFY]**
   - Zeppelins first bombed Britain in January 1915. **[VERIFY]**
-  - A B.E.2c brought down an airship at Cuffley (Leefe Robinson, September 1916). **[VERIFY]**
+  - Leefe Robinson brought down the airship SL 11 over Cuffley in a B.E.2c in September 1916. [RAF Museum](https://www.rafmuseum.org.uk/blog/the-few-and-the-first-battle-of-britain/)
   - Gas was first used on the Western Front at Ypres, April 1915. **[VERIFY]**
   - The shell crisis of 1915 rationed the guns. **[VERIFY]**
   - Ypres sat in a salient, overlooked by German guns on three sides. **[VERIFY]**

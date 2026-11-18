@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on MIT OpenCourseWare</title>
+    <link>/resources/projects/</link>
+    <description>Recent content in Projects on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/projects/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title> Immortality</title>
+      <link>/resources/mites_292s08_immortality/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mites_292s08_immortality/data.json</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Microsoft Word - Facebook Stalking 101.doc</title>
+      <link>/resources/mites_292s08_facbok/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mites_292s08_facbok/data.json</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Projects</title>
+      <link>/pages/projects/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/projects/data.json</guid>
+      <description>&lt;p&gt;Throughout the semester, students wrote a variety of essays spanning several genres including expert essays, poetic prose, and microfictions (see &lt;a href=&#34;../../pages/calendar-and-assignments/index.html&#34;&gt;calendar and assignments&lt;/a&gt; section). We have included several examples of student work in this section.&lt;/p&gt;&#xA;&lt;p&gt;Student files below are courtesy of Marcella Vokey, David Stiebel, and Natalie Andrew and are used with permission.&lt;/p&gt;&#xA;&#xA;    &lt;h3 id=&#34;marcella-vokey&#34;&gt;Marcella Vokey&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;&amp;ldquo;Facebook Stalking 101&amp;rdquo; (&lt;a href=&#34;../../resources/mites_292s08_facbok/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;&amp;ldquo;The Defeatist&amp;rdquo; (&lt;a href=&#34;../../resources/mites_292s08_the_def/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;&amp;ldquo;Verdis Quo&amp;rdquo; (&lt;a href=&#34;../../resources/mites_292s08_verid/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&#xA;    &lt;h3 id=&#34;david-stiebel&#34;&gt;David Stiebel&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;&amp;ldquo;The Fall&amp;rdquo; (&lt;a href=&#34;../../resources/mites_292s08_the_fall/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;&amp;ldquo;To Sleep&amp;rdquo; (&lt;a href=&#34;../../resources/mites_292s08_to_sleep/index.html&#34;&gt;PDF&lt;/a&gt;)&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>The Defeatist</title>
+      <link>/resources/mites_292s08_the_def/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mites_292s08_the_def/data.json</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>The Fall</title>
+      <link>/resources/mites_292s08_the_fall/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mites_292s08_the_fall/data.json</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>To Sleep</title>
+      <link>/resources/mites_292s08_to_sleep/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mites_292s08_to_sleep/data.json</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Verdis Quo</title>
+      <link>/resources/mites_292s08_verid/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mites_292s08_verid/data.json</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

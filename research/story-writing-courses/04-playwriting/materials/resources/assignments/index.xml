@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Assignments on MIT OpenCourseWare</title>
+    <link>/resources/assignments/</link>
+    <description>Recent content in Assignments on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/assignments/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Assignments</title>
+      <link>/pages/assignments/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/assignments/data.json</guid>
+      <description>&lt;p&gt;&lt;table&gt;&#xA;&#xA;&lt;thead&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;WEEK #&#xA;&lt;/th&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;ASSIGNMENTS&#xA;&lt;/th&gt;&#xA;&lt;/p&gt;&#xA;&lt;/tr&gt;&#xA;&#xA;&lt;p&gt;&lt;/thead&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;2&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Playwriting Exercise 1 (&lt;a href=&#34;../../resources/week2/index.html&#34;&gt;PDF&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/tr&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;3&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Playwriting Exercise 2 (&lt;a href=&#34;../../resources/week3_revised/index.html&#34;&gt;PDF&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/tr&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;4&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Playwriting Exercise 3 (&lt;a href=&#34;../../resources/week4/index.html&#34;&gt;PDF&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/tr&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;5&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Playwriting Exercise 4 (&lt;a href=&#34;../../resources/week5_revised/index.html&#34;&gt;PDF&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/tr&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;6&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Playwriting Exercise 5 (&lt;a href=&#34;../../resources/week6/index.html&#34;&gt;PDF 1&lt;/a&gt;) (&lt;a href=&#34;../../resources/week6b/index.html&#34;&gt;PDF 2&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/tr&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;7&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Playwriting Exercise 6 (&lt;a href=&#34;../../resources/week7/index.html&#34;&gt;PDF&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/tr&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;8&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Playwriting Exercise 7 (&lt;a href=&#34;../../resources/week8/index.html&#34;&gt;PDF&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/tr&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;9&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Playwriting Exercise 8 (&lt;a href=&#34;../../resources/week9/index.html&#34;&gt;PDF&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;/tr&gt;&#xA;&#xA;&lt;/table&gt;&#xA;&#xA;&lt;p&gt;The last two weeks of the course were devoted to workshopping students&amp;rsquo; final projects.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week2.pdf</title>
+      <link>/resources/week2/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week2/data.json</guid>
+      <description>&lt;p&gt;This file contains assignment questions and some notes for week 2.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week3_revised.pdf</title>
+      <link>/resources/week3_revised/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week3_revised/data.json</guid>
+      <description>&lt;p&gt;This resource contains importance of objects and assignments.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week4.pdf</title>
+      <link>/resources/week4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week4/data.json</guid>
+      <description>&lt;p&gt;This file contains an assignment that includes writing a high-context scene.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week5_revised.pdf</title>
+      <link>/resources/week5_revised/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week5_revised/data.json</guid>
+      <description>&lt;p&gt;This file contains an assignment that includes writing a play and questions to ask for it.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week5.pdf</title>
+      <link>/resources/week5/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week5/data.json</guid>
+      <description>&lt;p&gt;This file contains an assignment that includes writing a play and questions to ask for it.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week6.pdf</title>
+      <link>/resources/week6/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week6/data.json</guid>
+      <description>&lt;p&gt;This file contains an assignment that includes writing a play/scene given what the charcaters will do and also gives in addition the required conditions for the play.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week6b.pdf</title>
+      <link>/resources/week6b/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week6b/data.json</guid>
+      <description>&lt;p&gt;This file includes an assignment that involves creating a spine.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week7.pdf</title>
+      <link>/resources/week7/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week7/data.json</guid>
+      <description>&lt;p&gt;This file contains an assignment that includes writing a short radio play.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week8.pdf</title>
+      <link>/resources/week8/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week8/data.json</guid>
+      <description>&lt;p&gt;This file contains an assignment that includes writing a play on a particular subject.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>week9.pdf</title>
+      <link>/resources/week9/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/week9/data.json</guid>
+      <description>&lt;p&gt;This file contains a scenario that focuses to include miniature golf with someone in each couple.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

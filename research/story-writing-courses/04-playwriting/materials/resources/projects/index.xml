@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on MIT OpenCourseWare</title>
+    <link>/resources/projects/</link>
+    <description>Recent content in Projects on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/projects/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>dona_felicidad.pdf</title>
+      <link>/resources/dona_felicidad/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/dona_felicidad/data.json</guid>
+      <description>&lt;p&gt;This resource describes the play based on the rosewater of dona felicidad.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>mahabharata.pdf</title>
+      <link>/resources/mahabharata/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mahabharata/data.json</guid>
+      <description>&lt;p&gt;This resource describes the play based on an incident from the Mahabharata.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>mnemosyne.pdf</title>
+      <link>/resources/mnemosyne/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mnemosyne/data.json</guid>
+      <description>&lt;p&gt;This resource describes the play related to mnemosyne.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Projects</title>
+      <link>/pages/projects/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/projects/data.json</guid>
+      <description>&lt;p&gt;Students write a number of one-act plays for this class. The weekly assignments are roughly each 10 pages long, while the final projects run from 20-30 pages.&lt;/p&gt;&#xA;&#xA;    &lt;h3 id=&#34;examples-of-student-work&#34;&gt;Examples of Student Work&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;The Rosewater of Dona Felicidad by Hortense Gerardo (&lt;a href=&#34;../../resources/dona_felicidad/index.html&#34;&gt;PDF&lt;/a&gt;) (Courtesy of Hortense Gerardo. Used with permission.)&lt;/p&gt;&#xA;&lt;p&gt;Write Home About It by Waseem Daher (&lt;a href=&#34;../../resources/write_home/index.html&#34;&gt;PDF&lt;/a&gt;) (Courtesy of Waseem Daher. Used with permission.)&lt;/p&gt;&#xA;&lt;p&gt;Mnemosyne by Joan Mao (&lt;a href=&#34;../../resources/mnemosyne/index.html&#34;&gt;PDF&lt;/a&gt;) (Courtesy of Joan Mao. Used with permission.)&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>write_home.pdf</title>
+      <link>/resources/write_home/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/write_home/data.json</guid>
+      <description>&lt;p&gt;This resource describes the play Write Home About It written by Waseem Daher.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

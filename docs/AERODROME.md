@@ -15,7 +15,7 @@ STORY opens the pilot's desk in the barn at Rook Field, seen from straight above
 - **Plates (top right)** do the main things directly: TAKE OFF, CONTINUE or SORTIE n; LOG BOOK; SETTINGS; MAIN MENU. Esc puts a thing down, then leaves the desk.
 - **Straight there:** `?story` opens the desk directly, and `?day=N` sets the campaign day (the calendar and the orders' date).
 - **Code:** the drawings are in [desk-items.ts](../src/story/desk-items.ts), the desk and its layout in [barn-art.ts](../src/story/barn-art.ts), and the controls in [barn.ts](../src/story/barn.ts). All of it is drawn in code, the same for everyone. It's a stand-in until generated art replaces the base.
-- **[VERIFY]** The clock-code card's ring letters and distances (Y Z A B C D E F, 10 to 500 yards), and the period details: the penny stamp, the "Navy Cut" tin, the "Swan" matches and the pilot's flying log book.
+- **[VERIFY]** The exact postage on military envelopes, the "Navy Cut" tin, the "Swan" matches and the logbook cover. The [clock-code rings and period object references](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk) are documented.
 
 ## How it behaves
 
@@ -27,7 +27,7 @@ STORY opens the pilot's desk in the barn at Rook Field, seen from straight above
 
 The story sets the cover (`LogbookCover` in desk-items.ts; `BarnInfo.logbook`):
 
-- `rank`: written in his own hand on the RANK line. It starts as **2ND LIEUT.**, since a new RFC pilot was commissioned a Second Lieutenant. **[VERIFY]** whether he was "on probation" in 1915.
+- `rank`: written in his own hand on the RANK line. It starts as **2ND LIEUT.**, a rank attested for RFC pilot appointments in 1915. Tom’s specific commission and probation status remain open. [Historical research](HISTORICAL_RESEARCH.md#cast-and-voice)
 - `formerRank`: after a promotion, the old rank is struck through above the new one.
 - `number`: the book's number, pencilled in by the clerk at the top left (159 to start).
 - `wear`: 0 (new) to 1 (a long war). More handling darkens the edges, adds scuffs and spreads foxing. For now it rises a little with every flight logged.

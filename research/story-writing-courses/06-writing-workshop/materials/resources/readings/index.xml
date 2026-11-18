@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Readings on MIT OpenCourseWare</title>
+    <link>/resources/readings/</link>
+    <description>Recent content in Readings on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/readings/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fallen Bird</title>
+      <link>/resources/mites_292s08_fallen_bird/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mites_292s08_fallen_bird/data.json</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Readings</title>
+      <link>/pages/readings/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/readings/data.json</guid>
+      <description>&lt;p&gt;&lt;table&gt;&#xA;&lt;thead&gt;&#xA;&lt;tr&gt;&#xA;&lt;th&gt;&#xA;&#xA;SES #&#xA;&lt;/th&gt;&#xA;&lt;th&gt;&#xA;&#xA;READINGS&#xA;&lt;/th&gt;&#xA;&lt;/tr&gt;&#xA;&lt;/thead&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;&#xA;&#xA;1&#xA;&lt;/td&gt;&#xA;&lt;td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;Ebert, Roger. &amp;ldquo;Why I Write.&amp;rdquo;&lt;/p&gt;&#xA;&lt;p&gt;Goldberg, Natalie. &amp;ldquo;Why Do I Write?&amp;rdquo; In &lt;em&gt;Writing Down the Bones: Freeing the Writer Within&lt;/em&gt;. Boston, MA: Shambhala, 2005. ISBN: 9781590302613.&lt;/p&gt;&#xA;&lt;p&gt;Leitch, Will. &amp;ldquo;Why I Write.&amp;rdquo;&lt;/p&gt;&#xA;&lt;p&gt;Williams, Terry Tempest. &amp;ldquo;Why I Write.&amp;rdquo; (&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://rvannoy.asp.radford.edu/rvn/312/whyiwrite.pdf&#34;  aria-label=&#34;PDF (opens in a new tab)&#34;  &gt;PDF&lt;/a&gt;)&lt;/p&gt;&#xA;&lt;p&gt;&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;&#xA;&#xA;2&#xA;&lt;/td&gt;&#xA;&lt;td&gt;&#xA;&#xA;Eighner, Lars. &lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;https://scholarworks.umb.edu/cgi/viewcontent.cgi?article=1539&amp;amp;context=nejpp&#34;  aria-label=&#34;&amp;amp;ldquo;On Dumpster Diving.&amp;amp;rdquo; (PDF) (opens in a new tab)&#34;  &gt;&amp;ldquo;On Dumpster Diving.&amp;rdquo; (PDF)&lt;/a&gt; &lt;em&gt;New England Journal of Public Policy&lt;/em&gt; 8, no. 1 (1992): 88–95.&#xA;&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;&#xA;&#xA;3&#xA;&lt;/td&gt;&#xA;&lt;td&gt;&#xA;&#xA;Sanders, Scott Russell. &amp;ldquo;&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;https://www.frontiercsd.org/cms/lib/NY19000265/Centricity/Domain/218/Tools.pdf&#34;  aria-label=&#34;The Inheritance of Tools (opens in a new tab)&#34;  &gt;The Inheritance of Tools&lt;/a&gt;.&amp;rdquo;&#xA;&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;&#xA;&#xA;4&#xA;&lt;/td&gt;&#xA;&lt;td&gt;&#xA;&#xA;Moody, Rick. &amp;ldquo;Boys.&amp;rdquo; In &lt;em&gt;Demonology: Stories&lt;/em&gt;. New York, NY: Back Bay Books, 2002. ISBN: 9780316592109. (&lt;a   class=&#34;external-link &#34;   target=&#34;_blank&#34;   href=&#34;http://katey.schultz.googlepages.com/boys1.pdf&#34;  aria-label=&#34;PDF (opens in a new tab)&#34;  &gt;PDF&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;&#xA;&#xA;5&#xA;&lt;/td&gt;&#xA;&lt;td&gt;&#xA;&#xA;Young, Jessica. &amp;ldquo;Fallen Bird.&amp;rdquo; (unpublished essay) (&lt;a href=&#34;../../resources/mites_292s08_fallen_bird/index.html&#34;&gt;PDF&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;&#xA;&#xA;6&#xA;&lt;/td&gt;&#xA;&lt;td&gt;&#xA;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

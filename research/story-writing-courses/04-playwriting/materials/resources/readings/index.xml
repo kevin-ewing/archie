@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Readings on MIT OpenCourseWare</title>
+    <link>/resources/readings/</link>
+    <description>Recent content in Readings on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/readings/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>context_wk4.pdf</title>
+      <link>/resources/context_wk4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/context_wk4/data.json</guid>
+      <description>&lt;p&gt;This file contains a handout on high and low context.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>handout_wk10.pdf</title>
+      <link>/resources/handout_wk10/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/handout_wk10/data.json</guid>
+      <description>&lt;p&gt;This file contains a handout that contains some questions for revising your play.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>handout_wk2.pdf</title>
+      <link>/resources/handout_wk2/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/handout_wk2/data.json</guid>
+      <description>&lt;p&gt;This file contains some questions on how to begin writing the play.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>handout_wk3.pdf</title>
+      <link>/resources/handout_wk3/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/handout_wk3/data.json</guid>
+      <description>&lt;p&gt;This file contains some notes.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>handout_wk6.pdf</title>
+      <link>/resources/handout_wk6/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/handout_wk6/data.json</guid>
+      <description>&lt;p&gt;This file contains handout on thinking about plot.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>handout_wk9.pdf</title>
+      <link>/resources/handout_wk9/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/handout_wk9/data.json</guid>
+      <description>&lt;p&gt;This file contains a handout that contains  some notes about the play.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>in_class_wk9.pdf</title>
+      <link>/resources/in_class_wk9/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/in_class_wk9/data.json</guid>
+      <description>&lt;p&gt;This file contains a handout that involves an exercise that entails the instructions &amp;amp; elements on creating a piece.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>objects_wk2.pdf</title>
+      <link>/resources/objects_wk2/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/objects_wk2/data.json</guid>
+      <description>&lt;p&gt;This file contains handout on objects.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Readings</title>
+      <link>/pages/readings/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/readings/data.json</guid>
+      <description>&lt;p&gt;&lt;table&gt;&#xA;&#xA;&lt;thead&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;WeEK #&#xA;&lt;/th&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;TOPICS&#xA;&lt;/th&gt;&#xA;&#xA;&lt;th&gt;&#xA;&#xA;READINGS&#xA;&lt;/th&gt;&#xA;&lt;/p&gt;&#xA;&lt;/tr&gt;&#xA;&#xA;&lt;p&gt;&lt;/thead&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;1&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Playwrights are Storytellers&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;Ives, David. &amp;ldquo;Sure Thing.&amp;rdquo; In &lt;em&gt;All in the Timing: Fourteen Plays&lt;/em&gt;. New York, NY: Vintage Books, 1994. ISBN: 9780679759287.&#xA;&lt;/td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;&lt;/tr&gt;&#xA;&#xA;&lt;tr&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;2&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&#xA;The Power of the Unspoken Word (&lt;a href=&#34;../../resources/handout_wk2/index.html&#34;&gt;PDF 1&lt;/a&gt;) (&lt;a href=&#34;../../resources/objects_wk2/index.html&#34;&gt;PDF 2&lt;/a&gt;)&#xA;&lt;/td&gt;&#xA;&#xA;&lt;td&gt;&#xA;&lt;/p&gt;&#xA;&lt;p&gt;Alford, Henry. &amp;ldquo;Shouts and Murmers: Unspoken O&amp;rsquo;Neill.&amp;rdquo; &lt;em&gt;The New Yorker&lt;/em&gt;, December 1998, 68-69.&lt;/p&gt;&#xA;&lt;p&gt;Raffo, Heather. &amp;ldquo;Iraq Through the Eyes of its Women.&amp;rdquo; &lt;em&gt;American Theatre&lt;/em&gt;, April 2005, 20-22 and 70-71.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>setting_wk4.pdf</title>
+      <link>/resources/setting_wk4/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/setting_wk4/data.json</guid>
+      <description>&lt;p&gt;This file contains a handout that discusses about the importance of setting.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

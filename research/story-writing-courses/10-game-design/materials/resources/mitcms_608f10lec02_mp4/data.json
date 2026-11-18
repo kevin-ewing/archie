@@ -1,0 +1,34 @@
+{
+  "body": "",
+  "content": "<p><strong>Description:</strong> This lecture begins by exploring what a game is (and isn&rsquo;t) and defining the terms &ldquo;mechanic&rdquo; and &ldquo;dynamic&rdquo;. Designers identify the core mechanic and dynamic of a game to help guide iterative playtesting and optimization.</p>\n<p><strong>Instructors/speakers:</strong> Philip Tan, Jason Begy</p>\n<p><strong>Related Resources</strong></p>\n<p>[CGD] Chapter 1</p>\n<p>Zimmerman, Eric. &ldquo;<a   class=\"external-link \"   target=\"_blank\"   href=\"https://famst109mg.wordpress.com/2017/01/17/play-as-research-the-iterative-design-process-eric-zimmerman/\"  aria-label=\"Play as Research: The Iterative Design Process (opens in a new tab)\"  >Play as Research: The Iterative Design Process</a>.&rdquo; July 8, 2003.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec02_360p_16_9.mp4",
+  "file_size": 64875393,
+  "file_type": "video/mp4",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Lecture Audio"
+  ],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 2: Iterative Design",
+  "uid": "8aa84692-3bf1-47b8-bb78-882f52820a79",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec02_captions.vtt",
+    "video_thumbnail_file": "https://img.youtube.com/vi/bXSSQgtF9zA/default.jpg",
+    "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec02_transcript.pdf"
+  },
+  "video_metadata": {
+    "video_speakers": "",
+    "video_tags": "cms-608-game-design-fall-2010, dynamic, game design, mechanic, optimization, playtesting",
+    "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\nThis lecture begins by exploring what a game is (and isn't) and defining the terms \"mechanic\" and \"dynamic\". Designers identify the core mechanic and dynamic of a game to help guide iterative playtesting and optimization.\n\nRelated Resources:\n[CGD] Chapter 1.\n[CGD] = Brathwaite, Brenda, and Ian Schreiber. Challenges for Game Designers: Non-Digital Exercises for Video Game Designers. Boston, MA: Charles River Media/Course Technology, 2009. ISBN: 9781584505808.\nZimmerman, Eric. \"Play as Research: The Iterative Design Process.\" July 8, 2003.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "bXSSQgtF9zA"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "course_description": "This course provides practical instruction in the design and analysis of non-digital games. Students cover the texts, tools, references and historical context to analyze and compare game designs across a variety of genres, including sports, game shows, games of chance, card games, schoolyard games, board games, and role–playing games. In teams, students design, develop, and thoroughly test their original games to understand the interaction and evolution of game rules. Students taking the graduate version complete additional assignments.\n",
+  "course_description_html": "This course provides practical instruction in the design and analysis of non-digital games. Students cover the texts, tools, references and historical context to analyze and compare game designs across a variety of genres, including sports, game shows, games of chance, card games, schoolyard games, board games, and role–playing games. In teams, students design, develop, and thoroughly test their original games to understand the interaction and evolution of game rules. Students taking the graduate version complete additional assignments.",
+  "course_image": {
+    "content": "11d03f51-5ca1-d981-dd98-95aa7f41a6c4",
+    "website": "cms-608-game-design-fall-2010"
+  },
+  "course_image_metadata": {
+    "content_type": "resource",
+    "description": "",
+    "draft": false,
+    "file": "/courses/cms-608-game-design-fall-2010/11d03f515ca1d981dd9895aa7f41a6c4_cms-608f10.jpg",
+    "file_size": 74260,
+    "file_type": "image/jpeg",
+    "image_metadata": {
+      "caption": "Students test \"Black Hat\", a board game where players attempt to hack the Gibson supercomputer. See more games designed by students under [Assignments](/courses/cms-608-game-design-fall-2010/pages/assignments).",
+      "credit": "",
+      "image-alt": "Five students sit around a table, playing a board game."
+    },
+    "iscjklanguage": false,
+    "learning_resource_types": [],
+    "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "ocw_type": "OCWImage",
+    "resourcetype": "Image",
+    "title": "cms-608f10.jpg",
+    "uid": "11d03f51-5ca1-d981-dd98-95aa7f41a6c4"
+  },
+  "course_image_thumbnail": {
+    "content": "706e9d08-de12-388a-d5da-7a880543d215",
+    "website": "cms-608-game-design-fall-2010"
+  },
+  "course_title": "Game Design",
+  "department_numbers": [
+    "CMS-W"
+  ],
+  "extra_course_numbers": "CMS.864",
+  "image_src": "./static_resources/11d03f515ca1d981dd9895aa7f41a6c4_cms-608f10.jpg",
+  "instructors": [
+    {
+      "first_name": "Philip",
+      "last_name": "Tan",
+      "middle_initial": "B.",
+      "salutation": "",
+      "title": "Philip B. Tan",
+      "uid": "7e5ffa2a-ccdf-4136-9bef-213f34dbf5c0",
+      "url": "https://ocw.mit.edu/search/?q=Philip+B.+Tan"
+    },
+    {
+      "first_name": "Jason",
+      "last_name": "Begy",
+      "middle_initial": "",
+      "salutation": "",
+      "title": "Jason Begy",
+      "uid": "015be54e-9b42-f994-22ad-86516ffa79eb",
+      "url": "https://ocw.mit.edu/search/?q=Jason+Begy"
+    }
+  ],
+  "learning_resource_types": [
+    "Lecture Audio",
+    "Projects with Examples"
+  ],
+  "legacy_uid": "5caef4cc-0ae0-c6ef-aab9-b244e7d81743",
+  "level": [
+    "Undergraduate"
+  ],
+  "mit_learn_topics": [
+    [
+      "Art, Design & Architecture",
+      "Game Design"
+    ],
+    [
+      "Art, Design & Architecture",
+      "Media Studies"
+    ]
+  ],
+  "primary_course_number": "CMS.608",
+  "site_short_id": "cms.608-fall-2010",
+  "site_uid": "dc9dd4de-4779-4fa5-afda-9bd0ee499ed9",
+  "site_url_path": "courses/cms-608-game-design-fall-2010",
+  "term": "Fall",
+  "title": "Course Metadata",
+  "topics": [
+    [
+      "Fine Arts",
+      "Game Design"
+    ],
+    [
+      "Fine Arts",
+      "Media Studies"
+    ]
+  ],
+  "year": "2010"
+}

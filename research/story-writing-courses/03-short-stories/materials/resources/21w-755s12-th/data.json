@@ -1,0 +1,21 @@
+{
+  "content": "<p>Planning diagram for a short story. Image courtesy of Simon Scott.</p>\n",
+  "content_type": "resource",
+  "description": "Planning diagram for a short story. Image courtesy of Simon Scott.",
+  "draft": false,
+  "file": "/courses/21w-755-writing-and-reading-short-stories-spring-2012/8f90111ed34a98ffdbab3e99346a3a23_21w-755s12-th.jpg",
+  "file_size": 9406,
+  "file_type": "image/jpeg",
+  "image_metadata": {
+    "caption": "Planning diagram for a short story. (Image courtesy of {{% resource_link \"98f3c891-5434-416a-bf2f-2fcb7d56dda5\" \"Simon Scott\" %}} on Flickr.)",
+    "credit": "Image courtesy of Simon Scott.",
+    "image-alt": "Hand-written diagram outlining a plan for a short story."
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWImage",
+  "resourcetype": "Image",
+  "title": "21w-755s12-th.jpg",
+  "uid": "8f90111e-d34a-98ff-dbab-3e99346a3a23"
+}

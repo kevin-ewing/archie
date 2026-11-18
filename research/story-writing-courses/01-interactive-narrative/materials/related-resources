@@ -1,0 +1,533 @@
+<!DOCTYPE html PUBLIC   "-//W3C//DTD XHTML 1.0 Traditional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="format-detection" content="telephone=no">
+<title>Related Resources | Theory and Practice of Non-linear and Interactive Narrative | Writing and Humanistic Studies | MIT OpenCourseWare</title>
+<!-- Begin Automatic Metadata Insertion --><meta content="21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003" name="WT.cg_n">
+<meta content="Related Resources" name="WT.cg_s">
+<meta content="Links to external resources." name="Description">
+<meta content="Barrett, Edward C." name="Author">
+<meta content="Theory,Practice,Non-linear,Interactive,Narrative,Film,Writing,Games,Web,HTML,Multilinear,Story,creative writing,computers,book-based narratives,structure,digression,multiple points of view,storyline,hypertexts,adventure games,artificial intelligence programs,eliza,modeling,computer-based narratives,21W.765J,21L.489J,CMS.845,21W.765,21L.489,Digital Media,Creative Writing,Fiction,Game Design,Criticism" name="keywords">
+<meta content="21W.765J Theory and Practice of Non-linear and Interactive Narrative | Related Resources" name="Search_Display">
+<meta content="Digital Media" itemprop="about">
+<meta content="Creative Writing" itemprop="about">
+<meta content="Fiction" itemprop="about">
+<meta content="Game Design" itemprop="about">
+<meta content="Criticism" itemprop="about">
+<!-- End Automatic Metadata Insertion --><link title="default" rel="stylesheet" type="text/css" href="/styles/grid.css">
+<link title="default" rel="stylesheet" type="text/css" href="/styles/base.css">
+<link title="default" rel="stylesheet" type="text/css" href="/styles/menu.css">
+<link title="default" rel="stylesheet" type="text/css" href="/styles/jquery.bubblepopup.css">
+<link title="default" rel="stylesheet" type="text/css" href="/styles/courses.css">
+<link title="default" rel="stylesheet" type="text/css" href="/styles/courses_new.css">
+<link href="/xml/ocwcc.rdf" type="application/rdf+xml" rel="metadata">
+<link rel="canonical" href="http://ocw.mit.edu/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/related-resources">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<script type="text/javascript" src="/scripts/jquery.js"></script><script type="text/javascript" src="/jw-player-free/jwplayer.js"></script><script type="text/javascript" src="/scripts/ocw-media-utils.js"></script><script type="text/javascript" src="/scripts/ocw.js"></script><script type="text/javascript" src="/scripts/jquery.bubblepopup.min.js"></script><script type="text/javascript" src="/scripts/bubble-popup.js"></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+        
+	
+
+        <div id="top">
+			<div id="grid">
+				
+				
+					
+<div id="portletwrapper-6f63772e746f70706f72746c65746d616e616765720a636f6e746578740a2f506c6f6e650a736974652d686561646572" class="portletWrapper kssattr-portlethash-6f63772e746f70706f72746c65746d616e616765720a636f6e746578740a2f506c6f6e650a736974652d686561646572">
+<div class="portletStaticText portlet-static-site-header">
+<div id="banner" role="banner" class="grid_6 alpha"><a href="/"><img src="/images/ocw_mast.png" alt="MIT OpenCourseWare, Massachusetts Institute of Technology" class="logo"></a></div>
+<form action="/subscribe/index.htm?utm_source=header" method="get">
+    <div id="subscribe" role="form toolbar" class="grid_6 omega">
+    <div class="module">
+    <table class="social"><tbody><tr>
+<td class="text">Subscribe to the<br>
+                OCW Newsletter</td>
+                <td class="black"><input type="text" onclick="clearEmailBox()" onblur="fillEmailBox()" value="Enter Email" class="greytext emailField" id="email" name="fromemail"></td>
+                <td class="black"><input type="image" src="/images/button_subscribe.png" alt="Subscribe" class="sub_button"></td>
+                <td>
+<a href="http://facebook.com/mitocw"><img src="/images/icon_fb.png" alt="Click to visit our Facebook page."></a><a href="http://twitter.com/mitocw"><img src="/images/icon_tw.png" alt="Click to visit our Twitter feed."></a>
+</td>
+            </tr></tbody></table>
+</div>
+    <p class="helplinks"><a href="/help">Help</a>   |   <a href="/jsp/feedback.jsp?Referer=">Contact Us</a></p>
+    </div>
+    <div class="clear"> </div>
+</form>
+</div>
+
+</div>
+
+
+
+
+
+<div id="mega" role="navigation" class="grid_8 alpha">        
+	<ul id="menu">
+<li id="menu_home">
+            <a href="/"><img src="/images/top-nav_home.png" class="home_icon" alt="Click for site home page."></a><!-- Begin Home Item -->
+        </li>
+<!-- End Home Item -->        
+        <li class="selected">
+            <a href="#" class="drop">Courses</a><!-- Begin 5 columns Item -->
+            <div class="dropdown_5columns-a mega-courses">                    
+                <div class="col_1a">
+                    <div class="row_1a">
+                        <div class="quart">
+                            <h2 class="nav">Find courses by:</h2>
+                            <ul class="nav-bullet find_by">
+<li><a href="/courses/find-by-topic/">Topic</a></li>
+                                <li><a href="/courses/find-by-number/">MIT Course Number</a></li>
+                                <li><a href="/courses/find-by-department/">Department</a></li>
+                            </ul>
+</div>
+                        <div class="quart">
+                            <h2 class="nav">Collections</h2>
+                            <ul class="nav-bullet">
+<li><a href="/courses/audio-video-courses/">Audio/Video Lectures</a></li>
+                                <li><a href="/courses/online-textbooks/">Online Textbooks</a></li>
+                                <li><a href="/courses/new-courses/">New Courses</a></li>
+                                <li><a href="/courses/most-visited-courses/">Most Visited Courses</a></li>
+                                <li><a href="/courses/ocw-scholar/">OCW Scholar Courses</a></li>
+                                <li><a href="/courses/this-course-at-mit/">This Course at MIT</a></li>
+                                <li><a href="/resources/">Supplemental Resources</a></li>
+                            </ul>
+</div>
+                        <div class="clear"> </div>
+                    </div>
+                    <div class="row_1b">
+                        <h2 class="nav">Cross-Disciplinary Topic Lists</h2>
+                        <div class="quart">
+                        <ul class="nav-bullet">
+<li><a href="/courses/energy-courses">Energy</a></li>
+                            <li><a href="/courses/entrepreneurship">Entrepreneurship</a></li>
+                            <li><a href="/courses/environment-courses">Environment</a></li>
+                        </ul>
+</div>    
+                        <div class="quart">
+                        <ul class="nav-bullet">
+<li><a href="/courses/intro-programming">Introductory Programming</a></li>
+                            <li><a href="/courses/life-sciences">Life Sciences</a></li>
+                            <li><a href="/courses/transportation-courses">Transportation</a></li>
+                        </ul>
+</div>
+                        <div class="clear"> </div>
+                    </div>
+                    <div class="clear"> </div>
+                </div>
+                <div class="col_1b">
+                    <h2 class="nav">Translated Courses</h2>
+                    <ul class="nav-bullet">
+<li><a href="/courses/translated-courses/traditional-chinese">繁體字 / Traditional Chinese</a></li>
+                        <li><a href="/courses/translated-courses/simplified-chinese">简体字 / Simplified Chinese</a></li>
+                        <li><a href="/courses/translated-courses/spanish">Español / Spanish</a></li>
+                        <li><a href="/courses/translated-courses/portuguese">Português / Portuguese</a></li>
+                        <li><a href="/courses/translated-courses/thai">ภาษาเขียน / Thai</a></li>
+                        <li><a href="/courses/translated-courses/persian">فارسی / Persian</a></li>
+                        <li><a href="/courses/translated-courses/turkish">Türkçe / Turkish</a></li>
+                        <li><a href="/courses/translated-courses/korean">(비디오)한국 / Korean</a></li>
+                        <li><a href="/courses/translated-courses">More...</a></li>
+                    </ul>
+</div>
+            </div>
+        </li>
+        <li>
+            <a href="" class="drop">About</a>
+            <div class="dropdown_1column-a">
+                <div class="col_1">
+                    <ul class="nav-bullet mega-div-bottom">
+<li><a href="/about/">About MIT OpenCourseWare</a></li>
+                    </ul>
+<ul class="nav-bullet mega-div-bottom">
+<li><a href="/about/site-statistics/">Site Stats</a></li>
+                        <li><a href="/about/ocw-stories/">OCW Stories</a></li>                        
+                    </ul>
+<ul class="nav-bullet mega-div-bottom">
+<li><a href="/about/media-coverage/">Media Coverage</a></li>
+                        <li><a href="/about/newsletter/">Newsletter</a></li>
+                        <li><a href="/about/media-coverage/press-releases/">Press Releases</a></li>
+                    </ul>
+<ul class="nav-bullet">
+<li><a href="/about/next-decade/">OCW's Next Decade</a></li>
+                    </ul>
+</div>
+            </div>  
+        </li>    
+        <li>
+            <a href="" class="drop">Donate</a>        
+            <div class="dropdown_1column-a">
+                    <div class="col_1">
+                        <ul class="nav-bullet mega-div-bottom">
+<li><a href="/donate">Make a Donation</a></li>
+                            <li><a href="/donate/why-donate/">Why Donate?</a></li>
+                            <li><a href="/donate/ocw-course-champions-program/">Become a Course Champion</a></li>
+                            <li><a href="/donate/our-supporters/">Our Supporters</a></li>
+                            <li><a href="/donate/other-ways-to-contribute/">Other Ways to Contribute</a></li>
+                            <li><a href="/donate/shop-ocw">Shop OCW</a></li>
+                        </ul>
+<ul class="nav-bullet">
+<li><a href="/support/">Become a Corporate Sponsor</a></li>
+                        </ul>
+</div>
+            </div>            
+        </li>        
+        <li>
+            <a href="" class="drop">Featured Sites</a>        
+            <div class="dropdown_1column-a">
+                <div class="col_1">
+                    <ul class="nav-bullet mega-div-bottom">
+<li><a href="/high-school/">Highlights for High School</a></li>
+                        <li><a href="/educator/">OCW Educator</a></li>
+                    </ul>
+<ul class="nav-bullet mega-div-top">
+<li><a href="https://www.edx.org/school/mitx/allcourses?utm_source=OCW&amp;utm_medium=MegaMenu&amp;utm_campaign=OCW">MITx Courses on edX</a></li>
+                        <li><a href="http://teachingexcellence.mit.edu/">Teaching Excellence at MIT</a></li>
+						<li><a href="http://www.oeconsortium.org/">Open Education Consortium</a></li>
+                    </ul>
+</div>
+            </div>            
+        </li>
+    </ul>
+</div>
+<div id="search" role="search" class="grid_4 omega">
+    
+    <form method="get" action="/search/AdvancedSearch.htm">
+     	 <table class="search"><tbody><tr>
+<td class="black"><input type="text" onblur="fillSearchBox()" onfocus="clearSearchBox()" maxlength="255" value="Search" name="q" class="greytext searchField" id="terms"></td> 			 
+                    <td class="black"><input type="image" src="/images/button_search.png" name="btnG" class="sub_button"></td>			 
+                    <td class="text2"><a href="/search/AdvancedSearch.htm">Advanced<br>Search</a></td>
+                </tr></tbody></table>
+</form>
+</div>
+<div class="clear"></div>
+<!-- *end header* -->  
+
+				
+				
+			</div>
+<!-- top grid end -->
+		</div>
+<!-- top end -->
+			
+		<div id="center">
+         <div id="grid">
+		     <div id="left-section">
+                 <div id="breadcrumb">
+                      <p>
+
+    <a href="/">Home</a>
+    
+        »
+        
+    
+    
+        
+            <a href="/courses">Courses</a>
+            
+                »
+                
+            
+            
+         
+    
+    
+        
+            <a href="/courses/writing-and-humanistic-studies">Writing and Humanistic Studies</a>
+            
+                »
+                
+            
+            
+         
+    
+    
+        
+            <a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003">Theory and Practice of Non-linear and Interactive Narrative</a>
+            
+                »
+                
+            
+            
+         
+    
+    
+        
+            
+            
+            Related Resources
+         
+    
+</p>
+
+                 </div>
+                 <div class="clear"></div>
+                 <div id="section_title">
+           			<h1 class="title" itemprop="name" property="dct:title">
+        <span class="" id="parent-fieldname-title">
+            Related Resources
+        </span>
+    </h1>
+           	     </div>
+           	     <div class="clear"></div>
+           	     <div id="course_wrapper_section">
+           	     	 <div id="course_nav">
+           			 	
+
+
+
+<script language="javascript" type="text/javascript">
+function toggleMenu(objID) {
+  if (!document.getElementById) return;
+  var ob = document.getElementById(objID);
+  ob.className = (ob.className == 'selected')?'': 'selected';
+}
+function toggleClass(id)
+{
+  var divtoggleClass= document.getElementById(id);
+  divtoggleClass.className = (divtoggleClass.className == 'mO')?'mC': 'mO';
+  return false;
+}
+function changeAlt(id)
+{
+  id.alt = (id.alt == 'Expand Menu')?'Collapse Menu' : 'Expand Menu';
+  id.title = (id.title == 'Expand Menu')?'Collapse Menu' : 'Expand Menu';
+}
+</script><!--Left Nav Starts --><ul>
+<li class="">
+			   			<a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/index.htm">
+		                  Course Home  			                
+	                    </a>
+		        </li>
+		    
+         	
+	
+	
+	    	
+	    	    <li class="">
+			   			<a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/syllabus">
+		                  Syllabus  			                
+	                    </a>
+		        </li>
+		    
+         	
+	
+	
+	    	
+	    	    <li class="">
+			   			<a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/calendar">
+		                  Calendar  			                
+	                    </a>
+		        </li>
+		    
+         	
+	
+	
+	    	
+	    	    <li class="">
+			   			<a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/readings">
+		                  Readings  			                
+	                    </a>
+		        </li>
+		    
+         	
+	
+	
+	    	
+	    	    <li class="">
+			   			<a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/assignments">
+		                  Assignments  			                
+	                    </a>
+		        </li>
+		    
+         	
+	
+	
+	    	
+	    	    <li class="">
+			   			<a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/projects">
+		                  Projects  			                
+	                    </a>
+		        </li>
+		    
+         	
+	
+	
+	    	
+	    	    <li class="">
+			   			<a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/study-materials">
+		                  Study Materials  			                
+	                    </a>
+		        </li>
+		    
+         	
+	
+	
+	    	
+	    	    <li class="selected">
+			   			<a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/related-resources">
+		                  Related Resources  			                
+	                    </a>
+		        </li>
+		    
+         	
+	
+	
+	    	
+	    	    
+		    
+         	
+	<!--second tal block close-->  
+	
+		<li class="">
+			<a href="/courses/writing-and-humanistic-studies/21w-765j-theory-and-practice-of-non-linear-and-interactive-narrative-spring-2003/download-course-materials" class="">Download Course Materials</a>
+		</li>
+	
+</ul>
+<!--Left Nav Ends -->
+</div>
+           		     <div id="course_inner_section">
+           		     	 
+	       		     	<h2 class="subhead">Philip's Links</h2> <p><a href="http://web.mit.edu/21w765j/www/genres.html">Genres of hypertext</a><br> Past student projects from this class. Have a look, form your opinions, note how many ways you can present a story in hypertext.</p> <p><a href="http://www.fray.com/">The Fray</a><br> Interaction via the sharing of personal accounts. Note how the design of the site emphasizes the wealth of responses.</p> <p><a href="http://web.mit.edu/21h.418/www/philip/">Little Leadings</a><br> Woodcut visual style and typefaces connect with textual story. Subtle visual cues to indicate progress of story and characters.</p> <p><a href="http://web.mit.edu/21w765j/Spring98/p1/Rania_Bubbles/">Rania Khalaf - Bubbles</a><br> Colloquial writing and visual cues reinforce different personalities. Very strong characterization in the writing.</p> <h2 class="subhead">Student Selections</h2> <p><a href="http://www.brunching.com/">The Brunching Shuttlecocks</a><br> Look at the 'Good or Bad?' page. Shared opinions over miscellaneous topics.</p> <p><a href="http://marathon.bungie.org/story/">The Marathon Story site</a><br> An academic exercise in dissecting the plot of a computer game. Note the cross-genre literary references and how they affect the interpretation of the story.</p> <p><a href="http://www.newgrounds.com/assassin/">Assassin: Kill Celebrities</a><br> User-controlled pacing of animated narratives. Basic interaction implicates user in 'authorizing' the 'assassinations'.</p> <p><a href="http://www.cnn.com/">CNN.com</a><br> Growing, segmented stories over time. Back-threads of stories lead to related and highly different stories.</p> <p><a href="http://www.satmundi.com/">Satmundi</a><br> Animated graphical expression of emotions. Use of atmospheric sound.</p> <p><a href="http://slashdot.org/">Slashdot</a><br> Rapidly aggregative commentary on stories, with collaborative rating system that determines introductory stories.</p> <p><a href="http://www.ebay.com/">Ebay</a><br> Descriptions reveal stories of items being auctioned.</p> <p><a href="http://dir.yahoo.com/Arts/Humanities/Literature/Genres/Science_Fiction_and_Fantasy/Illuminatus_Trilogy__The/">The Illuminatus Trilogy</a><br> Original material refers to wealth of backstory, expanded and researched by readers in a number of formats.</p> <p><a href="http://web.mit.edu/21w765j/Spring_97/StudentWork_SP97/Final_Project/Laini/">Small Town USA</a><br> Game element adds narrative tension and time limit to multithreaded story. Dramatic conclusions.</p> <p><a href="http://www.cafepress.com/unamericandotcom">Unamerican Activities stickers</a><br> Every sticker reveals a story when clicked. Users can contribute new slogans. A series of stickers reveals poetic consistency.</p> <p><a href="http://www.theonion.com/">The Onion</a><br> Uses newspaper format to present (largely) humorous fiction. Also see What Do You Think with a seemingly recurrent series of characters.</p> <p><a href="http://www.deuceofclubs.com/write/666.htm">Deuce of Clubs: 666 Cough Syrup</a><br> Ongoing episodic real-life saga with documentary evidence and photographs. Consistent tone.</p> <p><a href="http://www.comedycentral.com/">Comedy Central</a><br> Parody perspectives on current affairs and trends.</p> <p><a href="http://www.disney.com/">Disney</a><br> Apparently there's an interactive story here somewhere, but we couldn't find it.</p>
+	                    
+	        			
+	                    
+	                    
+	                    	
+	                       
+	                    
+            		 </div>
+<!--Course_inner_section tag close -->
+           		     <div class="clear"></div>
+ 				 </div>
+<!--Course_wrapper tag close -->             
+ 			 </div>
+<!--left tag close -->
+ 			                
+         </div>
+<!--grid tag close --> 
+      </div>
+		
+		<div id="bottom">
+			<div id="grid">
+				
+<div id="portletwrapper-6f63772e626f74746f6d706f72746c65746d616e616765720a636f6e746578740a2f506c6f6e650a736974652d666f6f746572" class="portletWrapper kssattr-portlethash-6f63772e626f74746f6d706f72746c65746d616e616765720a636f6e746578740a2f506c6f6e650a736974652d666f6f746572">
+<div class="portletStaticText portlet-static-site-footer"><div id="bottom">
+<div id="grid">
+<!-- *begin footer* -->
+<div role="navigation sitemap" id="footer">
+<div class="grid_2 alpha" id="foot-c1">
+<h4 class="footer">Courses</h4>
+<ul class="foot-bullet">
+<li><a href="/courses/find-by-topic/">Find by Topic</a></li>
+    <li><a href="/courses/find-by-number/">Find by Course Number</a></li>
+    <li><a href="/courses/find-by-department/">Find by Department</a></li>
+    <li><a href="/courses/audio-video-courses/">Audio/Video Courses</a></li>
+    <li><a href="/courses/online-textbooks/">Online Textbooks</a></li>
+    <li><a href="/courses/new-courses/">New Courses</a></li>
+    <li><a href="/courses/most-visited-courses/">Most Visited Courses</a></li>
+    <li><a href="/courses/ocw-scholar/">OCW Scholar Courses</a></li>
+    <li><a href="/courses/this-course-at-mit/">This Course at MIT</a></li>
+    <li><a href="/resources/">Supplemental Resources</a></li>
+    <li><a href="/courses/translated-courses/">Translated Courses</a></li>
+</ul>
+</div>
+<div class="grid_2" id="foot-c2">
+<h4 class="footer">About</h4>
+<ul class="foot-bullet">
+<li><a href="/about/">About OpenCourseWare</a></li>
+    <li><a href="/about/site-statistics/">Site Stats</a></li>
+    <li><a href="/about/ocw-stories/">OCW Stories</a></li>    
+    <li><a href="/about/media-coverage/">Media Coverage</a></li>
+    <li><a href="/about/newsletter/">Newsletter</a></li>
+    <li><a href="/about/media-coverage/press-releases/">Press Releases</a></li>
+    <li><a href="/about/next-decade/">OCW's Next Decade</a></li>
+</ul>
+</div>
+<div class="grid_2" id="foot-c3">
+<h4 class="footer">Donate</h4>
+<ul class="foot-bullet">
+<li><a href="/donate">Make a Donation</a></li>
+    <li><a href="/donate/why-donate/">Why Donate?</a></li>
+    <li><a href="/donate/ocw-course-champions-program/">Become a Course Champion</a></li>
+    <li><a href="/donate/our-supporters/">Our Supporters</a></li>
+    <li><a href="/donate/other-ways-to-contribute/">Other Ways to Contribute</a></li>
+    <li><a href="/donate/shop-ocw/">Shop OCW</a></li>
+    <li><a href="/support/">Become a Corporate Sponsor</a></li>
+</ul>
+</div>
+<div class="grid_2" id="foot-c4">
+<h4 class="footer">Featured Sites</h4>
+<ul class="foot-bullet">
+<li><a href="/high-school/">Highlights for High School</a></li>
+    <li><a href="/educator/">OCW Educator</a></li>
+    <li><a href="https://www.edx.org/school/mitx/allcourses?utm_source=OCW&amp;utm_medium=MegaMenu&amp;utm_campaign=OCW">MITx Courses on edX</a></li>
+    <li><a href="http://teachingexcellence.mit.edu/">Teaching Excellence at MIT</a></li>
+    <li><a href="http://www.oeconsortium.org/">Open Education Consortium</a></li>
+</ul>
+<h4 style="margin-top: 14px;" class="footer">Tools</h4>
+<ul class="foot-bullet">
+<li><a href="/help/">Help &amp; FAQs</a></li>
+    <li><a href="/jsp/feedback.jsp">Contact Us</a></li>
+    <li><a href="/search/AdvancedSearch.htm">Advanced Search</a></li>
+    <li><a href="/help/site-map/">Site Map</a></li>
+    <li><a href="/terms/">Privacy &amp; Terms of Use</a></li>
+    <li><a href="/help/rss/">RSS Feeds</a></li>
+</ul>
+</div>
+<div itemtype="http://schema.org/CollegeOrUniversity" itemscope="" itemprop="publisher" class="grid_4 omega" id="foot-c5">
+<h4 class="footer">About <span itemprop="name">MIT OpenCourseWare</span>
+</h4>
+<p itemprop="description" class="accent">MIT OpenCourseWare makes the materials used in the teaching of almost all of MIT's subjects available on the Web, free of charge. With more than 2,200 courses available, OCW is delivering on the promise of open sharing of knowledge.</p>
+</div>
+<div class="grid_8 alpha" id="foot-copy">
+<a href="http://web.mit.edu"><img style="width: 195; height: 44;" alt="Massachusetts Institute of Technology logo and name." src="/images/logo_mit.png"></a>                 <a href="http://www.oeconsortium.org/"><img style="width: 219px; height: 59px; vertical-align: top;" alt="Open Education Consortium logo." src="/images/logo_oec.png"></a>                 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/deed.en_US" itemprop="useRightsUrl" rel="license"><img style="width: 126px; height: 44px; margin-right: 0;" alt="Creative Commons logo with terms BY-NC-SA." src="/images/cc_by-nc-sa.png"></a>
+<p class="copyright">© 2001–2014<br>
+Massachusetts Institute of Technology</p>
+<p style="font-size: 0.9em; margin-bottom: 15px;">Your use of the MIT OpenCourseWare site and materials is subject to our <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/deed.en_US">Creative Commons License</a> and other <a rel="cc:morePermissions" href="/terms/">terms of use</a>.</p>
+</div>
+<div class="grid_4 omega" id="foot-support">
+<h4 class="footer">Our Corporate Supporters</h4>
+<!-- HOME_CORP_LOGO_1 -->
+<div class="sponsors_google_ads_even" id="div-gpt-ad-1388181177156-0"><script type="text/javascript">
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1388181177156-0'); });
+</script></div>
+<!-- HOME_CORP_LOGO_2 -->
+<div class="sponsors_google_ads_odd" id="div-gpt-ad-1388181177156-1"><script type="text/javascript">
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1388181177156-1'); });
+</script></div>
+<!-- HOME_CORP_LOGO_3 -->
+<div class="sponsors_google_ads_even" id="div-gpt-ad-1388181177156-2"><script type="text/javascript">
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1388181177156-2'); });
+</script></div>
+<!-- HOME_CORP_LOGO_4 -->
+<div class="sponsors_google_ads_odd" id="div-gpt-ad-1388181177156-3"><script type="text/javascript">
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1388181177156-3'); });
+</script></div>
+<!-- HOME_CORP_LOGO_5 -->
+<div class="sponsors_google_ads_even" id="div-gpt-ad-1388181177156-4"><script type="text/javascript">
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1388181177156-4'); });
+</script></div>
+<!-- HOME_CORP_LOGO_6 -->
+<div class="sponsors_google_ads_odd" id="div-gpt-ad-1388181177156-5"><script type="text/javascript">
+googletag.cmd.push(function() { googletag.display('div-gpt-ad-1388181177156-5'); });
+</script></div>
+</div>
+</div>
+</div>
+</div></div>
+
+</div>
+
+
+
+
+
+                
+			</div> <!-- bottom grid end -->
+		</div>
+<!-- bottom end -->
+		
+		
+   </body>
+</html>

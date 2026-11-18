@@ -46,3 +46,5 @@ npm run frontmap -- --size=320000     # a wide area of many fronts instead (slow
 ```
 
 The fuller design lives in [the story bible](docs/STORY.md), [mechanics](docs/MECHANICS.md), and [technical design](docs/TECH.md).
+
+For campaign planning and the four character dossiers and writing skills, start with the [story workshop](docs/story/README.md).

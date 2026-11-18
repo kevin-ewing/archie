@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Written Assignments on MIT OpenCourseWare</title>
+    <link>/resources/written-assignments/</link>
+    <description>Recent content in Written Assignments on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/written-assignments/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Character Exercises</title>
+      <link>/resources/mit21w_755s12_character/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_character/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding Character Exercises.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Point of View Exercise</title>
+      <link>/resources/mit21w_755s12_pov/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/mit21w_755s12_pov/data.json</guid>
+      <description>&lt;p&gt;This resource contains information regarding Point of View Exercise.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

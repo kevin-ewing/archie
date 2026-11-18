@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Assignments on MIT OpenCourseWare</title>
+    <link>/resources/assignments/</link>
+    <description>Recent content in Assignments on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/assignments/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Assignments</title>
+      <link>/pages/assignments/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/pages/assignments/data.json</guid>
+      <description>&lt;h3 id=&#34;short-stories&#34;&gt;Short Stories&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;Every student will write three short stories. Each student is responsible for writing &lt;strong&gt;at least&lt;/strong&gt; one piece that will be submitted to workshop and rewritten. The same piece can be resubmitted to workshop after substantive rewriting has been done. Every student will be required to finish three pieces of fiction at the end of the class.&lt;/p&gt;&#xA;&#xA;    &lt;h3 id=&#34;writing-exercises&#34;&gt;Writing Exercises&lt;/h3&gt;&#xA;&#xA;&lt;p&gt;Students will also complete a series of exercises in the techniques we will discuss in class. These exercises are designed to give students an opportunity to focus on different elements of fiction and to practice in those particular areas out of context.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

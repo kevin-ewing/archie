@@ -1,0 +1,5914 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:00.040 align:middle line:90%
+
+
+00:00:00.040 --> 00:00:02.470 align:middle line:84%
+The following content is
+provided under a Creative
+
+00:00:02.470 --> 00:00:03.880 align:middle line:90%
+Commons license.
+
+00:00:03.880 --> 00:00:06.920 align:middle line:84%
+Your support will help MIT
+OpenCourseWare continue to
+
+00:00:06.920 --> 00:00:10.570 align:middle line:84%
+offer high quality educational
+resources for free.
+
+00:00:10.570 --> 00:00:13.470 align:middle line:84%
+To make a donation, or view
+additional materials from
+
+00:00:13.470 --> 00:00:17.875 align:middle line:84%
+hundreds of MIT courses, visit
+MIT OpenCourseWare at
+
+00:00:17.875 --> 00:00:20.531 align:middle line:90%
+ocw.mit.edu.
+
+00:00:20.531 --> 00:00:24.622 align:middle line:84%
+PROFESSOR: We'll start with a
+little bit of recap from two
+
+00:00:24.622 --> 00:00:26.914 align:middle line:90%
+Fridays ago.
+
+00:00:26.914 --> 00:00:31.310 align:middle line:84%
+But just a reminder of things to
+keep in mind while you guys
+
+00:00:31.310 --> 00:00:31.800 align:middle line:90%
+are testing.
+
+00:00:31.800 --> 00:00:35.635 align:middle line:84%
+On one hand, most of you are
+pretty much the most expert
+
+00:00:35.635 --> 00:00:40.370 align:middle line:84%
+players in your game at this
+point in time, [INAUDIBLE]
+
+00:00:40.370 --> 00:00:41.700 align:middle line:84%
+You know the game better
+than anybody else.
+
+00:00:41.700 --> 00:00:43.085 align:middle line:90%
+And the kind of things that--
+
+00:00:43.085 --> 00:00:45.640 align:middle line:90%
+
+
+00:00:45.640 --> 00:00:47.600 align:middle line:84%
+that means you suck
+as a tester.
+
+00:00:47.600 --> 00:00:52.310 align:middle line:84%
+That means you still have a
+role to play as testers.
+
+00:00:52.310 --> 00:00:55.750 align:middle line:84%
+You can be looking for the
+degenerate strategies, and you
+
+00:00:55.750 --> 00:00:57.120 align:middle line:90%
+can be looking for exploits.
+
+00:00:57.120 --> 00:01:00.418 align:middle line:84%
+Sometimes it takes more
+imagination than a
+
+00:01:00.418 --> 00:01:04.516 align:middle line:84%
+sleep-deprived MIT student has
+available to them, to be able
+
+00:01:04.516 --> 00:01:06.210 align:middle line:90%
+to see these exploits.
+
+00:01:06.210 --> 00:01:08.495 align:middle line:84%
+But, because you know the
+systems better than anyone
+
+00:01:08.495 --> 00:01:11.700 align:middle line:84%
+else, you're in a good position
+to spot that.
+
+00:01:11.700 --> 00:01:13.910 align:middle line:84%
+The kinds of things you're
+looking for are obviously
+
+00:01:13.910 --> 00:01:15.720 align:middle line:90%
+value [UNINTELLIGIBLE]
+
+00:01:15.720 --> 00:01:16.580 align:middle line:90%
+strategy.
+
+00:01:16.580 --> 00:01:22.080 align:middle line:84%
+I mentioned that the last time
+we were in this room.
+
+00:01:22.080 --> 00:01:28.080 align:middle line:84%
+But also, look for those
+strategies were, like, OK, I
+
+00:01:28.080 --> 00:01:29.610 align:middle line:90%
+have two [UNINTELLIGIBLE]
+
+00:01:29.610 --> 00:01:32.390 align:middle line:84%
+those decision points where I
+could do decision A or I could
+
+00:01:32.390 --> 00:01:38.940 align:middle line:84%
+do the decision B, but if I
+change my strategy, and nobody
+
+00:01:38.940 --> 00:01:41.920 align:middle line:84%
+else has changed their strategy,
+I'm screwed.
+
+00:01:41.920 --> 00:01:46.110 align:middle line:84%
+And that makes it really really
+hesitant for someone to
+
+00:01:46.110 --> 00:01:51.080 align:middle line:84%
+say, well, Strategy B could be
+really interesting, I can go
+
+00:01:51.080 --> 00:01:55.330 align:middle line:84%
+for this kind of play, but on
+the assumption that the only
+
+00:01:55.330 --> 00:01:58.270 align:middle line:84%
+way how this is going to be
+beneficial is if everybody
+
+00:01:58.270 --> 00:01:59.730 align:middle line:84%
+else also changes
+their strategy.
+
+00:01:59.730 --> 00:02:04.310 align:middle line:84%
+Now you have a situation where
+nobody wants to try that
+
+00:02:04.310 --> 00:02:05.370 align:middle line:90%
+second option.
+
+00:02:05.370 --> 00:02:07.930 align:middle line:84%
+That's one way to think
+about cyberpunks.
+
+00:02:07.930 --> 00:02:12.610 align:middle line:84%
+It's like, if you change your
+position and the only way that
+
+00:02:12.610 --> 00:02:16.698 align:middle line:84%
+you can change your position is
+at a cost to yourself, then
+
+00:02:16.698 --> 00:02:20.925 align:middle line:84%
+the benefits of changing that
+position is going to be lower
+
+00:02:20.925 --> 00:02:24.940 align:middle line:84%
+than the risk that you're taking
+on, then you've got a
+
+00:02:24.940 --> 00:02:27.716 align:middle line:84%
+situation where it's very
+difficult to break out of one
+
+00:02:27.716 --> 00:02:28.950 align:middle line:90%
+dominant strategy.
+
+00:02:28.950 --> 00:02:31.100 align:middle line:84%
+So if you've got a situation
+where there are three dominant
+
+00:02:31.100 --> 00:02:35.550 align:middle line:84%
+strategies, then none of them
+are dominant anymore that's
+
+00:02:35.550 --> 00:02:38.420 align:middle line:84%
+great, now I have an
+option of different
+
+00:02:38.420 --> 00:02:41.630 align:middle line:90%
+things they can choose.
+
+00:02:41.630 --> 00:02:44.065 align:middle line:84%
+So that's just one thing to keep
+in mind if all you guys
+
+00:02:44.065 --> 00:02:45.560 align:middle line:90%
+are looking at a game.
+
+00:02:45.560 --> 00:02:47.530 align:middle line:84%
+If everyone just ends up
+adopting the same strategy,
+
+00:02:47.530 --> 00:02:52.860 align:middle line:84%
+and you're just hoping for a
+chance of drawing the right
+
+00:02:52.860 --> 00:02:56.445 align:middle line:84%
+cards, in order to win your
+game, then [UNINTELLIGIBLE],
+
+00:02:56.445 --> 00:02:59.070 align:middle line:84%
+then you've got a game where
+the individual player's
+
+00:02:59.070 --> 00:03:03.232 align:middle line:84%
+decisions aren't quite that
+influential on the outcome.
+
+00:03:03.232 --> 00:03:07.955 align:middle line:84%
+And I still need to play your
+games to be able to see what
+
+00:03:07.955 --> 00:03:08.840 align:middle line:90%
+you guys are going for.
+
+00:03:08.840 --> 00:03:11.500 align:middle line:84%
+But, for the most part, it looks
+like you guys are not
+
+00:03:11.500 --> 00:03:14.082 align:middle line:84%
+going for a purely chance-based
+game.
+
+00:03:14.082 --> 00:03:16.305 align:middle line:84%
+You're looking for something
+where someone's decision
+
+00:03:16.305 --> 00:03:18.610 align:middle line:90%
+actually matters.
+
+00:03:18.610 --> 00:03:22.590 align:middle line:84%
+So that's one reminder from the
+game theory point of view.
+
+00:03:22.590 --> 00:03:25.260 align:middle line:84%
+And the other one I never really
+got time to talk about
+
+00:03:25.260 --> 00:03:27.030 align:middle line:84%
+games or system of conflict,
+and we don't have a huge
+
+00:03:27.030 --> 00:03:29.070 align:middle line:84%
+amount of time because
+we have today's
+
+00:03:29.070 --> 00:03:31.670 align:middle line:90%
+readings to go through.
+
+00:03:31.670 --> 00:03:37.760 align:middle line:84%
+But if you think about games as
+games where multiple people
+
+00:03:37.760 --> 00:03:39.580 align:middle line:84%
+are striving for some sort of
+goal, and there are going to
+
+00:03:39.580 --> 00:03:41.350 align:middle line:84%
+be winners and there are going
+to be losers, then the idea of
+
+00:03:41.350 --> 00:03:46.040 align:middle line:84%
+thinking of games as some kind
+of conflict makes sense.
+
+00:03:46.040 --> 00:03:49.585 align:middle line:84%
+If you think of them as, are
+games competitive, or are
+
+00:03:49.585 --> 00:03:54.630 align:middle line:84%
+games cooperative, for
+throughout some games that are
+
+00:03:54.630 --> 00:04:00.490 align:middle line:84%
+known to be cooperative
+[UNINTELLIGIBLE]
+
+00:04:00.490 --> 00:04:02.590 align:middle line:84%
+there are certain modes in
+certain different games that
+
+00:04:02.590 --> 00:04:06.320 align:middle line:84%
+flip it from competitive
+to cooperative.
+
+00:04:06.320 --> 00:04:08.100 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:04:08.100 --> 00:04:11.065 align:middle line:84%
+PROFESSOR: But it is designed
+for four people to play, all
+
+00:04:11.065 --> 00:04:12.070 align:middle line:90%
+going for the same goal.
+
+00:04:12.070 --> 00:04:13.450 align:middle line:90%
+AUDIENCE: Gears of War
+
+00:04:13.450 --> 00:04:17.079 align:middle line:84%
+PROFESSOR: Gears of War
+multiplayer, yeah.
+
+00:04:17.079 --> 00:04:18.320 align:middle line:84%
+[UNINTELLIGIBLE] interesting,
+yeah.
+
+00:04:18.320 --> 00:04:23.180 align:middle line:84%
+Because it's kind of the
+risk of cooperation.
+
+00:04:23.180 --> 00:04:29.050 align:middle line:84%
+Pandemic is you against
+the board, actually.
+
+00:04:29.050 --> 00:04:31.000 align:middle line:90%
+You against the game rules.
+
+00:04:31.000 --> 00:04:35.726 align:middle line:84%
+And actually, that leads into
+today's lecture a bit.
+
+00:04:35.726 --> 00:04:38.770 align:middle line:84%
+So hang onto that idea
+of Pandemic.
+
+00:04:38.770 --> 00:04:42.910 align:middle line:84%
+But there is one argument that
+all games are competitive.
+
+00:04:42.910 --> 00:04:46.030 align:middle line:84%
+Even games like Left for Dead,
+where you're playing against
+
+00:04:46.030 --> 00:04:47.380 align:middle line:84%
+the computer, or Pandemic, when
+you're playing against
+
+00:04:47.380 --> 00:04:49.460 align:middle line:90%
+the game rules.
+
+00:04:49.460 --> 00:04:50.210 align:middle line:90%
+Or--
+
+00:04:50.210 --> 00:04:51.960 align:middle line:84%
+AUDIENCE: Shelter
+[UNINTELLIGIBLE].
+
+00:04:51.960 --> 00:04:53.843 align:middle line:84%
+PROFESSOR: [UNINTELLIGIBLE]
+a bit--
+
+00:04:53.843 --> 00:04:55.320 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:04:55.320 --> 00:04:56.825 align:middle line:90%
+AUDIENCE: You're mostly playing
+
+00:04:56.825 --> 00:04:58.280 align:middle line:90%
+against the game rules.
+
+00:04:58.280 --> 00:05:00.060 align:middle line:84%
+Unless there's a trader,
+there's not
+
+00:05:00.060 --> 00:05:01.240 align:middle line:90%
+always one in the game.
+
+00:05:01.240 --> 00:05:06.700 align:middle line:84%
+PROFESSOR: But the basic idea is
+that even in a game that's
+
+00:05:06.700 --> 00:05:08.420 align:middle line:84%
+generally assumed to be
+co-op, you're still
+
+00:05:08.420 --> 00:05:09.590 align:middle line:90%
+playing against the world.
+
+00:05:09.590 --> 00:05:12.870 align:middle line:84%
+So as competitive against the
+world, just not here,
+
+00:05:12.870 --> 00:05:15.215 align:middle line:84%
+computing against the
+other human people
+
+00:05:15.215 --> 00:05:15.770 align:middle line:90%
+that are playing it.
+
+00:05:15.770 --> 00:05:16.550 align:middle line:90%
+If they're competing against.
+
+00:05:16.550 --> 00:05:19.270 align:middle line:84%
+Anyone is probably going to
+decide who set it up, to
+
+00:05:19.270 --> 00:05:20.300 align:middle line:90%
+[UNINTELLIGIBLE].
+
+00:05:20.300 --> 00:05:23.150 align:middle line:84%
+So that's one way to think of
+all games as competitive.
+
+00:05:23.150 --> 00:05:26.616 align:middle line:84%
+Obviously, the games that people
+generally think of as
+
+00:05:26.616 --> 00:05:29.420 align:middle line:84%
+competitive, real-time games
+like chess, for instance.
+
+00:05:29.420 --> 00:05:31.530 align:middle line:84%
+There's one winner, there's one
+loser, and if there's a
+
+00:05:31.530 --> 00:05:34.650 align:middle line:90%
+draw then nobody wins.
+
+00:05:34.650 --> 00:05:38.460 align:middle line:84%
+Or, those games people
+generally think of as
+
+00:05:38.460 --> 00:05:39.380 align:middle line:90%
+competitive.
+
+00:05:39.380 --> 00:05:42.290 align:middle line:84%
+But then, the other way to think
+about cooperation is
+
+00:05:42.290 --> 00:05:44.370 align:middle line:84%
+that all games are
+also cooperative.
+
+00:05:44.370 --> 00:05:46.390 align:middle line:84%
+Because if you don't agree
+on the rules--
+
+00:05:46.390 --> 00:05:50.850 align:middle line:84%
+if you're all in fact not
+playing the same rules, then
+
+00:05:50.850 --> 00:05:54.030 align:middle line:84%
+you don't actually
+have a game.
+
+00:05:54.030 --> 00:05:56.500 align:middle line:84%
+So you all have to cooperate
+to play.
+
+00:05:56.500 --> 00:06:00.510 align:middle line:84%
+We have the same set of rules
+and we're going to play
+
+00:06:00.510 --> 00:06:01.270 align:middle line:90%
+according to them.
+
+00:06:01.270 --> 00:06:02.760 align:middle line:84%
+That's not necessarily the
+same thing as saying that
+
+00:06:02.760 --> 00:06:04.700 align:middle line:90%
+everyone knows all the rules.
+
+00:06:04.700 --> 00:06:07.230 align:middle line:84%
+There are plenty of games,
+especially computer games,
+
+00:06:07.230 --> 00:06:09.460 align:middle line:84%
+where you're going
+into the game not
+
+00:06:09.460 --> 00:06:10.610 align:middle line:90%
+knowing all the rules.
+
+00:06:10.610 --> 00:06:12.960 align:middle line:84%
+You're going to try to figure
+out the rules as the one
+
+00:06:12.960 --> 00:06:15.290 align:middle line:90%
+system lets you.
+
+00:06:15.290 --> 00:06:17.550 align:middle line:84%
+Role-playing games, where
+you start off like,
+
+00:06:17.550 --> 00:06:18.930 align:middle line:90%
+I want to do this.
+
+00:06:18.930 --> 00:06:21.510 align:middle line:84%
+I want to-- you know,
+get drunk now,
+
+00:06:21.510 --> 00:06:22.625 align:middle line:90%
+and how do I do that?
+
+00:06:22.625 --> 00:06:25.524 align:middle line:84%
+And then the GM tells
+you the rules.
+
+00:06:25.524 --> 00:06:28.380 align:middle line:90%
+Roll against your--
+
+00:06:28.380 --> 00:06:28.856 align:middle line:90%
+AUDIENCE: Constitution.
+
+00:06:28.856 --> 00:06:31.280 align:middle line:84%
+PROFESSOR: Constitution,
+is it constitution?
+
+00:06:31.280 --> 00:06:32.495 align:middle line:84%
+AUDIENCE: Yeah, [UNINTELLIGIBLE]
+but.
+
+00:06:32.495 --> 00:06:32.930 align:middle line:90%
+Drunkenness.
+
+00:06:32.930 --> 00:06:33.660 align:middle line:90%
+PROFESSOR: Always good.
+
+00:06:33.660 --> 00:06:34.910 align:middle line:90%
+Possibly.
+
+00:06:34.910 --> 00:06:36.740 align:middle line:90%
+
+
+00:06:36.740 --> 00:06:40.670 align:middle line:84%
+And then you get
+told the rules.
+
+00:06:40.670 --> 00:06:43.076 align:middle line:90%
+And then you go and do it.
+
+00:06:43.076 --> 00:06:45.050 align:middle line:84%
+Live-action role-playing
+games.
+
+00:06:45.050 --> 00:06:45.880 align:middle line:84%
+I know there's a bunch of people
+here who play them.
+
+00:06:45.880 --> 00:06:48.170 align:middle line:84%
+You usually get a subset of
+all the rules that were
+
+00:06:48.170 --> 00:06:49.380 align:middle line:90%
+written for the game.
+
+00:06:49.380 --> 00:06:51.330 align:middle line:84%
+You get the subset that
+pertains to you.
+
+00:06:51.330 --> 00:06:54.940 align:middle line:84%
+And you assume that everybody
+else has the subset that
+
+00:06:54.940 --> 00:06:56.030 align:middle line:90%
+pertains to them.
+
+00:06:56.030 --> 00:06:58.150 align:middle line:84%
+And that they're playing
+according to it.
+
+00:06:58.150 --> 00:07:00.850 align:middle line:84%
+There's a strong honor system,
+and even in a game, especially
+
+00:07:00.850 --> 00:07:05.585 align:middle line:84%
+the kinds that are played in
+MIT, which are fiercely
+
+00:07:05.585 --> 00:07:05.970 align:middle line:90%
+competitive.
+
+00:07:05.970 --> 00:07:08.200 align:middle line:84%
+There's literally
+assassin games.
+
+00:07:08.200 --> 00:07:10.790 align:middle line:84%
+You literally want to lead
+someone into a dark alley and
+
+00:07:10.790 --> 00:07:13.590 align:middle line:90%
+shoot them.
+
+00:07:13.590 --> 00:07:16.110 align:middle line:84%
+Even then, you have to assume
+that whatever rules that
+
+00:07:16.110 --> 00:07:18.870 align:middle line:84%
+person, who you're leading down
+a dark alley in order to
+
+00:07:18.870 --> 00:07:19.350 align:middle line:90%
+shoot them.
+
+00:07:19.350 --> 00:07:21.130 align:middle line:84%
+Whatever rules [UNINTELLIGIBLE]
+they're
+
+00:07:21.130 --> 00:07:21.910 align:middle line:90%
+playing by those rules.
+
+00:07:21.910 --> 00:07:23.610 align:middle line:90%
+They're not going to say--
+
+00:07:23.610 --> 00:07:27.290 align:middle line:84%
+if you shoot them, they can
+say, that didn't work.
+
+00:07:27.290 --> 00:07:30.544 align:middle line:84%
+You have to assume that actually
+didn't work, because
+
+00:07:30.544 --> 00:07:32.410 align:middle line:84%
+they have rules that tell them
+when it works and when it
+
+00:07:32.410 --> 00:07:33.040 align:middle line:90%
+didn't work.
+
+00:07:33.040 --> 00:07:35.820 align:middle line:84%
+So it's still cooperative,
+even though
+
+00:07:35.820 --> 00:07:38.940 align:middle line:90%
+it's competitive play.
+
+00:07:38.940 --> 00:07:40.950 align:middle line:90%
+And, some terminology now.
+
+00:07:40.950 --> 00:07:44.810 align:middle line:84%
+There's systemic cooperation,
+which is what I'm describing.
+
+00:07:44.810 --> 00:07:47.880 align:middle line:84%
+It's the, you are agreeing
+that the system works.
+
+00:07:47.880 --> 00:07:50.740 align:middle line:84%
+And you are agreeing how
+the system works.
+
+00:07:50.740 --> 00:07:52.530 align:middle line:84%
+These are the ways
+how I'm going to
+
+00:07:52.530 --> 00:07:52.960 align:middle line:90%
+interact with the system.
+
+00:07:52.960 --> 00:07:55.810 align:middle line:90%
+If I'm going to be playing--
+
+00:07:55.810 --> 00:07:58.340 align:middle line:90%
+Goldeneye or [UNINTELLIGIBLE]
+
+00:07:58.340 --> 00:07:59.760 align:middle line:90%
+on the split screen.
+
+00:07:59.760 --> 00:08:01.140 align:middle line:90%
+Or Halo on the split screen.
+
+00:08:01.140 --> 00:08:06.890 align:middle line:84%
+And you agree not to look at
+somebody else's screen.
+
+00:08:06.890 --> 00:08:10.330 align:middle line:90%
+Then, that's a systemic rule.
+
+00:08:10.330 --> 00:08:13.460 align:middle line:84%
+You might also decide, no, it's
+on the screen, I can't
+
+00:08:13.460 --> 00:08:15.710 align:middle line:84%
+avoid seeing it, therefore
+we can all look at
+
+00:08:15.710 --> 00:08:16.420 align:middle line:90%
+each others' screens.
+
+00:08:16.420 --> 00:08:17.830 align:middle line:90%
+That would be a systemic rule.
+
+00:08:17.830 --> 00:08:22.700 align:middle line:84%
+Even though the goals are the
+same, let's shoot each other.
+
+00:08:22.700 --> 00:08:25.170 align:middle line:84%
+And then there's clear
+cooperation, which is a little
+
+00:08:25.170 --> 00:08:28.232 align:middle line:84%
+bit more like the games like
+Pandemic and Left for Dead,
+
+00:08:28.232 --> 00:08:31.220 align:middle line:84%
+where you're explicitly trying
+to help each other in your
+
+00:08:31.220 --> 00:08:32.690 align:middle line:90%
+team in a shared goal.
+
+00:08:32.690 --> 00:08:37.669 align:middle line:84%
+And I'm just trying to
+differentiate them.
+
+00:08:37.669 --> 00:08:42.110 align:middle line:84%
+Because it's useful sometimes
+to sort of try to figure out
+
+00:08:42.110 --> 00:08:42.720 align:middle line:90%
+the differences.
+
+00:08:42.720 --> 00:08:45.672 align:middle line:84%
+There's a game that I don't
+think we're making you play,
+
+00:08:45.672 --> 00:08:47.120 align:middle line:90%
+called The War on Terror.
+
+00:08:47.120 --> 00:08:50.130 align:middle line:90%
+That we have in the lab.
+
+00:08:50.130 --> 00:08:54.450 align:middle line:84%
+And one of the things about this
+game is that it actually
+
+00:08:54.450 --> 00:08:55.230 align:middle line:90%
+doesn't end.
+
+00:08:55.230 --> 00:08:57.530 align:middle line:84%
+If you look at the rules,
+it seems that there are
+
+00:08:57.530 --> 00:09:00.195 align:middle line:84%
+conditions for the game end,
+but they're really, really
+
+00:09:00.195 --> 00:09:01.530 align:middle line:90%
+hard to reach.
+
+00:09:01.530 --> 00:09:05.356 align:middle line:84%
+And if you're interested in
+seeing how the game ends, I'll
+
+00:09:05.356 --> 00:09:07.750 align:middle line:84%
+be happy to pass you to Cory,
+and he can try to figure it
+
+00:09:07.750 --> 00:09:09.290 align:middle line:90%
+out, or play it.
+
+00:09:09.290 --> 00:09:11.006 align:middle line:84%
+But of course, that's the point
+that they're trying to
+
+00:09:11.006 --> 00:09:11.325 align:middle line:90%
+make, right?
+
+00:09:11.325 --> 00:09:13.370 align:middle line:84%
+It's a War on Terror, it
+never really ends.
+
+00:09:13.370 --> 00:09:15.720 align:middle line:90%
+It'll keep going.
+
+00:09:15.720 --> 00:09:20.140 align:middle line:84%
+It perpetuates yourself, and
+it's designed to be a
+
+00:09:20.140 --> 00:09:21.420 align:middle line:90%
+competitive game.
+
+00:09:21.420 --> 00:09:24.910 align:middle line:84%
+Everybody tries to take down
+all the other states.
+
+00:09:24.910 --> 00:09:28.300 align:middle line:84%
+The other nation states, by
+sponsoring terrorist activity,
+
+00:09:28.300 --> 00:09:31.952 align:middle line:84%
+or trying to defend themselves
+from terrorist activity.
+
+00:09:31.952 --> 00:09:35.068 align:middle line:84%
+Which means everybody's
+responsible for terrorism in
+
+00:09:35.068 --> 00:09:37.360 align:middle line:90%
+the end, in that game.
+
+00:09:37.360 --> 00:09:41.310 align:middle line:84%
+But in the end, what you're
+hoping is at some point in
+
+00:09:41.310 --> 00:09:43.853 align:middle line:84%
+time, the players are going to
+cooperate, because this game's
+
+00:09:43.853 --> 00:09:44.680 align:middle line:90%
+not going to end.
+
+00:09:44.680 --> 00:09:48.380 align:middle line:84%
+That's the whole point
+of the game.
+
+00:09:48.380 --> 00:09:51.980 align:middle line:84%
+And the entire group coming to
+that conclusion in a shared
+
+00:09:51.980 --> 00:09:54.790 align:middle line:84%
+way, is what the game
+designers were
+
+00:09:54.790 --> 00:09:55.690 align:middle line:90%
+trying to go for.
+
+00:09:55.690 --> 00:09:56.630 align:middle line:90%
+It's a funny game.
+
+00:09:56.630 --> 00:09:59.280 align:middle line:84%
+Anybody who played Crunch, it
+was done by the same folks.
+
+00:09:59.280 --> 00:10:04.988 align:middle line:84%
+But it's a little bit more of
+the, we have an opinion and we
+
+00:10:04.988 --> 00:10:07.398 align:middle line:84%
+want you to share it, then
+this is a game that you
+
+00:10:07.398 --> 00:10:09.170 align:middle line:90%
+actually want to try to win.
+
+00:10:09.170 --> 00:10:10.910 align:middle line:90%
+It's funny.
+
+00:10:10.910 --> 00:10:12.160 align:middle line:90%
+[UNINTELLIGIBLE PHRASE]
+
+00:10:12.160 --> 00:10:21.160 align:middle line:90%
+
+
+00:10:21.160 --> 00:10:25.430 align:middle line:84%
+So, that's some opinions about
+cooperation, and that is,
+
+00:10:25.430 --> 00:10:27.620 align:middle line:84%
+systemic cooperation, where
+you're agreeing on the rules,
+
+00:10:27.620 --> 00:10:30.500 align:middle line:84%
+or you agree that the
+system works.
+
+00:10:30.500 --> 00:10:33.660 align:middle line:84%
+And that's their cooperation,
+where players are actually
+
+00:10:33.660 --> 00:10:35.710 align:middle line:84%
+agreeing towards some
+sort of shared goal.
+
+00:10:35.710 --> 00:10:39.100 align:middle line:84%
+And there are games where
+it flips between player
+
+00:10:39.100 --> 00:10:41.220 align:middle line:84%
+cooperation and player
+competition.
+
+00:10:41.220 --> 00:10:43.800 align:middle line:90%
+It's like--
+
+00:10:43.800 --> 00:10:47.820 align:middle line:84%
+Castle Crashers, who's played
+Castle Crashers?
+
+00:10:47.820 --> 00:10:49.360 align:middle line:84%
+It's a great game, xBox
+Live arcade game.
+
+00:10:49.360 --> 00:10:53.770 align:middle line:84%
+You run around, it's a side
+scrolling game, where a little
+
+00:10:53.770 --> 00:10:55.830 align:middle line:90%
+knight with a sword--
+
+00:10:55.830 --> 00:10:56.320 align:middle line:90%
+AUDIENCE: It's a sword?
+
+00:10:56.320 --> 00:10:57.970 align:middle line:84%
+AUDIENCE: No, it
+can be an axe.
+
+00:10:57.970 --> 00:11:00.310 align:middle line:90%
+It can be a fish.
+
+00:11:00.310 --> 00:11:03.178 align:middle line:84%
+PROFESSOR: Some sort of
+bludgeoning device.
+
+00:11:03.178 --> 00:11:05.950 align:middle line:90%
+Fish is awesome.
+
+00:11:05.950 --> 00:11:08.400 align:middle line:84%
+And in general, if you're
+playing with three other
+
+00:11:08.400 --> 00:11:10.840 align:middle line:84%
+people with controllers right
+to you on the couch, you're
+
+00:11:10.840 --> 00:11:12.970 align:middle line:84%
+pretty much going for
+the same goal.
+
+00:11:12.970 --> 00:11:15.520 align:middle line:84%
+There are you four, and there
+are a whole bunch of baddies
+
+00:11:15.520 --> 00:11:18.350 align:middle line:84%
+on screen, and you're trying
+to kill it all.
+
+00:11:18.350 --> 00:11:22.000 align:middle line:84%
+But then, as soon as you beat
+the last one, the game
+
+00:11:22.000 --> 00:11:25.140 align:middle line:84%
+switches from defeat all the
+baddies to save the princess.
+
+00:11:25.140 --> 00:11:26.280 align:middle line:90%
+And, wait a minute--
+
+00:11:26.280 --> 00:11:28.422 align:middle line:84%
+AUDIENCE: No, you've already
+saved the princess.
+
+00:11:28.422 --> 00:11:32.100 align:middle line:90%
+It goes to get the princess.
+
+00:11:32.100 --> 00:11:33.470 align:middle line:84%
+PROFESSOR: It becomes
+get the princess.
+
+00:11:33.470 --> 00:11:36.520 align:middle line:84%
+There's one princess, there's
+four knights, and it becomes a
+
+00:11:36.520 --> 00:11:37.190 align:middle line:90%
+competitive game.
+
+00:11:37.190 --> 00:11:39.082 align:middle line:84%
+All of a sudden, everything that
+you were using against
+
+00:11:39.082 --> 00:11:41.145 align:middle line:84%
+the baddies becomes
+something that
+
+00:11:41.145 --> 00:11:43.680 align:middle line:90%
+you use on your teammates.
+
+00:11:43.680 --> 00:11:47.210 align:middle line:84%
+And there are games that
+flip-flop between that.
+
+00:11:47.210 --> 00:11:51.460 align:middle line:84%
+Diplomacy is a really fluid
+game in that sense.
+
+00:11:51.460 --> 00:11:54.260 align:middle line:84%
+You have to assume everybody's
+competitive in that game.
+
+00:11:54.260 --> 00:11:57.600 align:middle line:84%
+But the only way to obtain your
+goals is to cooperate
+
+00:11:57.600 --> 00:11:59.210 align:middle line:90%
+occasionally.
+
+00:11:59.210 --> 00:12:01.940 align:middle line:90%
+And so you can adapt.
+
+00:12:01.940 --> 00:12:03.140 align:middle line:90%
+All that's clear cooperation.
+
+00:12:03.140 --> 00:12:05.030 align:middle line:90%
+No-one's disagreeing on rules.
+
+00:12:05.030 --> 00:12:07.820 align:middle line:84%
+So that's systemic cooperation
+all the way through, but then
+
+00:12:07.820 --> 00:12:09.755 align:middle line:84%
+there's player competition
+and cooperation
+
+00:12:09.755 --> 00:12:12.940 align:middle line:90%
+going back and forth.
+
+00:12:12.940 --> 00:12:17.260 align:middle line:90%
+So, that's cooperation.
+
+00:12:17.260 --> 00:12:24.550 align:middle line:84%
+Finally, think a little bit
+about level playing field and
+
+00:12:24.550 --> 00:12:26.820 align:middle line:84%
+what it means in your games,
+whether they're
+
+00:12:26.820 --> 00:12:28.330 align:middle line:90%
+[UNINTELLIGIBLE].
+
+00:12:28.330 --> 00:12:30.500 align:middle line:84%
+In many of your games,
+especially card games, they're
+
+00:12:30.500 --> 00:12:31.620 align:middle line:84%
+going to start with
+some sort of deal.
+
+00:12:31.620 --> 00:12:34.000 align:middle line:84%
+They're going to start with some
+sort of hand, or maybe a
+
+00:12:34.000 --> 00:12:36.750 align:middle line:84%
+drawing in some sort
+of systematic way
+
+00:12:36.750 --> 00:12:38.095 align:middle line:90%
+from a shuffled deck.
+
+00:12:38.095 --> 00:12:41.560 align:middle line:84%
+That pretty much means that
+you're starting out with
+
+00:12:41.560 --> 00:12:43.250 align:middle line:84%
+something that's effectively
+random.
+
+00:12:43.250 --> 00:12:47.500 align:middle line:84%
+But then it could be also
+influenced by your knowledge
+
+00:12:47.500 --> 00:12:50.410 align:middle line:84%
+of the game, by your
+skill at the game.
+
+00:12:50.410 --> 00:12:54.260 align:middle line:90%
+And you want to see how--
+
+00:12:54.260 --> 00:12:57.100 align:middle line:84%
+at what point, how do you want
+to balance it between
+
+00:12:57.100 --> 00:13:00.180 align:middle line:84%
+someone's skill, familiarity
+with the game,
+
+00:13:00.180 --> 00:13:02.160 align:middle line:90%
+against pure chance.
+
+00:13:02.160 --> 00:13:06.980 align:middle line:84%
+And a level playing field means
+different things to a
+
+00:13:06.980 --> 00:13:09.170 align:middle line:90%
+lot of different people.
+
+00:13:09.170 --> 00:13:13.177 align:middle line:84%
+For some people, it may mean,
+no matter what skill level I
+
+00:13:13.177 --> 00:13:14.560 align:middle line:84%
+am, I have a chance
+at winning.
+
+00:13:14.560 --> 00:13:16.500 align:middle line:84%
+So you're sort of biasing
+towards chance.
+
+00:13:16.500 --> 00:13:21.500 align:middle line:84%
+For some people a level playing
+field is, no matter
+
+00:13:21.500 --> 00:13:28.000 align:middle line:84%
+what hand I get given, there
+is a valid strategy.
+
+00:13:28.000 --> 00:13:31.090 align:middle line:84%
+Or the goals that get set
+in a way that allows
+
+00:13:31.090 --> 00:13:31.810 align:middle line:90%
+me to obtain it.
+
+00:13:31.810 --> 00:13:35.560 align:middle line:84%
+A lot of trick-kicking games,
+especially games with bidding,
+
+00:13:35.560 --> 00:13:38.380 align:middle line:84%
+actually have an automatic
+ranking system.
+
+00:13:38.380 --> 00:13:41.660 align:middle line:84%
+In various lives that you
+only bid a game that you
+
+00:13:41.660 --> 00:13:44.160 align:middle line:90%
+think you can win.
+
+00:13:44.160 --> 00:13:47.290 align:middle line:84%
+And the whole idea is, the game
+is to push your opponent
+
+00:13:47.290 --> 00:13:51.790 align:middle line:84%
+to bid on something which they
+couldn't actually get.
+
+00:13:51.790 --> 00:13:54.640 align:middle line:84%
+So, that's a level
+playing field.
+
+00:13:54.640 --> 00:14:01.460 align:middle line:84%
+I can have a crappy hand, but
+that's not chance so much as
+
+00:14:01.460 --> 00:14:03.730 align:middle line:84%
+the decisions that
+you're making.
+
+00:14:03.730 --> 00:14:13.680 align:middle line:84%
+So, what I would advocate,
+in this class, if
+
+00:14:13.680 --> 00:14:14.930 align:middle line:90%
+[UNINTELLIGIBLE PHRASE]
+
+00:14:14.930 --> 00:14:19.380 align:middle line:90%
+
+
+00:14:19.380 --> 00:14:23.550 align:middle line:84%
+is, when you're trying to
+balance it out towards
+
+00:14:23.550 --> 00:14:26.330 align:middle line:84%
+whatever your interpretation
+of a level playing field is
+
+00:14:26.330 --> 00:14:31.660 align:middle line:84%
+going to be, try to pick
+decisions that push you in the
+
+00:14:31.660 --> 00:14:34.320 align:middle line:84%
+direction of meaningful
+decisions.
+
+00:14:34.320 --> 00:14:37.610 align:middle line:84%
+Things that players can make a
+decision on, and can see the
+
+00:14:37.610 --> 00:14:39.000 align:middle line:90%
+consequences.
+
+00:14:39.000 --> 00:14:40.050 align:middle line:84%
+They can understand how
+those consequences
+
+00:14:40.050 --> 00:14:42.800 align:middle line:90%
+play out in the game.
+
+00:14:42.800 --> 00:14:46.099 align:middle line:84%
+And the outcome of the
+overall game is going
+
+00:14:46.099 --> 00:14:50.720 align:middle line:90%
+to be resolved then.
+
+00:14:50.720 --> 00:14:53.020 align:middle line:84%
+That is, again, not necessarily
+the only
+
+00:14:53.020 --> 00:14:53.750 align:middle line:90%
+definition.
+
+00:14:53.750 --> 00:14:55.430 align:middle line:84%
+So I want to be very
+very clear.
+
+00:14:55.430 --> 00:14:58.220 align:middle line:84%
+What I'm asking of you here is
+not necessarily the only
+
+00:14:58.220 --> 00:15:00.750 align:middle line:84%
+definition of a well-designed
+game.
+
+00:15:00.750 --> 00:15:06.350 align:middle line:84%
+Because designing a game to be
+played from ages 3 to 90, you
+
+00:15:06.350 --> 00:15:09.690 align:middle line:84%
+probably want a game where
+making a meaningful decision
+
+00:15:09.690 --> 00:15:12.544 align:middle line:84%
+isn't going to bias the game
+to the point where
+
+00:15:12.544 --> 00:15:16.360 align:middle line:84%
+[UNINTELLIGIBLE] people, or
+really smart because that's
+
+00:15:16.360 --> 00:15:19.880 align:middle line:90%
+just not [UNINTELLIGIBLE].
+
+00:15:19.880 --> 00:15:22.110 align:middle line:90%
+And this particular task.
+
+00:15:22.110 --> 00:15:26.570 align:middle line:84%
+Try and bias it so that, in that
+competitive sense, you
+
+00:15:26.570 --> 00:15:30.320 align:middle line:84%
+want everyone to feel like they
+have a chance of winning.
+
+00:15:30.320 --> 00:15:34.080 align:middle line:84%
+But I want you to bias your
+game towards the--
+
+00:15:34.080 --> 00:15:36.350 align:middle line:84%
+and whether you win or lose is
+going to be based on the
+
+00:15:36.350 --> 00:15:37.490 align:middle line:90%
+outcome of these decisions.
+
+00:15:37.490 --> 00:15:40.358 align:middle line:84%
+Clearly understanding the
+outcome of the decision that
+
+00:15:40.358 --> 00:15:41.100 align:middle line:90%
+you make in the game.
+
+00:15:41.100 --> 00:15:46.620 align:middle line:84%
+Not necessarily just what you
+wish , or what you were dealt.
+
+00:15:46.620 --> 00:15:50.220 align:middle line:90%
+
+
+00:15:50.220 --> 00:15:52.300 align:middle line:84%
+You can still use those
+things in your game.
+
+00:15:52.300 --> 00:15:56.135 align:middle line:84%
+Sometimes it's the whole idea of
+the, oh my God, I hope it's
+
+00:15:56.135 --> 00:15:59.440 align:middle line:90%
+the right card, aargh.
+
+00:15:59.440 --> 00:16:02.310 align:middle line:84%
+But then there's things
+like probability.
+
+00:16:02.310 --> 00:16:05.640 align:middle line:84%
+There's, how much information
+are you giving to the player
+
+00:16:05.640 --> 00:16:07.810 align:middle line:84%
+about what the probability that
+you have the right card
+
+00:16:07.810 --> 00:16:08.410 align:middle line:90%
+going to be.
+
+00:16:08.410 --> 00:16:10.400 align:middle line:84%
+Are you letting them look at
+the deck ahead of time?
+
+00:16:10.400 --> 00:16:12.510 align:middle line:84%
+Are you giving them information
+about how many of
+
+00:16:12.510 --> 00:16:15.220 align:middle line:84%
+those cards are in the deck, so
+that you can actually make
+
+00:16:15.220 --> 00:16:18.450 align:middle line:84%
+guesses on-- all right, we
+played through half this deck
+
+00:16:18.450 --> 00:16:22.042 align:middle line:84%
+and we haven't seen any of those
+cards yet, that means
+
+00:16:22.042 --> 00:16:23.410 align:middle line:84%
+the probability of that card
+showing up has now gone up.
+
+00:16:23.410 --> 00:16:26.350 align:middle line:84%
+And now we come to a decision
+that you can make.
+
+00:16:26.350 --> 00:16:29.180 align:middle line:90%
+Do I draw, do I hold--
+
+00:16:29.180 --> 00:16:32.000 align:middle line:90%
+that sort of thing.
+
+00:16:32.000 --> 00:16:35.030 align:middle line:84%
+So that's my suggestion
+for this class.
+
+00:16:35.030 --> 00:16:40.884 align:middle line:84%
+I would love to be able to see
+those kinds of games come out
+
+00:16:40.884 --> 00:16:42.134 align:middle line:90%
+of this class.
+
+00:16:42.134 --> 00:16:46.410 align:middle line:90%
+
+
+00:16:46.410 --> 00:16:49.080 align:middle line:84%
+So that's all the things
+that [UNINTELLIGIBLE]
+
+00:16:49.080 --> 00:16:53.530 align:middle line:90%
+
+
+00:16:53.530 --> 00:16:58.360 align:middle line:84%
+So, actually, before we move
+on, does anyone have any
+
+00:16:58.360 --> 00:16:59.610 align:middle line:90%
+questions regarding that?
+
+00:16:59.610 --> 00:17:06.535 align:middle line:90%
+
+
+00:17:06.535 --> 00:17:08.900 align:middle line:90%
+One point of administration.
+
+00:17:08.900 --> 00:17:13.164 align:middle line:84%
+Who here needs to print on
+the Gambit printers?
+
+00:17:13.164 --> 00:17:17.304 align:middle line:84%
+Or who here has access to other
+printers that you guys
+
+00:17:17.304 --> 00:17:19.128 align:middle line:84%
+are fairly confident about using
+for your assignment?
+
+00:17:19.128 --> 00:17:20.619 align:middle line:90%
+You need a printer?
+
+00:17:20.619 --> 00:17:24.757 align:middle line:84%
+AUDIENCE: No, did you say that
+you need a printer or that you
+
+00:17:24.757 --> 00:17:25.140 align:middle line:90%
+have access.
+
+00:17:25.140 --> 00:17:25.700 align:middle line:90%
+Because you said both?
+
+00:17:25.700 --> 00:17:25.980 align:middle line:90%
+PROFESSOR: Oh, right.
+
+00:17:25.980 --> 00:17:29.460 align:middle line:84%
+So who here needs to use
+Gambit printers?
+
+00:17:29.460 --> 00:17:32.600 align:middle line:84%
+Who absolutely needs to
+use Gambit printers.
+
+00:17:32.600 --> 00:17:34.698 align:middle line:84%
+Because we don't actually have
+computers set up for
+
+00:17:34.698 --> 00:17:35.948 align:middle line:90%
+everybody to log in.
+
+00:17:35.948 --> 00:17:40.846 align:middle line:90%
+
+
+00:17:40.846 --> 00:17:43.552 align:middle line:84%
+So I would suggest not using any
+of the computers in this
+
+00:17:43.552 --> 00:17:44.790 align:middle line:90%
+lab because [UNINTELLIGIBLE]
+
+00:17:44.790 --> 00:17:48.180 align:middle line:90%
+lab work on it.
+
+00:17:48.180 --> 00:17:51.971 align:middle line:84%
+So you've all got access to
+printers, that's awesome.
+
+00:17:51.971 --> 00:17:53.221 align:middle line:84%
+I think you sent out an e-mail
+about card stock.
+
+00:17:53.221 --> 00:17:55.580 align:middle line:90%
+
+
+00:17:55.580 --> 00:17:58.064 align:middle line:84%
+AUDIENCE: That card stock's
+actually out of stock.
+
+00:17:58.064 --> 00:17:59.810 align:middle line:90%
+PROFESSOR: [UNINTELLIGIBLE]
+
+00:17:59.810 --> 00:18:01.480 align:middle line:84%
+AUDIENCE: I went to order and
+I was like, oh, shit.
+
+00:18:01.480 --> 00:18:02.730 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:18:02.730 --> 00:18:05.430 align:middle line:90%
+
+
+00:18:05.430 --> 00:18:08.140 align:middle line:84%
+AUDIENCE: Is there like a
+Staples somewhere near here?
+
+00:18:08.140 --> 00:18:09.290 align:middle line:84%
+PROFESSOR: Harvard
+has a Staples,
+
+00:18:09.290 --> 00:18:10.850 align:middle line:90%
+downtown has a staples.
+
+00:18:10.850 --> 00:18:11.562 align:middle line:90%
+AUDIENCE: CopyTech has--
+
+00:18:11.562 --> 00:18:13.910 align:middle line:84%
+AUDIENCE: I went to CopyTech and
+they said they can print
+
+00:18:13.910 --> 00:18:17.270 align:middle line:90%
+and cut your cards for you.
+
+00:18:17.270 --> 00:18:21.140 align:middle line:84%
+PROFESSOR: They have a pretty
+awesome card printer.
+
+00:18:21.140 --> 00:18:24.805 align:middle line:90%
+Their cutter is harsh, harsh.
+
+00:18:24.805 --> 00:18:26.710 align:middle line:90%
+AUDIENCE: What does that mean?
+
+00:18:26.710 --> 00:18:28.910 align:middle line:84%
+PROFESSOR: Well, first of all,
+it's really pointy on the
+
+00:18:28.910 --> 00:18:31.140 align:middle line:84%
+corners, which is kind of
+cool if that's what
+
+00:18:31.140 --> 00:18:32.545 align:middle line:90%
+you're going for.
+
+00:18:32.545 --> 00:18:34.300 align:middle line:90%
+But [UNINTELLIGIBLE]
+
+00:18:34.300 --> 00:18:35.750 align:middle line:84%
+AUDIENCE: Can they round it
+or do we have to use--
+
+00:18:35.750 --> 00:18:36.750 align:middle line:84%
+AUDIENCE: I don't
+think they can.
+
+00:18:36.750 --> 00:18:37.330 align:middle line:90%
+PROFESSOR: They can't.
+
+00:18:37.330 --> 00:18:39.330 align:middle line:90%
+I have a rounder.
+
+00:18:39.330 --> 00:18:43.010 align:middle line:84%
+I have a corner punch that, you
+have to do it four times
+
+00:18:43.010 --> 00:18:44.570 align:middle line:90%
+for each card, but--
+
+00:18:44.570 --> 00:18:45.537 align:middle line:90%
+AUDIENCE: We'll do it.
+
+00:18:45.537 --> 00:18:46.968 align:middle line:90%
+We can do it.
+
+00:18:46.968 --> 00:18:49.480 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:18:49.480 --> 00:18:51.720 align:middle line:84%
+PROFESSOR: Just ask me and
+you can borrow it.
+
+00:18:51.720 --> 00:18:54.450 align:middle line:84%
+You may want to do it on some
+test cards before you really
+
+00:18:54.450 --> 00:18:56.150 align:middle line:90%
+get a sense of how it works.
+
+00:18:56.150 --> 00:18:58.540 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:18:58.540 --> 00:19:00.390 align:middle line:84%
+And I wouldn't suggest
+punching more than
+
+00:19:00.390 --> 00:19:02.250 align:middle line:90%
+one card at a time.
+
+00:19:02.250 --> 00:19:07.870 align:middle line:84%
+The other thing is, if you're
+printing it on a, not like
+
+00:19:07.870 --> 00:19:09.760 align:middle line:84%
+CopyTech, where they obviously
+know what kind of paper works
+
+00:19:09.760 --> 00:19:11.664 align:middle line:90%
+best with their printers.
+
+00:19:11.664 --> 00:19:14.185 align:middle line:84%
+If you're printing it on
+something like a Laserjet, if
+
+00:19:14.185 --> 00:19:18.280 align:middle line:84%
+you go to the paper
+manufacturer's website, a lot
+
+00:19:18.280 --> 00:19:21.130 align:middle line:84%
+of them actually specifically
+state Laserjet compatible.
+
+00:19:21.130 --> 00:19:23.270 align:middle line:84%
+And the problem is actually
+the width of the card.
+
+00:19:23.270 --> 00:19:25.720 align:middle line:84%
+There's not the folding
+of the paper as it
+
+00:19:25.720 --> 00:19:27.170 align:middle line:90%
+goes through the printer.
+
+00:19:27.170 --> 00:19:30.722 align:middle line:84%
+It's whether the toner will
+bond to the paper.
+
+00:19:30.722 --> 00:19:33.984 align:middle line:84%
+Like, does the paper get
+hot enough, and open up
+
+00:19:33.984 --> 00:19:35.180 align:middle line:90%
+[UNINTELLIGIBLE].
+
+00:19:35.180 --> 00:19:36.900 align:middle line:84%
+Does the paper get hot
+enough for the
+
+00:19:36.900 --> 00:19:38.660 align:middle line:90%
+toner to actually bind.
+
+00:19:38.660 --> 00:19:40.940 align:middle line:84%
+And a lot of card stocks
+actually don't, because
+
+00:19:40.940 --> 00:19:42.840 align:middle line:84%
+they're so thick that the heat
+doesn't transfer well.
+
+00:19:42.840 --> 00:19:45.815 align:middle line:84%
+And as a result of that, after
+print it looks great when it
+
+00:19:45.815 --> 00:19:47.530 align:middle line:84%
+comes out and it
+starts leaking.
+
+00:19:47.530 --> 00:19:51.320 align:middle line:84%
+So, that's the problem
+with the card stock.
+
+00:19:51.320 --> 00:19:54.890 align:middle line:84%
+Some card stocks will jam your
+printer, but the majority of
+
+00:19:54.890 --> 00:19:58.940 align:middle line:84%
+the modern Laserjets actually
+deal pretty well with that.
+
+00:19:58.940 --> 00:20:01.552 align:middle line:90%
+[UNINTELLIGIBLE PHRASE]
+
+00:20:01.552 --> 00:20:02.985 align:middle line:84%
+AUDIENCE: Did you want us to
+print on card stock for
+
+00:20:02.985 --> 00:20:04.750 align:middle line:84%
+Wednesday, or was that
+for when it's due?
+
+00:20:04.750 --> 00:20:06.058 align:middle line:90%
+PROFESSOR: When it's due.
+
+00:20:06.058 --> 00:20:06.348 align:middle line:90%
+AUDIENCE: OK.
+
+00:20:06.348 --> 00:20:07.770 align:middle line:90%
+So Wednesday--
+
+00:20:07.770 --> 00:20:09.430 align:middle line:84%
+PROFESSOR: And in fact, printing
+card stock for when
+
+00:20:09.430 --> 00:20:12.640 align:middle line:90%
+it's due is not necessary.
+
+00:20:12.640 --> 00:20:14.740 align:middle line:90%
+It is much appreciated.
+
+00:20:14.740 --> 00:20:17.336 align:middle line:84%
+It was a great thing for you
+to do for yourself, if you
+
+00:20:17.336 --> 00:20:20.232 align:middle line:84%
+want to make copies for your
+friends or your team, that you
+
+00:20:20.232 --> 00:20:22.490 align:middle line:84%
+actually want to
+end up playing.
+
+00:20:22.490 --> 00:20:25.210 align:middle line:84%
+To be perfectly honest,
+if you say--
+
+00:20:25.210 --> 00:20:29.210 align:middle line:84%
+if our printer wasn't working
+and all we could do were these
+
+00:20:29.210 --> 00:20:34.260 align:middle line:84%
+regular white papers, if I also
+cut them in the right
+
+00:20:34.260 --> 00:20:37.570 align:middle line:84%
+shape, so then we could just
+play the game, that's fine.
+
+00:20:37.570 --> 00:20:41.854 align:middle line:84%
+We're not going to take the
+weight of your paper and do
+
+00:20:41.854 --> 00:20:42.620 align:middle line:90%
+the [UNINTELLIGIBLE].
+
+00:20:42.620 --> 00:20:43.896 align:middle line:84%
+AUDIENCE: [UNINTELLIGIBLE]
+the deck first, erm.
+
+00:20:43.896 --> 00:20:45.146 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:20:45.146 --> 00:20:50.305 align:middle line:90%
+
+
+00:20:50.305 --> 00:20:53.868 align:middle line:84%
+PROFESSOR: Has anyone played,
+what was it, High Society
+
+00:20:53.868 --> 00:20:54.784 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:20:54.784 --> 00:20:55.242 align:middle line:90%
+AUDIENCE: Yes.
+
+00:20:55.242 --> 00:20:57.310 align:middle line:90%
+AUDIENCE: Those are awesome.
+
+00:20:57.310 --> 00:21:00.974 align:middle line:84%
+PROFESSOR: They were like
+kids' books, you know?
+
+00:21:00.974 --> 00:21:02.224 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:21:02.224 --> 00:21:04.190 align:middle line:90%
+
+
+00:21:04.190 --> 00:21:07.100 align:middle line:84%
+PROFESSOR: If anyone does have
+issues printing, before you
+
+00:21:07.100 --> 00:21:09.190 align:middle line:84%
+jump straight into the
+[UNINTELLIGIBLE]
+
+00:21:09.190 --> 00:21:14.245 align:middle line:84%
+talk to Jason and I. Jason
+usually has room by the TV
+
+00:21:14.245 --> 00:21:16.587 align:middle line:84%
+lounge, my room is just
+down the corridor.
+
+00:21:16.587 --> 00:21:19.510 align:middle line:84%
+And we might be able to
+help you with that.
+
+00:21:19.510 --> 00:21:23.681 align:middle line:84%
+But in general, if you've got
+access to other printers, go
+
+00:21:23.681 --> 00:21:24.154 align:middle line:90%
+right for it.
+
+00:21:24.154 --> 00:21:27.000 align:middle line:84%
+Because going through
+us is a bottleneck.
+
+00:21:27.000 --> 00:21:28.627 align:middle line:90%
+Again, not for Wednesday.
+
+00:21:28.627 --> 00:21:32.610 align:middle line:84%
+For Wednesday just have
+something testable so that we
+
+00:21:32.610 --> 00:21:35.640 align:middle line:84%
+can [UNINTELLIGIBLE] before
+the date it's due, try to
+
+00:21:35.640 --> 00:21:36.380 align:middle line:90%
+print something.
+
+00:21:36.380 --> 00:21:39.100 align:middle line:84%
+You don't want to wait until the
+last minute and you don't
+
+00:21:39.100 --> 00:21:43.230 align:middle line:84%
+want to suddenly realize that
+your paper doesn't work very
+
+00:21:43.230 --> 00:21:44.480 align:middle line:84%
+well with the printer
+at the last minute.
+
+00:21:44.480 --> 00:21:48.290 align:middle line:90%
+
+
+00:21:48.290 --> 00:21:54.782 align:middle line:84%
+So, today's reading was Bartle
+and Chapter 11, I think, of
+
+00:21:54.782 --> 00:21:58.450 align:middle line:90%
+the [UNINTELLIGIBLE].
+
+00:21:58.450 --> 00:22:03.420 align:middle line:84%
+And in general, both of them are
+asking the same question.
+
+00:22:03.420 --> 00:22:07.400 align:middle line:84%
+Which is, who are you designing
+your game for?
+
+00:22:07.400 --> 00:22:08.852 align:middle line:84%
+On the assumption that
+you're not designing
+
+00:22:08.852 --> 00:22:10.210 align:middle line:90%
+the game for yourself.
+
+00:22:10.210 --> 00:22:12.770 align:middle line:84%
+Of course, realistically, if
+you're going to get a job
+
+00:22:12.770 --> 00:22:17.160 align:middle line:84%
+making games, the majority of
+the games that you're going to
+
+00:22:17.160 --> 00:22:18.988 align:middle line:84%
+design are not games for
+yourself, they're going to be
+
+00:22:18.988 --> 00:22:21.720 align:middle line:84%
+games for some other
+demographic.
+
+00:22:21.720 --> 00:22:29.070 align:middle line:84%
+And the Bartle paper is a little
+bit more influential in
+
+00:22:29.070 --> 00:22:32.330 align:middle line:84%
+how people think about games,
+because it shifted the
+
+00:22:32.330 --> 00:22:36.760 align:middle line:84%
+question from, what's the age
+group, what's the demographic,
+
+00:22:36.760 --> 00:22:39.340 align:middle line:84%
+what are people out there
+who are already buying
+
+00:22:39.340 --> 00:22:42.060 align:middle line:90%
+games going to want?
+
+00:22:42.060 --> 00:22:45.530 align:middle line:84%
+And you fit that into, what
+sort of things are people
+
+00:22:45.530 --> 00:22:48.250 align:middle line:90%
+looking for in a game?
+
+00:22:48.250 --> 00:22:49.650 align:middle line:84%
+He doesn't actually take
+it to the next
+
+00:22:49.650 --> 00:22:50.960 align:middle line:90%
+step, which is where--
+
+00:22:50.960 --> 00:22:55.742 align:middle line:84%
+I think he wrote that
+in the 70s or late
+
+00:22:55.742 --> 00:22:57.694 align:middle line:90%
+80s, does anyone remember?
+
+00:22:57.694 --> 00:22:58.190 align:middle line:90%
+AUDIENCE: In the 90s.
+
+00:22:58.190 --> 00:23:00.590 align:middle line:84%
+AUDIENCE: I think it
+was in, like, 1990.
+
+00:23:00.590 --> 00:23:01.840 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:23:01.840 --> 00:23:11.140 align:middle line:90%
+
+
+00:23:11.140 --> 00:23:15.260 align:middle line:84%
+PROFESSOR: But a lot
+of the ideas come
+
+00:23:15.260 --> 00:23:16.430 align:middle line:90%
+from the 70s, actually.
+
+00:23:16.430 --> 00:23:19.610 align:middle line:84%
+Because that's when he
+made the first MUD.
+
+00:23:19.610 --> 00:23:21.070 align:middle line:90%
+RIchard Bartle [UNINTELLIGIBLE].
+
+00:23:21.070 --> 00:23:22.340 align:middle line:84%
+AUDIENCE: What exactly
+is a MUD?
+
+00:23:22.340 --> 00:23:24.430 align:middle line:84%
+They never actually
+described it.
+
+00:23:24.430 --> 00:23:26.450 align:middle line:84%
+They just assumed everyone
+knew what a MUD was.
+
+00:23:26.450 --> 00:23:27.870 align:middle line:84%
+PROFESSOR: MUD stands for
+Multi-User Dungeon.
+
+00:23:27.870 --> 00:23:29.780 align:middle line:90%
+Anyone want to describe one?
+
+00:23:29.780 --> 00:23:36.360 align:middle line:84%
+AUDIENCE: It's like, an online
+text-adventure thing, where
+
+00:23:36.360 --> 00:23:39.800 align:middle line:84%
+everyone's interacting
+with the same
+
+00:23:39.800 --> 00:23:41.050 align:middle line:90%
+text-based dungeon thing.
+
+00:23:41.050 --> 00:23:45.040 align:middle line:84%
+AUDIENCE: The best way to
+describe it is, imagine if WoW
+
+00:23:45.040 --> 00:23:48.100 align:middle line:84%
+was presented entirely
+[UNINTELLIGIBLE].
+
+00:23:48.100 --> 00:23:51.000 align:middle line:90%
+
+
+00:23:51.000 --> 00:23:53.180 align:middle line:84%
+AUDIENCE: I found that kind
+of annoying in the text.
+
+00:23:53.180 --> 00:23:54.893 align:middle line:84%
+He just assumed everyone
+knew what a MUD was.
+
+00:23:54.893 --> 00:23:58.060 align:middle line:84%
+But never actually said,
+this is what a MUD is.
+
+00:23:58.060 --> 00:23:58.900 align:middle line:90%
+PROFESSOR: Yeah.
+
+00:23:58.900 --> 00:24:01.770 align:middle line:84%
+Because the whole sort of,
+reading the article, actually
+
+00:24:01.770 --> 00:24:04.110 align:middle line:84%
+I believe he formatted
+that for a forum
+
+00:24:04.110 --> 00:24:07.670 align:middle line:90%
+post for for community.
+
+00:24:07.670 --> 00:24:09.470 align:middle line:90%
+So there's an assumption.
+
+00:24:09.470 --> 00:24:13.350 align:middle line:90%
+But yeah, apologies for that.
+
+00:24:13.350 --> 00:24:15.330 align:middle line:84%
+Actually, if you're interested--
+and here he does
+
+00:24:15.330 --> 00:24:16.620 align:middle line:90%
+define it right at the bottom.
+
+00:24:16.620 --> 00:24:18.607 align:middle line:84%
+Which is right at the end
+of the article here.
+
+00:24:18.607 --> 00:24:22.708 align:middle line:84%
+He talks about specifically,
+this is what I mean by MUD.
+
+00:24:22.708 --> 00:24:24.873 align:middle line:84%
+Somewhere in the
+footnotes--these text
+
+00:24:24.873 --> 00:24:28.620 align:middle line:84%
+adventures, text-style online
+games where multiple people
+
+00:24:28.620 --> 00:24:30.300 align:middle line:90%
+are interacting.
+
+00:24:30.300 --> 00:24:33.900 align:middle line:84%
+And if you look at the rest of
+the website, there's actually
+
+00:24:33.900 --> 00:24:34.860 align:middle line:84%
+a bunch of stuff about
+how MUDs work.
+
+00:24:34.860 --> 00:24:39.200 align:middle line:84%
+But, for the most part, that was
+sort of online multiplayer
+
+00:24:39.200 --> 00:24:43.530 align:middle line:90%
+gaming, back when he started.
+
+00:24:43.530 --> 00:24:46.670 align:middle line:84%
+He's credited for having
+built the first MUD.
+
+00:24:46.670 --> 00:24:50.690 align:middle line:84%
+And, frankly, not all
+that different from
+
+00:24:50.690 --> 00:24:53.630 align:middle line:90%
+MMOGs you get today.
+
+00:24:53.630 --> 00:24:56.240 align:middle line:84%
+The difference being that
+they were all text.
+
+00:24:56.240 --> 00:25:01.050 align:middle line:84%
+But you still went out
+hunting monsters.
+
+00:25:01.050 --> 00:25:03.270 align:middle line:84%
+They call them mobiles,
+or mobs.
+
+00:25:03.270 --> 00:25:05.592 align:middle line:84%
+And in fact there's
+still some of that
+
+00:25:05.592 --> 00:25:08.270 align:middle line:90%
+terminology going around.
+
+00:25:08.270 --> 00:25:10.010 align:middle line:90%
+They drop loot.
+
+00:25:10.010 --> 00:25:11.570 align:middle line:84%
+You will pick up loot
+and show it off.
+
+00:25:11.570 --> 00:25:13.995 align:middle line:84%
+And sometimes, some games
+[UNINTELLIGIBLE]
+
+00:25:13.995 --> 00:25:15.180 align:middle line:90%
+loot.
+
+00:25:15.180 --> 00:25:16.960 align:middle line:84%
+Most games let you
+exchange loot.
+
+00:25:16.960 --> 00:25:19.460 align:middle line:84%
+And then you would use your
+loot to go and kill other
+
+00:25:19.460 --> 00:25:22.650 align:middle line:90%
+monsters and get better loot.
+
+00:25:22.650 --> 00:25:23.540 align:middle line:84%
+Sometimes you'd do it
+with other people.
+
+00:25:23.540 --> 00:25:26.270 align:middle line:84%
+Sometimes you attack
+other people.
+
+00:25:26.270 --> 00:25:28.620 align:middle line:84%
+Sometimes you just hang around
+and chat and talk about things
+
+00:25:28.620 --> 00:25:30.180 align:middle line:84%
+that are completely not in game,
+like what did I have for
+
+00:25:30.180 --> 00:25:32.200 align:middle line:90%
+lunch today.
+
+00:25:32.200 --> 00:25:33.450 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:25:33.450 --> 00:25:35.670 align:middle line:90%
+
+
+00:25:35.670 --> 00:25:38.620 align:middle line:84%
+And sometimes it will
+take multiple
+
+00:25:38.620 --> 00:25:41.664 align:middle line:90%
+people to take a monster.
+
+00:25:41.664 --> 00:25:43.628 align:middle line:84%
+And it was just handled
+on a how fast can you
+
+00:25:43.628 --> 00:25:45.300 align:middle line:90%
+type kind of thing.
+
+00:25:45.300 --> 00:25:48.490 align:middle line:84%
+Attack monster, attack
+monster.
+
+00:25:48.490 --> 00:25:57.380 align:middle line:84%
+I think you can just hit repeat
+and but, the behaviors
+
+00:25:57.380 --> 00:26:00.260 align:middle line:84%
+are also not all
+that different.
+
+00:26:00.260 --> 00:26:08.520 align:middle line:84%
+And how he describes it is, a
+game will sight itself in a
+
+00:26:08.520 --> 00:26:13.860 align:middle line:84%
+position where it is variably
+appealing to
+
+00:26:13.860 --> 00:26:15.990 align:middle line:90%
+various kinds of players.
+
+00:26:15.990 --> 00:26:18.110 align:middle line:84%
+And that's how he
+described it.
+
+00:26:18.110 --> 00:26:21.100 align:middle line:84%
+Where game studies has kind of
+gone on to since then, is the
+
+00:26:21.100 --> 00:26:25.830 align:middle line:84%
+realization that just
+because you're--
+
+00:26:25.830 --> 00:26:27.080 align:middle line:84%
+some people through all the
+four types that you--
+
+00:26:27.080 --> 00:26:31.116 align:middle line:90%
+
+
+00:26:31.116 --> 00:26:32.426 align:middle line:90%
+AUDIENCE: Explorer.
+
+00:26:32.426 --> 00:26:34.716 align:middle line:90%
+Killer.
+
+00:26:34.716 --> 00:26:36.210 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:26:36.210 --> 00:26:38.190 align:middle line:84%
+PROFESSOR: So, there are these
+four types of players.
+
+00:26:38.190 --> 00:26:41.185 align:middle line:84%
+And just because you're an
+achiever in one game doesn't
+
+00:26:41.185 --> 00:26:43.460 align:middle line:84%
+necessarily mean that you're
+going to be an achiever in
+
+00:26:43.460 --> 00:26:43.800 align:middle line:90%
+another game.
+
+00:26:43.800 --> 00:26:46.640 align:middle line:84%
+Different people play different
+games, or possibly
+
+00:26:46.640 --> 00:26:48.030 align:middle line:84%
+even different types
+of the same game,
+
+00:26:48.030 --> 00:26:50.440 align:middle line:90%
+for different reasons.
+
+00:26:50.440 --> 00:26:53.620 align:middle line:84%
+And that's where we go back to
+earlier concepts that we
+
+00:26:53.620 --> 00:26:55.450 align:middle line:90%
+brought up, is [UNINTELLIGIBLE]
+
+00:26:55.450 --> 00:26:55.840 align:middle line:90%
+kinds of fun.
+
+00:26:55.840 --> 00:26:59.170 align:middle line:84%
+What are people trying to get
+out of their game playing?
+
+00:26:59.170 --> 00:27:02.340 align:middle line:90%
+So, but he was--
+
+00:27:02.340 --> 00:27:05.050 align:middle line:84%
+if you're looking at the content
+of any one of MUD, and
+
+00:27:05.050 --> 00:27:07.780 align:middle line:84%
+a little slice of what you saw
+of somebody's personality,
+
+00:27:07.780 --> 00:27:08.754 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:27:08.754 --> 00:27:12.650 align:middle line:84%
+and all the things that
+they were doing.
+
+00:27:12.650 --> 00:27:14.260 align:middle line:84%
+And the kinds of things that you
+tended to keep doing every
+
+00:27:14.260 --> 00:27:17.360 align:middle line:84%
+time you logged in, it was very
+easy to stereotype them
+
+00:27:17.360 --> 00:27:19.820 align:middle line:84%
+into somewhere along
+those lines.
+
+00:27:19.820 --> 00:27:22.954 align:middle line:84%
+Even he acknowledges that
+nobody's really all the way on
+
+00:27:22.954 --> 00:27:25.560 align:middle line:90%
+one of these layers.
+
+00:27:25.560 --> 00:27:29.502 align:middle line:84%
+Griefers, I think, are the words
+that I hear generally
+
+00:27:29.502 --> 00:27:31.740 align:middle line:90%
+used for killers nowadays.
+
+00:27:31.740 --> 00:27:33.821 align:middle line:84%
+But even then, that's
+not quite the way
+
+00:27:33.821 --> 00:27:34.580 align:middle line:90%
+that he's using it.
+
+00:27:34.580 --> 00:27:37.880 align:middle line:84%
+He's actually using it as
+somebody who's generally still
+
+00:27:37.880 --> 00:27:40.270 align:middle line:84%
+playing by the rules
+of the game.
+
+00:27:40.270 --> 00:27:43.740 align:middle line:84%
+They are there to cause misery
+to other people, but they're
+
+00:27:43.740 --> 00:27:46.150 align:middle line:90%
+not there to break the game.
+
+00:27:46.150 --> 00:27:48.980 align:middle line:84%
+There is a class of people
+called griefers, who are
+
+00:27:48.980 --> 00:27:51.962 align:middle line:84%
+deliberately trying to find ways
+to exploit the system, to
+
+00:27:51.962 --> 00:27:56.550 align:middle line:84%
+just make the game just
+kind of silly.
+
+00:27:56.550 --> 00:27:59.390 align:middle line:84%
+But all the other dynamics
+that he draws on
+
+00:27:59.390 --> 00:28:00.320 align:middle line:90%
+are very much there.
+
+00:28:00.320 --> 00:28:01.480 align:middle line:84%
+You get a whole bunch of
+socializers together.
+
+00:28:01.480 --> 00:28:05.330 align:middle line:84%
+People who want to do nothing
+but chat and have a good time,
+
+00:28:05.330 --> 00:28:06.670 align:middle line:84%
+they don't really care about the
+game, and there's going to
+
+00:28:06.670 --> 00:28:09.240 align:middle line:84%
+be a whole bunch of people going
+right after them, saying
+
+00:28:09.240 --> 00:28:12.640 align:middle line:84%
+these are great people
+to grief.
+
+00:28:12.640 --> 00:28:15.560 align:middle line:84%
+Because they are enjoying
+themselves so much.
+
+00:28:15.560 --> 00:28:16.810 align:middle line:90%
+We could end that.
+
+00:28:16.810 --> 00:28:19.473 align:middle line:90%
+
+
+00:28:19.473 --> 00:28:24.270 align:middle line:84%
+Second Life gets a lot of this,
+because Second Life has
+
+00:28:24.270 --> 00:28:25.640 align:middle line:84%
+that whole, you can do
+anything you want.
+
+00:28:25.640 --> 00:28:28.216 align:middle line:84%
+And socializing is one
+of the big things.
+
+00:28:28.216 --> 00:28:33.110 align:middle line:84%
+Personalizing is one
+of the big things.
+
+00:28:33.110 --> 00:28:39.380 align:middle line:84%
+So, do keep in mind that the
+way that he's talking about
+
+00:28:39.380 --> 00:28:43.290 align:middle line:84%
+it, sounds like all of these
+different personalities are
+
+00:28:43.290 --> 00:28:46.786 align:middle line:84%
+somewhat mutually exclusive when
+really the discussion has
+
+00:28:46.786 --> 00:28:52.040 align:middle line:84%
+now come to, how do you cater
+to all of these different
+
+00:28:52.040 --> 00:28:53.940 align:middle line:90%
+desires at any given time?
+
+00:28:53.940 --> 00:28:56.610 align:middle line:84%
+I may be an achiever today, I
+may be an explorer tomorrow.
+
+00:28:56.610 --> 00:29:00.040 align:middle line:84%
+And he even talks about
+explorers thinking that
+
+00:29:00.040 --> 00:29:04.600 align:middle line:84%
+achievers are beginner
+explorers, because it's like,
+
+00:29:04.600 --> 00:29:07.260 align:middle line:84%
+once you've already beaten the
+game, what else is there left
+
+00:29:07.260 --> 00:29:11.858 align:middle line:84%
+to do but explore what
+else you can do?
+
+00:29:11.858 --> 00:29:15.714 align:middle line:84%
+So he himself acknowledges that
+there's some personality
+
+00:29:15.714 --> 00:29:19.110 align:middle line:90%
+transfer that can happen.
+
+00:29:19.110 --> 00:29:22.280 align:middle line:84%
+But it's kind of interesting
+how he talks about the
+
+00:29:22.280 --> 00:29:25.210 align:middle line:90%
+feedback loops of people.
+
+00:29:25.210 --> 00:29:32.760 align:middle line:84%
+You'll get a whole bunch of
+achievers, and you get a whole
+
+00:29:32.760 --> 00:29:34.010 align:middle line:90%
+bunch of socializers.
+
+00:29:34.010 --> 00:29:39.030 align:middle line:90%
+
+
+00:29:39.030 --> 00:29:41.060 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:29:41.060 --> 00:29:43.360 align:middle line:84%
+AUDIENCE: [UNINTELLIGIBLE]
+killers, and achievers--
+
+00:29:43.360 --> 00:29:44.660 align:middle line:84%
+PROFESSOR: [UNINTELLIGIBLE]
+you've got the competition
+
+00:29:44.660 --> 00:29:47.340 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:29:47.340 --> 00:29:50.260 align:middle line:84%
+But he also makes this weird
+assumption that there is a
+
+00:29:50.260 --> 00:29:52.560 align:middle line:84%
+finite pool of people who are
+going to be playing the game.
+
+00:29:52.560 --> 00:29:59.940 align:middle line:84%
+Which is actually true, even in
+a 10-20 million player game
+
+00:29:59.940 --> 00:30:02.330 align:middle line:90%
+like in World of Warcraft.
+
+00:30:02.330 --> 00:30:04.150 align:middle line:90%
+All those things have to be--
+
+00:30:04.150 --> 00:30:07.126 align:middle line:90%
+we don't have 20 million people
+
+00:30:07.126 --> 00:30:09.610 align:middle line:90%
+logging onto one server.
+
+00:30:09.610 --> 00:30:12.780 align:middle line:84%
+They say, I have
+[UNINTELLIGIBLE]
+
+00:30:12.780 --> 00:30:14.190 align:middle line:90%
+or something.
+
+00:30:14.190 --> 00:30:15.600 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:30:15.600 --> 00:30:17.950 align:middle line:90%
+AUDIENCE: Exactly, exactly.
+
+00:30:17.950 --> 00:30:19.470 align:middle line:84%
+AUDIENCE: And I'm like,
+once [UNINTELLIGIBLE]
+
+00:30:19.470 --> 00:30:21.450 align:middle line:90%
+you can start [UNINTELLIGIBLE]
+
+00:30:21.450 --> 00:30:24.420 align:middle line:84%
+that are just really
+big numbers.
+
+00:30:24.420 --> 00:30:28.576 align:middle line:90%
+
+
+00:30:28.576 --> 00:30:31.880 align:middle line:84%
+Like, 25-- it's currently
+25 is the highest.
+
+00:30:31.880 --> 00:30:33.655 align:middle line:90%
+They used to go to 40.
+
+00:30:33.655 --> 00:30:35.815 align:middle line:84%
+But yeah, and you just
+kill bigger monsters
+
+00:30:35.815 --> 00:30:39.520 align:middle line:90%
+and get lots of loot.
+
+00:30:39.520 --> 00:30:42.820 align:middle line:84%
+And then there's PvP,
+which you go--
+
+00:30:42.820 --> 00:30:45.230 align:middle line:84%
+the main thing right
+now is arenas.
+
+00:30:45.230 --> 00:30:48.930 align:middle line:84%
+And you have the team of two
+or three or five, and you
+
+00:30:48.930 --> 00:30:52.767 align:middle line:84%
+fight other players with your
+gear by doing battlegrounds
+
+00:30:52.767 --> 00:30:54.240 align:middle line:90%
+and [UNINTELLIGIBLE]
+
+00:30:54.240 --> 00:30:56.700 align:middle line:90%
+arena.
+
+00:30:56.700 --> 00:31:00.820 align:middle line:90%
+And it's basically, WoW.
+
+00:31:00.820 --> 00:31:01.609 align:middle line:90%
+PROFESSOR: I can't remember.
+
+00:31:01.609 --> 00:31:03.565 align:middle line:84%
+Are there role-playing
+servers?
+
+00:31:03.565 --> 00:31:04.054 align:middle line:90%
+AUDIENCE: Yes.
+
+00:31:04.054 --> 00:31:06.010 align:middle line:84%
+There are role-playing
+servers.
+
+00:31:06.010 --> 00:31:09.759 align:middle line:84%
+I have actually never visited
+one, so I can't really talk
+
+00:31:09.759 --> 00:31:10.900 align:middle line:90%
+about that.
+
+00:31:10.900 --> 00:31:12.150 align:middle line:84%
+AUDIENCE: That's a
+lot of dancing.
+
+00:31:12.150 --> 00:31:15.877 align:middle line:90%
+
+
+00:31:15.877 --> 00:31:16.860 align:middle line:90%
+PROFESSOR: [UNINTELLIGIBLE]
+
+00:31:16.860 --> 00:31:20.090 align:middle line:84%
+slash dance, maybe, or your
+character dances.
+
+00:31:20.090 --> 00:31:23.360 align:middle line:84%
+And it was those things that
+really is popular among
+
+00:31:23.360 --> 00:31:28.680 align:middle line:84%
+socialized type players
+all over--
+
+00:31:28.680 --> 00:31:29.540 align:middle line:90%
+and Diablo.
+
+00:31:29.540 --> 00:31:31.160 align:middle line:84%
+But it's not just
+[UNINTELLIGIBLE].
+
+00:31:31.160 --> 00:31:34.823 align:middle line:84%
+I mean, slash dance means
+other things now.
+
+00:31:34.823 --> 00:31:37.264 align:middle line:90%
+It could mean I'm bored.
+
+00:31:37.264 --> 00:31:40.148 align:middle line:84%
+It's like, I have nothing to do
+right now, I have to wait
+
+00:31:40.148 --> 00:31:42.970 align:middle line:84%
+for this stupid thing to
+respawn, slash dance.
+
+00:31:42.970 --> 00:31:46.800 align:middle line:84%
+It's more fun than just
+standing there.
+
+00:31:46.800 --> 00:31:52.050 align:middle line:90%
+But there is a group in WoW.
+
+00:31:52.050 --> 00:31:54.080 align:middle line:90%
+And I guess--
+
+00:31:54.080 --> 00:31:55.970 align:middle line:90%
+maybe not a group.
+
+00:31:55.970 --> 00:32:01.384 align:middle line:84%
+There are folks who play World
+of Warcraft and they engage
+
+00:32:01.384 --> 00:32:03.400 align:middle line:90%
+you to think on theory crafts.
+
+00:32:03.400 --> 00:32:09.520 align:middle line:84%
+Which is, how we optimize the
+way how you build a character.
+
+00:32:09.520 --> 00:32:13.500 align:middle line:84%
+And the things that you equip a
+character for, to make that
+
+00:32:13.500 --> 00:32:16.140 align:middle line:84%
+character really, really
+good at doing one or
+
+00:32:16.140 --> 00:32:17.780 align:middle line:90%
+two different things.
+
+00:32:17.780 --> 00:32:20.070 align:middle line:84%
+So as you're building up a
+character that's designed to
+
+00:32:20.070 --> 00:32:23.230 align:middle line:84%
+heal, what class should they be,
+what race should they be,
+
+00:32:23.230 --> 00:32:27.470 align:middle line:84%
+what equipment should they be
+getting, depending on what
+
+00:32:27.470 --> 00:32:29.880 align:middle line:84%
+[UNINTELLIGIBLE] you
+are in the game.
+
+00:32:29.880 --> 00:32:34.195 align:middle line:84%
+And they're going to try to
+derive as much of the math of
+
+00:32:34.195 --> 00:32:40.800 align:middle line:84%
+the cause and effect in the
+game as they possibly can.
+
+00:32:40.800 --> 00:32:42.050 align:middle line:84%
+There is actually
+[UNINTELLIGIBLE]
+
+00:32:42.050 --> 00:32:44.500 align:middle line:90%
+
+
+00:32:44.500 --> 00:32:46.120 align:middle line:90%
+which is--
+
+00:32:46.120 --> 00:32:47.370 align:middle line:90%
+[UNINTELLIGIBLE PHRASE]
+
+00:32:47.370 --> 00:32:54.160 align:middle line:90%
+
+
+00:32:54.160 --> 00:32:56.280 align:middle line:90%
+It's actually kind of funny.
+
+00:32:56.280 --> 00:33:01.760 align:middle line:84%
+The Elitist Jerks' forums had
+one guy who just happened to
+
+00:33:01.760 --> 00:33:07.760 align:middle line:84%
+write a forum post about
+dressing up in real life.
+
+00:33:07.760 --> 00:33:11.648 align:middle line:84%
+Like, this is how you get really
+nice [UNINTELLIGIBLE]
+
+00:33:11.648 --> 00:33:16.530 align:middle line:84%
+because he worked at a
+men's fashion place.
+
+00:33:16.530 --> 00:33:19.608 align:middle line:84%
+And it it turned out that that
+community was really, really,
+
+00:33:19.608 --> 00:33:22.476 align:middle line:84%
+really interested in learning
+more about that.
+
+00:33:22.476 --> 00:33:24.320 align:middle line:84%
+Which is actually not
+all that weird.
+
+00:33:24.320 --> 00:33:26.992 align:middle line:84%
+It's like, you care about what
+armor you get in the game.
+
+00:33:26.992 --> 00:33:29.000 align:middle line:84%
+You care about what you
+wear in real life.
+
+00:33:29.000 --> 00:33:32.160 align:middle line:84%
+Especially if it might have some
+impact on your real life.
+
+00:33:32.160 --> 00:33:34.200 align:middle line:84%
+What job that you're
+looking for.
+
+00:33:34.200 --> 00:33:36.590 align:middle line:90%
+OK, you know.
+
+00:33:36.590 --> 00:33:38.930 align:middle line:84%
+So, I would actually put
+those more in the
+
+00:33:38.930 --> 00:33:40.700 align:middle line:90%
+explorers part of things.
+
+00:33:40.700 --> 00:33:42.310 align:middle line:84%
+Sure, they're looking
+to optimize.
+
+00:33:42.310 --> 00:33:43.800 align:middle line:84%
+They're looking to
+do their best.
+
+00:33:43.800 --> 00:33:45.990 align:middle line:84%
+But they're not looking to be
+necessarily rewarded by the
+
+00:33:45.990 --> 00:33:46.585 align:middle line:90%
+game system.
+
+00:33:46.585 --> 00:33:49.760 align:middle line:84%
+They're using the game system
+to test their ideas against.
+
+00:33:49.760 --> 00:33:55.452 align:middle line:84%
+It's like, I'm looking for a
+better way to suck up more
+
+00:33:55.452 --> 00:33:57.460 align:middle line:90%
+damage, because I'm a tank.
+
+00:33:57.460 --> 00:34:00.110 align:middle line:84%
+I'm supposed to be absorbing
+all the damage.
+
+00:34:00.110 --> 00:34:04.010 align:middle line:90%
+Or the other as they call it.
+
+00:34:04.010 --> 00:34:08.260 align:middle line:84%
+Or the attentions of the
+characters being controlled by
+
+00:34:08.260 --> 00:34:12.010 align:middle line:84%
+the computer, while the rest of
+my folks put out a lot of
+
+00:34:12.010 --> 00:34:14.739 align:middle line:90%
+damage, can do their job.
+
+00:34:14.739 --> 00:34:20.940 align:middle line:84%
+But I am not interested in what
+the system has deemed to
+
+00:34:20.940 --> 00:34:24.639 align:middle line:84%
+be, you have absorbed tons
+of damage, good job.
+
+00:34:24.639 --> 00:34:26.389 align:middle line:84%
+I don't care what
+the system says.
+
+00:34:26.389 --> 00:34:29.130 align:middle line:84%
+I care how the system operates,
+so that I could
+
+00:34:29.130 --> 00:34:32.746 align:middle line:84%
+optimize it through some sort
+of metric that I've figured
+
+00:34:32.746 --> 00:34:35.226 align:middle line:84%
+out and my friends have figured
+out and the community
+
+00:34:35.226 --> 00:34:36.714 align:middle line:90%
+has figured out.
+
+00:34:36.714 --> 00:34:38.512 align:middle line:84%
+So I want to understand
+the system.
+
+00:34:38.512 --> 00:34:39.690 align:middle line:84%
+Again, that's what
+it comes down to.
+
+00:34:39.690 --> 00:34:42.109 align:middle line:84%
+The metric that they're using
+is, how do I optimize it.
+
+00:34:42.109 --> 00:34:45.866 align:middle line:84%
+But for the most part, people
+who engage in that kind of
+
+00:34:45.866 --> 00:34:49.110 align:middle line:84%
+theory craft, it's like about
+this armor combined with those
+
+00:34:49.110 --> 00:34:53.660 align:middle line:84%
+pants, I've proven something,
+those are well in the area of
+
+00:34:53.660 --> 00:34:58.595 align:middle line:84%
+explorers even though their
+behavior seems very much,
+
+00:34:58.595 --> 00:35:00.370 align:middle line:90%
+that's the best solution.
+
+00:35:00.370 --> 00:35:05.040 align:middle line:84%
+Whereas achievers are very much
+focused on, how do I get
+
+00:35:05.040 --> 00:35:08.812 align:middle line:84%
+to level-- it's like, how do
+I get the coolest mount.
+
+00:35:08.812 --> 00:35:13.340 align:middle line:84%
+In World of Warcraft you can
+ride around and every once in
+
+00:35:13.340 --> 00:35:16.380 align:middle line:84%
+a while, Blizzard, the company
+that makes it, will release
+
+00:35:16.380 --> 00:35:17.310 align:middle line:90%
+some new stuff.
+
+00:35:17.310 --> 00:35:21.540 align:middle line:84%
+And the achievers will say,
+I've got to get that.
+
+00:35:21.540 --> 00:35:23.558 align:middle line:84%
+Because the space
+[UNINTELLIGIBLE]
+
+00:35:23.558 --> 00:35:25.967 align:middle line:84%
+it takes a lot of effort and a
+lot of money to be able to get
+
+00:35:25.967 --> 00:35:26.630 align:middle line:90%
+one of those things.
+
+00:35:26.630 --> 00:35:28.922 align:middle line:84%
+But to be able to get it,
+it gives you some
+
+00:35:28.922 --> 00:35:30.305 align:middle line:90%
+recognizable status.
+
+00:35:30.305 --> 00:35:33.130 align:middle line:84%
+You will see someone with
+the limited edition of
+
+00:35:33.130 --> 00:35:35.180 align:middle line:90%
+some kind of mount.
+
+00:35:35.180 --> 00:35:38.944 align:middle line:84%
+And you'll know that
+[UNINTELLIGIBLE] is to spend a
+
+00:35:38.944 --> 00:35:41.070 align:middle line:84%
+heck of a lot of time in this
+game and play the game really
+
+00:35:41.070 --> 00:35:43.490 align:middle line:84%
+well, that's the kind
+of recognition
+
+00:35:43.490 --> 00:35:44.340 align:middle line:90%
+they're looking for.
+
+00:35:44.340 --> 00:35:45.535 align:middle line:84%
+So that's the difference
+between
+
+00:35:45.535 --> 00:35:48.330 align:middle line:90%
+achievers and explorers.
+
+00:35:48.330 --> 00:35:50.930 align:middle line:84%
+So I want to try one
+little activity.
+
+00:35:50.930 --> 00:35:58.240 align:middle line:84%
+Which is, I've got the chart
+that Bartle lays out.
+
+00:35:58.240 --> 00:35:59.540 align:middle line:90%
+The whole player versus--
+
+00:35:59.540 --> 00:36:02.330 align:middle line:90%
+
+
+00:36:02.330 --> 00:36:06.920 align:middle line:84%
+interacting and acting,
+player and the world.
+
+00:36:06.920 --> 00:36:11.530 align:middle line:84%
+And he uses this to describe
+where your game could be at
+
+00:36:11.530 --> 00:36:13.330 align:middle line:90%
+any given time.
+
+00:36:13.330 --> 00:36:19.080 align:middle line:84%
+If you're acting on players
+that your game's biased
+
+00:36:19.080 --> 00:36:21.000 align:middle line:90%
+towards killers.
+
+00:36:21.000 --> 00:36:24.105 align:middle line:84%
+If you're designing your game
+to be more about interacting
+
+00:36:24.105 --> 00:36:26.556 align:middle line:84%
+with other players, then you're
+somewhat biasing it
+
+00:36:26.556 --> 00:36:27.830 align:middle line:90%
+towards socializers.
+
+00:36:27.830 --> 00:36:32.060 align:middle line:84%
+Interacting with the world is
+more for the achievers.
+
+00:36:32.060 --> 00:36:34.620 align:middle line:84%
+Acting on the world is more
+for the achievers.
+
+00:36:34.620 --> 00:36:38.132 align:middle line:84%
+Given these quests, I've
+beaten all the quests.
+
+00:36:38.132 --> 00:36:41.660 align:middle line:84%
+I have 100% of the
+quests complete.
+
+00:36:41.660 --> 00:36:42.700 align:middle line:90%
+That's achievers.
+
+00:36:42.700 --> 00:36:46.150 align:middle line:84%
+And interacting with the world
+is more of the explorers.
+
+00:36:46.150 --> 00:36:49.800 align:middle line:84%
+It's like, what else can
+you do in this world?
+
+00:36:49.800 --> 00:36:51.160 align:middle line:84%
+There are these goals that
+are set, that's great.
+
+00:36:51.160 --> 00:36:53.635 align:middle line:84%
+But how does this world work
+that I can do cool stuff.
+
+00:36:53.635 --> 00:36:56.110 align:middle line:84%
+AUDIENCE: [UNINTELLIGIBLE]
+distinction between acting and
+
+00:36:56.110 --> 00:37:01.060 align:middle line:84%
+interacting, incredibly
+[UNINTELLIGIBLE], I didn't
+
+00:37:01.060 --> 00:37:04.530 align:middle line:84%
+really understand what
+he was trying to say.
+
+00:37:04.530 --> 00:37:05.210 align:middle line:84%
+PROFESSOR: It was
+[UNINTELLIGIBLE].
+
+00:37:05.210 --> 00:37:07.610 align:middle line:84%
+I think he came across
+those terms because
+
+00:37:07.610 --> 00:37:10.635 align:middle line:90%
+they sounded cute.
+
+00:37:10.635 --> 00:37:12.800 align:middle line:84%
+Acting, interacting,
+is like a--
+
+00:37:12.800 --> 00:37:14.870 align:middle line:84%
+AUDIENCE: I mean, can you
+interact without action?
+
+00:37:14.870 --> 00:37:16.640 align:middle line:84%
+PROFESSOR: Well,
+[UNINTELLIGIBLE]
+
+00:37:16.640 --> 00:37:19.630 align:middle line:90%
+AUDIENCE: What does that mean?
+
+00:37:19.630 --> 00:37:22.750 align:middle line:84%
+And, like, the really classic
+example he gives.
+
+00:37:22.750 --> 00:37:28.230 align:middle line:84%
+Like, the acting on a play is
+like a pure [UNINTELLIGIBLE]
+
+00:37:28.230 --> 00:37:30.190 align:middle line:90%
+the other player fights back.
+
+00:37:30.190 --> 00:37:33.640 align:middle line:90%
+There's an interaction there.
+
+00:37:33.640 --> 00:37:33.970 align:middle line:90%
+PROFESSOR: Sure.
+
+00:37:33.970 --> 00:37:35.330 align:middle line:90%
+But the thing about it--
+
+00:37:35.330 --> 00:37:36.580 align:middle line:84%
+AUDIENCE: But the difference
+there--
+
+00:37:36.580 --> 00:37:39.680 align:middle line:84%
+PROFESSOR: So I believe what he
+means by that is that the
+
+00:37:39.680 --> 00:37:41.436 align:middle line:84%
+killer is actually less
+interested in what the player
+
+00:37:41.436 --> 00:37:43.610 align:middle line:90%
+does back to him.
+
+00:37:43.610 --> 00:37:45.450 align:middle line:84%
+In some sense, they are
+interacting because they're
+
+00:37:45.450 --> 00:37:48.050 align:middle line:84%
+trying to see what sort
+of response they get.
+
+00:37:48.050 --> 00:37:50.674 align:middle line:84%
+It's like, I'm going to do
+something to this player.
+
+00:37:50.674 --> 00:37:56.230 align:middle line:84%
+This player's either going to
+die, or fight back, or whine
+
+00:37:56.230 --> 00:37:59.250 align:middle line:84%
+about the fact that I'm
+hitting him so much.
+
+00:37:59.250 --> 00:38:02.650 align:middle line:84%
+But they're not looking for
+the competitive bit.
+
+00:38:02.650 --> 00:38:06.718 align:middle line:84%
+They're not really interested in
+the, and now that person's
+
+00:38:06.718 --> 00:38:07.702 align:middle line:84%
+going to turn around
+and attack me.
+
+00:38:07.702 --> 00:38:11.115 align:middle line:84%
+AUDIENCE: I know, but the whole
+point is supposed to be
+
+00:38:11.115 --> 00:38:14.660 align:middle line:84%
+that killers are griefers, so
+they really care about how
+
+00:38:14.660 --> 00:38:16.210 align:middle line:90%
+people respond to them.
+
+00:38:16.210 --> 00:38:20.775 align:middle line:84%
+He says later on that one of the
+most annoying things you
+
+00:38:20.775 --> 00:38:23.160 align:middle line:84%
+can do to a griefer is
+just ignore them and
+
+00:38:23.160 --> 00:38:23.830 align:middle line:90%
+not rise to the bait.
+
+00:38:23.830 --> 00:38:27.930 align:middle line:84%
+So interacting seems to
+be the crucial thing.
+
+00:38:27.930 --> 00:38:29.230 align:middle line:90%
+Again, I feel like his--
+
+00:38:29.230 --> 00:38:30.480 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:38:30.480 --> 00:38:35.680 align:middle line:90%
+
+
+00:38:35.680 --> 00:38:41.200 align:middle line:84%
+AUDIENCE: I kind of see it as,
+does the person care about how
+
+00:38:41.200 --> 00:38:44.190 align:middle line:90%
+the other works, in a sense?
+
+00:38:44.190 --> 00:38:48.590 align:middle line:84%
+And so it is the case that
+a griefer wants to
+
+00:38:48.590 --> 00:38:50.400 align:middle line:90%
+get a certain reaction.
+
+00:38:50.400 --> 00:38:53.540 align:middle line:84%
+But beyond that it
+doesn't matter.
+
+00:38:53.540 --> 00:38:57.920 align:middle line:84%
+So in the same case within the
+game system, I want it to do
+
+00:38:57.920 --> 00:39:00.390 align:middle line:84%
+this thing, I want it to give me
+points but why it did that
+
+00:39:00.390 --> 00:39:03.440 align:middle line:84%
+or how the mechanic works
+is kind of irrelevant.
+
+00:39:03.440 --> 00:39:06.740 align:middle line:84%
+And that's how I
+understood it.
+
+00:39:06.740 --> 00:39:12.060 align:middle line:84%
+AUDIENCE: Well, in particular,
+with the interacting, when
+
+00:39:12.060 --> 00:39:16.040 align:middle line:84%
+somebody is like trying to
+player kill or something, the
+
+00:39:16.040 --> 00:39:19.300 align:middle line:84%
+reaction is not necessarily--
+the reaction they're looking
+
+00:39:19.300 --> 00:39:22.700 align:middle line:84%
+for is to piss somebody
+off, right?
+
+00:39:22.700 --> 00:39:26.940 align:middle line:84%
+And that reaction is not
+necessarily part of the game.
+
+00:39:26.940 --> 00:39:34.000 align:middle line:84%
+So, it is acting on them because
+you are taking what
+
+00:39:34.000 --> 00:39:36.680 align:middle line:84%
+the game allows you to do, and
+using this against a person.
+
+00:39:36.680 --> 00:39:38.680 align:middle line:84%
+But you don't care about
+what they use in the
+
+00:39:38.680 --> 00:39:39.630 align:middle line:90%
+game against you.
+
+00:39:39.630 --> 00:39:42.750 align:middle line:84%
+You more care about this
+abstract idea.
+
+00:39:42.750 --> 00:39:46.000 align:middle line:84%
+So I think the interaction is
+not actually part of the game.
+
+00:39:46.000 --> 00:39:46.600 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:39:46.600 --> 00:39:49.243 align:middle line:84%
+specifically to do with game
+mechanics, whereas interacting
+
+00:39:49.243 --> 00:39:52.250 align:middle line:84%
+is to do with something
+which is--
+
+00:39:52.250 --> 00:39:54.980 align:middle line:84%
+so maybe acting is something
+mechanical, whereas
+
+00:39:54.980 --> 00:39:58.380 align:middle line:84%
+interacting is something
+dynamics-related?
+
+00:39:58.380 --> 00:39:59.310 align:middle line:90%
+Or?
+
+00:39:59.310 --> 00:40:06.480 align:middle line:84%
+AUDIENCE: Well, I see is as
+like, acting is sort of like a
+
+00:40:06.480 --> 00:40:09.000 align:middle line:84%
+single direction
+with mechanics.
+
+00:40:09.000 --> 00:40:12.400 align:middle line:84%
+So, for example, the mechanic
+there is being able to hit
+
+00:40:12.400 --> 00:40:15.380 align:middle line:84%
+somebody in the head with
+your [UNINTELLIGIBLE].
+
+00:40:15.380 --> 00:40:19.280 align:middle line:84%
+Whereas interacting would be the
+case where you are hitting
+
+00:40:19.280 --> 00:40:22.710 align:middle line:84%
+each other on each others'
+heads with your swords.
+
+00:40:22.710 --> 00:40:24.840 align:middle line:84%
+Which is an entirely
+different thing.
+
+00:40:24.840 --> 00:40:28.290 align:middle line:84%
+And it's more of a competitive
+thing rather than the, I just
+
+00:40:28.290 --> 00:40:30.540 align:middle line:90%
+want to make you angry.
+
+00:40:30.540 --> 00:40:33.110 align:middle line:84%
+AUDIENCE: I think the
+unidirectional perspective
+
+00:40:33.110 --> 00:40:34.345 align:middle line:90%
+makes sense.
+
+00:40:34.345 --> 00:40:35.436 align:middle line:84%
+You could think of it
+as going with the
+
+00:40:35.436 --> 00:40:36.570 align:middle line:90%
+hitting on the head example.
+
+00:40:36.570 --> 00:40:38.870 align:middle line:84%
+If I'm acting, then I care
+that information
+
+00:40:38.870 --> 00:40:40.080 align:middle line:90%
+is flowing one way.
+
+00:40:40.080 --> 00:40:41.970 align:middle line:90%
+I am dealing damage to you.
+
+00:40:41.970 --> 00:40:45.610 align:middle line:84%
+If I'm interacting, I'm curious
+as to how that is
+
+00:40:45.610 --> 00:40:48.483 align:middle line:84%
+computed and what that means
+for me in return.
+
+00:40:48.483 --> 00:40:50.060 align:middle line:90%
+Does that make sense?
+
+00:40:50.060 --> 00:40:51.190 align:middle line:84%
+AUDIENCE: So like, if I'm really
+bad at terminology--
+
+00:40:51.190 --> 00:40:52.942 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:40:52.942 --> 00:40:56.692 align:middle line:84%
+AUDIENCE: A bunch of other
+examples of things that you do
+
+00:40:56.692 --> 00:40:59.320 align:middle line:84%
+to maximize interacting
+versus acting.
+
+00:40:59.320 --> 00:41:03.430 align:middle line:84%
+There might be interesting
+examples of things like make
+
+00:41:03.430 --> 00:41:04.470 align:middle line:90%
+super [UNINTELLIGIBLE].
+
+00:41:04.470 --> 00:41:06.480 align:middle line:84%
+And then the acting ones are
+like, make [UNINTELLIGIBLE].
+
+00:41:06.480 --> 00:41:11.880 align:middle line:90%
+
+
+00:41:11.880 --> 00:41:16.950 align:middle line:84%
+PROFESSOR: So, in the context
+of a MUD, a puzzle is often
+
+00:41:16.950 --> 00:41:18.670 align:middle line:90%
+like a door.
+
+00:41:18.670 --> 00:41:20.945 align:middle line:84%
+So you've got to solve this
+puzzle if you want to get into
+
+00:41:20.945 --> 00:41:21.410 align:middle line:90%
+a new area.
+
+00:41:21.410 --> 00:41:24.530 align:middle line:84%
+Because that's really
+the only thing--
+
+00:41:24.530 --> 00:41:27.034 align:middle line:90%
+sometimes you get your loot.
+
+00:41:27.034 --> 00:41:34.840 align:middle line:84%
+And the idea behind that is, you
+are either privileging it
+
+00:41:34.840 --> 00:41:39.362 align:middle line:84%
+to getting people to talk with
+each other more and socialize
+
+00:41:39.362 --> 00:41:40.670 align:middle line:90%
+with each other more.
+
+00:41:40.670 --> 00:41:42.600 align:middle line:84%
+Or you're privileging it to
+getting people to look at the
+
+00:41:42.600 --> 00:41:46.330 align:middle line:84%
+world more, see more
+of the world and
+
+00:41:46.330 --> 00:41:48.330 align:middle line:90%
+understand how it works.
+
+00:41:48.330 --> 00:41:52.040 align:middle line:84%
+Then in a sense, you don't want
+to put too many barriers
+
+00:41:52.040 --> 00:41:56.320 align:middle line:84%
+between the people who've been
+in for a very long time and
+
+00:41:56.320 --> 00:42:00.460 align:middle line:84%
+the people who just started
+playing, the people who are in
+
+00:42:00.460 --> 00:42:02.498 align:middle line:84%
+one area of the world
+and people in
+
+00:42:02.498 --> 00:42:03.120 align:middle line:90%
+another area of the world.
+
+00:42:03.120 --> 00:42:03.810 align:middle line:90%
+You kind of want quick flow.
+
+00:42:03.810 --> 00:42:07.593 align:middle line:84%
+So in MUDs, that's one thing
+where the definition of
+
+00:42:07.593 --> 00:42:09.525 align:middle line:90%
+puzzles is very specific.
+
+00:42:09.525 --> 00:42:13.389 align:middle line:84%
+It's like, but I have to move
+this set of levers.
+
+00:42:13.389 --> 00:42:14.390 align:middle line:84%
+AUDIENCE: Another point that
+I've found that's really
+
+00:42:14.390 --> 00:42:18.690 align:middle line:84%
+strange, because I would expect
+an explorer, who is
+
+00:42:18.690 --> 00:42:22.440 align:middle line:84%
+supposed to be a world
+interacting person to really
+
+00:42:22.440 --> 00:42:26.430 align:middle line:84%
+enjoy deep puzzles, which reward
+them for knowing more
+
+00:42:26.430 --> 00:42:27.840 align:middle line:90%
+about the world.
+
+00:42:27.840 --> 00:42:31.080 align:middle line:84%
+PROFESSOR: But a problem with
+puzzles in MUDs is that
+
+00:42:31.080 --> 00:42:35.180 align:middle line:84%
+they're usually simple
+solutions.
+
+00:42:35.180 --> 00:42:38.920 align:middle line:84%
+So there's less pleasure to be
+found in a very difficult
+
+00:42:38.920 --> 00:42:40.635 align:middle line:84%
+puzzle, because all that
+told you was, you just
+
+00:42:40.635 --> 00:42:41.530 align:middle line:90%
+solved this one thing.
+
+00:42:41.530 --> 00:42:44.170 align:middle line:84%
+There is still some
+pleasure there.
+
+00:42:44.170 --> 00:42:49.650 align:middle line:84%
+The interest that explorers are
+way more compelled by--
+
+00:42:49.650 --> 00:42:52.040 align:middle line:90%
+kind of the latent dynamics--
+
+00:42:52.040 --> 00:42:55.650 align:middle line:84%
+is understanding the interaction
+of how mechanics--
+
+00:42:55.650 --> 00:42:59.180 align:middle line:84%
+especially [UNINTELLIGIBLE] in a
+way that might not have been
+
+00:42:59.180 --> 00:43:01.260 align:middle line:90%
+originally designed that way.
+
+00:43:01.260 --> 00:43:02.303 align:middle line:84%
+That's what they're
+looking for.
+
+00:43:02.303 --> 00:43:04.730 align:middle line:84%
+They're not looking for, what
+is the solution that was
+
+00:43:04.730 --> 00:43:05.437 align:middle line:90%
+designed in the game.
+
+00:43:05.437 --> 00:43:07.950 align:middle line:84%
+They're looking for, how am I
+going to get this game to do
+
+00:43:07.950 --> 00:43:11.082 align:middle line:84%
+something that it might not
+have been designed to do
+
+00:43:11.082 --> 00:43:14.940 align:middle line:84%
+originally, but would be cool
+once I figure it out.
+
+00:43:14.940 --> 00:43:17.980 align:middle line:90%
+So that, unfortunately--
+
+00:43:17.980 --> 00:43:19.440 align:middle line:90%
+you are definitely right.
+
+00:43:19.440 --> 00:43:22.660 align:middle line:84%
+But that one suffers from the
+very specific terminology of
+
+00:43:22.660 --> 00:43:27.070 align:middle line:84%
+what a puzzle is in a MUD, as
+opposed to the more general
+
+00:43:27.070 --> 00:43:30.090 align:middle line:84%
+definition of what
+a puzzle is.
+
+00:43:30.090 --> 00:43:34.630 align:middle line:84%
+The reason why, at least for
+achievers, hard puzzles are
+
+00:43:34.630 --> 00:43:38.500 align:middle line:84%
+very important, because if you
+make a puzzle that most people
+
+00:43:38.500 --> 00:43:41.158 align:middle line:84%
+aren't going to be able to get,
+being able to get that
+
+00:43:41.158 --> 00:43:43.910 align:middle line:84%
+puzzle gives you some
+[UNINTELLIGIBLE] status.
+
+00:43:43.910 --> 00:43:46.290 align:middle line:84%
+Usually some sort of visible
+reward, even.
+
+00:43:46.290 --> 00:43:50.090 align:middle line:84%
+You are now in a location not
+everybody else can get to, or
+
+00:43:50.090 --> 00:43:52.251 align:middle line:84%
+you now have a piece
+of equipment
+
+00:43:52.251 --> 00:43:53.970 align:middle line:90%
+that no-one else has.
+
+00:43:53.970 --> 00:44:01.390 align:middle line:84%
+Whereas explorers, they will
+probably have an advantage in
+
+00:44:01.390 --> 00:44:03.180 align:middle line:90%
+solving difficult puzzles.
+
+00:44:03.180 --> 00:44:05.640 align:middle line:84%
+But they're not necessarily the
+sort of thing that makes
+
+00:44:05.640 --> 00:44:08.840 align:middle line:84%
+them want to interact
+with the world.
+
+00:44:08.840 --> 00:44:12.110 align:middle line:84%
+Lots of the mechanics that
+interact with each other in
+
+00:44:12.110 --> 00:44:14.680 align:middle line:84%
+and new and interesting ways,
+are more likely to be
+
+00:44:14.680 --> 00:44:15.930 align:middle line:90%
+interesting to an explorer.
+
+00:44:15.930 --> 00:44:18.580 align:middle line:90%
+
+
+00:44:18.580 --> 00:44:21.446 align:middle line:84%
+But you're right, acting and
+interacting are crappy, crappy
+
+00:44:21.446 --> 00:44:24.620 align:middle line:90%
+terminology sort of thing.
+
+00:44:24.620 --> 00:44:27.782 align:middle line:84%
+AUDIENCE: Are you talking about
+how griefers are more
+
+00:44:27.782 --> 00:44:31.170 align:middle line:84%
+like actors, where they just try
+to get people to interact
+
+00:44:31.170 --> 00:44:34.390 align:middle line:84%
+with them, or try to get people
+to get annoyed by them.
+
+00:44:34.390 --> 00:44:36.780 align:middle line:84%
+I've definitely seen,
+[UNINTELLIGIBLE]
+
+00:44:36.780 --> 00:44:37.490 align:middle line:90%
+game design.
+
+00:44:37.490 --> 00:44:39.720 align:middle line:90%
+But [UNINTELLIGIBLE]
+
+00:44:39.720 --> 00:44:40.400 align:middle line:90%
+300.
+
+00:44:40.400 --> 00:44:44.580 align:middle line:84%
+Where we watched a video of
+griefers in Team Fortress 2,
+
+00:44:44.580 --> 00:44:49.410 align:middle line:84%
+where there's a certain door
+where, if they stand in a
+
+00:44:49.410 --> 00:44:50.560 align:middle line:90%
+certain spot, it won't open.
+
+00:44:50.560 --> 00:44:52.610 align:middle line:84%
+So this person started making
+everyone interact.
+
+00:44:52.610 --> 00:44:54.700 align:middle line:84%
+OK, we're going to play
+a game today.
+
+00:44:54.700 --> 00:44:56.050 align:middle line:84%
+If you want to leave, you have
+to answer correctly.
+
+00:44:56.050 --> 00:44:57.460 align:middle line:84%
+PROFESSOR: Yeah, what
+is the capital of--
+
+00:44:57.460 --> 00:45:01.280 align:middle line:90%
+
+
+00:45:01.280 --> 00:45:02.930 align:middle line:84%
+AUDIENCE: That I see as more
+of an explorer things.
+
+00:45:02.930 --> 00:45:05.855 align:middle line:84%
+Like, you bounce some weird
+combination of the interaction
+
+00:45:05.855 --> 00:45:09.320 align:middle line:84%
+with the mechanics that allows
+you to do something new, which
+
+00:45:09.320 --> 00:45:12.783 align:middle line:84%
+is turn Team Fortress
+2 into a game show.
+
+00:45:12.783 --> 00:45:14.110 align:middle line:90%
+AUDIENCE: It was pretty funny.
+
+00:45:14.110 --> 00:45:16.160 align:middle line:84%
+AUDIENCE: But people
+who can't play.
+
+00:45:16.160 --> 00:45:18.172 align:middle line:84%
+AUDIENCE: Griefers and explorers
+are a combination of
+
+00:45:18.172 --> 00:45:21.952 align:middle line:84%
+bottle types, if you're going
+to be a successful griefer.
+
+00:45:21.952 --> 00:45:26.170 align:middle line:90%
+
+
+00:45:26.170 --> 00:45:28.460 align:middle line:84%
+PROFESSOR: And that's
+absolutely true.
+
+00:45:28.460 --> 00:45:30.740 align:middle line:84%
+If your personality's oriented
+one way, you may have to
+
+00:45:30.740 --> 00:45:33.864 align:middle line:84%
+engage with some other behaviors
+in order to be able
+
+00:45:33.864 --> 00:45:37.970 align:middle line:84%
+to maximize that core behavior
+they're looking for.
+
+00:45:37.970 --> 00:45:43.385 align:middle line:84%
+So there are people who are
+looking at exploits and trying
+
+00:45:43.385 --> 00:45:45.410 align:middle line:84%
+to understand how the world
+works so they can cause
+
+00:45:45.410 --> 00:45:48.970 align:middle line:84%
+maximum damage and maximum
+grief to other people.
+
+00:45:48.970 --> 00:45:51.090 align:middle line:84%
+That's definitely one good
+way of doing it.
+
+00:45:51.090 --> 00:45:54.270 align:middle line:84%
+But what I find is that as soon
+as they find it, they are
+
+00:45:54.270 --> 00:45:58.350 align:middle line:84%
+not interested in finding
+more ways until that
+
+00:45:58.350 --> 00:45:59.600 align:middle line:90%
+first way gets boring.
+
+00:45:59.600 --> 00:46:02.160 align:middle line:90%
+
+
+00:46:02.160 --> 00:46:04.110 align:middle line:90%
+Or gets fixed.
+
+00:46:04.110 --> 00:46:07.715 align:middle line:84%
+So, people are going to say,
+there's a lot of teleporting
+
+00:46:07.715 --> 00:46:10.110 align:middle line:84%
+you directly in front of a
+turret, stuff like that.
+
+00:46:10.110 --> 00:46:12.815 align:middle line:84%
+Teleporting your own teammates
+in front of a turret, that
+
+00:46:12.815 --> 00:46:13.680 align:middle line:90%
+sort of thing.
+
+00:46:13.680 --> 00:46:14.930 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:46:14.930 --> 00:46:16.826 align:middle line:90%
+
+
+00:46:16.826 --> 00:46:19.644 align:middle line:90%
+AUDIENCE: I don't understand.
+
+00:46:19.644 --> 00:46:20.956 align:middle line:84%
+PROFESSOR: You don't
+understand?
+
+00:46:20.956 --> 00:46:21.630 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE].
+
+00:46:21.630 --> 00:46:22.180 align:middle line:90%
+PROFESSOR: It's fun.
+
+00:46:22.180 --> 00:46:22.940 align:middle line:90%
+AUDIENCE: Griefers.
+
+00:46:22.940 --> 00:46:26.250 align:middle line:90%
+AUDIENCE: No, it's not.
+
+00:46:26.250 --> 00:46:28.590 align:middle line:84%
+AUDIENCE: So, I'm going
+to mess with you.
+
+00:46:28.590 --> 00:46:30.750 align:middle line:90%
+Just for the hell of it.
+
+00:46:30.750 --> 00:46:34.020 align:middle line:84%
+AUDIENCE: I remember in Sims
+Online, an effective way to
+
+00:46:34.020 --> 00:46:37.460 align:middle line:84%
+grief would be to organize a
+band of people and arrive on
+
+00:46:37.460 --> 00:46:39.210 align:middle line:90%
+that property.
+
+00:46:39.210 --> 00:46:42.580 align:middle line:84%
+Since there was a population
+limit of 12 people or
+
+00:46:42.580 --> 00:46:44.610 align:middle line:90%
+something on any given lot.
+
+00:46:44.610 --> 00:46:47.740 align:middle line:84%
+In that lot, was a business that
+required a lot of people
+
+00:46:47.740 --> 00:46:48.460 align:middle line:90%
+to come through.
+
+00:46:48.460 --> 00:46:50.220 align:middle line:84%
+And then you just had
+12 of your people
+
+00:46:50.220 --> 00:46:52.220 align:middle line:90%
+show up and mill around.
+
+00:46:52.220 --> 00:46:53.660 align:middle line:90%
+And say a lot of profanities.
+
+00:46:53.660 --> 00:46:56.323 align:middle line:84%
+You could tag the place and
+lock it up and no-one else
+
+00:46:56.323 --> 00:46:58.078 align:middle line:84%
+could go there and visit it,
+sometimes including owners and
+
+00:46:58.078 --> 00:46:58.360 align:middle line:90%
+stuff like that.
+
+00:46:58.360 --> 00:47:00.475 align:middle line:90%
+It was very frustrating.
+
+00:47:00.475 --> 00:47:04.430 align:middle line:84%
+PROFESSOR: In fact, some of
+the behavior they did got
+
+00:47:04.430 --> 00:47:06.057 align:middle line:90%
+towards organized crime level.
+
+00:47:06.057 --> 00:47:11.145 align:middle line:84%
+Actually, I mean it wasn't real
+crime, it was virtual.
+
+00:47:11.145 --> 00:47:14.290 align:middle line:84%
+But there are actually a good
+number of articles about the
+
+00:47:14.290 --> 00:47:16.240 align:middle line:90%
+Sims Online mafia.
+
+00:47:16.240 --> 00:47:21.100 align:middle line:84%
+Because that game had so
+much built in for--
+
+00:47:21.100 --> 00:47:23.140 align:middle line:90%
+actually for socializers--
+
+00:47:23.140 --> 00:47:25.550 align:middle line:84%
+to be able to communicate,
+express themselves.
+
+00:47:25.550 --> 00:47:28.000 align:middle line:84%
+I mean if you played the
+original Sims, there's a whole
+
+00:47:28.000 --> 00:47:30.372 align:middle line:84%
+range of different expressive
+things that you can do to
+
+00:47:30.372 --> 00:47:33.810 align:middle line:84%
+communicate how you're feeling
+and to be able
+
+00:47:33.810 --> 00:47:34.780 align:middle line:90%
+to chat with people.
+
+00:47:34.780 --> 00:47:38.320 align:middle line:84%
+And someone, I think it might
+have been Maxis itself,
+
+00:47:38.320 --> 00:47:40.000 align:middle line:90%
+actually charted out the web of
+
+00:47:40.000 --> 00:47:41.740 align:middle line:90%
+influence of all the players.
+
+00:47:41.740 --> 00:47:46.670 align:middle line:84%
+And there was one alpha player
+who was in charge of
+
+00:47:46.670 --> 00:47:49.240 align:middle line:90%
+everything.
+
+00:47:49.240 --> 00:47:55.010 align:middle line:84%
+And if she decided that this
+person wasn't wanted, she
+
+00:47:55.010 --> 00:47:58.750 align:middle line:84%
+didn't want, spending too much
+time [UNINTELLIGIBLE]
+
+00:47:58.750 --> 00:48:02.740 align:middle line:84%
+because of how it pissed her off
+or piss one of her friends
+
+00:48:02.740 --> 00:48:05.080 align:middle line:84%
+off or something, she'd organize
+something like that.
+
+00:48:05.080 --> 00:48:06.460 align:middle line:90%
+Effectively.
+
+00:48:06.460 --> 00:48:09.320 align:middle line:90%
+It was called the Sims mafia.
+
+00:48:09.320 --> 00:48:11.025 align:middle line:84%
+and you get that
+[UNINTELLIGIBLE PHRASE]
+
+00:48:11.025 --> 00:48:15.780 align:middle line:90%
+
+
+00:48:15.780 --> 00:48:18.520 align:middle line:84%
+And it's kind of interesting
+to see how different worlds
+
+00:48:18.520 --> 00:48:19.918 align:middle line:90%
+respond to that.
+
+00:48:19.918 --> 00:48:22.980 align:middle line:84%
+Even though in [UNINTELLIGIBLE]
+which is--
+
+00:48:22.980 --> 00:48:26.640 align:middle line:84%
+actually, one thing I'd like
+to do is, I'd like to throw
+
+00:48:26.640 --> 00:48:29.900 align:middle line:84%
+different games up
+on that chart.
+
+00:48:29.900 --> 00:48:36.060 align:middle line:84%
+So I am looking mostly
+at multiplayer games.
+
+00:48:36.060 --> 00:48:39.470 align:middle line:84%
+Preferably online multiplayer
+games.
+
+00:48:39.470 --> 00:48:42.200 align:middle line:84%
+But, and I don't know all the
+games that are out there.
+
+00:48:42.200 --> 00:48:44.440 align:middle line:84%
+So, I'd like people
+to call-out games.
+
+00:48:44.440 --> 00:48:47.070 align:middle line:84%
+And tell me roughly what
+I should put up.
+
+00:48:47.070 --> 00:48:50.637 align:middle line:84%
+If you disagree, then by all
+means put up your hand and
+
+00:48:50.637 --> 00:48:52.700 align:middle line:84%
+suggest that it should
+be moved.
+
+00:48:52.700 --> 00:48:55.390 align:middle line:84%
+AUDIENCE: Minecraft should go
+definitely toward world
+
+00:48:55.390 --> 00:48:58.394 align:middle line:90%
+interaction andexplorer type.
+
+00:48:58.394 --> 00:48:59.795 align:middle line:90%
+AUDIENCE: Like, [UNINTELLIGIBLE]
+
+00:48:59.795 --> 00:49:03.070 align:middle line:90%
+far, far.
+
+00:49:03.070 --> 00:49:03.910 align:middle line:84%
+AUDIENCE: So what
+is Minecraft?
+
+00:49:03.910 --> 00:49:07.093 align:middle line:84%
+I've heard of it, I just don't
+know what exactly it's about.
+
+00:49:07.093 --> 00:49:08.837 align:middle line:84%
+AUDIENCE: You basically go
+around mining things and
+
+00:49:08.837 --> 00:49:11.460 align:middle line:84%
+creating objects, and you can
+create your own worlds.
+
+00:49:11.460 --> 00:49:13.080 align:middle line:90%
+AUDIENCE: So it's like--
+
+00:49:13.080 --> 00:49:14.240 align:middle line:90%
+I guess?
+
+00:49:14.240 --> 00:49:17.530 align:middle line:84%
+AUDIENCE: EVE is definitely
+world interacting as well.
+
+00:49:17.530 --> 00:49:18.050 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:49:18.050 --> 00:49:20.840 align:middle line:84%
+AUDIENCE: So that's
+same as EVE.
+
+00:49:20.840 --> 00:49:22.985 align:middle line:84%
+AUDIENCE: I would say EVE
+is also player to player
+
+00:49:22.985 --> 00:49:24.206 align:middle line:90%
+interacting.
+
+00:49:24.206 --> 00:49:25.345 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:49:25.345 --> 00:49:27.910 align:middle line:84%
+AUDIENCE: I'd see it as
+in the middle, then.
+
+00:49:27.910 --> 00:49:30.000 align:middle line:84%
+AUDIENCE: In EVE you have to
+form corporations with bunches
+
+00:49:30.000 --> 00:49:33.450 align:middle line:84%
+of people in order
+to do anything.
+
+00:49:33.450 --> 00:49:34.440 align:middle line:90%
+PROFESSOR: That's true.
+
+00:49:34.440 --> 00:49:39.403 align:middle line:84%
+You have to be really good in
+your social skills, actually.
+
+00:49:39.403 --> 00:49:40.401 align:middle line:84%
+It's one of the games that's
+most ruthlessly
+
+00:49:40.401 --> 00:49:41.651 align:middle line:90%
+[UNINTELLIGIBLE].
+
+00:49:41.651 --> 00:49:43.730 align:middle line:90%
+
+
+00:49:43.730 --> 00:49:44.050 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:49:44.050 --> 00:49:46.110 align:middle line:84%
+AUDIENCE: If you interact
+with the people
+
+00:49:46.110 --> 00:49:47.340 align:middle line:90%
+and the world a lot.
+
+00:49:47.340 --> 00:49:50.800 align:middle line:84%
+AUDIENCE: I think it's more
+strongly player attracting and
+
+00:49:50.800 --> 00:49:53.080 align:middle line:84%
+is world attracting
+than most games.
+
+00:49:53.080 --> 00:49:54.330 align:middle line:84%
+PROFESSOR: You cannot
+[UNINTELLIGIBLE].
+
+00:49:54.330 --> 00:49:57.360 align:middle line:90%
+
+
+00:49:57.360 --> 00:50:01.770 align:middle line:84%
+AUDIENCE: But there's also a
+huge amount of achievement and
+
+00:50:01.770 --> 00:50:03.700 align:middle line:84%
+player versus player conflict
+in this kind of stuff.
+
+00:50:03.700 --> 00:50:04.776 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:50:04.776 --> 00:50:08.190 align:middle line:84%
+AUDIENCE: You can die far down
+the interacting scale.
+
+00:50:08.190 --> 00:50:10.650 align:middle line:84%
+I mean, consider things in
+Second Life instead.
+
+00:50:10.650 --> 00:50:14.560 align:middle line:84%
+Which would be way further down
+the interacting end of
+
+00:50:14.560 --> 00:50:18.218 align:middle line:84%
+the spectrum than EVE
+Online, surely.
+
+00:50:18.218 --> 00:50:20.906 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:50:20.906 --> 00:50:22.180 align:middle line:84%
+AUDIENCE: Assuming that
+[UNINTELLIGIBLE].
+
+00:50:22.180 --> 00:50:23.215 align:middle line:84%
+AUDIENCE: I'm not sure
+it's hacking.
+
+00:50:23.215 --> 00:50:25.080 align:middle line:84%
+Like, PvP is the opposite
+of [UNINTELLIGIBLE].
+
+00:50:25.080 --> 00:50:26.606 align:middle line:90%
+AUDIENCE: I mean it's not--
+
+00:50:26.606 --> 00:50:28.240 align:middle line:84%
+AUDIENCE: I think it's
+definitely player interaction
+
+00:50:28.240 --> 00:50:30.220 align:middle line:90%
+more than player action.
+
+00:50:30.220 --> 00:50:32.040 align:middle line:84%
+AUDIENCE: Yeah, I believe
+it's interaction.
+
+00:50:32.040 --> 00:50:33.950 align:middle line:84%
+AUDIENCE: Something like having
+PvP tournaments, I
+
+00:50:33.950 --> 00:50:36.690 align:middle line:84%
+think, would be definitely
+a lot of interaction.
+
+00:50:36.690 --> 00:50:37.100 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:50:37.100 --> 00:50:40.570 align:middle line:84%
+I think that's the distinction
+between griefing and like
+
+00:50:40.570 --> 00:50:42.075 align:middle line:90%
+people fighting each other.
+
+00:50:42.075 --> 00:50:43.740 align:middle line:84%
+AUDIENCE: Griefing can be
+an [UNINTELLIGIBLE].
+
+00:50:43.740 --> 00:50:47.550 align:middle line:84%
+AUDIENCE: What I got from this
+article is that acting is
+
+00:50:47.550 --> 00:50:50.013 align:middle line:84%
+like, I go and kill someone
+and ha, I killed
+
+00:50:50.013 --> 00:50:50.620 align:middle line:90%
+them and that's it.
+
+00:50:50.620 --> 00:50:52.475 align:middle line:84%
+Or I go through the world, it's
+like, I killed a monster,
+
+00:50:52.475 --> 00:50:53.190 align:middle line:90%
+I killed a monster.
+
+00:50:53.190 --> 00:50:54.260 align:middle line:90%
+And you just have a goal.
+
+00:50:54.260 --> 00:50:55.480 align:middle line:84%
+If you want to get the
+goal instead of
+
+00:50:55.480 --> 00:50:58.210 align:middle line:90%
+diverting from your goal.
+
+00:50:58.210 --> 00:50:58.800 align:middle line:90%
+So, I don't know.
+
+00:50:58.800 --> 00:51:02.710 align:middle line:84%
+I definitely think griefing
+can be hugely interactive.
+
+00:51:02.710 --> 00:51:04.491 align:middle line:84%
+But there could be a
+whole bunch of--
+
+00:51:04.491 --> 00:51:08.210 align:middle line:84%
+in EVE if you infiltrate
+someone's company and you--
+
+00:51:08.210 --> 00:51:10.310 align:middle line:84%
+AUDIENCE: Steal ten thousand
+dollars' worth of their money.
+
+00:51:10.310 --> 00:51:10.660 align:middle line:90%
+AUDIENCE: Exactly.
+
+00:51:10.660 --> 00:51:13.520 align:middle line:84%
+That's hugely interactive
+griefing.
+
+00:51:13.520 --> 00:51:15.280 align:middle line:84%
+AUDIENCE: I don't think
+that's griefing.
+
+00:51:15.280 --> 00:51:16.500 align:middle line:84%
+AUDIENCE: Consider Team
+Fortress, right.
+
+00:51:16.500 --> 00:51:18.410 align:middle line:84%
+There's Team Fortress
+player interaction.
+
+00:51:18.410 --> 00:51:21.910 align:middle line:84%
+Because that means it's
+a socializer game.
+
+00:51:21.910 --> 00:51:24.020 align:middle line:84%
+PROFESSOR: I personally do not
+think Team Fortress falls
+
+00:51:24.020 --> 00:51:27.850 align:middle line:84%
+under player interacting
+with team.
+
+00:51:27.850 --> 00:51:29.240 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:51:29.240 --> 00:51:32.121 align:middle line:84%
+AUDIENCE: But Left
+for Dead is.
+
+00:51:32.121 --> 00:51:35.050 align:middle line:90%
+PROFESSOR: [UNINTELLIGIBLE]
+
+00:51:35.050 --> 00:51:35.940 align:middle line:84%
+AUDIENCE: There's definitely
+interaction happening--
+
+00:51:35.940 --> 00:51:36.340 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:51:36.340 --> 00:51:38.482 align:middle line:84%
+AUDIENCE: I'd say probably
+more-- it depends on what
+
+00:51:38.482 --> 00:51:38.880 align:middle line:90%
+you're doing
+
+00:51:38.880 --> 00:51:41.600 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:51:41.600 --> 00:51:43.170 align:middle line:84%
+AUDIENCE: So with Left for Dead
+you can play-- you're
+
+00:51:43.170 --> 00:51:46.160 align:middle line:84%
+interacting, but then you're
+also online and you can go
+
+00:51:46.160 --> 00:51:48.840 align:middle line:84%
+against other players
+who are actually the
+
+00:51:48.840 --> 00:51:50.983 align:middle line:90%
+zombies, against you.
+
+00:51:50.983 --> 00:51:51.406 align:middle line:90%
+PROFESSOR: Right.
+
+00:51:51.406 --> 00:51:55.370 align:middle line:84%
+So let's talk about the basic
+[UNINTELLIGIBLE].
+
+00:51:55.370 --> 00:52:02.430 align:middle line:84%
+AUDIENCE: So the basic, most
+common mode is going to be
+
+00:52:02.430 --> 00:52:04.370 align:middle line:84%
+four players playing
+cooperatively
+
+00:52:04.370 --> 00:52:07.440 align:middle line:90%
+against the game world.
+
+00:52:07.440 --> 00:52:09.860 align:middle line:84%
+AUDIENCE: That's just
+interacting with the world.
+
+00:52:09.860 --> 00:52:17.790 align:middle line:84%
+AUDIENCE: And there is a lot
+of interaction that goes on
+
+00:52:17.790 --> 00:52:20.808 align:middle line:84%
+between players, because you
+cannot basically survive
+
+00:52:20.808 --> 00:52:22.640 align:middle line:84%
+unless you get each
+others' backs.
+
+00:52:22.640 --> 00:52:24.080 align:middle line:84%
+AUDIENCE: So I would
+say it's--
+
+00:52:24.080 --> 00:52:26.440 align:middle line:84%
+AUDIENCE: And there's
+built-in functions
+
+00:52:26.440 --> 00:52:27.410 align:middle line:90%
+to help other people.
+
+00:52:27.410 --> 00:52:29.860 align:middle line:84%
+So someone might get back up
+on a ledge and he'll be
+
+00:52:29.860 --> 00:52:31.130 align:middle line:84%
+holding on and you have
+to pull him back up.
+
+00:52:31.130 --> 00:52:31.410 align:middle line:90%
+AUDIENCE: Or smokers.
+
+00:52:31.410 --> 00:52:34.730 align:middle line:84%
+AUDIENCE: At the same time,
+there's also an intelligent
+
+00:52:34.730 --> 00:52:38.830 align:middle line:84%
+engine that plans that level
+for you and places zombies
+
+00:52:38.830 --> 00:52:43.490 align:middle line:84%
+specifically to maintain you
+in a state of nervousness.
+
+00:52:43.490 --> 00:52:45.830 align:middle line:84%
+And so it's different every
+single time you play.
+
+00:52:45.830 --> 00:52:49.230 align:middle line:84%
+So those balance out and
+probably place it somewhere in
+
+00:52:49.230 --> 00:52:49.590 align:middle line:90%
+the middle.
+
+00:52:49.590 --> 00:52:52.501 align:middle line:84%
+Maybe a little bit more player
+biased than world biased,
+
+00:52:52.501 --> 00:52:55.500 align:middle line:84%
+because you really have
+to stick together.
+
+00:52:55.500 --> 00:52:58.250 align:middle line:84%
+PROFESSOR: So, it's weird
+because it's almost like, you
+
+00:52:58.250 --> 00:52:59.870 align:middle line:90%
+want to have like a plane.
+
+00:52:59.870 --> 00:53:01.120 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:53:01.120 --> 00:53:03.725 align:middle line:90%
+
+
+00:53:03.725 --> 00:53:05.460 align:middle line:84%
+AUDIENCE: I think the big
+problem with this sort of
+
+00:53:05.460 --> 00:53:08.650 align:middle line:84%
+graph is that you can't really
+necessarily separate games
+
+00:53:08.650 --> 00:53:11.570 align:middle line:90%
+into one of these quadrants.
+
+00:53:11.570 --> 00:53:12.820 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:53:12.820 --> 00:53:15.146 align:middle line:90%
+
+
+00:53:15.146 --> 00:53:16.760 align:middle line:84%
+PROFESSOR: And that
+is actually also--
+
+00:53:16.760 --> 00:53:18.240 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:53:18.240 --> 00:53:20.450 align:middle line:84%
+AUDIENCE: It might be a little
+more useful to actually draw
+
+00:53:20.450 --> 00:53:25.090 align:middle line:84%
+areas within the graph to
+represent a game, I guess.
+
+00:53:25.090 --> 00:53:29.230 align:middle line:84%
+Draw the area that encompasses
+all the pieces the game
+
+00:53:29.230 --> 00:53:30.490 align:middle line:90%
+represents.
+
+00:53:30.490 --> 00:53:31.740 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:53:31.740 --> 00:53:34.756 align:middle line:90%
+
+
+00:53:34.756 --> 00:53:39.560 align:middle line:84%
+PROFESSOR: Like Halo co-op and
+Halo multiplayer, and player
+
+00:53:39.560 --> 00:53:40.810 align:middle line:90%
+versus player.
+
+00:53:40.810 --> 00:53:43.560 align:middle line:90%
+
+
+00:53:43.560 --> 00:53:47.075 align:middle line:84%
+That will probably be a little
+refinement, if I create some
+
+00:53:47.075 --> 00:53:50.160 align:middle line:84%
+sort of scatter chart
+or Venn diagram.
+
+00:53:50.160 --> 00:53:51.540 align:middle line:84%
+AUDIENCE: Because I could
+definitely see there being a
+
+00:53:51.540 --> 00:53:54.450 align:middle line:84%
+game where there's a lot of
+acting on the world and
+
+00:53:54.450 --> 00:53:55.760 align:middle line:90%
+interacting with players.
+
+00:53:55.760 --> 00:53:58.610 align:middle line:84%
+And if you're just separating
+these into distinct points,
+
+00:53:58.610 --> 00:54:01.400 align:middle line:84%
+that isn't possible
+with this graph.
+
+00:54:01.400 --> 00:54:03.810 align:middle line:84%
+PROFESSOR: So that's another
+problem, is the assumption
+
+00:54:03.810 --> 00:54:08.980 align:middle line:84%
+that acting and interacting
+are--
+
+00:54:08.980 --> 00:54:10.235 align:middle line:90%
+AUDIENCE: Mutually exclusive?
+
+00:54:10.235 --> 00:54:11.720 align:middle line:84%
+PROFESSOR: They're mutually
+opposite.
+
+00:54:11.720 --> 00:54:12.970 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:54:12.970 --> 00:54:16.670 align:middle line:90%
+
+
+00:54:16.670 --> 00:54:18.318 align:middle line:84%
+Do people generally
+accept this?
+
+00:54:18.318 --> 00:54:18.766 align:middle line:90%
+AUDIENCE: No, no.
+
+00:54:18.766 --> 00:54:20.900 align:middle line:84%
+They do less acting
+than interacting.
+
+00:54:20.900 --> 00:54:23.610 align:middle line:84%
+AUDIENCE: If you just warp
+space, then you can have
+
+00:54:23.610 --> 00:54:24.000 align:middle line:90%
+[UNINTELLIGIBLE].
+
+00:54:24.000 --> 00:54:25.250 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:54:25.250 --> 00:54:27.745 align:middle line:90%
+
+
+00:54:27.745 --> 00:54:30.655 align:middle line:84%
+AUDIENCE: I think if you had
+different values for player
+
+00:54:30.655 --> 00:54:32.110 align:middle line:84%
+world interacting
+and acting would
+
+00:54:32.110 --> 00:54:34.540 align:middle line:90%
+necessarily be connected.
+
+00:54:34.540 --> 00:54:38.661 align:middle line:84%
+I think EVE definitely in world
+is very high, and in
+
+00:54:38.661 --> 00:54:40.736 align:middle line:90%
+player is very high.
+
+00:54:40.736 --> 00:54:43.050 align:middle line:84%
+PROFESSOR: World very high,
+player very high.
+
+00:54:43.050 --> 00:54:45.740 align:middle line:84%
+But I mean, player is
+interacting and world is
+
+00:54:45.740 --> 00:54:46.650 align:middle line:90%
+acting on the world.
+
+00:54:46.650 --> 00:54:48.820 align:middle line:90%
+AUDIENCE: On the world still.
+
+00:54:48.820 --> 00:54:49.870 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:54:49.870 --> 00:54:52.210 align:middle line:90%
+PROFESSOR: I mean, because--
+
+00:54:52.210 --> 00:54:55.100 align:middle line:84%
+you're exploring the world
+spatially a lot.
+
+00:54:55.100 --> 00:54:58.250 align:middle line:84%
+Are you exploring the systems
+of the world a lot?
+
+00:54:58.250 --> 00:55:00.571 align:middle line:84%
+Or are you really exploring the
+systems set up by people?
+
+00:55:00.571 --> 00:55:02.860 align:middle line:90%
+AUDIENCE: That's true.
+
+00:55:02.860 --> 00:55:07.930 align:middle line:84%
+PROFESSOR: The nice thing about
+things like EVE Online--
+
+00:55:07.930 --> 00:55:08.660 align:middle line:90%
+also [UNINTELLIGIBLE]
+
+00:55:08.660 --> 00:55:13.958 align:middle line:84%
+EVE Online [UNINTELLIGIBLE]
+game basically, where you
+
+00:55:13.958 --> 00:55:15.260 align:middle line:90%
+start off as a captain.
+
+00:55:15.260 --> 00:55:16.700 align:middle line:84%
+Correct me if I'm
+wrong with this.
+
+00:55:16.700 --> 00:55:19.354 align:middle line:84%
+AUDIENCE: It's a super-sandbox
+game.
+
+00:55:19.354 --> 00:55:22.198 align:middle line:84%
+PROFESSOR: But for the
+most part, you're
+
+00:55:22.198 --> 00:55:24.094 align:middle line:90%
+traveling in space.
+
+00:55:24.094 --> 00:55:26.830 align:middle line:84%
+AUDIENCE: Can you get out of
+your ship and walk on foot?
+
+00:55:26.830 --> 00:55:27.470 align:middle line:84%
+AUDIENCE: Have they added that,
+because I know they
+
+00:55:27.470 --> 00:55:30.000 align:middle line:84%
+wanted to add an expansion where
+you could actually walk
+
+00:55:30.000 --> 00:55:31.140 align:middle line:90%
+on planets.
+
+00:55:31.140 --> 00:55:32.950 align:middle line:84%
+Last time I heard,
+they hadn't.
+
+00:55:32.950 --> 00:55:34.220 align:middle line:84%
+AUDIENCE: Last I heard
+they hadn't.
+
+00:55:34.220 --> 00:55:37.370 align:middle line:84%
+AUDIENCE: Dust 66 or something
+like that.
+
+00:55:37.370 --> 00:55:37.895 align:middle line:84%
+PROFESSOR:
+[UNINTELLIGIBLE PHRASE]
+
+00:55:37.895 --> 00:55:40.340 align:middle line:84%
+AUDIENCE: It's a
+separate game.
+
+00:55:40.340 --> 00:55:42.560 align:middle line:84%
+PROFESSOR: No, you're traveling
+through space.
+
+00:55:42.560 --> 00:55:45.030 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:55:45.030 --> 00:55:48.895 align:middle line:84%
+But the whole idea is that it's
+all built around this
+
+00:55:48.895 --> 00:55:50.875 align:middle line:84%
+economy, where [UNINTELLIGIBLE]
+mining,
+
+00:55:50.875 --> 00:55:52.990 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:55:52.990 --> 00:55:53.285 align:middle line:90%
+cash.
+
+00:55:53.285 --> 00:55:57.110 align:middle line:84%
+But the real power in the game
+comes when players start to
+
+00:55:57.110 --> 00:55:59.040 align:middle line:90%
+ally with each other.
+
+00:55:59.040 --> 00:56:01.980 align:middle line:84%
+Form armadas, form
+trade groups.
+
+00:56:01.980 --> 00:56:06.880 align:middle line:84%
+Form areas that you can
+patrol and control.
+
+00:56:06.880 --> 00:56:09.325 align:middle line:84%
+And areas where you want to
+agree that if you don't get
+
+00:56:09.325 --> 00:56:13.689 align:middle line:84%
+along with the people who are in
+control of this space, you
+
+00:56:13.689 --> 00:56:14.516 align:middle line:84%
+will die when you
+fly in there.
+
+00:56:14.516 --> 00:56:18.484 align:middle line:84%
+And the only thing that's making
+that happen are other
+
+00:56:18.484 --> 00:56:20.964 align:middle line:84%
+players deciding that this
+social contract is
+
+00:56:20.964 --> 00:56:21.460 align:middle line:90%
+[UNINTELLIGIBLE].
+
+00:56:21.460 --> 00:56:24.436 align:middle line:90%
+So it's pretty damn amazing.
+
+00:56:24.436 --> 00:56:27.466 align:middle line:84%
+What some folks were talking
+about earlier was a big story
+
+00:56:27.466 --> 00:56:30.680 align:middle line:84%
+about how, basically, one person
+got into a very, very
+
+00:56:30.680 --> 00:56:33.755 align:middle line:84%
+powerful position in
+one of these clans.
+
+00:56:33.755 --> 00:56:35.540 align:middle line:90%
+And decided to defect.
+
+00:56:35.540 --> 00:56:42.360 align:middle line:84%
+Take a majority of one clan's
+financial resources with him.
+
+00:56:42.360 --> 00:56:46.090 align:middle line:84%
+And-- remember, this is a
+fairly modern massive
+
+00:56:46.090 --> 00:56:47.330 align:middle line:90%
+multiplayer online game.
+
+00:56:47.330 --> 00:56:50.370 align:middle line:84%
+In-game assets can now be
+traded for real money.
+
+00:56:50.370 --> 00:56:51.350 align:middle line:84%
+AUDIENCE: It's illegal
+so that--
+
+00:56:51.350 --> 00:56:52.000 align:middle line:90%
+PROFESSOR: It's illegal.
+
+00:56:52.000 --> 00:56:52.880 align:middle line:90%
+AUDIENCE: Like, in-game.
+
+00:56:52.880 --> 00:56:55.430 align:middle line:84%
+So you can get your
+account banned.
+
+00:56:55.430 --> 00:56:59.000 align:middle line:84%
+So what happened, if I'm talking
+about the one that
+
+00:56:59.000 --> 00:57:00.150 align:middle line:90%
+you're talking about.
+
+00:57:00.150 --> 00:57:03.080 align:middle line:84%
+Someone got to a really
+powerful place in
+
+00:57:03.080 --> 00:57:04.110 align:middle line:90%
+this banking clan.
+
+00:57:04.110 --> 00:57:06.400 align:middle line:84%
+And then took all of
+their assets and
+
+00:57:06.400 --> 00:57:07.510 align:middle line:90%
+traded it for real money.
+
+00:57:07.510 --> 00:57:11.130 align:middle line:84%
+So he got $10,000 by
+selling it off.
+
+00:57:11.130 --> 00:57:13.070 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:57:13.070 --> 00:57:16.326 align:middle line:84%
+AUDIENCE: One was a guy who
+infiltrated the clan
+
+00:57:16.326 --> 00:57:17.763 align:middle line:84%
+[UNINTELLIGIBLE] that
+much money.
+
+00:57:17.763 --> 00:57:20.300 align:middle line:84%
+One was like a parent who was
+going into financial trouble
+
+00:57:20.300 --> 00:57:24.285 align:middle line:84%
+and held a fifth of the assets
+of the major bank, and cashed
+
+00:57:24.285 --> 00:57:28.575 align:middle line:84%
+it in for $6,000 to help pay off
+part of his house and his
+
+00:57:28.575 --> 00:57:29.988 align:middle line:90%
+kids' medical bills.
+
+00:57:29.988 --> 00:57:32.350 align:middle line:84%
+And then posted an apology on
+the board and quit the game.
+
+00:57:32.350 --> 00:57:34.360 align:middle line:84%
+AUDIENCE: I thought he got
+banned from the game.
+
+00:57:34.360 --> 00:57:35.620 align:middle line:84%
+AUDIENCE: He was banned
+from the game, but he
+
+00:57:35.620 --> 00:57:38.494 align:middle line:90%
+also quit the game.
+
+00:57:38.494 --> 00:57:40.949 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+00:57:40.949 --> 00:57:42.225 align:middle line:84%
+AUDIENCE: He was like, I'm
+sorry, everybody, but this is
+
+00:57:42.225 --> 00:57:44.295 align:middle line:90%
+kind of important.
+
+00:57:44.295 --> 00:57:46.510 align:middle line:84%
+AUDIENCE: The amazing one
+was the guy who actually
+
+00:57:46.510 --> 00:57:51.170 align:middle line:84%
+infiltrated the company and
+just took it down as a
+
+00:57:51.170 --> 00:57:52.720 align:middle line:90%
+years-long operation--
+
+00:57:52.720 --> 00:57:53.328 align:middle line:84%
+AUDIENCE: [UNINTELLIGIBLE]
+thought he was a
+
+00:57:53.328 --> 00:57:54.070 align:middle line:90%
+friend and all that.
+
+00:57:54.070 --> 00:57:55.550 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:57:55.550 --> 00:57:57.870 align:middle line:84%
+Trying to get in and then
+managed to take down this
+
+00:57:57.870 --> 00:58:00.060 align:middle line:90%
+gigantic in-game corporation.
+
+00:58:00.060 --> 00:58:01.318 align:middle line:84%
+AUDIENCE: How many active
+players are
+
+00:58:01.318 --> 00:58:02.892 align:middle line:90%
+there on EVE Online?
+
+00:58:02.892 --> 00:58:04.620 align:middle line:90%
+A hundred thousand?
+
+00:58:04.620 --> 00:58:04.846 align:middle line:90%
+AUDIENCE: No.
+
+00:58:04.846 --> 00:58:07.400 align:middle line:84%
+I feel like the active
+players are--
+
+00:58:07.400 --> 00:58:07.990 align:middle line:90%
+PROFESSOR: [UNINTELLIGIBLE]
+
+00:58:07.990 --> 00:58:11.230 align:middle line:90%
+AUDIENCE: At any moment?
+
+00:58:11.230 --> 00:58:14.960 align:middle line:84%
+PROFESSOR: No, I mean active
+current players who have
+
+00:58:14.960 --> 00:58:16.720 align:middle line:90%
+active accounts.
+
+00:58:16.720 --> 00:58:18.070 align:middle line:84%
+AUDIENCE: Do they
+have new players
+
+00:58:18.070 --> 00:58:19.100 align:middle line:90%
+arriving regularly, or--
+
+00:58:19.100 --> 00:58:20.360 align:middle line:90%
+AUDIENCE: Occasionally.
+
+00:58:20.360 --> 00:58:21.926 align:middle line:84%
+AUDIENCE: They don't have
+a game that's been--
+
+00:58:21.926 --> 00:58:24.625 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:58:24.625 --> 00:58:25.460 align:middle line:84%
+AUDIENCE: It's like
+a ridiculous
+
+00:58:25.460 --> 00:58:26.870 align:middle line:90%
+learning curve, yeah.
+
+00:58:26.870 --> 00:58:29.220 align:middle line:84%
+AUDIENCE: It's like four
+months or something.
+
+00:58:29.220 --> 00:58:31.186 align:middle line:90%
+It's insane.
+
+00:58:31.186 --> 00:58:33.080 align:middle line:84%
+PROFESSOR: But the interesting
+thing about the particular
+
+00:58:33.080 --> 00:58:36.278 align:middle line:84%
+case where someone infiltrated,
+took all the
+
+00:58:36.278 --> 00:58:41.710 align:middle line:84%
+money and basically decimated
+this clan deliberately, was
+
+00:58:41.710 --> 00:58:44.540 align:middle line:84%
+that that person
+[UNINTELLIGIBLE]
+
+00:58:44.540 --> 00:58:45.790 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:58:45.790 --> 00:58:47.360 align:middle line:90%
+
+
+00:58:47.360 --> 00:58:48.960 align:middle line:84%
+AUDIENCE: The most recent
+one that I read about,
+
+00:58:48.960 --> 00:58:51.810 align:middle line:84%
+theoretically had in the tens of
+thousands of US dollars of
+
+00:58:51.810 --> 00:58:54.910 align:middle line:84%
+assets in the game and did not
+cash in any of it for real
+
+00:58:54.910 --> 00:58:57.385 align:middle line:84%
+money because there is no
+authorized mechanism.
+
+00:58:57.385 --> 00:59:00.050 align:middle line:84%
+And the article that I read,
+basically, the end note was,
+
+00:59:00.050 --> 00:59:01.170 align:middle line:84%
+no-one knows what he
+can do with it.
+
+00:59:01.170 --> 00:59:05.420 align:middle line:84%
+He's technically rich but
+there's no legal mechanism
+
+00:59:05.420 --> 00:59:07.330 align:middle line:90%
+[UNINTELLIGIBLE]
+
+00:59:07.330 --> 00:59:09.245 align:middle line:84%
+I don't think he got banned
+at all because--
+
+00:59:09.245 --> 00:59:10.495 align:middle line:84%
+PROFESSOR: Its part
+of the game.
+
+00:59:10.495 --> 00:59:12.890 align:middle line:90%
+
+
+00:59:12.890 --> 00:59:15.740 align:middle line:84%
+At least for the definition
+of EVE.
+
+00:59:15.740 --> 00:59:19.790 align:middle line:84%
+Stories like that tend
+to have earned its
+
+00:59:19.790 --> 00:59:20.470 align:middle line:90%
+reputation in a way.
+
+00:59:20.470 --> 00:59:23.820 align:middle line:90%
+This is lawless in space.
+
+00:59:23.820 --> 00:59:27.315 align:middle line:84%
+We're trying to encourage this
+kind of player to player.
+
+00:59:27.315 --> 00:59:29.215 align:middle line:90%
+And [UNINTELLIGIBLE]
+
+00:59:29.215 --> 00:59:32.150 align:middle line:90%
+
+
+00:59:32.150 --> 00:59:34.466 align:middle line:84%
+So I'm not entirely sure
+if [UNINTELLIGIBLE]
+
+00:59:34.466 --> 00:59:34.902 align:middle line:90%
+griefing.
+
+00:59:34.902 --> 00:59:37.580 align:middle line:84%
+It was an incredibly
+smart tactical--
+
+00:59:37.580 --> 00:59:39.710 align:middle line:84%
+AUDIENCE: See, I would not
+call that griefing.
+
+00:59:39.710 --> 00:59:44.110 align:middle line:84%
+It may have been done to annoy
+the people who were running
+
+00:59:44.110 --> 00:59:45.450 align:middle line:90%
+the company that he took down.
+
+00:59:45.450 --> 00:59:48.750 align:middle line:90%
+But see it as exploration.
+
+00:59:48.750 --> 00:59:50.500 align:middle line:90%
+I'm going to try and--
+
+00:59:50.500 --> 00:59:52.080 align:middle line:84%
+it's [UNINTELLIGIBLE]
+player interaction.
+
+00:59:52.080 --> 00:59:54.500 align:middle line:90%
+PROFESSOR: [UNINTELLIGIBLE]
+
+00:59:54.500 --> 00:59:54.950 align:middle line:90%
+[INTERPOSING VOICES]
+
+00:59:54.950 --> 00:59:57.080 align:middle line:84%
+AUDIENCE: I started a major
+corporation all by myself.
+
+00:59:57.080 --> 00:59:58.420 align:middle line:84%
+AUDIENCE: Yeah, might
+actually be--
+
+00:59:58.420 --> 01:00:00.900 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:00:00.900 --> 01:00:02.940 align:middle line:84%
+AUDIENCE: Do you put that
+on your resume?
+
+01:00:02.940 --> 01:00:05.340 align:middle line:90%
+Single-handedly [UNINTELLIGIBLE]
+
+01:00:05.340 --> 01:00:07.050 align:middle line:84%
+AUDIENCE: [UNINTELLIGIBLE]
+been hired by a lawyer.
+
+01:00:07.050 --> 01:00:08.300 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:00:08.300 --> 01:00:11.960 align:middle line:90%
+
+
+01:00:11.960 --> 01:00:13.250 align:middle line:84%
+PROFESSOR: So, what
+I would actually
+
+01:00:13.250 --> 01:00:15.940 align:middle line:90%
+like to end this with--
+
+01:00:15.940 --> 01:00:18.280 align:middle line:90%
+we've got about 15 minutes.
+
+01:00:18.280 --> 01:00:19.545 align:middle line:90%
+Is to spend some time--
+
+01:00:19.545 --> 01:00:21.470 align:middle line:84%
+I would say, how many
+of you have we got?
+
+01:00:21.470 --> 01:00:24.793 align:middle line:84%
+One, two, three, four, five,
+six, seven, eight, nine, 10,
+
+01:00:24.793 --> 01:00:28.290 align:middle line:90%
+11, 12, 13, 14, 15, 16.
+
+01:00:28.290 --> 01:00:30.100 align:middle line:90%
+So, groups of four.
+
+01:00:30.100 --> 01:00:33.175 align:middle line:84%
+And what I'd like
+folks to do--
+
+01:00:33.175 --> 01:00:34.425 align:middle line:90%
+[UNINTELLIGIBLE] --
+
+01:00:34.425 --> 01:00:38.760 align:middle line:90%
+
+
+01:00:38.760 --> 01:00:41.610 align:middle line:84%
+I'd like folks to come
+up with other axes.
+
+01:00:41.610 --> 01:00:46.110 align:middle line:84%
+Not necessarily anything
+having to do with
+
+01:00:46.110 --> 01:00:46.920 align:middle line:90%
+[UNINTELLIGIBLE].
+
+01:00:46.920 --> 01:00:52.264 align:middle line:84%
+Give me two things that you feel
+are diametrically opposed
+
+01:00:52.264 --> 01:00:56.580 align:middle line:84%
+but in describing a game,
+or any series of games.
+
+01:00:56.580 --> 01:00:59.180 align:middle line:84%
+You can place games
+on other sub-axes.
+
+01:00:59.180 --> 01:01:04.076 align:middle line:84%
+If we have time, we can talk
+about an attitude difference.
+
+01:01:04.076 --> 01:01:08.230 align:middle line:84%
+But something to help describe
+two people, OK, this game is
+
+01:01:08.230 --> 01:01:11.172 align:middle line:84%
+on the hard extreme of one,
+this game's on the hard
+
+01:01:11.172 --> 01:01:13.630 align:middle line:90%
+extreme of the other.
+
+01:01:13.630 --> 01:01:16.860 align:middle line:84%
+The goal here is to come up with
+terms that will help you
+
+01:01:16.860 --> 01:01:22.160 align:middle line:84%
+identify who this game might
+be target towards.
+
+01:01:22.160 --> 01:01:24.950 align:middle line:84%
+What kind of player might
+this game be targeting?
+
+01:01:24.950 --> 01:01:28.430 align:middle line:84%
+Not necessarily using Bartle's
+terminology at all.
+
+01:01:28.430 --> 01:01:30.504 align:middle line:84%
+Bartle's terminology, as we have
+said, is kind of weak, so
+
+01:01:30.504 --> 01:01:36.015 align:middle line:84%
+let's throw out some
+other words to
+
+01:01:36.015 --> 01:01:37.970 align:middle line:90%
+describe games already.
+
+01:01:37.970 --> 01:01:41.486 align:middle line:84%
+If that fails, because you
+haven't really thought about
+
+01:01:41.486 --> 01:01:44.150 align:middle line:84%
+it, to come up with
+some new words.
+
+01:01:44.150 --> 01:01:45.686 align:middle line:90%
+Real game-ish words.
+
+01:01:45.686 --> 01:01:46.936 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:01:46.936 --> 01:02:08.850 align:middle line:90%
+
+
+01:02:08.850 --> 01:02:10.942 align:middle line:84%
+AUDIENCE: Random versus
+strategy.
+
+01:02:10.942 --> 01:02:12.192 align:middle line:90%
+PROFESSOR: Oh, very good.
+
+01:02:12.192 --> 01:02:18.110 align:middle line:90%
+
+
+01:02:18.110 --> 01:02:20.735 align:middle line:84%
+AUDIENCE: Original
+versus copy.
+
+01:02:20.735 --> 01:02:21.985 align:middle line:84%
+PROFESSOR:
+[UNINTELLIGIBLE PHRASE]
+
+01:02:21.985 --> 01:02:29.150 align:middle line:90%
+
+
+01:02:29.150 --> 01:02:34.100 align:middle line:84%
+I'd rather use more chance or
+random to get the point across
+
+01:02:34.100 --> 01:02:35.090 align:middle line:90%
+pretty clearly.
+
+01:02:35.090 --> 01:02:36.590 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:02:36.590 --> 01:02:36.950 align:middle line:90%
+AUDIENCE: Right.
+
+01:02:36.950 --> 01:02:41.220 align:middle line:84%
+So I think that axis should be
+random, deterministic and/or
+
+01:02:41.220 --> 01:02:43.970 align:middle line:90%
+reactive and deliberative.
+
+01:02:43.970 --> 01:02:46.390 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:02:46.390 --> 01:02:48.770 align:middle line:90%
+AUDIENCE: It's fancy.
+
+01:02:48.770 --> 01:02:51.175 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:02:51.175 --> 01:02:52.630 align:middle line:90%
+PROFESSOR: Say that one again?
+
+01:02:52.630 --> 01:02:53.600 align:middle line:90%
+AUDIENCE: Reactive.
+
+01:02:53.600 --> 01:02:56.034 align:middle line:84%
+AUDIENCE: So reactive
+and delibrative.
+
+01:02:56.034 --> 01:02:58.140 align:middle line:84%
+AUDIENCE: Reactive
+and deliberative.
+
+01:02:58.140 --> 01:02:59.475 align:middle line:84%
+AUDIENCE: Or random
+and deterministic.
+
+01:02:59.475 --> 01:03:03.500 align:middle line:90%
+
+
+01:03:03.500 --> 01:03:04.680 align:middle line:84%
+AUDIENCE: So you can definitely
+still have
+
+01:03:04.680 --> 01:03:06.030 align:middle line:90%
+randomness and have strategy.
+
+01:03:06.030 --> 01:03:06.760 align:middle line:90%
+AUDIENCE: Right.
+
+01:03:06.760 --> 01:03:09.210 align:middle line:84%
+AUDIENCE: But random
+and deterministic.
+
+01:03:09.210 --> 01:03:12.040 align:middle line:84%
+AUDIENCE: They would be
+somewhere on the axis, right?
+
+01:03:12.040 --> 01:03:14.770 align:middle line:84%
+AUDIENCE: So the problem is, you
+can have incredible amount
+
+01:03:14.770 --> 01:03:18.020 align:middle line:84%
+of randomness but if you
+can just figure out the
+
+01:03:18.020 --> 01:03:19.520 align:middle line:84%
+probabilities, you
+can still have an
+
+01:03:19.520 --> 01:03:21.330 align:middle line:90%
+optimum strategy, right?
+
+01:03:21.330 --> 01:03:22.752 align:middle line:84%
+AUDIENCE: But then that's
+less random.
+
+01:03:22.752 --> 01:03:26.720 align:middle line:84%
+PROFESSOR: In doing this, you
+can't have a system that is so
+
+01:03:26.720 --> 01:03:31.336 align:middle line:84%
+complex yet deterministic that
+there's no way you can predict
+
+01:03:31.336 --> 01:03:32.580 align:middle line:90%
+what's going to happen next.
+
+01:03:32.580 --> 01:03:32.866 align:middle line:90%
+AUDIENCE: Yeah.
+
+01:03:32.866 --> 01:03:35.450 align:middle line:90%
+Killer robot.
+
+01:03:35.450 --> 01:03:37.775 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:03:37.775 --> 01:03:40.745 align:middle line:84%
+PROFESSOR: It's theoretically
+possible, but this is--
+
+01:03:40.745 --> 01:03:41.995 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:03:41.995 --> 01:03:45.360 align:middle line:90%
+
+
+01:03:45.360 --> 01:03:47.802 align:middle line:84%
+AUDIENCE: Player versus
+system agency?
+
+01:03:47.802 --> 01:03:51.300 align:middle line:84%
+PROFESSOR: Player versus--
+also system--
+
+01:03:51.300 --> 01:03:54.270 align:middle line:84%
+player versus system agency
+is kind of your--
+
+01:03:54.270 --> 01:03:56.370 align:middle line:90%
+AUDIENCE: It's distributed.
+
+01:03:56.370 --> 01:03:59.852 align:middle line:84%
+PROFESSOR: It's the name
+of your tactics, right?
+
+01:03:59.852 --> 01:04:00.308 align:middle line:90%
+AUDIENCE: Yes.
+
+01:04:00.308 --> 01:04:01.220 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:04:01.220 --> 01:04:03.580 align:middle line:84%
+AUDIENCE: You also had a low
+learning curve versus high
+
+01:04:03.580 --> 01:04:06.220 align:middle line:90%
+learning curve.
+
+01:04:06.220 --> 01:04:10.640 align:middle line:84%
+You're definitely not on both
+ends of that, and--
+
+01:04:10.640 --> 01:04:12.090 align:middle line:90%
+AUDIENCE: Fast versus slow.
+
+01:04:12.090 --> 01:04:15.990 align:middle line:90%
+
+
+01:04:15.990 --> 01:04:18.122 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:04:18.122 --> 01:04:19.535 align:middle line:90%
+AUDIENCE: I like that idea.
+
+01:04:19.535 --> 01:04:21.890 align:middle line:90%
+Fast versus slow.
+
+01:04:21.890 --> 01:04:29.570 align:middle line:84%
+AUDIENCE: So, another axis you
+may have was you could call it
+
+01:04:29.570 --> 01:04:35.569 align:middle line:84%
+freedom and predetermined
+paths in the game.
+
+01:04:35.569 --> 01:04:36.550 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:04:36.550 --> 01:04:37.490 align:middle line:90%
+AUDIENCE: Huh?
+
+01:04:37.490 --> 01:04:39.400 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:04:39.400 --> 01:04:41.760 align:middle line:84%
+AUDIENCE: Freedom versus
+constraint.
+
+01:04:41.760 --> 01:04:43.980 align:middle line:84%
+AUDIENCE: I can't remember the
+terms, but ludus and pitheus,
+
+01:04:43.980 --> 01:04:44.960 align:middle line:90%
+something like that.
+
+01:04:44.960 --> 01:04:47.630 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:04:47.630 --> 01:04:49.905 align:middle line:84%
+PROFESSOR: So one more that
+I use here often,
+
+01:04:49.905 --> 01:04:51.155 align:middle line:90%
+[UNINTELLIGIBLE PHRASE]
+
+01:04:51.155 --> 01:04:54.540 align:middle line:90%
+
+
+01:04:54.540 --> 01:04:55.790 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:04:55.790 --> 01:04:58.810 align:middle line:90%
+
+
+01:04:58.810 --> 01:04:59.840 align:middle line:84%
+PROFESSOR: 13 hours
+of Final Fantasy--
+
+01:04:59.840 --> 01:05:01.340 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:05:01.340 --> 01:05:02.590 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:05:02.590 --> 01:05:08.722 align:middle line:90%
+
+
+01:05:08.722 --> 01:05:11.140 align:middle line:90%
+AUDIENCE: For 60 hours.
+
+01:05:11.140 --> 01:05:12.390 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:05:12.390 --> 01:05:20.076 align:middle line:90%
+
+
+01:05:20.076 --> 01:05:24.028 align:middle line:84%
+PROFESSOR: Sandbox, I would
+say, [UNINTELLIGIBLE]
+
+01:05:24.028 --> 01:05:26.004 align:middle line:90%
+is a very broad one.
+
+01:05:26.004 --> 01:05:29.280 align:middle line:84%
+It's one that people generally
+understand as embodying a sort
+
+01:05:29.280 --> 01:05:30.750 align:middle line:90%
+of freedom.
+
+01:05:30.750 --> 01:05:33.660 align:middle line:84%
+You get to dick around,
+basically.
+
+01:05:33.660 --> 01:05:36.950 align:middle line:84%
+You get to play Grand Theft
+Auto totally not
+
+01:05:36.950 --> 01:05:39.119 align:middle line:90%
+following the storyline.
+
+01:05:39.119 --> 01:05:43.627 align:middle line:84%
+And-- actually, it kind of goes
+on, it becomes a little
+
+01:05:43.627 --> 01:05:45.036 align:middle line:84%
+bit less of that, you can get
+to do , you get to play but
+
+01:05:45.036 --> 01:05:47.970 align:middle line:84%
+the whole idea is that that
+world has ramps everywhere, so
+
+01:05:47.970 --> 01:05:51.350 align:middle line:84%
+that you can drive cars and
+vehicles [UNINTELLIGIBLE]
+
+01:05:51.350 --> 01:05:52.940 align:middle line:90%
+Anything else?
+
+01:05:52.940 --> 01:05:55.490 align:middle line:84%
+AUDIENCE: There's realism
+versus attraction.
+
+01:05:55.490 --> 01:05:56.750 align:middle line:90%
+AUDIENCE: Oooh.
+
+01:05:56.750 --> 01:05:59.090 align:middle line:90%
+AUDIENCE: What?
+
+01:05:59.090 --> 01:06:02.310 align:middle line:84%
+AUDIENCE: So the difference
+between EVE Online, for
+
+01:06:02.310 --> 01:06:03.640 align:middle line:84%
+example, which is supposed
+to be very
+
+01:06:03.640 --> 01:06:05.710 align:middle line:90%
+realistic, simulating something.
+
+01:06:05.710 --> 01:06:09.750 align:middle line:84%
+Whereas poker, for example,
+is just cards and numbers.
+
+01:06:09.750 --> 01:06:13.190 align:middle line:84%
+AUDIENCE: Something on the
+freedom sandbox versus
+
+01:06:13.190 --> 01:06:15.530 align:middle line:84%
+[UNINTELLIGIBLE] on rails,
+there's a very interesting
+
+01:06:15.530 --> 01:06:19.260 align:middle line:90%
+thing in [UNINTELLIGIBLE PHRASE]
+
+01:06:19.260 --> 01:06:21.530 align:middle line:84%
+there's a feature in one of the
+games where you were told
+
+01:06:21.530 --> 01:06:24.240 align:middle line:84%
+you need X amount of money to
+be able to pay for the ship
+
+01:06:24.240 --> 01:06:25.180 align:middle line:90%
+out of here.
+
+01:06:25.180 --> 01:06:27.220 align:middle line:84%
+And you're placed in a sort
+of sandbox environment.
+
+01:06:27.220 --> 01:06:28.174 align:middle line:90%
+And you're given--
+
+01:06:28.174 --> 01:06:30.340 align:middle line:90%
+you're not told, but--
+
+01:06:30.340 --> 01:06:33.528 align:middle line:84%
+whatever ways you can think of
+to make that amount of money.
+
+01:06:33.528 --> 01:06:34.560 align:middle line:84%
+The amount of money
+you need to leave
+
+01:06:34.560 --> 01:06:34.710 align:middle line:90%
+that part of the game.
+
+01:06:34.710 --> 01:06:38.060 align:middle line:84%
+So it's a predetermined
+sandbox .
+
+01:06:38.060 --> 01:06:39.190 align:middle line:90%
+PROFESSOR: [UNINTELLIGIBLE]
+
+01:06:39.190 --> 01:06:42.190 align:middle line:84%
+a lot of adventure games, a lot
+of roleplaying games, are
+
+01:06:42.190 --> 01:06:44.535 align:middle line:90%
+largely [UNINTELLIGIBLE]
+
+01:06:44.535 --> 01:06:45.790 align:middle line:90%
+areas of freedom.
+
+01:06:45.790 --> 01:06:48.820 align:middle line:84%
+Even in a game like Final
+Fantasy, it is not something
+
+01:06:48.820 --> 01:06:51.980 align:middle line:84%
+[UNINTELLIGIBLE] in other games
+in the series, the story
+
+01:06:51.980 --> 01:06:53.330 align:middle line:90%
+is largely predetermined.
+
+01:06:53.330 --> 01:06:58.238 align:middle line:84%
+But what you do in combat
+is very, very fluid.
+
+01:06:58.238 --> 01:07:01.880 align:middle line:84%
+And that's kind of like
+the dichotomy that
+
+01:07:01.880 --> 01:07:02.310 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:07:02.310 --> 01:07:06.410 align:middle line:84%
+Square Enix, or Square in
+the past, have decided
+
+01:07:06.410 --> 01:07:07.800 align:middle line:90%
+that that was OK.
+
+01:07:07.800 --> 01:07:11.990 align:middle line:84%
+This helps us cater to people
+who want some flexibility in
+
+01:07:11.990 --> 01:07:16.090 align:middle line:84%
+how they're going to play, by
+making the combat system fluid
+
+01:07:16.090 --> 01:07:16.825 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:07:16.825 --> 01:07:17.780 align:middle line:90%
+they want.
+
+01:07:17.780 --> 01:07:22.140 align:middle line:84%
+But also lets us cater to people
+who really want that
+
+01:07:22.140 --> 01:07:24.513 align:middle line:84%
+long, over-arching,
+epic narrative.
+
+01:07:24.513 --> 01:07:27.399 align:middle line:90%
+And we can only pick one.
+
+01:07:27.399 --> 01:07:29.323 align:middle line:84%
+We can't branch
+[UNINTELLIGIBLE PHRASE]
+
+01:07:29.323 --> 01:07:34.614 align:middle line:90%
+
+
+01:07:34.614 --> 01:07:36.080 align:middle line:90%
+Are there others?
+
+01:07:36.080 --> 01:07:37.160 align:middle line:84%
+AUDIENCE: I mean,
+[UNINTELLIGIBLE]
+
+01:07:37.160 --> 01:07:38.570 align:middle line:90%
+a lot of [UNINTELLIGIBLE PHRASE]
+
+01:07:38.570 --> 01:07:42.980 align:middle line:90%
+
+
+01:07:42.980 --> 01:07:45.406 align:middle line:84%
+puzzle games there's only one
+way to do it, whereas
+
+01:07:45.406 --> 01:07:47.378 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:07:47.378 --> 01:07:48.628 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:07:48.628 --> 01:07:51.815 align:middle line:90%
+
+
+01:07:51.815 --> 01:07:54.491 align:middle line:84%
+PROFESSOR: I mean, you
+could have multiple
+
+01:07:54.491 --> 01:07:56.415 align:middle line:90%
+solutions, I guess.
+
+01:07:56.415 --> 01:07:58.339 align:middle line:90%
+AUDIENCE: Multiple and single.
+
+01:07:58.339 --> 01:08:01.225 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:08:01.225 --> 01:08:03.527 align:middle line:84%
+PROFESSOR: I'm not so sure
+if that tells you
+
+01:08:03.527 --> 01:08:05.962 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:08:05.962 --> 01:08:09.858 align:middle line:84%
+if I tell you something about
+the constraints on
+
+01:08:09.858 --> 01:08:12.293 align:middle line:90%
+[UNINTELLIGIBLE] budget of--
+
+01:08:12.293 --> 01:08:14.241 align:middle line:84%
+AUDIENCE: I prefer games
+that are much more
+
+01:08:14.241 --> 01:08:15.215 align:middle line:90%
+[UNINTELLIGIBLE PHRASE]
+
+01:08:15.215 --> 01:08:18.649 align:middle line:84%
+And I guess it goes back
+to [UNINTELLIGIBLE]
+
+01:08:18.649 --> 01:08:20.190 align:middle line:84%
+PROFESSOR: Because the
+interesting thing about
+
+01:08:20.190 --> 01:08:23.735 align:middle line:84%
+multiple solutions and single
+solutions is that multiple
+
+01:08:23.735 --> 01:08:26.620 align:middle line:84%
+solutions-- it could
+be all design.
+
+01:08:26.620 --> 01:08:29.635 align:middle line:84%
+I could design in the game-- in
+fact, now, if you play Deus
+
+01:08:29.635 --> 01:08:34.285 align:middle line:84%
+Ex, or any of the sequels, they
+specifically stated that
+
+01:08:34.285 --> 01:08:38.734 align:middle line:84%
+they made this game with
+multiple solutions in mind.
+
+01:08:38.734 --> 01:08:42.970 align:middle line:84%
+And with the data sets to, they
+designed it so that they
+
+01:08:42.970 --> 01:08:45.243 align:middle line:84%
+thought, this puzzle needs
+to have three solutions.
+
+01:08:45.243 --> 01:08:48.180 align:middle line:84%
+And they actually will design
+an environment for it.
+
+01:08:48.180 --> 01:08:54.010 align:middle line:84%
+So, while the game kind of tells
+us, you get to play with
+
+01:08:54.010 --> 01:08:56.120 align:middle line:84%
+the system, you get to figure
+out how all these things
+
+01:08:56.120 --> 01:08:57.270 align:middle line:84%
+combine and come up with
+solutions on your own.
+
+01:08:57.270 --> 01:09:03.524 align:middle line:84%
+Really, they tried to design it
+so that you have three very
+
+01:09:03.524 --> 01:09:04.460 align:middle line:84%
+clear options at
+any given time.
+
+01:09:04.460 --> 01:09:05.856 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:09:05.856 --> 01:09:07.790 align:middle line:84%
+And so you can have multiple
+solutions.
+
+01:09:07.790 --> 01:09:12.040 align:middle line:84%
+Whereas this is like freedom
+sandboxing, kind of applies
+
+01:09:12.040 --> 01:09:13.851 align:middle line:90%
+not necessarily to design.
+
+01:09:13.851 --> 01:09:17.503 align:middle line:84%
+You've got lots of little things
+that you can do and
+
+01:09:17.503 --> 01:09:20.182 align:middle line:84%
+lots of different spaces that
+you can explore and design.
+
+01:09:20.182 --> 01:09:23.104 align:middle line:84%
+It's not like you've got one
+obstacle and three different
+
+01:09:23.104 --> 01:09:25.052 align:middle line:90%
+ways to solve it.
+
+01:09:25.052 --> 01:09:27.324 align:middle line:84%
+You've got all kinds of
+different things that you
+
+01:09:27.324 --> 01:09:27.974 align:middle line:90%
+could be doing.
+
+01:09:27.974 --> 01:09:28.960 align:middle line:84%
+You could be like
+[UNINTELLIGIBLE].
+
+01:09:28.960 --> 01:09:30.974 align:middle line:90%
+So these are different axes.
+
+01:09:30.974 --> 01:09:34.026 align:middle line:84%
+I just want to point out that
+these are different ways of
+
+01:09:34.026 --> 01:09:36.698 align:middle line:90%
+doing different things.
+
+01:09:36.698 --> 01:09:40.060 align:middle line:84%
+AUDIENCE: You can have, in terms
+of rule changing games,
+
+01:09:40.060 --> 01:09:41.766 align:middle line:84%
+whether it's dynamic rules
+or static rules.
+
+01:09:41.766 --> 01:09:42.098 align:middle line:90%
+AUDIENCE: Hmm.
+
+01:09:42.098 --> 01:09:47.244 align:middle line:84%
+So, hyper-dynamic, static,
+and then [UNINTELLIGIBLE]
+
+01:09:47.244 --> 01:09:52.722 align:middle line:90%
+
+
+01:09:52.722 --> 01:09:55.010 align:middle line:84%
+PROFESSOR: Are the rule going to
+change if [UNINTELLIGIBLE]
+
+01:09:55.010 --> 01:09:58.042 align:middle line:84%
+AUDIENCE: There are some games
+where the whole point is
+
+01:09:58.042 --> 01:09:59.018 align:middle line:90%
+changing rules.
+
+01:09:59.018 --> 01:09:59.994 align:middle line:90%
+AUDIENCE: Like Flux.
+
+01:09:59.994 --> 01:10:02.434 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:10:02.434 --> 01:10:04.800 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:10:04.800 --> 01:10:06.050 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:10:06.050 --> 01:10:13.160 align:middle line:90%
+
+
+01:10:13.160 --> 01:10:14.410 align:middle line:84%
+AUDIENCE: And assuming basically
+[UNINTELLIGIBLE]
+
+01:10:14.410 --> 01:10:18.156 align:middle line:90%
+
+
+01:10:18.156 --> 01:10:19.647 align:middle line:84%
+AUDIENCE: Timescale
+of decisions.
+
+01:10:19.647 --> 01:10:21.340 align:middle line:90%
+PROFESSOR: So, short model?
+
+01:10:21.340 --> 01:10:23.740 align:middle line:84%
+AUDIENCE: Yeah, like twitch
+games versus thought games.
+
+01:10:23.740 --> 01:10:26.354 align:middle line:84%
+AUDIENCE: [UNINTELLIGIBLE]
+decisions.
+
+01:10:26.354 --> 01:10:28.839 align:middle line:84%
+Sort of like that are
+contemplative and reactive.
+
+01:10:28.839 --> 01:10:31.324 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:10:31.324 --> 01:10:34.306 align:middle line:84%
+PROFESSOR: Are you guys going
+for basically the same thing.
+
+01:10:34.306 --> 01:10:37.504 align:middle line:84%
+Like, reactive means things are
+coming at you and you have
+
+01:10:37.504 --> 01:10:39.696 align:middle line:84%
+to respond really,
+really quickly.
+
+01:10:39.696 --> 01:10:41.644 align:middle line:84%
+Maybe [UNINTELLIGIBLE]
+about it.
+
+01:10:41.644 --> 01:10:45.540 align:middle line:84%
+And deliberative is like
+a trivia game.
+
+01:10:45.540 --> 01:10:46.790 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:10:46.790 --> 01:10:48.960 align:middle line:90%
+
+
+01:10:48.960 --> 01:10:51.280 align:middle line:84%
+PROFESSOR: Doesn't necessarily
+mean that.
+
+01:10:51.280 --> 01:10:53.900 align:middle line:84%
+The kind of turn-based game
+is very fast-paced.
+
+01:10:53.900 --> 01:10:58.202 align:middle line:84%
+Because the weight of any given
+decision is not going to
+
+01:10:58.202 --> 01:10:59.180 align:middle line:90%
+be so deep.
+
+01:10:59.180 --> 01:11:02.158 align:middle line:90%
+So, [UNINTELLIGIBLE]
+
+01:11:02.158 --> 01:11:05.602 align:middle line:84%
+I'm just going to put this up
+here because I'm running out
+
+01:11:05.602 --> 01:11:07.078 align:middle line:90%
+of space [UNINTELLIGIBLE]
+
+01:11:07.078 --> 01:11:11.020 align:middle line:90%
+
+
+01:11:11.020 --> 01:11:14.580 align:middle line:84%
+that's one way of describing
+a game, reactive versus
+
+01:11:14.580 --> 01:11:15.880 align:middle line:90%
+deliberative.
+
+01:11:15.880 --> 01:11:17.130 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:11:17.130 --> 01:11:19.230 align:middle line:90%
+
+
+01:11:19.230 --> 01:11:23.633 align:middle line:84%
+I bet you could take two of
+these and put them on an axis
+
+01:11:23.633 --> 01:11:24.945 align:middle line:84%
+and then we could
+talk about them.
+
+01:11:24.945 --> 01:11:26.860 align:middle line:90%
+On a [UNINTELLIGIBLE]
+
+01:11:26.860 --> 01:11:30.490 align:middle line:84%
+but every once in a while
+we find a game that
+
+01:11:30.490 --> 01:11:32.320 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:11:32.320 --> 01:11:33.430 align:middle line:90%
+Which is fine.
+
+01:11:33.430 --> 01:11:35.743 align:middle line:84%
+Which is part of
+[UNINTELLIGIBLE] to talk about
+
+01:11:35.743 --> 01:11:36.993 align:middle line:90%
+these games.
+
+01:11:36.993 --> 01:11:38.810 align:middle line:90%
+
+
+01:11:38.810 --> 01:11:42.838 align:middle line:84%
+These are really, really
+useful terms.
+
+01:11:42.838 --> 01:11:44.088 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:11:44.088 --> 01:11:47.130 align:middle line:90%
+
+
+01:11:47.130 --> 01:11:49.454 align:middle line:90%
+AUDIENCE: [UNINTELLIGIBLE]
+
+01:11:49.454 --> 01:11:50.704 align:middle line:90%
+[INTERPOSING VOICES]
+
+01:11:50.704 --> 01:11:54.264 align:middle line:90%
+
+
+01:11:54.264 --> 01:11:55.707 align:middle line:90%
+PROFESSOR: [UNINTELLIGIBLE]
+
+01:11:55.707 --> 01:11:59.101 align:middle line:84%
+it's a little bit more boxing,
+it's a little bit more
+
+01:11:59.101 --> 01:12:00.945 align:middle line:84%
+restrictive than
+predetermined.
+
+01:12:00.945 --> 01:12:02.330 align:middle line:90%
+[UNINTELLIGIBLE]
+
+01:12:02.330 --> 01:12:05.350 align:middle line:84%
+sandbox and rails are more like
+[UNINTELLIGIBLE PHRASE]
+
+01:12:05.350 --> 01:12:13.845 align:middle line:90%

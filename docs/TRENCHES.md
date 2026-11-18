@@ -3,7 +3,9 @@
 Reference for drawing the fronts (`src/world/military.ts`). These are broad generalisations; real
 trenches varied by sector, ground, unit and month. Every claim is **[VERIFY]** until checked against a
 source (trench maps, RFC/RAF air photos, the British *Notes for Infantry Officers on Trench Warfare*,
-German *Stellungsbau* manuals).
+German *Stellungsbau* manuals). The [historical research ledger](HISTORICAL_RESEARCH.md#aircraft-guns-and-the-desk) points to dated British maps and a General Staff manual for comparison.
+
+The [General Staff manual](https://314th.org/numbered-documents/0582-notes-for-infantry-officers-on-trench-warfare.pdf), §17, prescribes bays 18–30 feet long and traverses 9–12 feet thick. It also discusses the need for substantial revetment in winter in Flanders clay. These are British instructions, with actual traces to check against sector maps.
 
 The game's convention: u < 0 is the British (or French) side, u > 0 the German side.
 
@@ -31,7 +33,7 @@ The game's convention: u < 0 is the British (or French) side, u > 0 the German s
 
 | | British / French | German |
 |---|---|---|
-| Fire trench | Traversed (square bays, "crenellated" in plan), bays ~10 yd; often uneven, rebuilt in patches | Traversed too, but more regular and better kept; deeper, firing steps revetted |
+| Fire trench | Traversed. British guidance describes bays 6–10 yd long between traverses. Local spacing and rebuilding varied. | Traversed too, but more regular and better kept; deeper, firing steps revetted |
 | Flanders (high water table) | **Breastworks**: sandbag parapets built *up* rather than dug down; "grouse butts"; constant bailing | Breastworks too where wet, but from 1916–17 **concrete** shelters and MG posts (MEBU, "pillboxes") behind the line |
 | Revetting | Sandbags, corrugated iron, A-frames, duckboards; French wattle hurdles (*clayonnage*), gabions | Timber, wicker, planking; later concrete |
 | Dugouts | Shallow: "funk holes" cut into the parapet, small shelters, some deeper ones later | **Deep dugouts** (*Stollen*) 6–12 m down, especially on the chalk of the Somme, often with two entrances; some electric light **[VERIFY depths]** |

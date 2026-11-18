@@ -1,0 +1,87 @@
+{
+  "course_description": "Some argue that genre fiction is only a marketing category, but other critics say that different genres meet specific expectations of readers. This course examines these different agreements of what the reader wants and what the writer provides under the aegis of different genres. We will look at how genres are divided into subgenres, and how they are combined into cross-genre work, always keeping in mind the Reader-Writer Contact that is at the heart of genre writing. We shall also think about the ways in which crossing genres has led to the establishment of new genres (steampunk, preternatural romance) and strongly established subgenres (historical mystery, urban fantasy).\n",
+  "course_description_html": "Some argue that genre fiction is only a marketing category, but other critics say that different genres meet specific expectations of readers. This course examines these different agreements of what the reader wants and what the writer provides under the aegis of different genres. We will look at how genres are divided into subgenres, and how they are combined into cross-genre work, always keeping in mind the Reader-Writer Contact that is at the heart of genre writing. We shall also think about the ways in which crossing genres has led to the establishment of new genres (steampunk, preternatural romance) and strongly established subgenres (historical mystery, urban fantasy).",
+  "course_image": {
+    "content": "91c00eb7-a018-9480-f945-78153644e0d4",
+    "website": "21w-758-genre-fiction-workshop-spring-2013"
+  },
+  "course_image_metadata": {
+    "content_type": "resource",
+    "description": "The cover of the March 1954 issue of Beyond Fantasy Fiction, illustrated by Scott Templar. Public domain via wikimedia commons.",
+    "draft": false,
+    "file": "/courses/21w-758-genre-fiction-workshop-spring-2013/91c00eb7a0189480f94578153644e0d4_21W-758s13.jpg",
+    "file_size": 75974,
+    "file_type": "image/jpeg",
+    "image_metadata": {
+      "caption": "The cover of the March 1954 issue of _Beyond Fantasy Fiction_, illustrated by Scott Templar. (Public domain via {{% resource_link \"96b09222-9b82-449d-aad5-a64b57dfcf4f\" \"wikimedia commons\" %}}.)",
+      "credit": "Public domain via wikimedia commons.",
+      "image-alt": "The cover of the March 1954 issue of the magazine \"Beyond Fantasy Fiction,\" showing the taloned hands of a creature arising from the pages of the book \"Demonology,\" to turn off the light as a white haired man slumbers happily in a carved wooden chair."
+    },
+    "iscjklanguage": false,
+    "learning_resource_types": [],
+    "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "ocw_type": "OCWImage",
+    "resourcetype": "Image",
+    "title": "21W-758s13.jpg",
+    "uid": "91c00eb7-a018-9480-f945-78153644e0d4"
+  },
+  "course_image_thumbnail": {
+    "content": "e234ba7d-8a08-2672-6a0a-8868ba850098",
+    "website": "21w-758-genre-fiction-workshop-spring-2013"
+  },
+  "course_title": "Genre Fiction Workshop",
+  "department_numbers": [
+    "CMS-W"
+  ],
+  "extra_course_numbers": "",
+  "image_src": "./static_resources/91c00eb7a0189480f94578153644e0d4_21W-758s13.jpg",
+  "instructors": [
+    {
+      "first_name": "Shariann",
+      "last_name": "Lewitt",
+      "middle_initial": "",
+      "salutation": "",
+      "title": "Shariann Lewitt",
+      "uid": "4188f62e-353d-9a45-df34-1d869485e93a",
+      "url": "https://ocw.mit.edu/search/?q=Shariann+Lewitt"
+    }
+  ],
+  "learning_resource_types": [
+    "Written Assignments with Examples",
+    "Instructor Insights"
+  ],
+  "legacy_uid": "f1e4b1d6-0df7-f021-1dce-a326343bd64f",
+  "level": [
+    "Undergraduate"
+  ],
+  "mit_learn_topics": [
+    [
+      "Humanities",
+      "Literature"
+    ]
+  ],
+  "primary_course_number": "21W.758",
+  "site_short_id": "21w.758-spring-2013",
+  "site_uid": "ded00c22-f972-43ae-b4fd-a448b1248e41",
+  "site_url_path": "courses/21w-758-genre-fiction-workshop-spring-2013",
+  "term": "Spring",
+  "title": "Course Metadata",
+  "topics": [
+    [
+      "Humanities",
+      "Literature",
+      "American Literature"
+    ],
+    [
+      "Humanities",
+      "Literature",
+      "Creative Writing"
+    ],
+    [
+      "Humanities",
+      "Literature",
+      "Fiction"
+    ]
+  ],
+  "year": "2013"
+}

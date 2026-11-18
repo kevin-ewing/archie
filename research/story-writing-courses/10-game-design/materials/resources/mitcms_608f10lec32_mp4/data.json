@@ -1,0 +1,34 @@
+{
+  "body": "",
+  "content": "<p><strong>Description:</strong> &ldquo;Live action&rdquo; describes a wide range of activities, from sports, to real-time roleplaying, to playground/party games. Careful choices about mechanics, abstraction, and communication help create an engaging experience without physical or emotional harm.</p>\n<p><strong>Instructors/speakers:</strong> Philip Tan, Jason Begy</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec32_360p_16_9.mp4",
+  "file_size": 118484474,
+  "file_type": "video/mp4",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Lecture Audio"
+  ],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 32: Live Action Games",
+  "uid": "2a6c043b-0705-49f0-af65-a99d75492cbe",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec32_captions.vtt",
+    "video_thumbnail_file": "https://img.youtube.com/vi/RbeY5CT9Go4/default.jpg",
+    "video_transcript_file": "/courses/cms-608-game-design-fall-2010/mitcms_608f10lec32_transcript.pdf"
+  },
+  "video_metadata": {
+    "video_speakers": "",
+    "video_tags": "cms-608-game-design-fall-2010",
+    "youtube_description": "MIT CMS.608 Game Design, Fall 2010\nInstructors: Philip B. Tan, Jason Begy\n\nView the complete course: https://ocw.mit.edu/courses/cms-608-game-design-fall-2010/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP61_JVg12Ukxft03EJ7xxdbR\n\n\"Live action\" describes a wide range of activities, from sports, to real-time roleplaying, to playground/party games. Careful choices about mechanics, abstraction, and communication help create an engaging experience without physical or emotional harm.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "RbeY5CT9Go4"
+  }
+}

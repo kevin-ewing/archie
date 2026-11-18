@@ -4,7 +4,7 @@ Follow **[AGENTS.md](AGENTS.md)** (Ponytail) for all code. Project-specific rule
 
 ## Read first
 - `docs/MECHANICS.md`: what the game does
-- `docs/STORY.md`: narrative bible
+- [Story workshop](docs/story/README.md) and [story bible](docs/STORY.md): current crew decisions, campaign continuity and the [four dossiers and writing skills](docs/STORY.md#current-cast-and-writing-references). Follow the story-work guidance in [AGENTS.md](AGENTS.md#archie-story-work).
 - `docs/TECH.md`: stack, module layout, performance rules
 - `docs/TRENCHES.md`: how British/French and German trenches differed (for drawing the fronts)
 - `docs/AGENT_TOOLS.md`: **see what your change does, fast**: `npm run snap` (world → PNG), `npm run fingerprint` (output unchanged?), URL scenarios, and the `archie` console API in the running game (state, timings, time/place, snapshots). Use these to check your own work.

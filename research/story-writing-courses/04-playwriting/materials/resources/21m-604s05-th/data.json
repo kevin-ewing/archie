@@ -1,0 +1,21 @@
+{
+  "content": "<p>New image Upload</p>\n",
+  "content_type": "resource",
+  "description": "New image Upload",
+  "draft": false,
+  "file": "/courses/21m-604-playwriting-i-spring-2005/c0cd07aca17f9129f6536387faf24d1a_21m-604s05-th.jpg",
+  "file_size": 13052,
+  "file_type": "image/jpeg",
+  "image_metadata": {
+    "caption": "Playwrights often read their work out loud to check that each character has a distinct voice. (Image by Dalydose on {{% resource_link \"71ad0570-1452-4983-ba46-6cac8ad2b25d\" \"flickr.com\" %}}.)",
+    "credit": "",
+    "image-alt": "Photograph of a woman reading a script."
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWImage",
+  "resourcetype": "Image",
+  "title": "21m-604s05-th.jpg",
+  "uid": "c0cd07ac-a17f-9129-f653-6387faf24d1a"
+}
