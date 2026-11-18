@@ -2,6 +2,7 @@
 // Missions are references to future content; level/day progression is explicit, not inferred from midnight.
 import { TRENCH_STYLES, type TrenchStyle } from '../world/settings.ts';
 import type { Features } from '../world/generate.ts';
+import { dateOf, formatISO } from '../sim/calendar.ts';
 import { advanceClock, DAYLIGHT, type Clock } from '../sim/daylight.ts';
 
 export const GAME_MODES = ['free-play'] as const;
@@ -98,9 +99,7 @@ function readLevel(value: unknown): LevelProgress {
 /** Day zero is 10 May 1915. UTC arithmetic keeps campaign dates independent of the player's timezone/DST. */
 export function campaignDate(day: number): string {
   requireValue(natural(day), 'Invalid campaign day.');
-  const date = new Date(Date.UTC(1915, 0, DAYLIGHT.startDayOfYear + day));
-  requireValue(Number.isFinite(date.getTime()), 'Campaign date is out of range.');
-  return date.toISOString().split('T')[0];
+  return formatISO(dateOf(day));
 }
 
 export function createGame(options: { mode?: GameMode; seed?: number; startHour?: number; day?: number; level?: number; world?: Partial<WorldConfig>; levelId?: string; objectives?: readonly string[] } = {}) {

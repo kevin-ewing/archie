@@ -17,6 +17,8 @@ import { militaryTile } from './military.ts';
 import { DEV, type TrenchStyle } from './settings.ts';
 import { shadeTile, type ShadeSun } from './shading.ts';
 import { structureAt, structuresNear, trackAt, tracksNear } from './structures.ts';
+import { MAY_LOOK, type SeasonState } from '../sim/seasons.ts';
+import { setLook } from './season.ts';
 
 /** Which additions to stamp into ground tiles (development toggles; both on in play). `density` > 1
  *  packs them closer for local debugging (see DEV in world/settings.ts). */
@@ -32,7 +34,7 @@ export type Features = {
 export const ALL_FEATURES: Features = { structures: true, military: true };
 
 export type TileRequest =
-  | { kind: 'ground'; seed: number; cx: number; cy: number; features?: Features; damage?: readonly DamageMark[] }
+  | { kind: 'ground'; seed: number; cx: number; cy: number; features?: Features; damage?: readonly DamageMark[]; season?: SeasonState }
   | { kind: 'clouds' | 'cloudShadow'; seed: number; cx: number; cy: number }
   | { kind: 'shade'; cx: number; cy: number; heights: Uint8Array<ArrayBuffer>; sun: ShadeSun };
 
@@ -92,6 +94,7 @@ export function tileStamp(seed: number, cx: number, cy: number, features: Featur
 export function generateTile(req: TileRequest): TileData {
   switch (req.kind) {
     case 'ground':
+      setLook({ ...MAY_LOOK, ...req.season }); // before tileStamp: structures and military read the look too
       // Layer 2 (the landscape) is drawn by groundChunk under the stamp, only where nothing covers it.
       return groundChunk(req.seed, req.cx, req.cy, tileStamp(req.seed, req.cx, req.cy, req.features ?? ALL_FEATURES, req.damage ?? []));
     case 'clouds':

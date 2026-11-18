@@ -7,7 +7,9 @@ import { engineSound } from './audio/audio.ts';
 import { cellular } from './core/noise.ts';
 import { gradeFor, gradePixels, skyFor } from './render/grade.ts';
 import { createSmoke, updateSmoke } from './render/smoke.ts';
-import { advanceClock, createClock, DAYLIGHT, sunAt } from './sim/daylight.ts';
+import { REFERENCE } from './sim/calendar.ts';
+import { advanceClock, createClock, sunAt } from './sim/daylight.ts';
+import { sunDay } from './sim/sun.ts';
 import { createPlane, updatePlane } from './sim/flight.ts';
 import { createInstruments, updateInstruments } from './ui/instruments.ts';
 import { cloudChunk } from './world/clouds.ts';
@@ -67,7 +69,7 @@ for (let y = 0; y < 3 * CHUNK; y++) {
 }
 bench('sunlight', 'sunlight tile 128²', 7, (run) => shadeTile(heights, { tx: 0.8, ty: 0.6, elevation: 0.35 + run * 0.001 }, 0, 0)[run]);
 
-const sun = sunAt(DAYLIGHT.startDayOfYear, 19);
+const sun = sunAt(sunDay(REFERENCE), 19);
 const grade = gradeFor(sun, skyFor(1915, 0, true));
 bench('grade', 'grade pixels 720×450', 9, (run) => gradePixels(720, 450, grade, { x: 0.8, y: 0.6 }).tint[run]);
 

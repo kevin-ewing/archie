@@ -1,0 +1,702 @@
+{
+  "pbtResults": {
+    "1.3 Write property tests for the calendar": {
+      "status": "passed",
+      "lastRunTimestamp": 1795014741899
+    },
+    "3.2 Write property test for sortie start and clock window": {
+      "status": "passed",
+      "lastRunTimestamp": 1795015109202
+    },
+    "6.3 Write property tests for purity, range and continuity": {
+      "status": "passed",
+      "lastRunTimestamp": 1795016303949
+    },
+    "6.5 Write property tests for the blend, windows, key and overrides": {
+      "status": "passed",
+      "lastRunTimestamp": 1795016419802
+    },
+    "9.5 Write property tests for overlay coverage": {
+      "status": "failed",
+      "failingExample": "P19 share: seed 0, snow 0.154 → measured share 0.00 (snow 0.3→0.12, 0.5→0.73, 0.7→0.99). P20: seed 45496, track colour [108,90,61], snow 0.32 → dirt pixels become SNOW[2] (0xbac6d2), much brighter than the track.",
+      "lastRunTimestamp": 1795016996744
+    }
+  },
+  "executionHistory": {
+    "1.1 Add `fast-check` as a dev dependency": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343081
+      },
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013347779
+      },
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013999662
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014309592
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014710403
+      }
+    ],
+    "1.2 Create `src/sim/calendar.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343138
+      },
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013348547
+      },
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013998866
+      }
+    ],
+    "1.3 Write property tests for the calendar": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343177
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014712487
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014772253
+      }
+    ],
+    "2.1 Create `src/sim/sun.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343204
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014712908
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014771203
+      }
+    ],
+    "2.2 Write unit tests for sun times and legal time": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343229
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014775432
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015078132
+      }
+    ],
+    "2.3 Write property tests for sun and legal time": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343256
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015083712
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016271103
+      }
+    ],
+    "3.1 Update `src/sim/daylight.ts` and its callers": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343295
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014775462
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015078831
+      }
+    ],
+    "3.2 Write property test for sortie start and clock window": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343320
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015083736
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016268659
+      }
+    ],
+    "4. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343344
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795017305303
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795018348809
+      }
+    ],
+    "5.1 Create `src/sim/climate.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343368
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014713396
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014771768
+      }
+    ],
+    "5.2 Write unit tests for the climatology": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343393
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014775575
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015077664
+      }
+    ],
+    "6.1 Create `src/sim/seasons.ts` core": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343417
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014776017
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015076880
+      }
+    ],
+    "6.2 Add override parsing to `src/sim/seasons.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343444
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015083760
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016267990
+      }
+    ],
+    "6.3 Write property tests for purity, range and continuity": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343470
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016274495
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016357671
+      }
+    ],
+    "6.4 Write property tests for phenology and ground-state behaviour": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343494
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016274649
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016358477
+      }
+    ],
+    "6.5 Write property tests for the blend, windows, key and overrides": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343519
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016365921
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016629363
+      }
+    ],
+    "7. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343542
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795018351912
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795018418925
+      }
+    ],
+    "8.1 Export colour groups from `src/world/military.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343564
+      },
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013348904
+      },
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013998918
+      }
+    ],
+    "8.2 Create `src/world/season.ts`: look, tones and leaf cover": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343587
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015084198
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016269573
+      }
+    ],
+    "8.3 Add the ground-state overlay to `src/world/season.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343613
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016366014
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016630971
+      }
+    ],
+    "8.4 Write property test for per-tree leaf timing": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343638
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016366037
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016631768
+      }
+    ],
+    "9.1 Edit `src/world/ground.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343662
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016636604
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016865414
+      }
+    ],
+    "9.2 Edit `src/world/structures.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343687
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016636541
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016865576
+      }
+    ],
+    "9.3 Edit `src/world/generate.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343711
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016868350
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016916287
+      }
+    ],
+    "9.4 Write property test for placement independence": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343737
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016919463
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795017207298
+      }
+    ],
+    "9.5 Write property tests for overlay coverage": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343761
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016919721
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795017298556
+      }
+    ],
+    "9.6 Write tile validity property test and look snapshots": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343786
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016920579
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795017207319
+      }
+    ],
+    "10.1 Edit `src/render/scene.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343827
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016275308
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016359225
+      }
+    ],
+    "10.2 Edit `src/render/grade.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343852
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015084555
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016270276
+      }
+    ],
+    "10.3 Edit `src/main.ts` and `src/ui/clock.ts` wiring": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343876
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016366059
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016630158
+      }
+    ],
+    "10.4 Write tests for the grade": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343902
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016366081
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016632315
+      }
+    ],
+    "11.1 Wire overrides in `src/main.ts`, `src/devtools.ts` and `src/snap.ts`": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343926
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016636894
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016866198
+      }
+    ],
+    "12.1 Add fingerprint and stamp fuzz checks": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343949
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016921395
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795017207341
+      }
+    ],
+    "12.2 Update repo docs": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013343976
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016922047
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795017207481
+      }
+    ],
+    "13. Final checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "f1cd3982-2366-4c4b-85af-f34b41ed2299",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795013344002
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795018421874
+      },
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795018482516
+      }
+    ],
+    "1. Calendar module and test tooling": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795014772286
+      }
+    ],
+    "5. Climatology and anchors": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795015077696
+      }
+    ],
+    "3. Rewire the sun to the date": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016268690
+      }
+    ],
+    "2. Sun times and legal time": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016271131
+      }
+    ],
+    "6. Season_State": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016629430
+      }
+    ],
+    "8. World look module": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016631830
+      }
+    ],
+    "10. Render and UI wiring": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016632387
+      }
+    ],
+    "11. Debug overrides": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795016866231
+      }
+    ],
+    "12. Fingerprint, fuzz and docs": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795017207505
+      }
+    ],
+    "9. Apply the look in tile generation": [
+      {
+        "executionId": "ac01d08b-430b-4f8c-8ee9-fc5fc376797b",
+        "chatSessionId": "sess_d27b78da-6f71-4f9b-be54-a007f9b413be",
+        "timestamp": 1795017298591
+      }
+    ]
+  }
+}

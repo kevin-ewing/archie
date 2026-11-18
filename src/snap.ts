@@ -11,6 +11,7 @@
 //   npm run snap -- --w=2000 --h=1500 --zoom=1     a wider area, 1 image px per world px
 //   npm run snap -- --hour=18.5                    lit by the sun's shading at that hour (shadows, relief)
 //   npm run snap -- --features=structures,military,full,frontLine --style=traversed --density=2.5 --seed=42
+//   npm run snap -- --season=winter --snow=1      the land on a season's middle date (or --date=1915-12-25), with parameters forced
 //   npm run snap -- --out=debug/before.png         (default debug/snap.png; debug/ is git-ignored)
 //
 // Features: structures (farms), military (the front), full (all of the front's works, not only trenches),
@@ -21,7 +22,10 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { encodePng } from './core/png.ts';
-import { DAYLIGHT, sunAt } from './sim/daylight.ts';
+import { REFERENCE } from './sim/calendar.ts';
+import { applyOverrides, parseOverrides, seasonAt, SEASON_DATES } from './sim/seasons.ts';
+import { sunAt } from './sim/daylight.ts';
+import { sunDay } from './sim/sun.ts';
 import { frontPoint, frontsNear } from './world/fronts.ts';
 import { generateTile, type Features } from './world/generate.ts';
 import { CHUNK } from './world/ground.ts';
@@ -50,6 +54,12 @@ const features: Features = {
   density: num('density', 10),
   atStart: true,
 };
+// Season: --date=YYYY-MM-DD, --season=winter|..., --snow= --frost= --mud= --water= --ice= --foliage= --haze= (0 to 1).
+const parsed = parseOverrides(new URLSearchParams([...opt]).toString());
+if (parsed.problems.length) throw new Error(parsed.problems.join('; '));
+const ov = parsed.overrides;
+const date = ov.date ?? (ov.season ? SEASON_DATES[ov.season] : REFERENCE);
+const season = ov.date || ov.season || ov.params ? applyOverrides(seasonAt(date, seed), ov) : undefined;
 const out = opt.get('out') ?? 'debug/snap.png';
 
 // Where to look: a world point, or s/u on the start's front.
@@ -70,12 +80,12 @@ const tiles = new Map<string, ReturnType<typeof generateTile>>();
 const tile = (tx: number, ty: number) => {
   const k = `${tx},${ty}`;
   let t = tiles.get(k);
-  if (!t) tiles.set(k, (t = generateTile({ kind: 'ground', seed, cx: tx, cy: ty, features })));
+  if (!t) tiles.set(k, (t = generateTile({ kind: 'ground', seed, cx: tx, cy: ty, features, season })));
   return t;
 };
 // The sun's shading layer for a tile, from the heights of it and its 8 neighbours (as the game bakes it).
 const hour = opt.has('hour') ? num('hour', 12) : null;
-const sun = hour === null ? null : sunAt(DAYLIGHT.startDayOfYear, hour);
+const sun = hour === null ? null : sunAt(sunDay(date), hour);
 const shades = new Map<string, Uint8ClampedArray>();
 const shade = (tx: number, ty: number) => {
   const k = `${tx},${ty}`;

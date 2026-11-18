@@ -6,6 +6,9 @@ import { tileStamp } from './generate.ts';
 const ALL_FEATURES = { structures: true, military: true };
 import { frontPoint, frontsNear } from './fronts.ts';
 import { structuresNear, tracksNear } from './structures.ts';
+import { generateTile } from './generate.ts';
+import { seasonAt } from '../sim/seasons.ts';
+import { SEASON_DATES } from '../sim/seasons.ts';
 
 // Guards against the whole class of "a stamp returned no colour" bugs (e.g. a negative index from %),
 // which crash tile generation: sample thousands of pixels, at negative coordinates too, around fronts
@@ -78,4 +81,17 @@ test('the front keeps out of water: its works are masked off lakes (texture-samp
   }
   assert.ok(stamped > 1000, 'the front is there');
   assert.ok(wet / stamped < 0.01, `${wet} of ${stamped} stamped pixels on water`);
+});
+test('tiles at fronts and farms stay valid on five dates', () => {
+  const dates = [...Object.values(SEASON_DATES), { year: 1914, month: 12, day: 25 }];
+  const pts = frontsNear(SEED, -40000, -40000, 40000, 40000).slice(0, 2).flatMap((f) => [0, 450].map((s) => frontPoint(SEED, f, s, 0)));
+  for (const s of structuresNear(SEED, -40000, -40000, 40000, 40000).slice(0, 2)) pts.push(s);
+  for (const d of dates) {
+    const season = seasonAt(d, SEED);
+    for (const p of pts) {
+      const t = generateTile({ kind: 'ground', seed: SEED, cx: Math.floor(p.x / CHUNK), cy: Math.floor(p.y / CHUNK), features: ALL_FEATURES, season });
+      for (let i = 0; i < t.rgba.length; i += 4) assert.ok(t.rgba[i + 3] === 255, `bad pixel on ${JSON.stringify(d)}`);
+      for (const h of t.heights!) assert.ok(Number.isFinite(h) && h >= 0);
+    }
+  }
 });

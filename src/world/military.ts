@@ -17,7 +17,8 @@
 // Scale: 1 world px ≈ 0.4 m. British on one side of each line, German on the other.
 
 import { cellular, cellularField, fbm, hash, valueNoise, type Cell } from '../core/noise.ts';
-import { dirtAt, noDigMask, WATER, type RGB } from './ground.ts';
+import { dirtAt, noDigMask } from './ground.ts';
+import { WATER, type RGB } from './palette.ts';
 import { devastationAt, FRONTS, frontField, frontPoint, frontsNear, nearest, type Front, type FrontCoords } from './fronts.ts';
 import { DEV } from './settings.ts';
 
@@ -31,7 +32,8 @@ const SIDE_LINE: Record<-1 | 1, RGB> = { [-1]: [40, 110, 240], [1]: [245, 200, 3
 const rgb = (hex: number): RGB => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
 const pick = <T>(list: readonly T[], v: number): T => list[Math.min(list.length - 1, Math.max(0, Math.floor(v * list.length)))];
 const mod = (a: number, n: number) => ((a % n) + n) % n;
-const M = {
+/** Colour groups. Exported so world/season.ts can register them (mud, bags, wire, boards, dugout, pool…) in its Surface map. */
+export const M = {
   mud: [rgb(0x4f4030), rgb(0x43362a), rgb(0x5a4934)], // wet, churned
   clod: rgb(0x3a2e22),
   bowl: rgb(0x3a2e22),

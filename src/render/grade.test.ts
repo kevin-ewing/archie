@@ -1,9 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import fc from 'fast-check';
 import { gradeFor, gradePixels, OVERCAST, skyFor } from './grade.ts';
-import { DAYLIGHT, sunAt, sunsetHour } from '../sim/daylight.ts';
+import { REFERENCE } from '../sim/calendar.ts';
+import { sunDay } from '../sim/sun.ts';
+import { sunAt, sunsetHour } from '../sim/daylight.ts';
 
-const D = DAYLIGHT.startDayOfYear;
+const D = sunDay(REFERENCE);
 const sky = { ...skyFor(1915, 0, true), beauty: 1 };
 
 test('plain daylight draws nothing; sunset glows; night is darker than dusk', () => {
@@ -86,4 +89,66 @@ test('the fast row-copying paint matches the full per-pixel computation', () => 
       assert.deepEqual(fast.glow, full.glow);
     }
   }
+});
+
+// Property 24: Winter evenings are plainer. Validates: Requirements 14.1, 14.2
+test('winter evenings are overcast more often than summer ones, and skyBias 0 changes nothing', () => {
+  const share = (seed: number, first: number, bias: number) => Array.from({ length: 200 }, (_, i) => skyFor(seed, first + i, true, bias)).filter((s) => s.palette === OVERCAST).length;
+  fc.assert(
+    fc.property(fc.integer({ min: 0, max: 1_000_000 }), fc.integer({ min: 0, max: 1000 }), (seed, day) => {
+      assert.ok(share(seed, day, -1) > share(seed, day + 400, 0.5));
+      for (const evening of [true, false]) assert.deepEqual(skyFor(seed, day, evening, 0), skyFor(seed, day, evening));
+    }),
+    { numRuns: 50 },
+  );
+});
+
+// Stored output of the pre-seasons gradeFor at span 1 (REFERENCE date), sunset-1h, sunset+6min, 23:30. Validates: Requirements 14.3, 14.4
+const STORED = [
+  { h: -1, near: [253.328, 185.8497, 23.3065], far: [232.1976, 158.233, 150.8098], night: 0, cloud: { near: [228.7156, 207.4356, 148.9659], far: [206.7599, 169.6733, 161.8495], amount: 0.1836 }, tintAlpha: 0.5098, glow: [241.5098, 193.1043, 91.5003], glowAlpha: 0.2782, rays: 0.3417 },
+  { h: 0.1, near: [68.7342, 73.9459, 121.1685], far: [38.5873, 40.7732, 93.6887], night: 0.0712, cloud: { near: [116.0785, 123.5733, 141.8039], far: [84.5243, 88.4227, 110.2871], amount: 0.4962 }, tintAlpha: 0.8, glow: [225.6802, 143.0475, 152.4164], glowAlpha: 0.1562, rays: 0.4225 },
+  { h: null, near: [12, 23, 72], far: [12, 23, 72], night: 1, cloud: { near: [101, 112, 128], far: [101, 112, 128], amount: 0.65 }, tintAlpha: 0.8, glow: [225.1003, 141.2136, 154.6482], glowAlpha: 0, rays: 0 },
+];
+const near4 = (a: readonly number[], b: readonly number[]) => a.forEach((v, i) => assert.ok(Math.abs(v - b[i]) < 1e-3, `${v} vs ${b[i]}`));
+
+test('with no season, or a neutral one, gradeFor equals the pre-seasons output', () => {
+  assert.equal(sunAt(D, 13).span, 1);
+  for (const s of STORED) {
+    const sun = sunAt(D, s.h === null ? 23.5 : sunsetHour(D) + s.h);
+    for (const g of [gradeFor(sun, sky), gradeFor(sun, sky, { skyBias: 0, haze: 0 })]) {
+      near4(g.near, s.near);
+      near4(g.far, s.far);
+      near4(g.cloud.near, s.cloud.near);
+      near4(g.cloud.far, s.cloud.far);
+      near4(g.glow, s.glow);
+      near4([g.night, g.cloud.amount, g.tintAlpha, g.glowAlpha, g.rays, g.haze], [s.night, s.cloud.amount, s.tintAlpha, s.glowAlpha, s.rays, 0]);
+      assert.equal(g.active, true);
+    }
+  }
+});
+
+test('haze changes only the glow pass', () => {
+  for (const h of [13, sunsetHour(D) - 1, 23.5]) {
+    const sun = sunAt(D, h);
+    const plain = gradeFor(sun, sky);
+    const hazy = gradeFor(sun, sky, { skyBias: 0, haze: 0.5 });
+    assert.deepEqual({ ...hazy, haze: 0, active: plain.active }, plain);
+    assert.equal(hazy.haze, 0.5);
+    assert.equal(hazy.active, true);
+    const a = gradePixels(64, 64, plain, { x: 1, y: 0 });
+    const b = gradePixels(64, 64, hazy, { x: 1, y: 0 });
+    assert.deepEqual(b.tint, a.tint, 'tint pass is identical');
+    assert.notDeepEqual(b.glow, a.glow, 'glow pass carries the veil');
+  }
+});
+
+test('the winter tint cools and the summer tint warms daylight; both fade by night', () => {
+  const sun = sunAt(D, sunsetHour(D) - 1);
+  const base = gradeFor(sun, sky);
+  const cold = gradeFor(sun, sky, { skyBias: -1, haze: 0 });
+  const warm = gradeFor(sun, sky, { skyBias: 1, haze: 0 });
+  assert.ok(cold.near[2] / cold.near[0] > base.near[2] / base.near[0] || cold.far[2] / cold.far[0] > base.far[2] / base.far[0]);
+  assert.ok(warm.far[2] / warm.far[0] < base.far[2] / base.far[0]);
+  const night = sunAt(D, 23.5);
+  assert.deepEqual(gradeFor(night, sky, { skyBias: -1, haze: 0 }).near, gradeFor(night, sky).near);
 });

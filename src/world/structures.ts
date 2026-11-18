@@ -29,6 +29,7 @@ import { hash, valueNoise } from '../core/noise.ts';
 import { DIRT, dirtAt, isWater, landAt, type RGB } from './ground.ts';
 import { FRONTS, frontInfo } from './fronts.ts';
 import { type Stamp } from './military.ts';
+import { look, tone } from './season.ts';
 import { DEV } from './settings.ts';
 
 const rgb = (hex: number): RGB => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
@@ -85,6 +86,22 @@ const S = {
   bark: [rgb(0x5e574a), rgb(0x46403a)], // grey bark, so a pile reads on brown earth
   cut: rgb(0xc4ad80), // fresh-sawn ends
 };
+
+/** Yard colours the season overlay registers as worn earth, so mud wets the paved apron and the dung heap (12.3). */
+export const YARD = { paving: S.paving, dung: S.dung };
+const BLOSSOM = rgb(0xe8d6d8); // apple and pear blossom, pale pink-white
+
+// Seasonal presence of farm features, by the look's date (12.4). At MAY_LOOK (doy 130, wheat stage 2, hay 1,
+// leaf days 60) every test below is true, so today's tiles are unchanged. [VERIFY] the day windows.
+const inSpring = () => look.s.doy >= 50 && look.s.doy <= 150; // muck heaps wait on the field to be spread
+const inOffSeason = () => look.s.doy < 165 || look.s.doy > 270; // beet clamps and brushwood stand except high summer
+/** Last year's rick and thatched stacks stand until threshed; the new ones go up after the harvest (wheat stage 4). */
+const stacksStand = () => {
+  const w = look.s.cropStages['young wheat'];
+  return w <= 2.5 || w >= 3.5;
+};
+/** How much of an orchard's canopy is in blossom: 0 once the leaf is full (and at MAY_LOOK), following `bloom.hawthorn`. */
+const blossom = () => look.s.bloom.hawthorn * Math.min(1, Math.max(0, (60 - look.s.leafDays) / 40));
 
 type Roof = keyof typeof ROOFS;
 /** A block of building: rectangle in the site's frame, with a roof. */
@@ -392,11 +409,11 @@ function bitPixel(b: Bit, x: number, y: number, id: number, d: number, ruined: b
       const gx = mod(x + b.hw, b.step);
       const gy = mod(y + b.hh, b.step);
       if (gx < 1 && gy < 1) return [S.post, 10]; // the tall poles
-      if (gy < 1.8 && !ruined && valueNoise(id + 11, x / 3, y) > 0.3) return [S.bine[d < 0.4 ? 0 : d < 0.8 ? 1 : 2], 5 + 2 * d]; // bines up the strings
+      if (gy < 1.8 && !ruined && valueNoise(id + 11, x / 3, y) > 0.3 + 0.7 * (1 - look.s.foliage)) return [S.bine[d < 0.4 ? 0 : d < 0.8 ? 1 : 2], 5 + 2 * d]; // bines up the strings
       return [d < 0.35 ? DIRT.worn : S.soil, 0]; // hoed ground between
     }
     case 'muck': {
-      if (!inside) return null;
+      if (!inside || !inSpring()) return null;
       const row = Math.floor((y + b.hh) / b.step);
       const hx = mod(x + b.hw + (row & 1) * b.step * 0.5, b.step) - b.step / 2;
       const hy = mod(y + b.hh, b.step) - b.step / 2;
@@ -430,13 +447,13 @@ function bitPixel(b: Bit, x: number, y: number, id: number, d: number, ruined: b
     }
     case 'rick': {
       // A long rick: straw sides, thatched ridge along its length.
-      if (!inside) return null;
+      if (!inside || !stacksStand()) return null;
       const t = 1 - ax / b.hw;
       return [ax < 0.8 ? S.hay[1] : mod(Math.floor(y / 1.5), 2) ? S.hay[0] : S.straw, 2.5 + 2 * t];
     }
     case 'faggots':
       // Brushwood bundles stacked against a wall, tied in the middle.
-      return inside ? [Math.abs(mod(x + b.hw, 2.5) - 1.25) < 0.4 ? S.post : mod(Math.round(x + y), 2) ? S.logs[0] : S.logs[2], 1.4] : null;
+      return inside && inOffSeason() ? [Math.abs(mod(x + b.hw, 2.5) - 1.25) < 0.4 ? S.post : mod(Math.round(x + y), 2) ? S.logs[0] : S.logs[2], 1.4] : null;
     case 'cocks': {
       // Hay cocks in loose rows on the meadow.
       if (!inside) return null;
@@ -445,10 +462,12 @@ function bitPixel(b: Bit, x: number, y: number, id: number, d: number, ruined: b
       const hx = mod(x + b.hw, b.step) - b.step / 2 - (hash(id + 51, col, row) - 0.5) * 2;
       const hy = mod(y + b.hh, b.step) - b.step / 2;
       const r = Math.hypot(hx, hy);
-      if (hash(id + 52, col, row) < 0.6) return null; // just a few
+      const pr = hash(id + 52, col, row);
+      if (pr < 0.6 || (pr - 0.6) / 0.4 > look.s.hay || look.s.hay <= 0.05) return null; // just a few, and fewer as the hay is carried
       return r < 2 ? [S.hay[r < 1 ? 0 : 1], 2 * (2 - r)] : null;
     }
     case 'clamp': {
+      if (!inOffSeason()) return null;
       const e = (x / b.hw) ** 2 + (y / b.hh) ** 2;
       return e > 1 ? null : [d < 0.15 ? S.straw : S.clamp, 1.2 * (1 - e)]; // earthed-over beet
     }
@@ -517,6 +536,7 @@ function structure(s: Structure, wx: number, wy: number): Stamp | null {
   }
   for (const h of s.hay) {
     const r = Math.hypot(lx - h.x, ly - h.y);
+    if (r < h.r && !s.ruined && !stacksStand()) continue; // thatched stacks follow the rick
     if (r < h.r) return s.ruined ? [S.charred, 0.5] : [S.hay[r < h.r / 2 ? 0 : 1], 1 + 3 * (1 - r / h.r)];
   }
   for (const p of s.ponds) {
@@ -543,7 +563,11 @@ function structure(s: Structure, wx: number, wy: number): Stamp | null {
     const cr = (2.6 + hash(s.id + 3, ci, cj) * 0.9) * SITE_SCALE;
     if (s.ruined) {
       if (rr < 1) return [S.charred, 3];
-    } else if (rr < cr) return [S.tree[rr < cr / 2 ? 1 : d < 0.5 ? 0 : 2], 6 + 1.5 * (1 - rr / cr)];
+    } else if (rr < cr) {
+      const c = S.tree[rr < cr / 2 ? 1 : d < 0.5 ? 0 : 2];
+      const bl = blossom();
+      return [bl > 0.05 && hash(s.id + 4, Math.round(wx), Math.round(wy)) < bl * 0.6 ? tone(c, BLOSSOM, 0.7) : c, 6 + 1.5 * (1 - rr / cr)];
+    }
   }
   // Paving right round the buildings (cobbles, setts), then the yard and trampled earth fraying out into
   // the fields, speckled with tufts.

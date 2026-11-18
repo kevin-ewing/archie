@@ -33,6 +33,7 @@ npm run snap -- --front=4000,-300             centred on the start's front: s px
 npm run snap -- --w=2000 --h=1500 --zoom=1    a wider area, 1 image px per world px
 npm run snap -- --hour=18.5                   lit by the sun at that solar hour (shadows, relief)
 npm run snap -- --features=structures,military,full,frontLine --style=traversed --density=2.5 --seed=42
+npm run snap -- --season=winter --snow=1      a season's middle date (or --date=1915-12-25), with parameters forced
 npm run snap -- --out=debug/before.png        choose the file (compare before/after images)
 ```
 
@@ -103,6 +104,9 @@ keeping the previous run in `debug/backup/`.
 | `?play` | Skip the landing page and start Free Fly. |
 | `?story` | Open the Story barn straight away (docs/AERODROME.md). |
 | `?day=40` | Campaign day (0 = 10 May 1915): the date on the desk and in flight. |
+| `?date=1915-12-25` | Season override: the calendar date at which campaign day 0 falls (the clock then runs on from it). Development or `?debug` only. Malformed values are dropped with a console warning. |
+| `?season=winter` | Season override: the middle date of `winter`, `spring`, `summer` or `autumn` (21 Jan, 21 Apr, 21 Jul, 21 Oct 1915). Same limits as `?date=`. |
+| `?snow=0.8` | Force one ground state or look value, 0 to 1: `snow`, `frost`, `mud`, `water`, `ice`, `foliage`, `haze`. Same limits as `?date=`. |
 | `?debug` | Profiler overlay and the `archie` API in a production build. Also turns saves off. |
 
 Example: `http://localhost:5174/?play&seed=1915&time=18.9&speed=0&x=1500&y=-800&heading=90&off=frontLines`
@@ -113,7 +117,7 @@ From the browser console, or an agent's JavaScript-in-page tool. `archie.help()`
 
 | Call | Returns / does |
 |---|---|
-| `archie.state()` | `{ seed, phase, day, hours, speed, plane: { x, y, headingDeg, speed, bank }, sun: { elevationDeg, azimuthDeg, strength }, features, toggles: { id: on }, view: { w, h, scale, devW, devH } }` |
+| `archie.state()` | `{ seed, phase, day, date, season, overridden, hours, speed, plane: { x, y, headingDeg, speed, bank }, sun: { elevationDeg, azimuthDeg, strength }, features, toggles: { id: on }, view: { w, h, scale, devW, devH } }` |
 | `await archie.stats(ms = 1000)` | Timings over the next `ms`: `{ frames, fps, work: { mean, p95, max }, stages: { ground, sunlight, plane, clouds, grade, hud }, drops }`, in ms per frame. `work` is the game's own JavaScript time per frame. |
 | `archie.time(hours)` | Set the solar time (0–24). |
 | `archie.speed(k)` | Clock speed override: `0` freezes, `null` returns to the toggles (FAST TIME = 3×). |
@@ -121,6 +125,9 @@ From the browser console, or an agent's JavaScript-in-page tool. `archie.help()`
 | `archie.toggle(id, on?)` | Flip (or set) a debug toggle. Returns its new state. |
 | `await archie.ready(timeoutMs = 10000)` | Resolves `true` once every visible tile has been generated for 10 frames in a row (`false` on timeout). Call it after `goto`, `time`, toggles or a reload, before you look or measure. |
 | `archie.say(who, text, scene?)` | Pop up an offscreen voice's line (`observer`, `major`, `recording`, `rigger`, `mechanic`, `pilot`). It waits for its scene (`flight` or `base`). |
+| `archie.date(iso?)` | Use a calendar date, e.g. `'1915-12-25'`: the current clock day becomes that date. `null` clears every season override. Returns the date. Tiles regenerate afterwards, so `await archie.ready()` before looking. |
+| `archie.season(name?)` | Jump to the middle date of `winter`, `spring`, `summer` or `autumn`. Throws an `Error` listing the valid names. |
+| `archie.seasonParam(name, value?)` | Force `snow`, `frost`, `mud`, `water`, `ice`, `foliage` or `haze` to 0–1 (`null` clears it). Throws on a bad name or range. |
 | `archie.snapshot()` | The current frame (game + HUD) as a PNG data URL, at device resolution. |
 | `await archie.photo(path, canvas?)` | Dev server only: save the frame (or any canvas you pass) as a PNG at `path` inside the project (`vite.config.ts`). For real game photos with the plane, clouds and HUD. |
 

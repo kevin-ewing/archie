@@ -8,36 +8,32 @@
 // Pure functions of (seed, world pixel); no DOM, so they're testable and reproducible.
 
 import { bayer, cellular, fbm, hash, valueNoise } from '../core/noise.ts';
+import { BLOOM_KINDS } from '../sim/seasons.ts';
 import { frontClearance } from './fronts.ts';
+import { cropTones, crowns, grassTones, isIce, leafCover, look, overlay } from './season.ts';
+import { DIRT, rgb, SHORE, WATER, type RGB } from './palette.ts';
 import { DEV } from './settings.ts';
 
-export type RGB = readonly [number, number, number];
+export { DIRT, SHORE, WATER, type RGB };
 
 export const CHUNK = 128; // world pixels per tile edge
 
-const rgb = (hex: number): RGB => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
-
-export const WATER = { deep: rgb(0x34494f), shallow: rgb(0x48606a), glint: rgb(0x7d9599), pool: [rgb(0x3c4642), rgb(0x46524c)] as const }; // pool: muddy standing water (shell holes, flooded ditches)
-export const SHORE = { mud: rgb(0x6a5e43), reeds: rgb(0x535b33) };
 const FLOOR = { deep: rgb(0x1f2c19), litter: rgb(0x2a3720) };
 const SCRUB = [rgb(0x3b4a26), rgb(0x46552c), rgb(0x2f3d20)] as const;
-/** Tree species, as [rim, canopy, crown, lit] tones: oak (most), a paler poplar/birch, a dark elm. */
-const SPECIES: readonly (readonly [RGB, RGB, RGB, RGB])[] = [
-  [rgb(0x33452d), rgb(0x35482e), rgb(0x40573a), rgb(0x4e6843)],
-  [rgb(0x46593a), rgb(0x4a5e3d), rgb(0x566e45), rgb(0x6a8252)],
-  [rgb(0x293a27), rgb(0x293c28), rgb(0x324a31), rgb(0x3d5a3a)],
-];
+// Tree species tones and crop colours live in world/season.ts (crowns, cropTones), season-tinted.
+const FLOOR_BARE = { deep: rgb(0x2e2519), litter: rgb(0x4a3a24) }; // leaf litter, once the trees are bare
+const BRANCH = rgb(0x3a3631); // bare twigs and trunk, seen from above
+const STRAW = rgb(0x8a7d4e); // dead reeds
 /** Hedgerows: dark (old blackthorn, holly) or light green (young hawthorn, hazel), in long runs of each. */
 const HEDGE = { dark: [rgb(0x2c3a1b), rgb(0x3a4a23)], light: [rgb(0x40532a), rgb(0x506534)] } as const;
-export const DIRT = { dry: rgb(0x7d6a49), worn: rgb(0x6c5a3d), rut: rgb(0x574732) };
 
 // Wildflowers of a Flanders May (pre-herbicide fields were full of them): poppies and cornflowers among
 // the crops, buttercups, ox-eye daisies and red clover in the meadows, hawthorn ("may") blossom on the
 // hedges, cow parsley along the margins, bluebells carpeting the woods.
 // Flowers are rare finds: each kind blooms only in its own scattered regions a few kilometres apart
 // (`bloom`), so a whole day's flying turns up a handful of poppy fields, bluebell woods and so on.
-// ponytail: May only. Seasons (poppies peak in June, flax flowers blue in June–July, hay and stubble in
-// late summer) need the season passed into generation; add it when the calendar spans months.
+// How much each kind blooms on the date, and when crops ripen, comes from the look (world/season.ts) and
+// the calendar tables in sim/climate.ts; the table here is the May picture.
 export const FLOWER = {
   poppy: rgb(0xa8382a),
   cornflower: rgb(0x4d68b0),
@@ -54,25 +50,25 @@ export const FLOWER = {
 const BLOOM = { poppy: 0, cornflower: 1, buttercup: 2, daisy: 3, clover: 4, bluebell: 5, hawthorn: 6, cowParsley: 7, colza: 8 } as const;
 /** How strongly a kind of flower blooms here, 0 (mostly) … 1, in rare patches roughly 3 km across. */
 function bloom(seed: number, x: number, y: number, kind: number, rarity = 0.75): number {
-  return smooth((valueNoise(seed + 80 + kind * 7, x / 3200, y / 3200) - rarity) / 0.1);
+  return smooth((valueNoise(seed + 80 + kind * 7, x / 3200, y / 3200) - rarity) / 0.1) * look.s.bloom[BLOOM_KINDS[kind]];
 }
 
 type Pattern = 'furrows' | 'rows' | 'hay' | 'grass' | 'flowerheads';
-type Crop = { name: string; a: RGB; b: RGB; weight: number; pattern: Pattern; weeds?: boolean; flowers?: 'meadow' | 'pasture'; hay?: boolean }; // hay: mown for hay (some carry hay cocks)
+type Crop = { name: string; i: number; weight: number; pattern: Pattern; weeds?: boolean; flowers?: 'meadow' | 'pasture'; hay?: boolean }; // hay: mown for hay (some carry hay cocks)
 /**
  * Field crops of 1910s Flanders: small mixed farms growing grain, colza (rapeseed, in yellow flower in May),
  * flax, red clover for fodder, with meadows and pasture for the dairy cows.
  */
-const CROPS: readonly Crop[] = [
-  { name: 'ploughed', a: rgb(0x6a5538), b: rgb(0x584530), weight: 1.6, pattern: 'furrows' },
-  { name: 'young wheat', a: rgb(0x5b6734), b: rgb(0x4e5a2d), weight: 2, pattern: 'rows', weeds: true },
-  { name: 'meadow', a: rgb(0x6c763e), b: rgb(0x7f8449), weight: 2, pattern: 'grass', flowers: 'meadow', hay: true },
-  { name: 'rough grass', a: rgb(0x8c7f52), b: rgb(0x7b6f47), weight: 1, pattern: 'hay', hay: true },
-  { name: 'pasture', a: rgb(0x4f5a2e), b: rgb(0x5d6936), weight: 2, pattern: 'grass', flowers: 'pasture' },
-  { name: 'colza in flower', a: rgb(0xc4b03a), b: rgb(0xa99a36), weight: 0.25, pattern: 'rows', weeds: true },
-  { name: 'red clover', a: rgb(0x5a6a38), b: rgb(0xa86e80), weight: 0.2, pattern: 'flowerheads' },
-  { name: 'young flax', a: rgb(0x64785a), b: rgb(0x587050), weight: 0.6, pattern: 'rows', weeds: true },
-];
+const CROPS: readonly Crop[] = ([
+  { name: 'ploughed', weight: 1.6, pattern: 'furrows' },
+  { name: 'young wheat', weight: 2, pattern: 'rows', weeds: true },
+  { name: 'meadow', weight: 2, pattern: 'grass', flowers: 'meadow', hay: true },
+  { name: 'rough grass', weight: 1, pattern: 'hay', hay: true },
+  { name: 'pasture', weight: 2, pattern: 'grass', flowers: 'pasture' },
+  { name: 'colza in flower', weight: 0.25, pattern: 'rows', weeds: true },
+  { name: 'red clover', weight: 0.2, pattern: 'flowerheads' },
+  { name: 'young flax', weight: 0.6, pattern: 'rows', weeds: true },
+] as Omit<Crop, 'i'>[]).map((c, i) => ({ ...c, i }));
 const CROP_TOTAL = CROPS.reduce((t, c) => t + c.weight, 0);
 const COLZA = CROPS[5];
 /** A field's crop from its id in [0, 1), by weight. */
@@ -81,7 +77,21 @@ function cropOf(id: number): Crop {
   for (const c of CROPS) if ((t -= c.weight) < 0) return c;
   return CROPS[CROPS.length - 1];
 }
-export const BASE = CROPS[2].a; // fallback fill where a tile isn't generated yet
+export const BASE = rgb(0x6c763e); // fallback fill where a tile isn't generated yet
+
+/** The crop's two colours on this date (grass faded toward winter, crops by growth stage), one lookup per look. */
+let colourLook: unknown;
+let colourTable: (readonly [RGB, RGB])[] = [];
+function colours(crop: Crop): readonly [RGB, RGB] {
+  if (colourLook !== look.s) {
+    colourLook = look.s;
+    colourTable = CROPS.map((c) => {
+      const [a, b] = cropTones(c.i);
+      return c.pattern === 'grass' || c.pattern === 'hay' ? grassTones(a, b) : [a, b];
+    });
+  }
+  return colourTable[crop.i];
+}
 
 const LAKE = 0.88; // wetness above this is water
 const SHORE_W = 0.015; // wetness band below LAKE that is shoreline
@@ -154,7 +164,7 @@ function treeChance(seed: number, i: number, j: number, cx: number, cy: number):
 const copseValue = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => valueNoise(seed + 49, x / 55, y / 55) - 0.1 * woodClear(clear);
 const copseChance = (seed: number, x: number, y: number, clear = frontClearance(seed, x, y)) => smooth((copseValue(seed, x, y, clear) - 0.955) / 0.02);
 
-export type Tree = { dx: number; dy: number; dist: number; r: number; species: number };
+export type Tree = { dx: number; dy: number; dist: number; r: number; species: number; id: number };
 
 /** The topmost whole tree crown covering (x, y), if any. */
 export function treeAt(seed: number, x: number, y: number): Tree | null {
@@ -175,12 +185,26 @@ export function treeAt(seed: number, x: number, y: number): Tree | null {
       const z = 1 - distSq / (r * r); // highest canopy surface, matching the radial colour and height
       if (z <= bestZ || hash(seed + 28, i, j) >= treeChance(seed, i, j, cx, cy)) continue;
       const sp = hash(seed + 29, i, j);
-      best = { dx, dy, dist: Math.sqrt(distSq), r, species: sp < 0.72 ? 0 : sp < 0.9 ? 1 : 2 };
+      best = { dx, dy, dist: Math.sqrt(distSq), r, species: sp < 0.72 ? 0 : sp < 0.9 ? 1 : 2, id: (Math.imul(i, 73856093) ^ Math.imul(j, 19349663)) | 0 };
       bestZ = z;
     }
   }
   return best;
 }
+
+let leafTree: Tree | undefined;
+let leafLook: unknown;
+let leafValue: ReturnType<typeof leafCover>;
+/** The tree's leaf state on the look's date (remembered for the next pixel of the same crown). */
+function leafCoverOf(tree: Tree) {
+  if (tree.id !== leafTree?.id || leafLook !== look.s) {
+    leafTree = tree;
+    leafLook = look.s;
+    leafValue = leafCover(tree.species, tree.id);
+  }
+  return leafValue;
+}
+const hedgeHeight = () => HEIGHT.hedge * (0.4 + 0.6 * look.s.foliage); // bare hedges are lower
 
 /** Colour and height of one world pixel. */
 export function groundAt(seed: number, x: number, y: number): [RGB, number] {
@@ -190,10 +214,15 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
   // middle, dark at the rim); the sun's direction is added live by the shading layer (world/shading.ts).
   const tree = treeAt(seed, x, y);
   if (tree) {
-    const [rim, canopy, crown, lit] = SPECIES[tree.species];
-    const t = tree.dist / tree.r + (d - 0.5) * 0.35;
-    const c = t < 0.25 ? lit : t < 0.55 ? crown : t < 0.85 ? canopy : rim;
-    return [c, HEIGHT.tree + HEIGHT.crownBulge * (1 - tree.dist / tree.r)];
+    const lc = leafCoverOf(tree);
+    const h = HEIGHT.tree * (0.4 + 0.6 * lc.cover) + HEIGHT.crownBulge * lc.cover * (1 - tree.dist / tree.r);
+    if (lc.cover >= 0.5) {
+      const [rim, canopy, crown, lit] = crowns(tree.species, lc, Math.floor(hash(531, tree.id, 0) * 3));
+      const t = tree.dist / tree.r + (d - 0.5) * 0.35;
+      return [t < 0.25 ? lit : t < 0.55 ? crown : t < 0.85 ? canopy : rim, h];
+    }
+    // Thinning or bare: twigs where the dither passes, else the ground shows through the crown.
+    if (d + valueNoise(seed + 532, x / 2, y / 2) * 0.3 > lc.cover * 2) return [BRANCH, h];
   }
 
   // Lakes: deep middle, shallow edge, a ragged shore of mud and reeds. Edges frayed + dithered.
@@ -205,9 +234,9 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
     const deep = wet > LAKE + 0.012 + (valueNoise(seed + 11, x / 6, y / 6) - 0.5) * 0.006;
     return [deep ? WATER.deep : WATER.shallow, 0];
   }
-  if (wet > LAKE - SHORE_W) {
-    const reeds = valueNoise(seed + 13, x / 3, y / 3) + d * 0.3 > 0.8;
-    return reeds ? [SHORE.reeds, HEIGHT.reeds] : [SHORE.mud, 0];
+  if (wet > LAKE - SHORE_W * (1 + look.s.waterLevel)) { // a high water level widens the muddy shore; open water stays put
+    const reeds = valueNoise(seed + 13, x / 3, y / 3) + d * 0.3 > 0.8 + 0.25 * look.s.waterLevel;
+    return reeds ? [look.s.foliage < 0.3 ? STRAW : SHORE.reeds, HEIGHT.reeds] : [SHORE.mud, 0];
   }
 
   // Woodland ground between the crowns: dark floor deep inside, then scrub that frays out into the
@@ -217,7 +246,7 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
     const glade = gladeValue(seed, x, y) + (valueNoise(seed + 18, x / 7, y / 7) - 0.5) * 0.16 + (d - 0.5) * 0.1;
     if (glade > GLADE) {
       // Glade meadow, its edge frayed and dithered into the scrub around it; buttercups and daisies.
-      const { a, b } = CROPS[2];
+      const [a, b] = colours(CROPS[2]);
       const f = flowers(seed, x, y, 'meadow');
       return [f ?? (valueNoise(seed + 37, x / 3, y / 3) + d * 0.5 > 0.95 ? b : a), 0];
     }
@@ -228,7 +257,10 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
     if (bluebells > 0 && drift + (d - 0.5) * 0.25 > 1.25 - bluebells * 0.35) {
       return [hash(seed + 62, x, y) > 0.7 ? FLOWER.bluebellLit : FLOWER.bluebell, dens > 0.8 ? HEIGHT.understory : HEIGHT.scrub];
     }
-    if (dens > 0.8) return [valueNoise(seed + 16, x / 3, y / 3) + d * 0.3 > 0.85 ? FLOOR.litter : FLOOR.deep, HEIGHT.understory];
+    if (dens > 0.8) {
+      const floor = look.s.foliage < 0.3 ? FLOOR_BARE : FLOOR;
+      return [valueNoise(seed + 16, x / 3, y / 3) + d * 0.3 > 0.85 ? floor.litter : floor.deep, HEIGHT.understory];
+    }
     return [SCRUB[Math.floor(valueNoise(seed + 17, x / 3, y / 3) * 2.2 + d * 0.8) % 3], HEIGHT.scrub];
   }
 
@@ -247,7 +279,7 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
   const hedged = valueNoise(seed + 33, x / 70, y / 70) > 0.4 && valueNoise(seed + 41, x / 25, y / 25) > 0.25;
   if (border < 4 && hedged) {
     // Hawthorn hedges in white "may" blossom, in sprays along their length.
-    if (valueNoise(seed + 63, x / 7, y / 7) > 0.72 && hash(seed + 64, x, y) > 1 - 0.2 * bloom(seed, x, y, BLOOM.hawthorn, 0.86)) return [FLOWER.hawthorn, HEIGHT.hedge];
+    if (valueNoise(seed + 63, x / 7, y / 7) > 0.72 && hash(seed + 64, x, y) > 1 - 0.2 * bloom(seed, x, y, BLOOM.hawthorn, 0.86)) return [FLOWER.hawthorn, hedgeHeight()];
     // Light or dark per whole hedge: one choice for each pair of fields it divides (so a hedge changes
     // only at a field corner), weighted by a very large-scale region so neighbouring hedges mostly match.
     const lo = Math.floor(Math.min(cell.id, cell.id2) * 1e6);
@@ -257,14 +289,14 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
     // Speckled: small clusters of the other tone (a few bushes of another kind) mixed through each hedge.
     const other = valueNoise(seed + 36, x / 1.6, y / 1.6) + (d - 0.5) * 0.35 > 0.72;
     const tones = light !== other ? HEDGE.light : HEDGE.dark;
-    return [tones[valueNoise(seed + 38, x / 2.5, y / 2.5) + d * 0.3 > 0.75 ? 1 : 0], HEIGHT.hedge];
+    return [tones[valueNoise(seed + 38, x / 2.5, y / 2.5) + d * 0.3 > 0.75 ? 1 : 0], hedgeHeight()];
   }
   const dirtW = Math.max(0, (valueNoise(seed + 39, x / 60, y / 60) - 0.45) * 26) + (valueNoise(seed + 45, x / 5, y / 5) - 0.5) * 4;
   const worn = border < dirtW + 10 && valueNoise(seed + 46, x / 12, y / 12) + (d - 0.5) * 0.1 > 0.86;
   if (border < dirtW || worn) {
     if (valueNoise(seed + 47, x / 3, y / 3) + d * 0.3 < 0.3) {
       // Tufts of grass in the margin; froths of cow parsley along hedged ones.
-      return [hedged && hash(seed + 65, x, y) > 1 - 0.12 * bloom(seed, x, y, BLOOM.cowParsley, 0.86) ? FLOWER.cowParsley : own.a, 0];
+      return [hedged && hash(seed + 65, x, y) > 1 - 0.12 * bloom(seed, x, y, BLOOM.cowParsley, 0.86) ? FLOWER.cowParsley : colours(own)[0], 0];
     }
     const t = valueNoise(seed + 42, x / 2.5, y / 2.5) + d * 0.35;
     return [t > 1.05 ? DIRT.rut : t > 0.6 ? DIRT.worn : DIRT.dry, 0];
@@ -296,7 +328,7 @@ const COCK = { x: 16, y: 21 }; // apart along and between the rows
 const MOWN = 0.15;
 export const HAY = { light: rgb(0xb7a05a), dark: rgb(0x9a844a), swath: rgb(0x8a8550) };
 function haycockAt(seed: number, id: number, x: number, y: number): [RGB, number] | null {
-  if (hash(seed + 80, Math.floor(id * 1e6), 1) > MOWN) return null;
+  if (hash(seed + 80, Math.floor(id * 1e6), 1) > MOWN * look.s.hay) return null;
   const i = Math.floor(x / COCK.x);
   const j = Math.floor(y / COCK.y);
   const cx = (i + 0.25 + 0.5 * hash(seed + 81, i, j)) * COCK.x;
@@ -333,14 +365,14 @@ function flowers(seed: number, x: number, y: number, kind: 'meadow' | 'pasture')
 /** One pixel of the crop belonging to the field with this id, whose own point is (sx, sy). */
 function cropPixel(seed: number, id: number, x: number, y: number, d: number, sx: number, sy: number): RGB {
   const crop = cropOf(id);
-  const { a, b } = crop;
+  const [a, b] = colours(crop);
   const dir = Math.floor(hash(seed + 34, Math.floor(id * 1e6), 0) * 4);
   const s = dir === 0 ? x : dir === 1 ? y : dir === 2 ? x + y : x - y;
   switch (crop.pattern) {
     case 'furrows':
       return stripe(s, 3) ? a : b;
     case 'rows': // colza only shows yellow where it's in flower, else it's still green; decided once per field (at its own point), so a field is never split
-      if (crop === COLZA && bloom(seed, sx, sy, BLOOM.colza) < 0.3) return stripe(s, 3) ? CROPS[1].a : CROPS[1].b;
+      if (crop === COLZA && bloom(seed, sx, sy, BLOOM.colza) < 0.3) return stripe(s, 3) ? colours(CROPS[1])[0] : colours(CROPS[1])[1];
       return stripe(s, 3) ? a : b;
     case 'hay':
       return stripe(s, 5) && hash(seed + 35, x, y) > 0.25 ? b : a;
@@ -421,6 +453,8 @@ export type TileData = { rgba: Uint8ClampedArray<ArrayBuffer>; heights?: Uint8Ar
 
 /** Fraction of water pixels that can sparkle. */
 export const GLINT = 0.0007;
+/** … of ice pixels, a quarter of open water's. */
+export const ICE_GLINT = GLINT * 0.25;
 /** … and of the front's small muddy pools (more, so most shell-hole pools get a glint or two). */
 export const POOL_GLINT = 0.02;
 export const HEIGHT_STEPS = 8;
@@ -441,9 +475,12 @@ export function groundChunk(seed: number, cx: number, cy: number, stamp?: Ground
       const wx = cx * CHUNK + x;
       const wy = cy * CHUNK + y;
       const stamped = stamp?.(wx, wy);
-      const [c, h] = stamped ?? groundAt(seed, wx, wy);
+      const [ground, h] = stamped ?? groundAt(seed, wx, wy);
+      const c = overlay(seed, wx, wy, ground, h); // snow, mud, flooding and ice: the very same colour at May
       const [r, g, b] = c;
-      if (stamped ? (c === WATER.pool[0] || c === WATER.pool[1]) && hash(seed + 12, wx, wy) < POOL_GLINT : (c === WATER.deep || c === WATER.shallow) && hash(seed + 12, wx, wy) < GLINT) glints.push(i);
+      // Ice sparkles at a quarter of open water's rate; turbid water (no longer WATER.deep) still counts as water.
+      const rate = isIce(c) ? ICE_GLINT : c === WATER.pool[0] || c === WATER.pool[1] ? POOL_GLINT : !stamped && (ground === WATER.deep || ground === WATER.shallow) ? GLINT : 0;
+      if (rate && hash(seed + 12, wx, wy) < rate) glints.push(i);
       const k = SHADE[groundShade(seed, wx, wy) + 1];
       rgba[i * 4] = r * k;
       rgba[i * 4 + 1] = g * k;

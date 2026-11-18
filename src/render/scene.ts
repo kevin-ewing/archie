@@ -21,6 +21,7 @@ import { cloudLevel } from '../world/clouds.ts';
 import { createTileLayer, type TileLayer } from './tiles.ts';
 import { createDamage, damageVersion, marksFor, type Damage } from '../world/damage.ts';
 import type { Features } from '../world/generate.ts';
+import { MAY_LOOK, seasonKey, type SeasonState } from '../sim/seasons.ts';
 import { LIGHTS } from '../world/lights.ts';
 import { createLampSprite, drawLamps } from './lamps.ts';
 
@@ -47,6 +48,7 @@ export type Scene = {
   seed: number;
   features: Features; // which additions are stamped into the ground (development toggles)
   damage: Damage; // live damage marks, stamped into the tiles they touch
+  season: { state: SeasonState; key: number }; // the date's look; `key` is its bucketed hash (tiles regenerate when it changes)
   ground: TileLayer;
   sunlight: TileLayer; // cast shadows + relief, re-baked as the sun moves
   cloudShadows: TileLayer;
@@ -88,13 +90,14 @@ export function createScene(seed: number, density = 1): Scene {
   let shared = '';
   let sharedSun = '';
   let sharedGround = NaN;
-  const groundVersion = (cx: number, cy: number) => (scene.features.structures ? 1 : 0) + (scene.features.military ? 2 : 0) + (scene.features.frontLine ? 4 : 0) + 8 * damageVersion(scene.damage, cx, cy);
+  const groundVersion = (cx: number, cy: number) => (scene.features.structures ? 1 : 0) + (scene.features.military ? 2 : 0) + (scene.features.frontLine ? 4 : 0) + 8 * damageVersion(scene.damage, cx, cy) + 2 ** 6 * scene.season.key;
   const scene: Scene = {
     seed,
     features: { structures: false, military: true, density },
     damage: createDamage(),
+    season: { state: MAY_LOOK, key: seasonKey(MAY_LOOK) },
     ground: createTileLayer(
-      (cx, cy) => gen({ kind: 'ground', seed, cx, cy, features: { ...scene.features }, damage: marksFor(scene.damage, cx, cy) }),
+      (cx, cy) => gen({ kind: 'ground', seed, cx, cy, features: { ...scene.features }, damage: marksFor(scene.damage, cx, cy), season: scene.season.state }),
       CHUNK,
       { version: (cx, cy) => String(groundVersion(cx, cy)), fadeMs: 400 }, // toggles and new damage fade in
     ),
@@ -315,7 +318,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   f.prof.mark('plane');
 
   // The light of the hour, and the sun's direction on screen (it turns with the camera).
-  const grade = gradeFor(sun, skyFor(scene.seed, f.day, sun.evening));
+  const grade = gradeFor(sun, skyFor(scene.seed, f.day, sun.evening, scene.season.state.skyBias), scene.season.state);
   scene.hourLight = grade; // for the HUD, which takes the same light (see ui/hud.ts gradeMatrix)
   const sa = -cam.angle;
   const toward = { x: sun.toward.x * Math.cos(sa) - sun.toward.y * Math.sin(sa), y: sun.toward.x * Math.sin(sa) + sun.toward.y * Math.cos(sa) };
@@ -474,7 +477,7 @@ export function drawTerrain(ctx: CanvasRenderingContext2D, view: View, scene: Sc
   }
 
   // The clouds (both decks), coloured by the light of the hour, then the light of the hour over everything.
-  const grade = gradeFor(sun, skyFor(scene.seed, day, sun.evening));
+  const grade = gradeFor(sun, skyFor(scene.seed, day, sun.evening, scene.season.state.skyBias), scene.season.state);
   const CB = scene.cloudBuf;
   if (CB.canvas.width !== width || CB.canvas.height !== height) {
     CB.canvas.width = width;

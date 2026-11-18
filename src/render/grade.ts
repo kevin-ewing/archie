@@ -49,9 +49,10 @@ export const OVERCAST: Palette = { name: 'Overcast', glow: hex(0xf0d8c0), warm: 
 export type Sky = { palette: Palette; beauty: number; rayEnd: RGB };
 
 /** The sky for one dawn or dusk: deterministic per seed, day and half of the day. */
-export function skyFor(seed: number, day: number, evening: boolean): Sky {
+export function skyFor(seed: number, day: number, evening: boolean, skyBias = 0): Sky {
   const k = evening ? 1 : 0;
-  if (hash(seed + 301, day, k) < 0.1) return { palette: OVERCAST, beauty: 0.6, rayEnd: OVERCAST.hot };
+  const winter = Math.max(0, -skyBias); // winter evenings are plainer: more overcast, a little less beauty
+  if (hash(seed + 301, day, k) < 0.1 + 0.2 * winter) return { palette: OVERCAST, beauty: 0.6, rayEnd: OVERCAST.hot };
   // Two palettes, mixed by a random amount, each colour then nudged a little: a fresh sky every time.
   const a = ALL_PALETTES[Math.floor(hash(seed + 300, day, k) * ALL_PALETTES.length)];
   const b = ALL_PALETTES[Math.floor(hash(seed + 303, day, k) * ALL_PALETTES.length)];
@@ -67,7 +68,7 @@ export function skyFor(seed: number, day: number, evening: boolean): Sky {
   const palette: Palette = { name: t < 0.05 || a === b ? a.name : `${a.name}+${b.name}`, glow: blend('glow'), warm: blend('warm'), hot: blend('hot'), mid: blend('mid'), cool: blend('cool'), deep: blend('deep'), night: blend('night') };
   // The shafts start gold-ish and drift to one of this sky's deeper colours by the time the sun is on the horizon.
   const rayEnd = hash(seed + 308, day, k) < 0.5 ? palette.hot : palette.mid;
-  return { palette, beauty: 0.8 + Math.pow(hash(seed + 302, day, k), 2) * 0.6, rayEnd }; // always dramatic, some outrageous
+  return { palette, beauty: (0.8 + Math.pow(hash(seed + 302, day, k), 2) * 0.6) * (1 - 0.15 * winter), rayEnd }; // always dramatic, some outrageous
 }
 
 const WHITE: RGB = [255, 255, 255];
@@ -90,18 +91,27 @@ export type Grade = {
   active: boolean; // false in plain daylight: nothing to draw
   /** How the clouds are coloured: lit from the sun's side, shaded away from it, blended in by `amount`. */
   cloud: { near: RGB; far: RGB; amount: number };
+  haze: number; // 0 … 0.6: a pale veil toward the edge of the view, drawn in the glow pass
 };
 
-/** The grade for this sun and sky. Pure. */
-export function gradeFor(sun: Sun, sky: Sky): Grade {
+const HAZE_COLOUR: RGB = hex(0xc8d2e0); // pale grey-blue
+const hazing = (g: Grade) => g.haze > 0.02;
+const COLD_TINT: RGB = [0.93, 0.96, 1];
+const WARM_TINT: RGB = [1, 0.98, 0.92];
+
+/** The grade for this sun and sky. Pure. `season` (skyBias, haze) is neutral when omitted. */
+export function gradeFor(sun: Sun, sky: Sky, season?: { skyBias: number; haze: number }): Grade {
   const el = (sun.elevation * 180) / Math.PI;
   const p = sky.palette;
   const b = sky.beauty;
+  // The low-sun hours scale with the date's noon height (span is 1 on 10 May), so the golden hour is the
+  // same share of the day in every month. Dusk and night use the real elevation.
+  const elS = el > 0 ? el * sun.span : el;
   // Golden from ~22° of sun; the blaze from ~12° above the horizon until the sun's rays stop, ~4° below it;
   // then the sky turns blue straight away (dusk), and reaches full night soon after. The same going the
   // other way: it stays fully dark until shortly before sunrise, then lifts into blue dawn.
-  const golden = el > 0 ? smooth((22 - el) / 14) : 1 - smooth(-el / 5);
-  const blaze = clamp01(el >= 1 ? 1 - (el - 1) / 11 : 1 - (1 - el) / 5);
+  const golden = elS > 0 ? smooth((22 - elS) / 14) : 1 - smooth(-elS / 5);
+  const blaze = clamp01(elS >= 1 ? 1 - (elS - 1) / 11 : 1 - (1 - elS) / 5);
   const dusk = smooth((0.5 - el) / 2.5); // dark within a couple of degrees (~15 min) of the sun crossing the horizon
   const night = smooth((-1 - el) / 4); // starts ~10 min after sunset, fully dark in ~40; mirrored before sunrise
   const DUSK_BLUE = mix(p.deep, NIGHT_BLUE, 0.5);
@@ -114,7 +124,17 @@ export function gradeFor(sun: Sun, sky: Sky): Grade {
     far = mix(far, p.mid, 0.25 * blaze * (1 - dusk));
   }
   const evening = (0.32 * golden + 0.5 * blaze * (1 - dusk) + 0.72 * dusk) * (0.65 + 0.35 * b);
-  const tintAlpha = Math.min(NIGHT_ALPHA, evening * (1 - night) + NIGHT_ALPHA * night);
+  let tintAlpha = Math.min(NIGHT_ALPHA, evening * (1 - night) + NIGHT_ALPHA * night);
+  // Seasonal daylight: cooler and flatter in winter, warmer in summer. Fades out into the night.
+  const sb = season?.skyBias ?? 0;
+  if (sb !== 0) {
+    const w = Math.abs(sb) * (1 - night);
+    const t = sb < 0 ? COLD_TINT : WARM_TINT;
+    const tinted = (c: RGB): RGB => mix(c, [c[0] * t[0], c[1] * t[1], c[2] * t[2]], w);
+    near = tinted(near);
+    far = tinted(far);
+    tintAlpha = Math.min(NIGHT_ALPHA, tintAlpha + 0.14 * w);
+  }
   // Light shafts and the glow can show for a good while before the sun sets, but once it has set they
   // only linger 20 game minutes into the night (full for 12, fading out by 20). Same before sunrise.
   const intoNight = sun.evening ? sun.horizonMinutes : -sun.horizonMinutes;
@@ -135,6 +155,7 @@ export function gradeFor(sun: Sun, sky: Sky): Grade {
   const byDay = clamp01(0.1 * golden + 0.58 * blaze * blaze) * (0.75 + 0.25 * b);
   const duskCloudAmount = byDay + (0.5 - byDay) * dusk;
   const cloudAmount = duskCloudAmount + (0.65 - duskCloudAmount) * night;
+  const haze = season?.haze ?? 0;
   return {
     near,
     far,
@@ -144,7 +165,8 @@ export function gradeFor(sun: Sun, sky: Sky): Grade {
     glow: rayColour,
     glowAlpha,
     rays: blaze * b * 0.9 * rayWindow,
-    active: tintAlpha > 0.004 || glowAlpha > 0.004,
+    haze,
+    active: tintAlpha > 0.004 || glowAlpha > 0.004 || haze > 0.02,
   };
 }
 
@@ -228,7 +250,38 @@ export function gradePixels(
       G[i] = glowing ? glowPack[band * SHAFT_LEVELS + shafts[u | 0]] : 0;
     }
   }
+  if (hazing(g)) hazeVeil(glow, G, w, h, g.haze, R);
   return { tint, glow };
+}
+
+/** The haze: a radial, banded, dithered pale veil composited ("over") into the glow image. Rotation-invariant. */
+function hazeVeil(glow: Uint8ClampedArray<ArrayBuffer>, G: Uint32Array, w: number, h: number, haze: number, R: number) {
+  const cx = w / 2;
+  const cy = h / 2;
+  const top = haze * 0.25;
+  const [hr, hg, hb] = HAZE_COLOUR;
+  for (let y = 0, i = 0; y < h; y++) {
+    const row = (y & 3) << 2;
+    for (let x = 0; x < w; x++, i++) {
+      const t = smooth((Math.hypot(x - cx, y - cy) / R - 0.35) / 0.65);
+      if (t <= 0) continue;
+      const band = Math.min(BANDS - 1, Math.max(0, ((t * (BANDS - 1)) + DITHER[row | (x & 3)] + 0.5) | 0));
+      const a2 = (top * band) / (BANDS - 1);
+      if (a2 <= 0) continue;
+      if (G[i] >>> 24 === 0) {
+        G[i] = ((Math.round(a2 * 255) << 24) | (Math.round(hb) << 16) | (Math.round(hg) << 8) | Math.round(hr)) >>> 0;
+        continue;
+      }
+      const o = i * 4;
+      const a1 = glow[o + 3] / 255;
+      const a = a1 + a2 * (1 - a1);
+      const k = (a2 * (1 - a1)) / a;
+      glow[o] = glow[o] + (hr - glow[o]) * k;
+      glow[o + 1] = glow[o + 1] + (hg - glow[o + 1]) * k;
+      glow[o + 2] = glow[o + 2] + (hb - glow[o + 2]) * k;
+      glow[o + 3] = a * 255;
+    }
+  }
 }
 
 function repaint(layer: GradeLayer, size: number, g: Grade, radius: number) {
@@ -237,7 +290,7 @@ function repaint(layer: GradeLayer, size: number, g: Grade, radius: number) {
   const px = gradePixels(size, size, g, { x: 1, y: 0 }, layer.px, radius);
   layer.px = px;
   layer.tint.getContext('2d')!.putImageData(new ImageData(px.tint, size, size), 0, 0);
-  if (g.glowAlpha > 0.004) layer.glow.getContext('2d')!.putImageData(new ImageData(px.glow, size, size), 0, 0); // else drawGrade doesn't draw it
+  if (g.glowAlpha > 0.004 || hazing(g)) layer.glow.getContext('2d')!.putImageData(new ImageData(px.glow, size, size), 0, 0); // else drawGrade doesn't draw it
 }
 
 /**
@@ -251,7 +304,7 @@ export function drawGrade(ctx: CanvasRenderingContext2D, view: View, layer: Grad
   const radius = Math.hypot(view.w, view.h) / 2;
   const size = Math.ceil(radius * 2) + 2; // covers the screen at any rotation
   const q = (v: number, step: number) => Math.round(v / step);
-  const key = [size, q(g.tintAlpha, 0.01), q(g.glowAlpha, 0.01), q(g.rays, 0.02), q(g.near[0] + g.near[1] * 3 + g.near[2] * 7, 6), q(g.far[0] + g.far[1] * 3 + g.far[2] * 7, 6), q(g.glow[0] + g.glow[1] * 3 + g.glow[2] * 7, 6)].join(',');
+  const key = [size, q(g.tintAlpha, 0.01), q(g.glowAlpha, 0.01), q(g.rays, 0.02), q(g.near[0] + g.near[1] * 3 + g.near[2] * 7, 6), q(g.far[0] + g.far[1] * 3 + g.far[2] * 7, 6), q(g.glow[0] + g.glow[1] * 3 + g.glow[2] * 7, 6), q(g.haze, 0.02)].join(',');
   if (key !== layer.key) {
     layer.key = key;
     repaint(layer, size, g, radius);
@@ -261,7 +314,7 @@ export function drawGrade(ctx: CanvasRenderingContext2D, view: View, layer: Grad
   ctx.rotate(Math.atan2(sunScreen.y, sunScreen.x));
   ctx.globalCompositeOperation = 'multiply';
   ctx.drawImage(layer.tint, -size / 2, -size / 2);
-  if (g.glowAlpha > 0.004) {
+  if (g.glowAlpha > 0.004 || hazing(g)) {
     ctx.globalCompositeOperation = 'screen';
     ctx.drawImage(layer.glow, -size / 2, -size / 2);
   }

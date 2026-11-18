@@ -34,7 +34,7 @@ test('the console delegates session controls and rejects bad speeds before the s
   Object.assign(globalThis, { window: {} });
   try {
     installDevApi({
-      state: () => ({}), setHours: () => {}, setSpeed: (k) => speeds.push(k), goto: () => {},
+      state: () => ({}), overrides: () => ({}), setOverrides: () => {}, date: () => '1915-05-10', setHours: () => {}, setSpeed: (k) => speeds.push(k), goto: () => {},
       pause: () => { pauses++; }, resume: () => { resumes++; }, session: () => ({ version: 1 }),
       toggles: [{ id: 'military', on: true }], onToggle: (id, on) => worldChanges.push([id, on]), complete: () => true, canvases: [],
       prof: { start() {}, mark() {}, end() {}, add() {}, history: () => [] },

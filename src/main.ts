@@ -9,7 +9,10 @@ import { createDisplay } from './render/display.ts';
 import { PROP, propWidth } from './render/plane.ts';
 import { createScene, drawScene, drawTerrain } from './render/scene.ts';
 import { applyAids, createAids } from './sim/aids.ts';
-import { DAYLIGHT, dayOfYear, sunNow, sunsetHour } from './sim/daylight.ts';
+import { dateOf, dayNumber, fromDayNumber, formatISO, REFERENCE, setCampaignStart, type CalDate } from './sim/calendar.ts';
+import { sunNow, sunsetHour } from './sim/daylight.ts';
+import { legalHours, sunDay } from './sim/sun.ts';
+import { applyOverrides, parseOverrides, seasonAt, seasonKey, SEASON_DATES, type Overrides } from './sim/seasons.ts';
 import { createPlane, FLIGHT, updatePlane } from './sim/flight.ts';
 import { createClockFace, drawClock } from './ui/clock.ts';
 import { label } from './ui/gauges.ts';
@@ -43,12 +46,26 @@ function numberFromUrl(name: string, ok: (n: number) => boolean): number | undef
 // The player's save (settings, story progress): kept in their browser, but never in development or with
 // `?debug`, where every visit starts fresh (see game/save.ts).
 const save = createSave(!import.meta.env.DEV && !new URLSearchParams(location.search).has('debug'));
+// Season overrides (`?date= ?season= ?snow= ...`): development and `?debug` only, never saved. `?date=` is the
+// date at which clock.day is 0; archie.date() later makes the current day that date.
+let overrides: Overrides = {};
+if (IS_DEV || new URLSearchParams(location.search).has('debug')) {
+  const parsed = parseOverrides(location.search);
+  for (const p of parsed.problems) console.warn(`Season override ignored: ${p}`);
+  overrides = parsed.overrides;
+}
+const overrideDate = (o: Overrides): CalDate | undefined => o.date ?? (o.season ? SEASON_DATES[o.season] : undefined);
+const startFor = (o: Overrides, atDay: number): CalDate => {
+  const d = overrideDate(o);
+  return d ? fromDayNumber(dayNumber(d) - atDay) : REFERENCE;
+};
+setCampaignStart(startFor(overrides, 0));
 const SEED = numberFromUrl('seed', (n) => Number.isInteger(n) && n >= 0 && n < 2 ** 31) ?? save.data.story?.seed ?? Math.floor(Math.random() * 2 ** 31); // which world: `?seed=`, else the story's world (so its tiles load behind the landing page), else random
 // Solar time to start at: `?time=19.5`; else a random time before sunset (drawn through the seeded hash, fed
 // with the session's start time, so each visit differs).
 const randomStart = hash(SEED, Math.floor(Date.now() / 1000), 77);
 const TIME_PARAM = numberFromUrl('time', (n) => n >= 0 && n < 24);
-const RANDOM_HOUR = sunsetHour(DAYLIGHT.startDayOfYear) - (1.75 + randomStart * 0.5); // 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
+const RANDOM_HOUR = sunsetHour(sunDay(dateOf(0))) - (1.75 + randomStart * 0.5); // 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
 const START_HOUR = TIME_PARAM ?? RANDOM_HOUR;
 
 const trenchParam = new URLSearchParams(location.search).get('trench');
@@ -264,6 +281,15 @@ const scene = createScene(state.seed, state.world.density); // farms 2.5× the b
 // (Set here for the main thread, which places lamps from the farms, and in every tile request for the workers.)
 DEV.atStart = state.world.frontAtStart;
 Object.assign(scene.features, worldFeatures(state.world));
+
+/** The date's look: recomputed only when the calendar day changes, then handed to the scene (tiles, grade). */
+let seasonDay = NaN;
+const currentSeason = () => {
+  if (state.clock.day === seasonDay) return;
+  seasonDay = state.clock.day;
+  const s = applyOverrides(seasonAt(dateOf(seasonDay), state.seed), overrides);
+  scene.season = { state: s, key: seasonKey(s) };
+};
 // The front is being built one part at a time: for now only its trench lines, in one style (being
 // worked on: hasty; `?trench=traversed` shows the original).
 console.log(`Trench style: ${TRENCH_STYLE} (pin one with ?trench=${TRENCH_STYLES.join('|')})`);
@@ -441,6 +467,14 @@ if (IS_DEV || debugRequested) {
     resume: () => { game.resume(); syncSession(); },
     session: () => game.snapshot(),
     setSpeed: (k) => (speedOverride = k),
+    overrides: () => overrides,
+    setOverrides: (o) => {
+      overrides = o;
+      setCampaignStart(startFor(o, state.clock.day));
+      seasonDay = NaN;
+      currentSeason();
+    },
+    date: () => formatISO(dateOf(state.clock.day)),
     goto: (x, y, headingDeg) => placePlane(x, y, headingDeg === undefined ? undefined : (headingDeg * Math.PI) / 180),
     toggles: toggles.items,
     onToggle,
@@ -566,7 +600,7 @@ const storyInfo = (): BarnInfo => {
   const now = new Date();
   return {
     day: date, month: MONTHS[month - 1], year, sortie: save.data.log.length + 1, date: dateText(day),
-    hours: now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600, sunset: sunsetHour(dayOfYear({ day, hours: 0 })),
+    hours: now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600, sunset: sunsetHour(sunDay(dateOf(day))),
     logbook: { ...LOGBOOK_START, wear: Math.min(1, LOGBOOK_START.wear + save.data.log.length * 0.02) },
   };
 };
@@ -643,6 +677,7 @@ function drawLanding(c: HTMLCanvasElement, at: number) {
   if (landingT0 < 0) landingT0 = at;
   const y = plane.y - ((at - landingT0) / 1000) * LANDING_DRIFT;
   // The bare landscape: no farms or buildings of any kind, no front (the game's own render sets these back).
+  currentSeason();
   scene.features.structures = false;
   scene.features.military = false;
   scene.features.frontLine = false;
@@ -675,6 +710,7 @@ function render(alpha: number, timing: RenderTiming) {
     const view = display.view();
     const warning = engineWarning(plane);
     const sun = sunNow(state.clock);
+    currentSeason();
     for (const toggle of worldToggles) toggle.on = state.world[worldToggleKeys[toggle.id as keyof typeof worldToggleKeys]];
     scene.features.structures = state.world.farms;
     scene.features.military = state.world.fronts;
@@ -738,10 +774,11 @@ function render(alpha: number, timing: RenderTiming) {
         }
       }
     }
+    const today = sunDay(dateOf(state.clock.day)); // the watch shows legal time; the clock and saves stay solar
     drawClock(hudCtx, view, clockFace, {
-      hours: state.clock.hours,
+      hours: legalHours(today, state.clock.hours),
       day: state.clock.day,
-      sunset: sunsetHour(dayOfYear(state.clock)),
+      sunset: legalHours(today, sunsetHour(today)),
       dateText: dateText(state.clock.day),
     }, glow, instrumentLight);
     // The HUD takes the light of the hour: the world's own grade, as a colour matrix the browser applies.
