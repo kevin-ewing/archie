@@ -23,19 +23,22 @@ You’re Tom Bell, an RFC pilot flying with an observer to help the guns find th
 
 ## Development
 
-Requires Node.js 22.12 or later.
+Requires Node.js 22.12 or later. Run `make help` for the full command list.
 
 ```sh
-npm install
-npm run dev
+make install
+make dev
+make dev MODE=story
+make dev MODE=boxes
+make dev MODE=flight QUERY='seed=1915&time=18.9&speed=0'
+make check
+make build
+make preview
 ```
 
-Run the checks and production build with:
+Vite opens the selected route in your default browser on the port it actually starts on. Use `make dev BROWSER=none` to keep the browser closed. Use `OPEN` for a custom route and `ARGS` for extra Vite flags. For example, `make dev OPEN='/story.html?boxes' ARGS='--port 5174'`. Use `make clean` to remove the production build.
 
-```sh
-npm run check
-npm run build
-```
+Run `make patch`, `make minor`, or `make major` to bump the version in both npm manifests without creating a commit or tag. `make version` prints the current version.
 
 Performance checks:
 

@@ -13,7 +13,7 @@ export type Landing = {
 
 const READY_AT_LATEST_MS = 12_000; // a world that won't finish loading still gets its menu
 
-export function wireLanding(opts: { skip: boolean; onFreeFly: () => void; onStory: () => void; onSettings: (back: () => void) => void }): Landing {
+export function wireLanding(opts: { skip: boolean; onFreeFly: () => void; onStory: () => void; onReady: () => void; onSettings: (back: () => void) => void }): Landing {
   const page = document.getElementById('landing');
   const canvas = document.getElementById('landing-terrain');
   const none: Landing = { terrain: () => null, ready: () => {}, dismiss: () => {} };
@@ -27,9 +27,13 @@ export function wireLanding(opts: { skip: boolean; onFreeFly: () => void; onStor
     return none;
   }
   const items = [...page.querySelectorAll<HTMLButtonElement>('.landing-item')];
-  const ready = () => page.classList.add('ready');
-  setTimeout(ready, READY_AT_LATEST_MS);
   let chosen = false;
+  const ready = () => {
+    if (chosen || page.classList.contains('ready')) return;
+    page.classList.add('ready');
+    opts.onReady();
+  };
+  setTimeout(ready, READY_AT_LATEST_MS);
   const leave = () => {
     if (chosen) return;
     chosen = true;

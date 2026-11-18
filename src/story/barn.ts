@@ -8,6 +8,7 @@ import { createPx, plot, text, textWidth, type Px, type RGBA } from '../core/pix
 import { menuItem, MENU_W, sizeFaces } from '../ui/pause.ts';
 import { BARN_LOADING, barnScene, drawing, logbookDrawing, ordersDrawing, Z, type BarnInfo, type BarnScene, type Spot } from './barn-art.ts';
 import * as I from './desk-items.ts';
+import type { BarnJob } from './barn-worker.ts';
 import { messagePad, sealedLetter } from './clutter.ts';
 import type { Tooltips } from '../ui/tooltip.ts';
 import './barn.css';
@@ -15,6 +16,7 @@ import './barn.css';
 export type LogEntry = { sortie: number; date: string; minutes: number };
 export type BarnOptions = {
   info: BarnInfo;
+  prepared?: BarnPreparation;
   resuming: boolean; // a story flight to carry on from
   log: readonly LogEntry[];
   uiPx: () => number; // CSS px per UI px (the plates)
@@ -31,6 +33,60 @@ export type BarnOptions = {
   onSettings: (back: () => void) => void;
   onClose: () => void;
 };
+
+function deskSize(g: number, ui: number) {
+  const W = Math.max(80, Math.ceil(innerWidth / g));
+  const H = Math.max(80, Math.ceil(innerHeight / g));
+  const pixel = Math.max(1, Math.round(g * (window.devicePixelRatio || 1)));
+  // Reserve the corner for the menu plates, whose size is in UI pixels.
+  const w = Math.ceil((MENU_W + 16) * ui / g);
+  const clear = [{ x: W - w, y: 0, w, h: Math.ceil(70 * ui / g) }];
+  return { W, H, pixel, clear };
+}
+
+type BarnPreparation = {
+  key: string;
+  result: Promise<BarnScene | undefined>;
+  cancel: () => void;
+};
+
+function preparationKey([W, H, info, order, clear, pixel]: BarnJob) {
+  // The watch is repainted from the current time when the scene is shown.
+  return JSON.stringify([W, H, { ...info, hours: undefined }, order, clear, pixel]);
+}
+
+function prepare(job: BarnJob): BarnPreparation {
+  let finish: BarnPreparation['cancel'] = () => {};
+  const result = new Promise<BarnScene | undefined>((resolve) => {
+    let worker: Worker;
+    try {
+      worker = new Worker(new URL('./barn-worker.ts', import.meta.url), { type: 'module' });
+    } catch {
+      resolve(undefined);
+      return;
+    }
+    const timeout = window.setTimeout(() => finish(), 15_000);
+    const complete = (scene?: BarnScene) => {
+      clearTimeout(timeout);
+      worker.terminate();
+      resolve(scene);
+    };
+    finish = () => complete();
+    worker.onmessage = (event: MessageEvent<BarnScene>) => complete(event.data);
+    worker.onerror = worker.onmessageerror = finish;
+    try {
+      worker.postMessage(job);
+    } catch {
+      finish();
+    }
+  });
+  return { key: preparationKey(job), result, cancel: () => finish() };
+}
+
+export function prepareBarn(info: BarnInfo, gamePx: number, uiPx: number): BarnPreparation {
+  const { W, H, pixel, clear } = deskSize(gamePx, uiPx);
+  return prepare([W, H, info, [], clear, pixel]);
+}
 
 const INK: RGBA = I.P.ink;
 const PAPER: RGBA = I.P.cream;
@@ -442,22 +498,14 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
 
   let spots: Spot[] = [];
   let key = '';
-  function layout() {
+  function layout(job: BarnJob, g: number, prepared?: BarnScene) {
     const t0 = performance.now();
-    try { layoutNow(); } finally { o.measure?.('desk layout', performance.now() - t0); }
+    try { layoutNow(job, g, prepared); } finally { o.measure?.('desk layout', performance.now() - t0); }
   }
-  function layoutNow() {
-    const g = o.gamePx();
-    const W = Math.max(80, Math.ceil(innerWidth / g));
-    const H = Math.max(80, Math.ceil(innerHeight / g));
-    const k = `${W}x${H}:${g}`;
-    if (k === key) return;
-    key = k;
-    // Keep the plates' corner clear of the usable things (the plates are in UI px; the desk in game px).
-    const r = o.uiPx() / g;
-    const clear = [{ x: W - Math.ceil((MENU_W + 16) * r), y: 0, w: Math.ceil((MENU_W + 16) * r), h: Math.ceil(70 * r) }];
-    scale = Math.max(1, Math.round(g * (window.devicePixelRatio || 1)));
-    scene = barnScene(W, H, o.info, order, clear, scale);
+  function layoutNow(job: BarnJob, g: number, prepared?: BarnScene) {
+    const [W, H, , , , pixel] = job;
+    scale = pixel;
+    scene = prepared ?? barnScene(...job);
     art.width = W * scale;
     art.height = H * scale;
     art.style.width = `${W * g}px`;
@@ -485,20 +533,38 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     }));
     sizeFaces([things, plates], o.uiPx());
   }
-  // Working out the arrangement can take a moment (most of a second the first time; then very little), so it
-  // happens behind the barn's loading screen: shown at once, the arrangement worked out once it's on screen
-  // (two frames later), then lifted. A resize brings it back until the window has stopped changing.
-  let pending = 0, settle = 0;
+  // Leave the loading screen visible while the worker finishes. A resize can supersede a pending layout.
+  let pending = 0, settle = 0, revision = 0;
+  let preparation = o.prepared;
   const arrangeBehind = (wait: number) => {
+    const request = ++revision;
     loading.show();
     clearTimeout(settle);
     cancelAnimationFrame(pending);
     settle = window.setTimeout(() => {
-      pending = requestAnimationFrame(() => (pending = requestAnimationFrame(() => {
+      pending = requestAnimationFrame(() => (pending = requestAnimationFrame(async () => {
         pending = 0;
         if (!open) return;
-        if (heldId) { stop(); held.hidden = true; things.inert = plates.inert = false; heldId = null; } // (a resize puts it down)
-        layout();
+        const g = o.gamePx();
+        const { W, H, pixel, clear } = deskSize(g, o.uiPx());
+        const job: BarnJob = [W, H, o.info, order.slice(), clear, pixel];
+        const next = preparationKey(job);
+        if (key === next) {
+          preparation?.cancel();
+          preparation = undefined;
+          loading.hide();
+          return;
+        }
+        if (preparation?.key !== next) {
+          preparation?.cancel();
+          preparation = prepare(job);
+        }
+        const ready = await preparation.result;
+        if (!open || request !== revision) return;
+        preparation = undefined;
+        if (heldId) { stop(); held.hidden = true; things.inert = plates.inert = false; heldId = null; }
+        layout(job, g, ready);
+        key = next;
         loading.hide();
       })));
     }, wait);
@@ -524,6 +590,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     removeEventListener('resize', relayout);
     cancelAnimationFrame(pending);
     clearTimeout(settle);
+    preparation?.cancel();
     removeEventListener('keydown', keys, true);
     room.remove();
     o.tips?.hide();

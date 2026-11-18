@@ -22,11 +22,11 @@ import { DEV, TRENCH_STYLES, type TrenchStyle } from './world/settings.ts';
 import { installDevApi } from './devtools.ts';
 import { createPauseUi, createSettings, drawVolumePlate, GAME_URL, MENU_W } from './ui/pause.ts';
 import { wireLanding } from './ui/landing.ts';
-import { openBarn } from './story/barn.ts';
+import { openBarn, prepareBarn } from './story/barn.ts';
 import { createVoices } from './game/voices.ts';
 import { createVoiceBox } from './ui/voice.ts';
 import { createTooltips, type Tip } from './ui/tooltip.ts';
-import { barnScene, type BarnInfo } from './story/barn-art.ts';
+import type { BarnInfo } from './story/barn-art.ts';
 import { LOGBOOK_START } from './story/desk-items.ts';
 import { createSave } from './game/save.ts';
 import { hudLight } from './ui/light.ts';
@@ -571,16 +571,8 @@ const storyInfo = (): BarnInfo => {
   };
 };
 const storyGamePx = () => display.view().scale / (window.devicePixelRatio || 1);
-// The desk's drawings take ~0.3 s the first time: make them as soon as STORY is pointed at or focused, so
-// that pressing it opens the desk at once.
-let deskReady = false;
-const prepareDesk = () => {
-  if (deskReady) return;
-  deskReady = true;
-  const g = storyGamePx();
-  setTimeout(() => barnScene(Math.max(80, Math.ceil(innerWidth / g)), Math.max(80, Math.ceil(innerHeight / g)), storyInfo(), [], [], Math.max(1, Math.round(g * (window.devicePixelRatio || 1)))), 0);
-};
-for (const ev of ['pointerenter', 'focus', 'touchstart']) document.getElementById('landing-story')?.addEventListener(ev, prepareDesk, { once: true, passive: true });
+const storyUiPx = () => display.view().uiScale / (window.devicePixelRatio || 1);
+let warmDesk: ReturnType<typeof prepareBarn> | undefined;
 const openStory = () => {
   const page = document.getElementById('landing');
   if (page) page.inert = true;
@@ -589,9 +581,10 @@ const openStory = () => {
   barn = openBarn({
     tips,
     info: storyInfo(),
+    prepared: warmDesk,
     resuming: !!saved,
     log: save.data.log,
-    uiPx: () => display.view().uiScale / (window.devicePixelRatio || 1),
+    uiPx: storyUiPx,
     gamePx: storyGamePx, // flight's pixel size
     measure: IS_DEV || debugRequested ? (name, ms) => prof.add(name, ms) : undefined,
     onSettings: (back) => settings.open(back),
@@ -609,12 +602,20 @@ const openStory = () => {
       document.getElementById('landing-story')?.focus();
     },
   });
+  warmDesk = undefined; // the desk now owns the pending preparation
 };
 const landing = wireLanding({
   skip: new URLSearchParams(location.search).has('play'),
   onSettings: (back) => settings.open(back),
   onStory: openStory,
-  onFreeFly: () => { chosen = true; },
+  onReady: () => {
+    if (!barn?.isOpen()) warmDesk = prepareBarn(storyInfo(), storyGamePx(), storyUiPx());
+  },
+  onFreeFly: () => {
+    warmDesk?.cancel();
+    warmDesk = undefined;
+    chosen = true;
+  },
 });
 if (new URLSearchParams(location.search).has('story') && !chosen) openStory();
 

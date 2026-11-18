@@ -87,6 +87,8 @@ keeping the previous run in `debug/backup/`.
 - Vite hot-reloads on every save, which restarts the game. Wait for `archie` again, then
   `await archie.ready()`.
 
+`make dev MODE=boxes` opens the desk with its layout boxes. Use `MODE=story` for the in-game desk or `MODE=flight` to go straight to Free Fly. To launch a pinned scenario, run `make dev MODE=flight QUERY='seed=1915&time=18.9&speed=0'`. Use `ARGS='--port 5174 --strictPort'` if you need a known port. Set `BROWSER=none` if you’re opening the URL yourself.
+
 ### URL scenarios: reload straight into a situation
 
 | Parameter | Effect |
