@@ -141,7 +141,9 @@ From the browser console, or an agent's JavaScript-in-page tool. `archie.help()`
 | `military` | FRONT | |
 | `frontLines` | FRONT LINES | |
 
-**Every screen:** the profiler and its panel run on the main menu (`menu view`: its terrain window) and at the Story desk (`desk paint`, `desk layout`: work the desk does outside the frame, counted into the next one through `prof.add`) as well as in flight. The panel's first line says which screen it's measuring. Off the flight it sits bottom-left, clear of the plates.
+**Every screen:** the profiler and its panel run on the main menu (`menu view`: its terrain window) and at the Story desk (`desk paint`, `desk layout`: work the desk does outside the frame, counted into the next one through `prof.add`) as well as in flight. The panel's first line says which screen it's measuring. Off the flight it sits bottom-left, clear of the plates. Two more lines: `tiles in` (each tile's main-thread cost as it arrives, counted into the next frame) and `tiles` (made since the last update, per kind: time per tile in the workers and tiles a second).
+
+**By season:** `?day=N` (campaign day; 0 = 10 May 1915) puts a run on any date. To check a change across the year, measure each of these at `?time=11` (frozen, then `archie.speed(null)`) and again half an hour before that date's sunset: 0, 42, 72, 103, 134, 164, 195, 225, 256, 271, 287, 316, 347.
 
 **Profiler stages,** in draw order: `ground` (the composed ground tiles), `sunlight` (shadows, sparkle,
 the plane's shadow, cloud shadows), `plane`, `clouds` (all cloud layers and their tint), `grade` (the

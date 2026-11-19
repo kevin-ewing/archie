@@ -64,6 +64,11 @@ function instrument(size: number, paint: (px: Px, reading: number, alert: Alert)
   glow.width = glow.height = size;
   const glowCtx = glow.getContext('2d')!;
   const glowImg = new ImageData(glowPx.data, size, size);
+  // Last frame's picture (before the light of the hour), and what it was lit with: most frames a needle
+  // hasn't moved a whole pixel, so the picture is the same and what's already on its canvases stays.
+  const last = new Uint32Array(size * size);
+  const now = new Uint32Array(px.data.buffer);
+  let lastLit = '';
   return {
     canvas,
     glow,
@@ -71,6 +76,12 @@ function instrument(size: number, paint: (px: Px, reading: number, alert: Alert)
     draw(reading, alert, luminous = false, light) {
       px.data.fill(0);
       paint(px, reading, alert);
+      const lit = `${luminous}|${light?.key ?? ''}`;
+      let same = lit === lastLit;
+      for (let i = 0; same && i < now.length; i++) same = now[i] === last[i];
+      if (same) return;
+      last.set(now);
+      lastLit = lit;
       if (luminous) {
         radiumOf(px, glowPx);
         glowCtx.putImageData(glowImg, 0, 0);

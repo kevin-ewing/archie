@@ -232,6 +232,14 @@ What keeps it cheap:
 
 Biggest remaining cost: the sunlight layer's cross-fades (~0.4–0.8 ms), since a fade keeps that composite redrawing.
 
+**With the seasons** (November 2026): every date of the campaign year, measured at midday frozen, midday with the clock running (development speed, 3×), and half an hour before sunset. The frame's own JavaScript stays at 0.84–1.08 ms by day, 1.06–1.42 ms with the clock running, and 0.86–1.0 ms at dusk. What keeps it there:
+- **The light overlay is repainted off the main thread** (`render/gradeworker.ts`, started with `startGradeWorker()`). The frame keeps the painting it has until the new one lands, a frame or two later; the first painting, behind the loading screen, is made at once. Around sunset it used to repaint inside the frame several times a second.
+- **The haze veil's banding is worked out once per overlay size** (`hazeBands`), not per pixel on every repaint: a hazy repaint dropped from ~8.5 ms to ~1.9 ms. A check (`grade.haze.test.ts`) holds it pixel for pixel to the original.
+- **The instruments and the watch repaint only when their picture changes.** An instrument compares this frame's paint with the last; the watch keys on its hands' whole-pixel positions. Most frames a needle hasn't moved a pixel. That's worth most at night, when the radium glow doubles the work.
+- **The debug panel** shows each tile's main-thread cost as it arrives (`tiles in`), and a `tiles` line: the workers' time per tile and the tiles made per second, for each kind (ground, which includes the season's effects; shade; clouds).
+
+At development speed the sun's shading tiles are re-baked at about 80–170 a second (1–4 ms each, in the workers), which is the sunlight layer's remaining cost. That's unchanged from before the seasons.
+
 ## 7. Checks & testing
 
 - **`npm run check`**: TypeScript type-check plus small runnable checks (`*.test.ts`) using Node's built-in test runner. No test framework.

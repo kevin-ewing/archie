@@ -7,7 +7,17 @@ import type { TileJob, TileResult } from '../world/worker.ts';
 
 export type TileGen = (req: TileRequest) => Promise<TileData>;
 
-type Waiting = { resolve: (t: TileData) => void; reject: (e: unknown) => void };
+/** Tiles made since the last look, per kind (ground, shade, clouds…): how many, and the time making them took (in the
+ * workers). For the debug panel: `takeTileStats()` reads and resets. */
+const made = new Map<string, { n: number; ms: number }>();
+const tally = (kind: string, ms: number) => { const m = made.get(kind) ?? { n: 0, ms: 0 }; m.n++; m.ms += ms; made.set(kind, m); };
+export function takeTileStats(): Map<string, { n: number; ms: number }> {
+  const out = new Map(made);
+  made.clear();
+  return out;
+}
+
+type Waiting = { resolve: (t: TileData) => void; reject: (e: unknown) => void; kind: string };
 
 /** One tile at a time on the main thread, yielding between tiles. Slower, but always works. */
 function mainThreadGen(): TileGen {
@@ -23,7 +33,7 @@ function mainThreadGen(): TileGen {
   };
   return (req) =>
     new Promise((resolve) => {
-      queue.push(() => resolve(generateTile(req)));
+      queue.push(() => { const t0 = performance.now(); const t = generateTile(req); tally(req.kind, performance.now() - t0); resolve(t); });
       if (!busy) {
         busy = true;
         setTimeout(pump, 0);
@@ -51,7 +61,9 @@ export function createTileGen(): TileGen {
     workers = Array.from({ length: count }, () => {
       const w = new Worker(new URL('../world/worker.ts', import.meta.url), { type: 'module' });
       w.onmessage = ({ data }: MessageEvent<TileResult>) => {
-        waiting.get(data.id)?.resolve(data.tile);
+        const w = waiting.get(data.id);
+        if (w) tally(w.kind, data.ms);
+        w?.resolve(data.tile);
         waiting.delete(data.id);
       };
       w.onerror = (e) => giveUp(e.message || 'worker error');
@@ -66,7 +78,7 @@ export function createTileGen(): TileGen {
     if (broken) return fallback(req);
     return new Promise((resolve, reject) => {
       const id = next++;
-      waiting.set(id, { resolve, reject });
+      waiting.set(id, { resolve, reject, kind: req.kind });
       workers[id % count].postMessage({ id, req } satisfies TileJob, requestTransfer(req));
     });
   };

@@ -36,6 +36,9 @@ export type Around = { n: number; e: number; s: number; w: number };
 
 /** A tile's cache key: a number, not a string (thousands of lookups a frame; |cx|, |cy| < 2^20). */
 const tileKey = (cx: number, cy: number) => (cx + 1048576) * 2097152 + (cy + 1048576);
+/** Development: told the main-thread cost of each tile as it arrives (into a canvas, its cross-fade set up). */
+let onArrive: ((ms: number) => void) | null = null;
+export const setTileArrivalHook = (f: ((ms: number) => void) | null) => { onArrive = f; };
 const FADE_HZ = 30; // how often a cross-fade in progress redraws the composite
 const RETRY_MS = 1000; // after a failed tile, wait this long before asking again
 const NOT_READY_MS = 100; // after a tile that can't be made yet (its inputs aren't ready), wait this long: not every frame
@@ -77,6 +80,14 @@ export function createTileLayer(
       (data) => {
         pending.delete(key);
         const now = performance.now();
+        try { arrive(data, now); } finally { onArrive?.(performance.now() - now); }
+      },
+      () => {
+        pending.delete(key);
+        failedAt.set(key, performance.now()); // retried after RETRY_MS
+      },
+    );
+    const arrive = (data: TileData, now: number) => {
         const canvas = document.createElement('canvas');
         canvas.width = canvas.height = tile;
         canvas.getContext('2d')!.putImageData(new ImageData(data.rgba, tile, tile), 0, 0);
@@ -101,12 +112,7 @@ export function createTileLayer(
         dirty = true;
         failedAt.delete(key);
         while (cache.size > maxCached) cache.delete(cache.keys().next().value!);
-      },
-      () => {
-        pending.delete(key);
-        failedAt.set(key, performance.now()); // retried after RETRY_MS
-      },
-    );
+    };
   }
 
   function get(cx: number, cy: number): Entry | undefined {

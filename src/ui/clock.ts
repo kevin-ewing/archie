@@ -100,10 +100,21 @@ function watchFace(r: number) {
     disc(px, c, cy, 1.5, () => C.metal); // the pivot
     return { minute, hour };
   };
-  return { size, c, cy, staticFace, paint };
+  /** Everything `paint` depends on, as it lands on whole pixels (every line and dot rounds its ends): the
+   * same key, the same picture. The watch repaints only when it changes (the hands move a pixel). */
+  const key = (hours: number, sunset: number) => {
+    const mark = polar(c, cy, r - 1, angle(sunset));
+    const minute = polar(c, cy, r - 7, (hours % 1) * 2 * Math.PI);
+    const hour = polar(c, cy, r - 13, angle(hours));
+    return `${Math.round(mark.x)},${Math.round(mark.y)},${clockText(hours).ampm},${Math.round(minute.x)},${Math.round(minute.y)},${Math.round(hour.x)},${Math.round(hour.y)}`;
+  };
+  return { size, c, cy, staticFace, paint, key };
 }
 
 /** The watch as a plain raster at a given time, for the desk in the barn. Pure. */
+/** The key the watch repaints on (see watchFace `key`): for tests. */
+export const watchKey = (r: number, hours: number, sunset: number): string => watchFace(r).key(hours, sunset);
+
 export function watchPx(r: number, hours: number, sunset: number): Px {
   const f = watchFace(r);
   const px = createPx(f.size, f.size + STEM);
@@ -116,7 +127,8 @@ export function watchPx(r: number, hours: number, sunset: number): Px {
 /** Mark V-inspired cockpit watch; the user's reference has a long stem and no bow.
  * The AM / PM aperture replaces its subsidiary seconds dial as a deliberate game aid; no seconds hand. */
 export function createWatch(r: number): Instrument & { sunset: number; cx: number } {
-  const { size, c, cy, staticFace, paint } = watchFace(r);
+  const { size, c, cy, staticFace, paint, key } = watchFace(r);
+  let shown = '';
   const px = createPx(size, size + STEM);
   const canvas = document.createElement('canvas');
   canvas.width = size;
@@ -131,6 +143,9 @@ export function createWatch(r: number): Instrument & { sunset: number; cx: numbe
   const watch = {
     canvas, glow, size, cx: c, sunset: 19.5,
     draw(hours: number, _alert = 0, luminous = false, light?: HudLight) {
+      const k = `${key(hours, watch.sunset)}|${luminous}|${light?.key ?? ''}`;
+      if (k === shown) return; // the same picture as last frame
+      shown = k;
       px.data.set(staticFace.data);
       const { minute, hour } = paint(px, hours, watch.sunset);
       if (luminous) {

@@ -8,6 +8,9 @@ import { createCamera, updateCamera } from './render/camera.ts';
 import { createDisplay } from './render/display.ts';
 import { PROP, propWidth } from './render/plane.ts';
 import { createScene, drawScene, drawTerrain } from './render/scene.ts';
+import { startGradeWorker } from './render/grade.ts';
+import { setTileArrivalHook } from './render/tiles.ts';
+import { takeTileStats } from './render/tilegen.ts';
 import { applyAids, createAids } from './sim/aids.ts';
 import { dateOf, dayNumber, fromDayNumber, formatISO, REFERENCE, setCampaignStart, type CalDate } from './sim/calendar.ts';
 import { sunNow, sunsetHour } from './sim/daylight.ts';
@@ -276,6 +279,8 @@ const aids = createAids(plane, IS_DEV ? 'hold' : 'off');
 const prevPlane = { ...plane };
 const prevCam = { ...cam };
 const STEP = 1 / 60;
+startGradeWorker(); // the light of the hour is repainted off the main thread
+if (IS_DEV || new URLSearchParams(location.search).has('debug')) setTileArrivalHook((ms) => prof.add('tiles in', ms)); // each tile's main-thread cost as it arrives, in the debug panel
 const scene = createScene(state.seed, state.world.density); // farms 2.5× the base rate in play; development packs them 4× closer still
 // Development only: a front always runs through the plane's start. In production fronts fall where they fall.
 // (Set here for the main thread, which places lamps from the farms, and in every tile request for the workers.)
@@ -415,8 +420,10 @@ if (IS_DEV && debugPanel) {
   debugPanel.textContent = `${debugDetails()}\ncollecting frame timings…`;
 }
 let debugPanelBottom = 0;
+let tilesSince = performance.now();
 const prof = createProfiler(IS_DEV || debugRequested, (text) => {
   if (!debugPanel) return;
+  const now = performance.now();
   debugPanel.hidden = false;
   const view = display.view();
   const mobile = view.mobile;
@@ -428,7 +435,11 @@ const prof = createProfiler(IS_DEV || debugRequested, (text) => {
   debugPanel.style.left = portrait ? '8px' : '';
   debugPanel.style.right = portrait ? 'auto' : '';
   const timings = mobile ? text.split('\n').filter((s, i) => i === 0 || s.startsWith('frame ')).map((s) => s.split(' (')[0]).join('\n') : text;
-  debugPanel.textContent = `${debugDetails()}\n${timings}`;
+  // Tiles made since the last update (in the workers: they don't count against the frame, but show what the
+  // terrain and its seasons cost): per kind, the time per tile and how many a second.
+  const made = [...takeTileStats()].map(([k, m]) => `${k} ${(m.ms / m.n).toFixed(1)}ms x${(m.n * (1000 / Math.max(1, now - tilesSince))).toFixed(0)}/s`);
+  tilesSince = now;
+  debugPanel.textContent = `${debugDetails()}\n${timings}${mobile ? '' : `\ntiles     ${made.join('  ') || 'none'}`}`;
   debugPanelBottom = debugPanel.getBoundingClientRect().bottom;
 });
 

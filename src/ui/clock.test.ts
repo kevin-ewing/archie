@@ -30,3 +30,16 @@ test('the larger watch draws its hands over the raised AM/PM aperture', () => {
     if (savedImageData) Object.defineProperty(globalThis, 'ImageData', savedImageData); else Reflect.deleteProperty(globalThis, 'ImageData');
   }
 });
+
+test('the watch repaints only when its picture would change: the same key, the same pixels', async () => {
+  const { watchKey, watchPx } = await import('./clock.ts');
+  const seen = new Map<string, Uint8ClampedArray>();
+  let repeats = 0;
+  for (let i = 0; i < 4000; i++) {
+    const hours = 6 + i * 0.0005 + Math.floor(i / 1000) * 3.1, sunset = 15.9 + Math.floor(i / 1000) * 0.71; // frames ~2 game seconds apart, in runs at different hours
+    const k = watchKey(27, hours, sunset), px = watchPx(27, hours, sunset).data;
+    const before = seen.get(k);
+    if (before) { repeats++; assert.deepEqual(px, before, `key ${k}`); } else seen.set(k, px);
+  }
+  assert.ok(repeats > 1000, 'many frames share a picture (that is the saving)');
+});

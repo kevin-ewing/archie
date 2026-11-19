@@ -179,6 +179,9 @@ export type GradeLayer = {
   glow: HTMLCanvasElement;
   key: string;
   px?: { tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> };
+  size?: number; // the size the canvases were last painted at
+  glowOn?: boolean; // whether that painting has a glow to draw
+  busy?: boolean; // a repaint is being made off the main thread
 };
 
 export const createGradeLayer = (): GradeLayer => ({ tint: document.createElement('canvas'), glow: document.createElement('canvas'), key: '' });
@@ -254,43 +257,94 @@ export function gradePixels(
   return { tint, glow };
 }
 
-/** The haze: a radial, banded, dithered pale veil composited ("over") into the glow image. Rotation-invariant. */
-function hazeVeil(glow: Uint8ClampedArray<ArrayBuffer>, G: Uint32Array, w: number, h: number, haze: number, R: number) {
+/**
+ * The haze's banding: for each pixel, which band of the veil it falls in (0: none), from where it lies in the
+ * image alone, so it's worked out once per image size and kept (it's most of the haze's cost: a square root
+ * and a smoothstep per pixel). The haze's strength is applied per repaint, in hazeVeil.
+ */
+let veilKey = '';
+let veilBands = new Uint8Array(0);
+export function hazeBands(w: number, h: number, R: number): Uint8Array {
+  const key = `${w}x${h}:${R}`;
+  if (key === veilKey) return veilBands;
+  const B = new Uint8Array(w * h);
   const cx = w / 2;
   const cy = h / 2;
-  const top = haze * 0.25;
-  const [hr, hg, hb] = HAZE_COLOUR;
   for (let y = 0, i = 0; y < h; y++) {
     const row = (y & 3) << 2;
     for (let x = 0; x < w; x++, i++) {
       const t = smooth((Math.hypot(x - cx, y - cy) / R - 0.35) / 0.65);
       if (t <= 0) continue;
-      const band = Math.min(BANDS - 1, Math.max(0, ((t * (BANDS - 1)) + DITHER[row | (x & 3)] + 0.5) | 0));
-      const a2 = (top * band) / (BANDS - 1);
-      if (a2 <= 0) continue;
-      if (G[i] >>> 24 === 0) {
-        G[i] = ((Math.round(a2 * 255) << 24) | (Math.round(hb) << 16) | (Math.round(hg) << 8) | Math.round(hr)) >>> 0;
-        continue;
-      }
-      const o = i * 4;
-      const a1 = glow[o + 3] / 255;
-      const a = a1 + a2 * (1 - a1);
-      const k = (a2 * (1 - a1)) / a;
-      glow[o] = glow[o] + (hr - glow[o]) * k;
-      glow[o + 1] = glow[o + 1] + (hg - glow[o + 1]) * k;
-      glow[o + 2] = glow[o + 2] + (hb - glow[o + 2]) * k;
-      glow[o + 3] = a * 255;
+      B[i] = Math.min(BANDS - 1, Math.max(0, ((t * (BANDS - 1)) + DITHER[row | (x & 3)] + 0.5) | 0));
     }
+  }
+  veilKey = key;
+  veilBands = B;
+  return B;
+}
+
+/** The haze: a radial, banded, dithered pale veil composited ("over") into the glow image. Rotation-invariant. */
+function hazeVeil(glow: Uint8ClampedArray<ArrayBuffer>, G: Uint32Array, w: number, h: number, haze: number, R: number) {
+  const B = hazeBands(w, h, R);
+  const top = haze * 0.25;
+  const [hr, hg, hb] = HAZE_COLOUR;
+  // Per band: its strength, and the packed colour for a pixel with no glow under it (most of them, by day).
+  const A2 = new Float64Array(BANDS);
+  const packed = new Uint32Array(BANDS);
+  for (let b = 1; b < BANDS; b++) {
+    A2[b] = (top * b) / (BANDS - 1);
+    packed[b] = ((Math.round(A2[b] * 255) << 24) | (Math.round(hb) << 16) | (Math.round(hg) << 8) | Math.round(hr)) >>> 0;
+  }
+  for (let i = 0, n = w * h; i < n; i++) {
+    const b = B[i];
+    if (!b) continue;
+    const a2 = A2[b];
+    if (a2 <= 0) continue;
+    if (G[i] >>> 24 === 0) {
+      G[i] = packed[b];
+      continue;
+    }
+    const o = i * 4;
+    const a1 = glow[o + 3] / 255;
+    const a = a1 + a2 * (1 - a1);
+    const k = (a2 * (1 - a1)) / a;
+    glow[o] = glow[o] + (hr - glow[o]) * k;
+    glow[o + 1] = glow[o + 1] + (hg - glow[o + 1]) * k;
+    glow[o + 2] = glow[o + 2] + (hb - glow[o + 2]) * k;
+    glow[o + 3] = a * 255;
   }
 }
 
-function repaint(layer: GradeLayer, size: number, g: Grade, radius: number) {
+/** Put a painting into the layer's canvases. */
+function show(layer: GradeLayer, size: number, g: Grade, px: { tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> }) {
   for (const c of [layer.tint, layer.glow]) if (c.width !== size || c.height !== size) (c.width = size), (c.height = size);
+  layer.tint.getContext('2d')!.putImageData(new ImageData(px.tint, size, size), 0, 0);
+  layer.glowOn = g.glowAlpha > 0.004 || hazing(g);
+  if (layer.glowOn) layer.glow.getContext('2d')!.putImageData(new ImageData(px.glow, size, size), 0, 0); // else drawGrade doesn't draw it
+  layer.size = size;
+}
+function repaint(layer: GradeLayer, size: number, g: Grade, radius: number) {
   // Painted with the sun along +x; drawGrade rotates it to the sun's direction on screen every frame.
   const px = gradePixels(size, size, g, { x: 1, y: 0 }, layer.px, radius);
   layer.px = px;
-  layer.tint.getContext('2d')!.putImageData(new ImageData(px.tint, size, size), 0, 0);
-  if (g.glowAlpha > 0.004 || hazing(g)) layer.glow.getContext('2d')!.putImageData(new ImageData(px.glow, size, size), 0, 0); // else drawGrade doesn't draw it
+  show(layer, size, g, px);
+}
+
+/** Paints a grade off the main thread (render/gradeworker.ts); null where workers can't start (Node, tools). */
+type Painter = (job: { size: number; g: Grade; radius: number }) => Promise<{ tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> }>;
+let painter: Painter | null = null;
+/** Start the grade's worker (call once, in the browser). Until it answers, and without it, repaints are made in the frame. */
+export function startGradeWorker(): void {
+  if (painter || typeof Worker === 'undefined') return;
+  try {
+    const w = new Worker(new URL('./gradeworker.ts', import.meta.url), { type: 'module' });
+    let next: ((px: { tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> }) => void) | null = null;
+    w.onmessage = (e) => { const done = next; next = null; done?.(e.data); };
+    w.onerror = () => { painter = null; };
+    painter = (job) => new Promise((resolve) => { next = resolve; w.postMessage(job); });
+  } catch {
+    painter = null;
+  }
 }
 
 /**
@@ -306,17 +360,31 @@ export function drawGrade(ctx: CanvasRenderingContext2D, view: View, layer: Grad
   const q = (v: number, step: number) => Math.round(v / step);
   const key = [size, q(g.tintAlpha, 0.01), q(g.glowAlpha, 0.01), q(g.rays, 0.02), q(g.near[0] + g.near[1] * 3 + g.near[2] * 7, 6), q(g.far[0] + g.far[1] * 3 + g.far[2] * 7, 6), q(g.glow[0] + g.glow[1] * 3 + g.glow[2] * 7, 6), q(g.haze, 0.02)].join(',');
   if (key !== layer.key) {
-    layer.key = key;
-    repaint(layer, size, g, radius);
+    if (!painter || !layer.size) {
+      // The first painting (behind the loading screen), or no worker: made here and now.
+      layer.key = key;
+      repaint(layer, size, g, radius);
+    } else if (!layer.busy) {
+      // Made off the main thread: the frame keeps the painting it has until the new one is ready (a frame or
+      // two). One at a time; a later light is painted once this one lands.
+      layer.busy = true;
+      const want = key;
+      painter({ size, g, radius }).then((px) => {
+        layer.busy = false;
+        layer.key = want;
+        show(layer, size, g, px);
+      });
+    }
   }
+  const drawn = layer.size ?? size;
   ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
   ctx.translate(view.w / 2, view.h / 2);
   ctx.rotate(Math.atan2(sunScreen.y, sunScreen.x));
   ctx.globalCompositeOperation = 'multiply';
-  ctx.drawImage(layer.tint, -size / 2, -size / 2);
-  if (g.glowAlpha > 0.004 || hazing(g)) {
+  ctx.drawImage(layer.tint, -drawn / 2, -drawn / 2);
+  if (layer.glowOn) {
     ctx.globalCompositeOperation = 'screen';
-    ctx.drawImage(layer.glow, -size / 2, -size / 2);
+    ctx.drawImage(layer.glow, -drawn / 2, -drawn / 2);
   }
   ctx.globalCompositeOperation = 'source-over';
 }
