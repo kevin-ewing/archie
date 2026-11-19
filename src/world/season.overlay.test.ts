@@ -4,7 +4,7 @@ import fc from 'fast-check';
 import { MAY_LOOK, type SeasonState } from '../sim/seasons.ts';
 import { DIRT, WATER, rgb, type RGB } from './palette.ts';
 import { M } from './military.ts';
-import { floodShare, isIce, overlay, surfaceOf, withLook } from './season.ts';
+import { floodShare, isIce, overlay, surfaceOf, tone, withLook } from './season.ts';
 import { landAt } from './ground.ts';
 import { frontClearance } from './fronts.ts';
 
@@ -30,6 +30,10 @@ const patch = (look: SeasonState, seed: number, ox: number, oy: number, c: RGB, 
   });
 
 const isSnowTone = (c: RGB) => c[2] >= c[0] && c[0] >= 0xba && c[1] >= 0xc6; // 0xeef1f2, 0xd9e0e6, 0xbac6d2
+// Deep snow is never a flat sheet: where it lies white, about one pixel in five is a tuft of the grass poking
+// through, half grass and half pale snow (overlay, world/season.ts). That pixel is under the snow cover too.
+const TUFT = tone(GRASS, rgb(0xd9e0e6), 0.5);
+const isCovered = (c: RGB) => isSnowTone(c) || (c[0] === TUFT[0] && c[1] === TUFT[1] && c[2] === TUFT[2]);
 
 test('Property 19: snow-covered pixels only grow with snow, and the share tracks it on open ground', () => {
   fc.assert(
@@ -38,7 +42,7 @@ test('Property 19: snow-covered pixels only grow with snow, and the share tracks
       const lo = patch(winter({ snow: a }), seed, ox, oy, GRASS, 0);
       const hi = patch(winter({ snow: b }), seed, ox, oy, GRASS, 0);
       lo.forEach((c, i) => {
-        if (isSnowTone(c)) assert.ok(isSnowTone(hi[i]), `pixel ${i} covered at snow ${a} but not at ${b}`);
+        if (isCovered(c)) assert.ok(isCovered(hi[i]), `pixel ${i} covered at snow ${a} but not at ${b}`);
       });
     }),
     { numRuns: 60 },
@@ -59,7 +63,7 @@ test('Property 19: the snow share on open ground is about 1.25 x snow (full from
         if (landAt(seed, ox + SIZE / 2, oy + SIZE / 2) !== 'open' || frontClearance(seed, ox + SIZE / 2, oy + SIZE / 2) > 0) continue;
         fields++;
         const px = patch(winter({ snow }), seed, ox, oy, GRASS, 0);
-        covered += px.filter(isSnowTone).length;
+        covered += px.filter(isCovered).length;
         n += px.length;
       }
       const want = Math.min(1, 1.25 * snow);
