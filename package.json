@@ -16,6 +16,7 @@
     "benchmark:update": "node --experimental-strip-types src/perf.ts --update",
     "frontmap": "node --experimental-strip-types src/frontmap.ts",
     "snap": "node --experimental-strip-types src/snap.ts",
+    "seasonshot": "node --experimental-strip-types src/seasonshot.ts",
     "fingerprint": "node --experimental-strip-types src/fingerprint.ts",
     "verify": "npm run check && npm run benchmark:check && npm run build"
   },

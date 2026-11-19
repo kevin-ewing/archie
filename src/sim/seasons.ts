@@ -3,7 +3,8 @@
 // 30-day fold of a small hidden daily weather model; the weather itself is never exposed or drawn.
 //
 // Every number here that is a date or a rate is a tuning value, [VERIFY] against northern-France sources
-// (see climate.ts). `MAY_LOOK` is the neutral state: tiles generated with it match today's output.
+// (see climate.ts). `MAY_LOOK` is the default look for tiles requested without a season; the dates themselves
+// (10 May included) are never pulled toward it, so every value eases smoothly through the year.
 
 import { dayNumber, dayOfYear, fromDayNumber, parseISO, REFERENCE, type CalDate } from './calendar.ts';
 import { ANCHORS, dailyValue, ERA_OFFSET_C, meanTempC, NORMALS, PHENOLOGY, type Anchor } from './climate.ts';
@@ -25,8 +26,10 @@ export type SeasonState = {
   autumnColour: number; // 0-1
   leafDays: number; // days since this year's bud burst (negative = before)
   fallDays: number; // days since this year's autumn colour started (negative = before)
-  grassGreen: number; // 0-1
+  grassGreen: number; // 0-1: 0 dormant winter grass, 1 green
+  grassDry: number; // -1 lush (June) .. 0 (May) .. 1 parched pale (September)
   cropStages: Record<CropName, number>; // 0 bare, 1 blades, 2 green, 3 ripe, 4 stubble (continuous)
+  cropRange: Record<CropName, number[]>; // the stage CROP_SPREAD days either side, so each field can run early or late
   bloom: Record<BloomKind, number>; // 0-1 per kind; multiplies the spatial bloom
   hay: number; // 0-1 haymaking
   snow: number;
@@ -47,6 +50,8 @@ const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
 const mixN = (a: number, b: number, t: number) => a + (b - a) * t;
 
 const allOf = <K extends string>(keys: readonly K[], v: number) => Object.fromEntries(keys.map((k) => [k, v])) as Record<K, number>;
+/** Day offsets at which `cropRange` samples each crop's stage: a field picks its own point in between (world/season.ts). */
+export const CROP_SPREAD = [-16, -8, 0, 8, 16] as const;
 
 /** The neutral state: every seasonal operation is the identity here. Equals the 10 May 1915 look. */
 const refSun = sunDay(REFERENCE);
@@ -60,9 +65,13 @@ export const MAY_LOOK: SeasonState = {
   leafDays: 60,
   fallDays: -60,
   grassGreen: 1,
+  grassDry: 0,
   cropStages: { ...allOf(CROP_NAMES, 2), ploughed: 0 },
-  bloom: allOf(BLOOM_KINDS, 1),
-  hay: 1,
+  cropRange: Object.fromEntries(CROP_NAMES.map((k) => [k, CROP_SPREAD.map(() => (k === 'ploughed' ? 0 : 2))])) as Record<CropName, number[]>,
+  // 10 May: buttercups, daisies, bluebells, hawthorn, cow parsley and colza are out; poppies, cornflowers and clover
+  // flower later, and haymaking starts in June (PHENOLOGY in climate.ts).
+  bloom: { ...allOf(BLOOM_KINDS, 1), poppy: 0, cornflower: 0, clover: 0 },
+  hay: 0,
   snow: 0,
   frost: 0,
   mud: 0,
@@ -124,11 +133,14 @@ function cyclic(pts: readonly Pt[], doy: number): number {
   return mixN(a[1], b[1], (d - ad) / (bd - ad));
 }
 
+// Winter wheat: blades from December, green by late April, ripe late July, harvested in August; the stubble is
+// ploughed in through September and October. Colza: green rosettes all winter (in flower April-May, see bloom),
+// ripe in June, cut in July, sown again in September. Flax and red clover: sown in spring. [VERIFY] every day.
 function cropStages(doy: number, harvest: number): Record<CropName, number> {
   const h = harvest;
-  const wheat: Pt[] = [[74, 2], [130, 2], [196 + h, 3], [222 + h, 4], [280, 4], [290, 0], [305, 0], [335, 1]];
-  const colza: Pt[] = [[160, 2], [186 + h, 3], [206 + h, 4], [260, 4], [270, 0], [300, 1], [330, 2]];
-  const spring: Pt[] = [[100, 0], [121, 2], [200 + h, 2], [232 + h, 3], [258 + h, 4], [280, 4], [290, 0]];
+  const wheat: Pt[] = [[60, 1.2], [110, 2], [150, 2], [200 + h, 3], [222 + h, 4], [255, 4], [295, 0], [310, 0], [345, 1]];
+  const colza: Pt[] = [[150, 2], [178 + h, 3], [198 + h, 4], [225, 4], [245, 0], [265, 0], [285, 1], [320, 2]];
+  const spring: Pt[] = [[85, 0], [125, 2], [200 + h, 2], [232 + h, 3], [258 + h, 4], [275, 4], [300, 0]];
   return {
     ploughed: 0,
     'young wheat': cyclic(wheat, doy),
@@ -201,13 +213,15 @@ export function stepGround(g: Ground, w: { t: number; tmin: number; rain: number
   const snowing = w.t < 1.5;
   const snowfall = snowing ? w.rain : 0;
   const rainfall = snowing ? 0 : w.rain;
-  const melt = Math.min(g.snow, 0.04 * Math.max(0, w.t));
+  // Lying snow melts slowly (a few days to a week or two in a mild spell), faster in rain.
+  const melt = Math.min(g.snow, 0.012 * Math.max(0, w.t) + 0.05 * rainfall);
   const snow = slew(g.snow, g.snow + 0.9 * snowfall - melt);
   const frozen = w.tmin < -2 ? 0.5 : 1;
   const mud = slew(g.mud, (g.mud * ramp(w.t, 5, 18, 0.93, 0.6) + 0.35 * rainfall + 0.15 * melt) * frozen);
   const water = slew(g.water, g.water * ramp(w.t, 5, 18, 0.9, 0.5) + 0.25 * rainfall + 0.1 * melt);
   const level = slew(g.level, g.level * 0.93 + 0.1 * w.rain, 0.04);
-  const ice = slew(g.ice, g.ice + 0.12 * Math.max(0, -w.t) - 0.15 * Math.max(0, w.t));
+  // Lake ice builds over a run of cold days and nights and goes in a thaw.
+  const ice = slew(g.ice, g.ice + (w.t < 3 ? 0.07 * Math.max(0, 1.5 - w.t) + 0.03 * Math.max(0, -w.tmin) : 0) - 0.05 * Math.max(0, w.t - 2));
   const frost = slew(g.frost, w.tmin < 0 && snow < 0.3 ? smooth(-w.tmin / 4) : 0);
   return { snow, mud, water, level, ice, frost };
 }
@@ -218,11 +232,13 @@ function equilibrium(doy: number): Ground {
   return { snow: 0, mud: 0.2 * wet, water: 0.08 * wet, level: 0.2 * wet, ice: 0, frost: 0 };
 }
 
+/** Days of weather folded into a date's ground states. */
+const FOLD_DAYS = 30;
 function fold(n: number, seed: number) {
-  let g = equilibrium(weatherDay(n - 30, seed).doy);
+  let g = equilibrium(weatherDay(n - FOLD_DAYS, seed).doy);
   let t14 = 0;
   let rain14 = 0;
-  for (let i = n - 30; i <= n; i++) {
+  for (let i = n - FOLD_DAYS; i <= n; i++) {
     const w = weatherDay(i, seed);
     g = stepGround(g, w);
     if (i > n - 14) {
@@ -242,12 +258,12 @@ export function coldCap(date: CalDate): number {
   return d < 121 ? 1 - (d - 105) / 16 : (d - 273) / 15;
 }
 
-// ---------------------------------------------------------------- the state
+/** A light snow floor through December, easing in from late November and out in early January. [VERIFY] a game choice, not climate. */
+const DECEMBER_SNOW: Pt[] = [[1, 0.1], [14, 0], [328, 0], [340, 0.14], [365, 0.13]];
+/** Ground frost only from early October to early April (none later in spring). */
+const FROST_SEASON: Pt[] = [[80, 1], [96, 0], [275, 0], [300, 1]];
 
-/** 0 on the Reference_Date, rising to 1 at 7 days either side. */
-export function referenceWeight(date: CalDate): number {
-  return smooth(Math.abs(dayNumber(date) - dayNumber(REFERENCE)) / 7);
-}
+// ---------------------------------------------------------------- the state
 
 const R = (doy: number) => -Math.cos((2 * Math.PI * (doy - 12)) / 365);
 const R0 = R(MAY_LOOK.doy);
@@ -278,8 +294,15 @@ function compute(date: CalDate, seed: number): SeasonState {
   const bloom = {} as Record<BloomKind, number>;
   for (const k of BLOOM_KINDS) {
     const [a, b] = P.bloom[k];
-    bloom[k] = trap(doy, a + Y.bloom[k], b + Y.bloom[k]);
+    bloom[k] = trap(doy, a + Y.bloom[k], b + Y.bloom[k], P.bloomRamp); // flowers come and go over a few weeks
   }
+  // Grass greens up with the spring (earlier or later with the year's bud burst), parches pale in late summer,
+  // and dies back to winter straw from October.
+  const dB = Y.bud - P.budDay.centre;
+  const grassGreen = cyclic([[70, 0], [95 + dB, 0.2], [118 + dB, 0.75], [132, 1], [250, 1], [290, 0.6], [318, 0.2], [340, 0]], doy);
+  const grassDry = cyclic([[130, 0], [165, -0.6], [195, -0.2], [225, 0.5], [255, 1], [285, 0.7], [320, 0]], doy);
+  const range = CROP_SPREAD.map((o) => cropStages(doy + o, Y.harvest));
+  const cropRange = Object.fromEntries(CROP_NAMES.map((k) => [k, range.map((r) => r[k])])) as Record<CropName, number[]>;
   const wet = clamp01(rain14 / 0.25);
   const cold = clamp01((12 - t14) / 12);
 
@@ -292,49 +315,21 @@ function compute(date: CalDate, seed: number): SeasonState {
     autumnColour,
     leafDays,
     fallDays,
-    grassGreen: 0.25 + 0.75 * smooth((t14 - 3) / 9),
-    cropStages: cropStages(doy, Y.harvest),
+    grassGreen,
+    grassDry,
+    cropStages: range[CROP_SPREAD.indexOf(0)],
+    cropRange,
     bloom,
-    hay: trap(doy, P.hay[0] + Y.harvest, P.hay[1] + Y.harvest),
-    snow: g.snow * cap,
-    frost: g.frost * cap,
+    hay: trap(doy, P.hay[0] + Y.harvest, P.hay[1] + Y.harvest, P.bloomRamp),
+    // December always carries at least a light snow, lying in the lee of hedges and in the furrows.
+    snow: Math.max(g.snow * cap, cyclic(DECEMBER_SNOW, doy)),
+    frost: g.frost * cyclic(FROST_SEASON, doy),
     mud: g.mud,
     standingWater: g.water,
     ice: g.ice * cap,
     waterLevel: g.level,
     haze: 0.6 * wet * (0.4 + 0.6 * cold),
     skyBias: skyBiasOf(doy),
-  };
-}
-
-/** Blend a computed state from MAY_LOOK by the reference weight; date, doy and daylength are never blended. */
-function blend(s: SeasonState, w: number): SeasonState {
-  if (w >= 1) return s;
-  const m = MAY_LOOK;
-  const f = (a: number, b: number) => mixN(a, b, w);
-  const rec = <K extends string>(a: Record<K, number>, b: Record<K, number>, keys: readonly K[]) =>
-    Object.fromEntries(keys.map((k) => [k, f(a[k], b[k])])) as Record<K, number>;
-  return {
-    date: s.date,
-    doy: s.doy,
-    daylength: s.daylength,
-    foliage: f(m.foliage, s.foliage),
-    budding: f(m.budding, s.budding),
-    autumnColour: f(m.autumnColour, s.autumnColour),
-    leafDays: f(m.leafDays, s.leafDays),
-    fallDays: f(m.fallDays, s.fallDays),
-    grassGreen: f(m.grassGreen, s.grassGreen),
-    cropStages: rec(m.cropStages, s.cropStages, CROP_NAMES),
-    bloom: rec(m.bloom, s.bloom, BLOOM_KINDS),
-    hay: f(m.hay, s.hay),
-    snow: f(m.snow, s.snow),
-    frost: f(m.frost, s.frost),
-    mud: f(m.mud, s.mud),
-    standingWater: f(m.standingWater, s.standingWater),
-    ice: f(m.ice, s.ice),
-    waterLevel: f(m.waterLevel, s.waterLevel),
-    haze: f(m.haze, s.haze),
-    skyBias: f(m.skyBias, s.skyBias),
   };
 }
 
@@ -345,7 +340,7 @@ export function seasonAt(date: CalDate, seed: number): SeasonState {
   const key = dayKey(dayNumber(date), seed);
   const hit = stateCache.get(key);
   if (hit) return hit;
-  const s = blend(compute(date, seed), referenceWeight(date));
+  const s = compute(date, seed);
   stateCache.set(key, s);
   return s;
 }
@@ -363,8 +358,10 @@ export function clearSeasonCache(): void {
 export function seasonKey(s: SeasonState): number {
   const q = (v: number, steps: number) => Math.round(v * steps);
   const vals = [
-    q(s.foliage, 16), q(s.budding, 8), q(s.autumnColour, 8), q(s.grassGreen, 8),
-    ...CROP_NAMES.map((k) => q(s.cropStages[k], 4)),
+    q(s.foliage, 16), q(s.budding, 8), q(s.autumnColour, 8), q(s.grassGreen, 8), q(s.grassDry, 8),
+    // Trees and fields ease a little every day (each on its own day), so the day itself is part of the key.
+    Math.round(s.leafDays), Math.round(s.fallDays),
+    ...CROP_NAMES.flatMap((k) => s.cropRange[k].map((v) => q(v, 16))),
     ...BLOOM_KINDS.map((k) => q(s.bloom[k], 4)),
     q(s.hay, 4), q(s.snow, 10), q(s.frost, 6), q(s.mud, 8), q(s.standingWater, 8), q(s.waterLevel, 6), q(s.ice, 8),
   ];

@@ -29,7 +29,7 @@ import { hash, valueNoise } from '../core/noise.ts';
 import { DIRT, dirtAt, isWater, landAt, type RGB } from './ground.ts';
 import { FRONTS, frontInfo } from './fronts.ts';
 import { type Stamp } from './military.ts';
-import { look, tone } from './season.ts';
+import { BARK, hedgeTone, leafCover, leafTone, look, tone } from './season.ts';
 import { DEV } from './settings.ts';
 
 const rgb = (hex: number): RGB => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
@@ -64,6 +64,9 @@ const S = {
   tree: [rgb(0x4e6638), rgb(0x5c7442), rgb(0x435a30)],
   soil: rgb(0x4d3f2c),
   veg: [rgb(0x5f7a3a), rgb(0x6f8a44)],
+  vegDull: rgb(0x6c6640), // garden rows going over
+  brassica: rgb(0x3d4c34), // leeks, kale and cabbages, standing through the winter
+  weathered: rgb(0x766a4e), // a stack's thatch and sides, greyed by the winter
   water: rgb(0x34494f),
   reeds: rgb(0x535b33),
   millWood: [rgb(0x5a4a38), rgb(0x4d3f30)],
@@ -91,15 +94,24 @@ const S = {
 export const YARD = { paving: S.paving, dung: S.dung };
 const BLOSSOM = rgb(0xe8d6d8); // apple and pear blossom, pale pink-white
 
-// Seasonal presence of farm features, by the look's date (12.4). At MAY_LOOK (doy 130, wheat stage 2, hay 1,
-// leaf days 60) every test below is true, so today's tiles are unchanged. [VERIFY] the day windows.
+// Seasonal presence of farm features, by the look's date (12.4). At MAY_LOOK (doy 130, wheat stage 2, hay 0,
+// leaf days 60) every test below is true; hay cocks wait for June. [VERIFY] the day windows.
 const inSpring = () => look.s.doy >= 50 && look.s.doy <= 150; // muck heaps wait on the field to be spread
 const inOffSeason = () => look.s.doy < 165 || look.s.doy > 270; // beet clamps and brushwood stand except high summer
-/** Last year's rick and thatched stacks stand until threshed; the new ones go up after the harvest (wheat stage 4). */
-const stacksStand = () => {
-  const w = look.s.cropStages['young wheat'];
-  return w <= 2.5 || w >= 3.5;
+/** A piecewise-linear value over the year, by the look's day of year (`pts` sorted, covering 1-366). */
+const byDay = (pts: readonly (readonly [number, number])[]) => {
+  const d = look.s.doy;
+  for (let i = 1; i < pts.length; i++) if (d <= pts[i][0]) return pts[i - 1][1] + ((pts[i][1] - pts[i - 1][1]) * (d - pts[i - 1][0])) / (pts[i][0] - pts[i - 1][0]);
+  return pts[pts.length - 1][1];
 };
+/** Share of ricks and stacks standing: last year's are used up through winter and spring, the new ones go up after the harvest. */
+const STACKS = [[1, 0.6], [90, 0.45], [165, 0.2], [200, 0.2], [235, 0.85], [300, 0.8], [366, 0.6]] as const;
+/** Does stack `k` of site `id` stand on the date? Each site's stacks go up and come down on their own days. */
+const stands = (id: number, k: number) => hash(id + 61, k, 7) < byDay(STACKS);
+/** Stack straw on the date: fresh gold after the harvest, greyed by the winter. */
+const stackTone = (c: RGB) => tone(c, S.weathered, (1 - look.s.grassGreen) * 0.55);
+/** How far a kitchen garden's rows have grown: little but winter greens until April, full by July, cleared in autumn. */
+const GARDEN = [[1, 0.1], [75, 0.05], [110, 0.3], [160, 0.85], [195, 1], [250, 0.85], [290, 0.45], [330, 0.15], [366, 0.1]] as const;
 /** How much of an orchard's canopy is in blossom: 0 once the leaf is full (and at MAY_LOOK), following `bloom.hawthorn`. */
 const blossom = () => look.s.bloom.hawthorn * Math.min(1, Math.max(0, (60 - look.s.leafDays) / 40));
 
@@ -447,9 +459,9 @@ function bitPixel(b: Bit, x: number, y: number, id: number, d: number, ruined: b
     }
     case 'rick': {
       // A long rick: straw sides, thatched ridge along its length.
-      if (!inside || !stacksStand()) return null;
+      if (!inside || !stands(id, 0)) return null;
       const t = 1 - ax / b.hw;
-      return [ax < 0.8 ? S.hay[1] : mod(Math.floor(y / 1.5), 2) ? S.hay[0] : S.straw, 2.5 + 2 * t];
+      return [stackTone(ax < 0.8 ? S.hay[1] : mod(Math.floor(y / 1.5), 2) ? S.hay[0] : S.straw), 2.5 + 2 * t];
     }
     case 'faggots':
       // Brushwood bundles stacked against a wall, tied in the middle.
@@ -478,7 +490,10 @@ function bitPixel(b: Bit, x: number, y: number, id: number, d: number, ruined: b
       const t = hash(id + 31, k, 0);
       if (t < 0.15) return r < 0.9 ? [S.post, 2.5] : null; // freshly pollarded: just the stump
       const cr = 1.8 + t;
-      return r < cr && !ruined ? [S.willow[r < cr * 0.5 ? 1 : d < 0.5 ? 0 : 2], 4 + 1.5 * (1 - r / cr)] : null;
+      if (r >= cr || ruined) return null;
+      const lc = leafCover(1, (id * 17 + k) | 0);
+      if (lc.cover > d * 0.95) return [leafTone(S.willow[r < cr * 0.5 ? 1 : d < 0.5 ? 0 : 2], lc), 4 + 1.5 * (1 - r / cr)];
+      return r < 0.8 || d < 0.45 ? [BARK.twig[2], 3.5] : null; // bare withies on the pollard head
     }
   }
 }
@@ -534,10 +549,11 @@ function structure(s: Structure, wx: number, wy: number): Stamp | null {
     const px = bitPixel(b, lx - b.x, ly - b.y, s.id, d, s.ruined);
     if (px) return px;
   }
-  for (const h of s.hay) {
+  for (let k = 0; k < s.hay.length; k++) {
+    const h = s.hay[k];
     const r = Math.hypot(lx - h.x, ly - h.y);
-    if (r < h.r && !s.ruined && !stacksStand()) continue; // thatched stacks follow the rick
-    if (r < h.r) return s.ruined ? [S.charred, 0.5] : [S.hay[r < h.r / 2 ? 0 : 1], 1 + 3 * (1 - r / h.r)];
+    if (r < h.r && !s.ruined && !stands(s.id, k + 1)) continue; // each stack built and used on its own days
+    if (r < h.r) return s.ruined ? [S.charred, 0.5] : [stackTone(S.hay[r < h.r / 2 ? 0 : 1]), 1 + 3 * (1 - r / h.r)];
   }
   for (const p of s.ponds) {
     if (Math.abs(lx - p.x) > p.r + 1 || Math.abs(ly - p.y) > p.r + 1) continue; // the ragged edge reaches ≤ 1 px out
@@ -547,14 +563,21 @@ function structure(s: Structure, wx: number, wy: number): Stamp | null {
   }
   if (s.graves && inBox(s.graves, lx, ly) && mod(Math.round(lx), 3) === 0 && mod(Math.round(ly), 3) === 0) return [S.grave, 0.8]; // headstones in the grass
   for (const g of s.gardens) {
-    if (inBox(g, lx, ly)) return s.ruined ? [pick(S.rubble, d), 0] : mod(Math.floor(ly - g.y + g.hh), 3) === 0 ? [S.soil, 0] : [S.veg[d < 0.5 ? 0 : 1], 0.3]; // vegetable rows
+    if (!inBox(g, lx, ly)) continue;
+    if (s.ruined) return [pick(S.rubble, d), 0];
+    if (mod(Math.floor(ly - g.y + g.hh), 3) === 0) return [S.soil, 0];
+    // Vegetable rows, grown as far as the season has them; a few winter greens all year.
+    const grown = byDay(GARDEN);
+    const v = hash(s.id + 8, Math.round(wx), Math.round(wy));
+    if (v < grown) return [tone(S.veg[d < 0.5 ? 0 : 1], S.vegDull, (1 - look.s.grassGreen) * 0.5), 0.1 + 0.3 * grown];
+    return v < grown + 0.1 ? [S.brassica, 0.3] : [S.soil, 0];
   }
   for (const o of s.orchards) {
     if (!inBox(o, lx, ly)) continue;
     // Fruit trees in rows, a little irregular; near the front, only stumps remain.
     const gx = lx - o.x + o.hw;
     const gy = ly - o.y + o.hh;
-    if (o.hedge && Math.min(gx, gy, 2 * o.hw - gx, 2 * o.hh - gy) < 1.4 && valueNoise(s.id + 9, lx / 4, ly / 4) > 0.2) return [S.hedge[d < 0.5 ? 0 : 1], 2.5]; // hawthorn
+    if (o.hedge && Math.min(gx, gy, 2 * o.hw - gx, 2 * o.hh - gy) < 1.4 && valueNoise(s.id + 9, lx / 4, ly / 4) > 0.2) return [hedgeTone(S.hedge[d < 0.5 ? 0 : 1], d < 0.5), 2.5]; // hawthorn
     const ci = Math.floor(gx / o.step);
     const cj = Math.floor(gy / o.step);
     const jx = (hash(s.id + 1, ci, cj) - 0.5) * 2;
@@ -564,9 +587,15 @@ function structure(s: Structure, wx: number, wy: number): Stamp | null {
     if (s.ruined) {
       if (rr < 1) return [S.charred, 3];
     } else if (rr < cr) {
-      const c = S.tree[rr < cr / 2 ? 1 : d < 0.5 ? 0 : 2];
-      const bl = blossom();
-      return [bl > 0.05 && hash(s.id + 4, Math.round(wx), Math.round(wy)) < bl * 0.6 ? tone(c, BLOSSOM, 0.7) : c, 6 + 1.5 * (1 - rr / cr)];
+      // Fruit trees leaf, blossom, colour and drop like the woods (an early species), each on its own days.
+      const lc = leafCover(1, (s.id * 31 + ci * 7 + cj) | 0);
+      if (lc.cover > Math.min(0.99, valueNoise(s.id + 6, lx / 1.6, ly / 1.6) * 0.6 + d * 0.25 + (rr / cr) * 0.15)) {
+        const c = leafTone(S.tree[rr < cr / 2 ? 1 : d < 0.5 ? 0 : 2], lc);
+        const bl = blossom();
+        return [bl > 0.05 && hash(s.id + 4, Math.round(wx), Math.round(wy)) < bl * 0.6 ? tone(c, BLOSSOM, 0.7) : c, 4 + 3.5 * lc.cover * (1 - rr / cr)];
+      }
+      if (rr < 0.9) return [BARK.trunk, 4];
+      if (d < 0.3 + 0.2 * (1 - rr / cr)) return [BARK.twig[1], 3]; // bare twigs; the grass shows between
     }
   }
   // Paving right round the buildings (cobbles, setts), then the yard and trampled earth fraying out into

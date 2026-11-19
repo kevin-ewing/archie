@@ -1024,6 +1024,16 @@ export function militaryAt(
 }
 
 /** Of the shelled ground, what `onlyTrenches` (development) draws: switched on one at a time. */
+/** Same-coloured copies, by identity, of the shelled ground's tones where the earth was thrown up since the last
+ *  snow: it lies on top of the snow, so it stays dark (see overlay in world/season.ts). No change without snow. */
+export const FRESH = new Set<RGB>();
+const freshOf = new Map<RGB, RGB>();
+const fresh = (c: RGB): RGB => {
+  let f = freshOf.get(c);
+  if (!f) freshOf.set(c, (f = [c[0], c[1], c[2]] as unknown as RGB)), FRESH.add(f);
+  return f;
+};
+const FRESH_SHARE = 0.3; // of the shell holes (the rest are older, under the snow)
 const ONLY_TRENCHES_GROUND = { craters: true, wrecks: false, stumps: false, clods: false, mud: true };
 /** Shelling: stacked craters (whole, some full of water), wrecks, blasted stumps, churned mud and clods. */
 function shelling(
@@ -1041,10 +1051,11 @@ function shelling(
     // The pit and lip are speckled with clods and wet mud; the lip and the thrown earth round it get some of
     // the paler, greyer dug earth too (as in the trenches' banks and spoil), flung up from below.
     if (hit.c.pool && q < 0.45) return [M.pool[q < 0.3 ? 0 : 1], 0.05];
-    if (q < 0.35) return [speckle(seed, x, y, CRATER.speckle.pit) ?? M.clod, 0.1];
-    if (q < 0.65) return [speckle(seed, x, y, CRATER.speckle.pit) ?? M.bowl, 0.2];
-    if (q < 1) return [dug(seed, x, y, CRATER.speckle.lipDug) ?? speckle(seed, x, y, CRATER.speckle.lip) ?? M.rim[d < 0.55 ? 0 : 1], H.rim];
-    if (d < 0.6 * (1 - (q - 1) / (CRATER.splash - 1))) return [dug(seed, x, y, CRATER.speckle.thrownDug) ?? M.clod, H.mud]; // thrown earth around it
+    const f = !hit.c.pool && hash(seed + 296, Math.round(hit.c.x), Math.round(hit.c.y)) < FRESH_SHARE ? fresh : (c: RGB) => c;
+    if (q < 0.35) return [f(speckle(seed, x, y, CRATER.speckle.pit) ?? M.clod), 0.1];
+    if (q < 0.65) return [f(speckle(seed, x, y, CRATER.speckle.pit) ?? M.bowl), 0.2];
+    if (q < 1) return [f(dug(seed, x, y, CRATER.speckle.lipDug) ?? speckle(seed, x, y, CRATER.speckle.lip) ?? M.rim[d < 0.55 ? 0 : 1]), H.rim];
+    if (d < 0.6 * (1 - (q - 1) / (CRATER.splash - 1))) return [f(dug(seed, x, y, CRATER.speckle.thrownDug) ?? M.clod), H.mud]; // thrown earth around it
   }
   if (on.wrecks && au > nml + 40 && au < 900 && dev > 0.15) {
     const ks = Math.floor(s / 260);
@@ -1060,9 +1071,32 @@ function shelling(
     const stump = cells.stump(x, y);
     if (stump.f1 < 1.3 && stump.id < dev * 0.8) return [M.stump, H.stump];
   }
-  if (on.clods && d < dev * 0.18) return [M.clod, H.mud]; // small churned clods everywhere
-  if (on.mud && d < dev ** 1.3) return [pick(M.mud, valueNoise(seed + 212, x / 3, y / 3)), H.mud];
+  const clod = on.clods && d < dev * 0.18;
+  if (clod || (on.mud && d < dev ** 1.3)) {
+    const c = clod ? M.clod : pick(M.mud, valueNoise(seed + 212, x / 3, y / 3));
+    // Earth thrown up since the snow lies on it: thick round each fresh hole, thinning out to a few clods, plus
+    // a thin scatter (later shelling, traffic) that thickens smoothly with the shelling. Dithered, so it fades.
+    const e = Math.max(ejecta(seed, craters, x, y), 0.25 * smooth((dev - 0.45) / 0.45));
+    return [hash(seed + 299, x, y) < e ? fresh(c) : c, H.mud];
+  }
   return null;
+}
+
+/** How thick the earth thrown from fresh shell holes lies at x, y (0..1): full to 1.35 r, gone by ~3 r (≤ 24 px). */
+function ejecta(seed: number, craters: (i: number, j: number) => Crater | null, x: number, y: number): number {
+  const ci = Math.floor(x / CRATER_CELL);
+  const cj = Math.floor(y / CRATER_CELL);
+  let e = 0;
+  for (let j = cj - 1; j <= cj + 1; j++) {
+    for (let i = ci - 1; i <= ci + 1; i++) {
+      const c = craters(i, j);
+      if (!c || c.pool || hash(seed + 296, Math.round(c.x), Math.round(c.y)) >= FRESH_SHARE) continue;
+      const dist = Math.hypot(x - c.x, y - c.y);
+      const reach = Math.min(3 * c.r, CRATER_CELL); // a 3×3 search sees every hole this close
+      e = Math.max(e, smooth((reach - dist) / (reach - CRATER.splash * c.r)) ** 1.5);
+    }
+  }
+  return e;
 }
 
 /** A map fix to the closest sampled trench floor, rather than the middle of no-man's land. */

@@ -2,6 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { groundChunk, groundColor, groundHeight, HAY, HEIGHT, treeAt, WATER } from './ground.ts';
 import { cloudLevel } from './clouds.ts';
+import { withLook } from './season.ts';
+import { seasonAt } from '../sim/seasons.ts';
 
 const water = Object.values(WATER);
 
@@ -49,7 +51,7 @@ test('trees are always drawn whole: every pixel of a crown is tree, wherever it 
   assert.ok(checked > 100, `enough trees sampled (${checked})`);
 });
 
-test('some meadows are being mown: whole hay cocks out in the fields', () => {
+test('some meadows are being mown in June: whole hay cocks out in the fields', () => withLook(seasonAt({ year: 1915, month: 6, day: 21 }, 1915), () => {
   let cocks = 0;
   let cut = 0;
   for (let y = -6000; y < 6000; y += 3) {
@@ -62,7 +64,7 @@ test('some meadows are being mown: whole hay cocks out in the fields', () => {
   assert.ok(cocks > 3, `hay cocks (${cocks})`);
   // Never cut by a field edge or a wood; the landscape's rare stray scrub speck may still land on one.
   assert.ok(cut / cocks < 0.08, `whole cocks (${cut}/${cocks} cut)`);
-});
+}));
 
 test('a colza field is in flower or not as a whole: never split across the field', async () => {
   const { cellular, valueNoise } = await import('../core/noise.ts');

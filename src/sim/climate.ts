@@ -114,16 +114,18 @@ export const PHENOLOGY = {
   harvest: { from: 206, to: 227 }, // winter cereal harvest, late July to mid August
   harvestShift: 5,
   bloomShift: 6,
+  bloomRamp: 16, // days a flower takes to come fully into bloom, and to go over
+  // Mostly over by mid August, all gone by early September.
   bloom: {
-    bluebell: [105, 140],
-    hawthorn: [120, 150],
-    cowParsley: [125, 175],
-    colza: [100, 145],
-    buttercup: [110, 230],
-    daisy: [130, 250],
-    poppy: [145, 215],
-    cornflower: [155, 220],
-    clover: [150, 260],
+    bluebell: [100, 145],
+    hawthorn: [112, 155],
+    cowParsley: [100, 180], // from mid April
+    colza: [92, 150],
+    buttercup: [105, 205],
+    daisy: [105, 215], // from late April, so 10 May is in flower
+    poppy: [140, 210],
+    cornflower: [150, 215],
+    clover: [145, 235],
   },
   hay: [152, 190], // haymaking, late May/June to before cereal harvest
 } as const;

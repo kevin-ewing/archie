@@ -250,7 +250,7 @@ These were chosen without further questions to the user. Each can be revised bef
 
 #### Acceptance Criteria
 
-1. WHEN the date is the Reference_Date, THE World_Generator SHALL produce ground tiles whose Fingerprint equals the Fingerprint before this feature.
+1. WHEN the date is the Reference_Date, THE World_Generator SHALL produce ground tiles whose Fingerprint equals the Fingerprint before this feature, except that poppies, cornflowers, red clover and hay cocks are absent (they belong to June, not 10 May). The Fingerprint baseline is re-saved once for this change.
 2. THE World_Generator SHALL draw every seasonal visual as a bitmap through the existing tile pipeline at 1 game pixel per texel, with no vector fills under rotation and no scaling with smoothing.
 3. THE World_Generator SHALL choose seasonal colours from tonal families next to the existing `rgb(...)` constants in `ground.ts`, `structures.ts` and `military.ts`, built with the same banding and Bayer dithering as the existing code.
 4. THE World_Generator SHALL read the Season_State only as an input to colouring and ground state, so that the layer order (front plan, landscape, farms, stamps) and the rule "a layer reads only earlier layers" hold.

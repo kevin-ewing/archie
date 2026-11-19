@@ -5,6 +5,8 @@ import { MAY_LOOK, type SeasonState } from '../sim/seasons.ts';
 import { DIRT, WATER, rgb, type RGB } from './palette.ts';
 import { M } from './military.ts';
 import { floodShare, isIce, overlay, surfaceOf, withLook } from './season.ts';
+import { landAt } from './ground.ts';
+import { frontClearance } from './fronts.ts';
 
 // Feature: seasons-system, Property 19: Snow and flood coverage grow with their parameter
 // **Validates: Requirements 10.2, 13.1**
@@ -43,27 +45,39 @@ test('Property 19: snow-covered pixels only grow with snow, and the share tracks
   );
 });
 
-test('Property 19: the snow share on open ground is within 0.15 of snow', () => {
-  // Averaged over many well-separated patches: the noise cells are 40 px wide, so each patch is only one or two
-  // independent samples, and 16 of them left a per-seed sd of about 0.05 (a 0.15 miss in a few hundred runs).
+test('Property 19: the snow share on open ground is about 1.25 x snow (full from 0.8)', () => {
+  // Snow lies field by field and in drifts along the hedges (snowLie), so a 48-px patch is mostly one field:
+  // averaged over 64 well-separated patches, i.e. a few dozen fields.
   fc.assert(
     fc.property(seeds, fc.double({ min: 0.1, max: 0.9, noNaN: true }), (seed, snow) => {
       let covered = 0;
       let n = 0;
-      for (let k = 0; k < 64; k++) {
-        const px = patch(winter({ snow }), seed, k * 331, k * 197 - 800, GRASS, 0);
+      let fields = 0;
+      for (let k = 0; k < 400 && fields < 64; k++) {
+        const [ox, oy] = [k * 331, k * 197 - 800];
+        // Open farmland only: woods and a front's zone hold snow their own way.
+        if (landAt(seed, ox + SIZE / 2, oy + SIZE / 2) !== 'open' || frontClearance(seed, ox + SIZE / 2, oy + SIZE / 2) > 0) continue;
+        fields++;
+        const px = patch(winter({ snow }), seed, ox, oy, GRASS, 0);
         covered += px.filter(isSnowTone).length;
         n += px.length;
       }
-      assert.ok(Math.abs(covered / n - snow) <= 0.15, `share ${covered / n} vs snow ${snow}`);
+      const want = Math.min(1, 1.25 * snow);
+      assert.ok(Math.abs(covered / n - want) <= 0.2, `share ${covered / n} vs ${want} at snow ${snow}`);
     }),
     { numRuns: 30 },
   );
 });
 
-test('Property 19: flooded pixels only grow with standingWater (trench floors and open ground)', () => {
+test('Property 19: open ground never floods; flooded trench floors only grow with standingWater', () => {
   const isPool = (c: RGB) => WATER.pool.includes(c);
-  for (const [c, name] of [[M.bowl, 'trench'], [GRASS, 'field']] as [RGB, string][]) {
+  fc.assert(
+    fc.property(seeds, origin, origin, param, (seed, ox, oy, sw) => {
+      assert.ok(!patch(winter({ standingWater: sw, mud: sw }), seed, ox, oy, GRASS, 0).some(isPool), 'a field pixel flooded');
+    }),
+    { numRuns: 30 },
+  );
+  for (const [c, name] of [[M.bowl, 'trench']] as [RGB, string][]) {
     fc.assert(
       fc.property(seeds, origin, origin, param, param, (seed, ox, oy, p, q) => {
         const [a, b] = p <= q ? [p, q] : [q, p];
@@ -103,8 +117,8 @@ test('Property 19: floodShare is monotone in standingWater and wetness, and with
   );
 });
 
-test('Property 20: tracks, trench floors, ruts and dugouts do not turn bright under snow', () => {
-  const dark: RGB[] = [M.track, DIRT.rut, M.dugout, M.bowl, ...M.relicFloor];
+test('Property 20: tracks, ruts and dugouts do not turn bright under snow out in the open (trenches and shell holes fill)', () => {
+  const dark: RGB[] = [M.track, DIRT.rut, M.dugout];
   fc.assert(
     fc.property(seeds, origin, origin, fc.constantFrom(...dark), fc.double({ min: 0.05, max: 1, noNaN: true }), (seed, ox, oy, c, snow) => {
       assert.ok(['dirt', 'trench'].includes(surfaceOf(c, 0)));

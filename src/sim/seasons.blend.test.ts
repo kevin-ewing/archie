@@ -4,7 +4,7 @@ import fc from 'fast-check';
 import { dayNumber, formatISO, fromDayNumber, REFERENCE } from './calendar.ts';
 import { PHENOLOGY } from './climate.ts';
 import {
-  BLOOM_KINDS, CROP_NAMES, MAY_LOOK, parseOverrides, referenceWeight, seasonAt, seasonKey, SEASON_DATES,
+  BLOOM_KINDS, CROP_NAMES, parseOverrides, seasonAt, seasonKey, SEASON_DATES,
   type OverrideParam, type SeasonState,
 } from './seasons.ts';
 
@@ -13,37 +13,19 @@ const seed = fc.integer({ min: 0, max: 0x7fffffff });
 const dayN = fc.integer({ min: dayNumber({ year: 1900, month: 1, day: 1 }), max: dayNumber({ year: 2100, month: 12, day: 31 }) });
 const campaignN = fc.integer({ min: dayNumber({ year: 1914, month: 1, day: 1 }), max: dayNumber({ year: 1918, month: 12, day: 31 }) });
 
-// Feature: seasons-system, Property 15: Reference date is neutral and fades smoothly
-test('Property 15: the reference date is MAY_LOOK and the blend weight rises from 0 to 1 over 7 days', () => {
+// Feature: seasons-system, Property 15: the look eases day to day (no date is pulled toward a fixed look)
+test('Property 15: the season-driven values move by small daily steps all year', () => {
   fc.assert(
-    fc.property(seed, (s) => {
-      assert.deepEqual(seasonAt(REFERENCE, s), MAY_LOOK);
-      assert.equal(referenceWeight(REFERENCE), 0);
-      for (const sign of [1, -1]) {
-        let prev = 0;
-        for (let k = 0; k <= 10; k++) {
-          const w = referenceWeight(fromDayNumber(REF_N + sign * k));
-          assert.ok(w >= prev, `w(${sign * k}) = ${w} fell below ${prev}`);
-          if (k >= 7) assert.equal(w, 1);
-          prev = w;
-        }
-      }
+    fc.property(seed, fc.integer({ min: 0, max: 364 }), (s, k) => {
+      const a = seasonAt(fromDayNumber(REF_N - 130 + k), s);
+      const b = seasonAt(fromDayNumber(REF_N - 129 + k), s);
+      for (const key of ['foliage', 'budding', 'autumnColour', 'grassGreen', 'grassDry', 'hay'] as const)
+        assert.ok(Math.abs(a[key] - b[key]) <= 0.1, `${key} jumped ${a[key]} -> ${b[key]} at day ${k}`);
+      for (const c of CROP_NAMES) assert.ok(Math.abs(a.cropStages[c] - b.cropStages[c]) <= 0.25, `${c} jumped`);
+      for (const f of BLOOM_KINDS) assert.ok(Math.abs(a.bloom[f] - b.bloom[f]) <= 0.1, `${f} bloom jumped`);
+      assert.ok(Math.abs(a.leafDays - b.leafDays - -1) < 1e-9 || Math.abs(a.leafDays - b.leafDays) > 300, 'leafDays counts days');
     }),
-    { numRuns: 25 },
-  );
-});
-
-test('Property 15: the fade is continuous (each field moves by at most the daily bound)', () => {
-  fc.assert(
-    fc.property(seed, (s) => {
-      for (let k = 0; k < 7; k++) {
-        const a = seasonAt(fromDayNumber(REF_N + k), s);
-        const b = seasonAt(fromDayNumber(REF_N + k + 1), s);
-        for (const key of ['foliage', 'grassGreen', 'hay', 'snow', 'mud', 'standingWater'] as const)
-          assert.ok(Math.abs(a[key] - b[key]) <= 0.35, `${key} jumped ${a[key]} -> ${b[key]} at +${k}`);
-      }
-    }),
-    { numRuns: 25 },
+    { numRuns: 300 },
   );
 });
 
@@ -51,8 +33,6 @@ test('Property 15: the fade is continuous (each field moves by at most the daily
 test('Property 16: bloom and hay are in [0, 1] and zero outside their widened windows', () => {
   fc.assert(
     fc.property(seed, fc.oneof(dayN, campaignN), (s, n) => {
-      // Within 7 days of the Reference_Date the state is blended toward MAY_LOOK (1 for all), by design.
-      fc.pre(Math.abs(n - REF_N) >= 7);
       const st = seasonAt(fromDayNumber(n), s);
       const P = PHENOLOGY;
       const outside = (doy: number, a: number, b: number, shift: number) => doy < a - shift || doy > b + shift;
@@ -70,19 +50,21 @@ test('Property 16: bloom and hay are in [0, 1] and zero outside their widened wi
 
 // Feature: seasons-system, Property 22: Season key is a function of the bucketed state
 const BUCKETS: Partial<Record<keyof SeasonState, number>> = {
-  foliage: 16, budding: 8, autumnColour: 8, grassGreen: 8, hay: 4, snow: 10, frost: 6, mud: 8, standingWater: 8, waterLevel: 6, ice: 8,
+  foliage: 16, budding: 8, autumnColour: 8, grassGreen: 8, grassDry: 8, hay: 4, snow: 10, frost: 6, mud: 8, standingWater: 8, waterLevel: 6, ice: 8,
 };
 
 /** Same buckets as `seasonKey`, so the key must not change; fields outside the key are scrambled. */
 function sameBuckets(s: SeasonState): SeasonState {
   const centre = (v: number, steps: number) => Math.round(v * steps) / steps;
-  const out: SeasonState = { ...s, cropStages: { ...s.cropStages }, bloom: { ...s.bloom } };
+  const out: SeasonState = { ...s, cropStages: { ...s.cropStages }, cropRange: { ...s.cropRange }, bloom: { ...s.bloom } };
   for (const [k, steps] of Object.entries(BUCKETS)) (out as Record<string, unknown>)[k] = centre(s[k as keyof SeasonState] as number, steps!);
-  for (const k of CROP_NAMES) out.cropStages[k] = centre(s.cropStages[k], 4);
+  for (const k of CROP_NAMES) out.cropRange[k] = s.cropRange[k].map((v) => centre(v, 16));
+  for (const k of CROP_NAMES) out.cropStages[k] = 1 - s.cropStages[k]; // read only through cropRange
   for (const k of BLOOM_KINDS) out.bloom[k] = centre(s.bloom[k], 4);
   out.haze = 1 - s.haze;
   out.skyBias = -s.skyBias;
-  out.leafDays += 3;
+  out.leafDays = Math.round(s.leafDays) + 0.2; // the day counts are keyed by whole days
+  out.fallDays = Math.round(s.fallDays) - 0.2;
   return out;
 }
 

@@ -9,8 +9,8 @@
 
 import { bayer, cellular, fbm, hash, valueNoise } from '../core/noise.ts';
 import { BLOOM_KINDS } from '../sim/seasons.ts';
-import { frontClearance } from './fronts.ts';
-import { cropTones, crowns, grassTones, isIce, leafCover, look, overlay } from './season.ts';
+import { frontClearance, frontsNear, nearest } from './fronts.ts';
+import { BARK, COLZA_FLOWER, cropTones, crowns, fallenLeaf, floorTone, grassTones, hedgeTone, isIce, leafCover, leafLitter, look, overlay, scrubTone, tone } from './season.ts';
 import { DIRT, rgb, SHORE, WATER, type RGB } from './palette.ts';
 import { DEV } from './settings.ts';
 
@@ -20,9 +20,8 @@ export const CHUNK = 128; // world pixels per tile edge
 
 const FLOOR = { deep: rgb(0x1f2c19), litter: rgb(0x2a3720) };
 const SCRUB = [rgb(0x3b4a26), rgb(0x46552c), rgb(0x2f3d20)] as const;
-// Tree species tones and crop colours live in world/season.ts (crowns, cropTones), season-tinted.
-const FLOOR_BARE = { deep: rgb(0x2e2519), litter: rgb(0x4a3a24) }; // leaf litter, once the trees are bare
-const BRANCH = rgb(0x3a3631); // bare twigs and trunk, seen from above
+// Tree species tones and crop colours live in world/season.ts (crowns, cropTones), season-tinted; so do the
+// winter tones of the forest floor, scrub and hedges (floorTone, scrubTone, hedgeTone).
 const STRAW = rgb(0x8a7d4e); // dead reeds
 /** Hedgerows: dark (old blackthorn, holly) or light green (young hawthorn, hazel), in long runs of each. */
 const HEDGE = { dark: [rgb(0x2c3a1b), rgb(0x3a4a23)], light: [rgb(0x40532a), rgb(0x506534)] } as const;
@@ -79,18 +78,29 @@ function cropOf(id: number): Crop {
 }
 export const BASE = rgb(0x6c763e); // fallback fill where a tile isn't generated yet
 
-/** The crop's two colours on this date (grass faded toward winter, crops by growth stage), one lookup per look. */
+/**
+ * A field's own place in the season: `u` 0-1 how early or late it runs (sown, ripened, cut and ploughed on its own
+ * days), `v` 0-2 which variant of its crop's colours it takes. Decided once per field, from its id.
+ */
+const fieldTiming = (seed: number, id: number) => {
+  const k = Math.floor(id * 1e6);
+  return { u: hash(seed + 52, k, 3), v: Math.floor(hash(seed + 53, k, 4) * 3) };
+};
+/** The crop's two colours on this date for one field (grass faded toward winter, crops by growth stage), remembered for the next pixel of the same field. */
+let colourKey = NaN;
 let colourLook: unknown;
-let colourTable: (readonly [RGB, RGB])[] = [];
-function colours(crop: Crop): readonly [RGB, RGB] {
-  if (colourLook !== look.s) {
+let colourValue: readonly [RGB, RGB];
+function colours(seed: number, crop: Crop, id: number): readonly [RGB, RGB] {
+  if (id !== colourKey || colourLook !== look.s) {
+    colourKey = id;
     colourLook = look.s;
-    colourTable = CROPS.map((c) => {
-      const [a, b] = cropTones(c.i);
-      return c.pattern === 'grass' || c.pattern === 'hay' ? grassTones(a, b) : [a, b];
-    });
+    const { u, v } = fieldTiming(seed, id);
+    if (crop.pattern === 'grass' || crop.pattern === 'hay') {
+      const [a, b] = cropTones(crop.i);
+      colourValue = grassTones(a, b, v);
+    } else colourValue = cropTones(crop.i, u, v);
   }
-  return colourTable[crop.i];
+  return colourValue;
 }
 
 const LAKE = 0.88; // wetness above this is water
@@ -206,6 +216,30 @@ function leafCoverOf(tree: Tree) {
 }
 const hedgeHeight = () => HEIGHT.hedge * (0.4 + 0.6 * look.s.foliage); // bare hedges are lower
 
+/**
+ * A leafless tree seen from above, or null between its limbs: a dark trunk at the centre, 5-7 limbs radiating out
+ * (each forking once toward the rim) and a haze of fine twigs at the edge. Each tree is turned its own way and has
+ * a warmer or greyer bark.
+ */
+function bareTree(tree: Tree, d: number): [RGB, number] | null {
+  const k = (n: number) => hash(535 + n, tree.id, 0);
+  const rr = tree.dist / tree.r;
+  const h = HEIGHT.tree * (0.55 - 0.25 * rr);
+  if (tree.dist < 1.1) return [BARK.trunk, HEIGHT.tree * 0.6];
+  const bark = Math.floor(k(0) * 3);
+  const n = 5 + Math.floor(k(1) * 3);
+  const sector = (2 * Math.PI) / n;
+  const a = Math.atan2(tree.dy, tree.dx) + k(2) * 2 * Math.PI;
+  const da = (((a % sector) + sector) % sector) - sector / 2; // angle from the nearest limb
+  if (tree.dist * Math.abs(Math.sin(da)) < 0.55) return [BARK.limb[bark], h];
+  if (rr > 0.5) {
+    const fork = Math.abs(da) - sector * 0.3; // the forks, splitting off either side of each limb
+    if (tree.dist * Math.abs(Math.sin(fork)) < 0.45) return [BARK.twig[bark], h * 0.9];
+    if (d < 0.2 + 0.1 * rr) return [BARK.twig[bark], h * 0.7]; // the haze of twigs
+  }
+  return null;
+}
+
 /** Colour and height of one world pixel. */
 export function groundAt(seed: number, x: number, y: number): [RGB, number] {
   const d = bayer(x, y);
@@ -215,14 +249,20 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
   const tree = treeAt(seed, x, y);
   if (tree) {
     const lc = leafCoverOf(tree);
-    const h = HEIGHT.tree * (0.4 + 0.6 * lc.cover) + HEIGHT.crownBulge * lc.cover * (1 - tree.dist / tree.r);
-    if (lc.cover >= 0.5) {
-      const [rim, canopy, crown, lit] = crowns(tree.species, lc, Math.floor(hash(531, tree.id, 0) * 3));
-      const t = tree.dist / tree.r + (d - 0.5) * 0.35;
+    const rr = tree.dist / tree.r;
+    // Leaves fill the crown in clumps as `cover` rises (and drop the same way); where there are none, the bare tree shows.
+    const leafy = lc.cover > 0 && lc.cover > Math.min(0.99, valueNoise(seed + 533, x / 2.2, y / 2.2) * 0.55 + d * 0.25 + rr * 0.2);
+    if (leafy) {
+      const h = HEIGHT.tree * (0.4 + 0.6 * lc.cover) + HEIGHT.crownBulge * lc.cover * (1 - rr);
+      // Mid-turn, a crown is mottled: some sprays turn ahead of the rest.
+      const autumn = lc.autumn > 0 && lc.autumn < 2 ? Math.min(2, Math.max(0, lc.autumn + (valueNoise(seed + 534, x / 3, y / 3) - 0.5) * 0.6)) : lc.autumn;
+      const [rim, canopy, crown, lit] = crowns(tree.species, { bud: lc.bud, autumn, hue: lc.hue, vary: lc.vary });
+      const t = rr + (d - 0.5) * 0.35;
       return [t < 0.25 ? lit : t < 0.55 ? crown : t < 0.85 ? canopy : rim, h];
     }
-    // Thinning or bare: twigs where the dither passes, else the ground shows through the crown.
-    if (d + valueNoise(seed + 532, x / 2, y / 2) * 0.3 > lc.cover * 2) return [BRANCH, h];
+    const limb = bareTree(tree, d);
+    if (limb) return limb;
+    // Between the limbs the ground shows through.
   }
 
   // Lakes: deep middle, shallow edge, a ragged shore of mud and reeds. Edges frayed + dithered.
@@ -236,7 +276,7 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
   }
   if (wet > LAKE - SHORE_W * (1 + look.s.waterLevel)) { // a high water level widens the muddy shore; open water stays put
     const reeds = valueNoise(seed + 13, x / 3, y / 3) + d * 0.3 > 0.8 + 0.25 * look.s.waterLevel;
-    return reeds ? [look.s.foliage < 0.3 ? STRAW : SHORE.reeds, HEIGHT.reeds] : [SHORE.mud, 0];
+    return reeds ? [tone(SHORE.reeds, STRAW, smooth((0.8 - look.s.foliage) / 0.6)), HEIGHT.reeds] : [SHORE.mud, 0]; // reeds die back to straw as the leaves fall
   }
 
   // Woodland ground between the crowns: dark floor deep inside, then scrub that frays out into the
@@ -246,11 +286,11 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
     const glade = gladeValue(seed, x, y) + (valueNoise(seed + 18, x / 7, y / 7) - 0.5) * 0.16 + (d - 0.5) * 0.1;
     if (glade > GLADE) {
       // Glade meadow, its edge frayed and dithered into the scrub around it; buttercups and daisies.
-      const [a, b] = colours(CROPS[2]);
+      const [a, b] = colours(seed, CROPS[2], -1);
       const f = flowers(seed, x, y, 'meadow');
-      return [f ?? (valueNoise(seed + 37, x / 3, y / 3) + d * 0.5 > 0.95 ? b : a), 0];
+      return [f ?? fallen(seed, x, y, 0.2) ?? (valueNoise(seed + 37, x / 3, y / 3) + d * 0.5 > 0.95 ? b : a), 0];
     }
-    if (glade > GLADE - 0.07) return [SCRUB[Math.floor(valueNoise(seed + 17, x / 3, y / 3) * 2.2 + d * 0.8) % 3], HEIGHT.scrub];
+    if (glade > GLADE - 0.07) return [fallen(seed, x, y, 0.3) ?? scrub(seed, x, y, d), HEIGHT.scrub];
     // Bluebells carpet the woodland floor in drifts (a Belgian May), thinning into the scrub at the edge.
     const drift = valueNoise(seed + 60, x / 26, y / 26) + valueNoise(seed + 61, x / 6, y / 6) * 0.3;
     const bluebells = dens > 0.7 ? bloom(seed, x, y, BLOOM.bluebell) : 0; // only some woods, deep inside
@@ -258,15 +298,15 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
       return [hash(seed + 62, x, y) > 0.7 ? FLOWER.bluebellLit : FLOWER.bluebell, dens > 0.8 ? HEIGHT.understory : HEIGHT.scrub];
     }
     if (dens > 0.8) {
-      const floor = look.s.foliage < 0.3 ? FLOOR_BARE : FLOOR;
-      return [valueNoise(seed + 16, x / 3, y / 3) + d * 0.3 > 0.85 ? floor.litter : floor.deep, HEIGHT.understory];
+      const lit = valueNoise(seed + 16, x / 3, y / 3) + d * 0.3 > 0.85;
+      return [fallen(seed, x, y, 1) ?? floorTone(lit ? FLOOR.litter : FLOOR.deep, lit), HEIGHT.understory];
     }
-    return [SCRUB[Math.floor(valueNoise(seed + 17, x / 3, y / 3) * 2.2 + d * 0.8) % 3], HEIGHT.scrub];
+    return [fallen(seed, x, y, 0.3) ?? scrub(seed, x, y, d), HEIGHT.scrub];
   }
 
   // Copse floor: scrub under the clumps of trees standing out in the fields.
   if (copseValue(seed, x, y, clear) + (valueNoise(seed + 19, x / 5, y / 5) - 0.5) * 0.03 + (d - 0.5) * 0.02 > 0.95) {
-    return [SCRUB[Math.floor(valueNoise(seed + 17, x / 3, y / 3) * 2.2 + d * 0.8) % 3], HEIGHT.scrub];
+    return [fallen(seed, x, y, 0.3) ?? scrub(seed, x, y, d), HEIGHT.scrub];
   }
 
   // Farmland: big irregular fields, each with its own crop and row direction.
@@ -288,15 +328,18 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
     const light = hash(seed + 35, lo, hi) < lightShare;
     // Speckled: small clusters of the other tone (a few bushes of another kind) mixed through each hedge.
     const other = valueNoise(seed + 36, x / 1.6, y / 1.6) + (d - 0.5) * 0.35 > 0.72;
-    const tones = light !== other ? HEDGE.light : HEDGE.dark;
-    return [tones[valueNoise(seed + 38, x / 2.5, y / 2.5) + d * 0.3 > 0.75 ? 1 : 0], hedgeHeight()];
+    const lit = light !== other;
+    const tones = lit ? HEDGE.light : HEDGE.dark;
+    return [hedgeTone(tones[valueNoise(seed + 38, x / 2.5, y / 2.5) + d * 0.3 > 0.75 ? 1 : 0], lit), hedgeHeight()];
   }
-  const dirtW = Math.max(0, (valueNoise(seed + 39, x / 60, y / 60) - 0.45) * 26) + (valueNoise(seed + 45, x / 5, y / 5) - 0.5) * 4;
+  // In a wet spell the margins and paths spread wider, most in the low ground (overlay darkens them as mud).
+  const sodden = look.s.mud * 9 * smooth((wet - 0.3) / 0.4);
+  const dirtW = Math.max(0, (valueNoise(seed + 39, x / 60, y / 60) - 0.45) * 26) + (valueNoise(seed + 45, x / 5, y / 5) - 0.5) * 4 + sodden;
   const worn = border < dirtW + 10 && valueNoise(seed + 46, x / 12, y / 12) + (d - 0.5) * 0.1 > 0.86;
   if (border < dirtW || worn) {
     if (valueNoise(seed + 47, x / 3, y / 3) + d * 0.3 < 0.3) {
       // Tufts of grass in the margin; froths of cow parsley along hedged ones.
-      return [hedged && hash(seed + 65, x, y) > 1 - 0.12 * bloom(seed, x, y, BLOOM.cowParsley, 0.86) ? FLOWER.cowParsley : colours(own)[0], 0];
+      return [hedged && hash(seed + 65, x, y) > 1 - 0.12 * bloom(seed, x, y, BLOOM.cowParsley, 0.86) ? FLOWER.cowParsley : colours(seed, own, cell.id)[0], 0];
     }
     const t = valueNoise(seed + 42, x / 2.5, y / 2.5) + d * 0.35;
     return [t > 1.05 ? DIRT.rut : t > 0.6 ? DIRT.worn : DIRT.dry, 0];
@@ -313,6 +356,11 @@ export function groundAt(seed: number, x: number, y: number): [RGB, number] {
     if (h > 1 - 0.035 * bloom(seed, x, y, BLOOM.poppy)) return [FLOWER.poppy, 0];
     if (h < 0.035 * bloom(seed, x, y, BLOOM.cornflower)) return [FLOWER.cornflower, 0];
   }
+
+  // Leaves blown out of the woods onto the fields alongside, in autumn.
+  const woodNear = look.s.fallDays > -10 || look.s.fallDays < -250 ? smooth((stretch(fbm(seed + 20, x / 700, y / 700, 4), 1.41) - 0.665) / 0.012) : 0; // only in leaf-fall, and only a few pixels outside the wood's edge (it starts at 0.68)
+  const leaf = woodNear > 0 ? fallen(seed, x, y, woodNear ** 4 * 0.15) : null;
+  if (leaf) return [leaf, 0];
 
   // Where two fields meet with no dirt between them, their crops intermingle across a frayed, dithered band.
   const mix = border / 14 + (valueNoise(seed + 50, x / 5, y / 5) - 0.5) * 0.6 + (d - 0.5) * 0.5;
@@ -362,18 +410,128 @@ function flowers(seed: number, x: number, y: number, kind: 'meadow' | 'pasture')
   return null;
 }
 
+/** Scrub (bramble, bracken, hazel) at a wood's edge and under copses, browned for the season. */
+const scrub = (seed: number, x: number, y: number, d: number): RGB => scrubTone(SCRUB[Math.floor(valueNoise(seed + 17, x / 3, y / 3) * 2.2 + d * 0.8) % 3]);
+
+/**
+ * A fallen leaf at a pixel in autumn, or null. `near` 0-1: how close the trees are (1 on the forest floor). The leaves
+ * lie in streaks across the prevailing wind (from the west-south-west), thicker in the woods and drifting out over the fields.
+ */
+function fallen(seed: number, x: number, y: number, near: number): RGB | null {
+  const lit = leafLitter();
+  if (lit <= 0.02 || near <= 0) return null;
+  // Blown into clumps and short streaks along the wind, not spread evenly.
+  const streak = valueNoise(seed + 601, (x * 0.92 - y * 0.38) / 24, (y * 0.92 + x * 0.38) / 7);
+  const clump = valueNoise(seed + 608, x / 6, y / 6);
+  const heap = smooth((streak * clump - 0.12) / 0.15); // dense heaps with bare ground between, not a thin scatter
+  if (hash(seed + 600, x, y) > lit * near * (0.005 + 0.7 * heap)) return null;
+  return fallenLeaf(hash(seed + 602, x, y));
+}
+
+/**
+ * How readily snow lies at a pixel, 0-1. Out in the fields: deepest in the lee (east-north-east side) of hedges and
+ * field borders where it drifts, then field by field, in small drifts scattered across each field, in the furrows
+ * and the hollows. In the woods it lies evenly among the trees (no field lines); in a front's zone the churned
+ * ground has its own pattern (no field lines either). Snow covers a pixel once it is deep enough for its `lie`
+ * (see overlay in world/season.ts); the lee of anything standing (trees, walls, parapets) is added there.
+ */
+export function snowLie(seed: number, x: number, y: number): number {
+  const clear = frontClearance(seed, x, y);
+  const wood = Math.max(woodDensity(seed, x, y, clear), copseChance(seed, x, y, clear));
+  const inWood = smooth(wood * 1.6);
+  const [inFront, inWorks] = clear > 0 ? frontZones(seed, x, y) : [0, 0];
+  let lie = inWood >= 1 || inFront >= 1 ? 0 : fieldLie(seed, x, y, inWorks);
+  if (inWood > 0) lie += (0.68 + 0.22 * valueNoise(seed + 603, x / 16, y / 16) + 0.1 * valueNoise(seed + 604, x / 4, y / 4) - lie) * inWood;
+  if (inFront > 0) {
+    // Churned ground holds snow a little better than a field (holes, clods); the fields alongside keep their border drifts as it fades in.
+    // About as even a spread as the fields' (so as much of it whitens at a depth), without the field lines.
+    const front = 0.15 + 0.55 * stretch(fbm(seed + 605, x / 90, y / 90, 4), 1.4) + 0.1 * valueNoise(seed + 606, x / 5, y / 5) + 0.3 * tuftAt(seed, x, y) ** 4; // soft sweeps and small drifts
+    lie += (front - lie) * inFront;
+  }
+  return lie;
+}
+
+/** Small drifts: short tongues along the wind, behind a tussock or a clod (0-1, high in a drift). */
+const tuftAt = (seed: number, x: number, y: number) => valueNoise(seed + 607, (x * 0.92 - y * 0.38) / 11, (y * 0.92 + x * 0.38) / 6);
+
+/** px behind the divide past nml where the hindmost trench can run (military.ts WALLS: fire trench at 12, three walls at most 75 apart, wandering 40). */
+const BACK_TRENCH = 12 + 3 * 75 + 40;
+/**
+ * Where a pixel is in a front: [between the two sides' wire (the churned no-man's land), between the two sides'
+ * hindmost trenches], each 1 inside, easing to 0 across its edge, and 0 away from a front.
+ */
+function frontZones(seed: number, x: number, y: number): [number, number] {
+  const n = nearest(seed, frontsNear(seed, x, y, x + 1, y + 1), x, y);
+  if (!n) return [0, 0];
+  const au = Math.abs(n.u);
+  const e = smooth(n.end * 4);
+  return [smooth((n.f.nml - 14 - au) / 80) * e, smooth((n.f.nml + BACK_TRENCH + 120 - au) / 240) * e]; // the wire starts 26 px in front of the fire trench (nml + 12)
+}
+
+/**
+ * Snow lie on open fields. `works` 0-1: among the trenches (between the hindmost lines), where the fields are
+ * trampled and dug through: the same spread and the same fields, but without their sharp outlines (see below).
+ */
+function fieldLie(seed: number, x: number, y: number, works = 0): number {
+  const cell = fieldCell(seed, x, y);
+  const border = cell.f2 - cell.f1;
+  const nx = cell.dx - cell.dx2;
+  const ny = cell.dy - cell.dy2;
+  const lee = Math.max(0, -(nx * 0.92 - ny * 0.38) / (Math.hypot(nx, ny) || 1)); // the border lies upwind of this side of it
+  const hedged = valueNoise(seed + 33, x / 70, y / 70) > 0.4 && valueNoise(seed + 41, x / 25, y / 25) > 0.25;
+  const drift = smooth(1 - border / (10 + 50 * lee)) * (hedged ? 1 : 0.55) * (0.4 + 0.6 * lee);
+  const crop = cropOf(cell.id);
+  const dir = Math.floor(hash(seed + 34, Math.floor(cell.id * 1e6), 0) * 4);
+  const s = dir === 0 ? x : dir === 1 ? y : dir === 2 ? x + y : x - y;
+  const trough = crop.pattern === 'furrows' || crop.pattern === 'rows' ? (stripe(s, 3) ? 0 : 1) : crop.pattern === 'hay' ? (stripe(s, 5) ? 0 : 0.6) : 0.4;
+  const exposure = hash(seed + 54, Math.floor(cell.id * 1e6), 5); // each field holds its snow a little longer or shorter (aspect, crop cover)
+  const swell = fbm(seed + 542, x / 220, y / 220, 2);
+  const low = stretch(fbm(seed + 10, x / 900, y / 900, 4), 1.39);
+  const tuft = tuftAt(seed, x, y);
+  const tufted = smooth((valueNoise(seed + 611, x / 140, y / 140) - 0.45) / 0.3); // only in some stretches of a field
+  let edgeDrift = drift;
+  let share = exposure;
+  let tufts = tufted;
+  if (works > 0) {
+    // Among the works the hedges are shot away and the banks trodden down: a border keeps only broken stretches
+    // of its drift; each field still holds its snow longer or shorter (the same fields as outside, so the zone
+    // runs on into them), but that eases across its border instead of stopping at it; and every clod and rut
+    // has a small drift behind it. The other sheltered spots (shell holes, the lee of the works) come in overlay.
+    const broken = smooth((valueNoise(seed + 616, x / 28, y / 28) - 0.3) / 0.35) * 0.75;
+    const across = 0.5 * (1 - smooth(border / 70)); // the neighbour's share, half at the border
+    const blurred = exposure * (1 - across) + hash(seed + 54, Math.floor(cell.id2 * 1e6), 5) * across + (fbm(seed + 614, x / 60, y / 60, 2) - 0.5) * 0.25;
+    edgeDrift += (drift * broken - drift) * works;
+    share += (blurred - share) * works;
+    tufts += (1 - tufts) * works;
+  }
+  const raw = 0.5 * edgeDrift + 0.07 * trough * (1 - 0.6 * works) + 0.3 * share + 0.06 * swell + 0.08 * low + 0.02 * bayer(x, y) + 0.3 * tufts * tuft ** 8;
+  // Spread to about uniform over open land (its measured quantiles), so a snow depth covers a predictable share.
+  for (let i = 1; i < LIE_RANK.length; i++) {
+    const [r1, q1] = LIE_RANK[i];
+    if (raw <= r1) {
+      const [r0, q0] = LIE_RANK[i - 1];
+      return q0 + ((q1 - q0) * (raw - r0)) / (r1 - r0);
+    }
+  }
+  return 1;
+}
+const LIE_RANK = [[0, 0], [0.098, 0.02], [0.119, 0.05], [0.14, 0.1], [0.169, 0.2], [0.204, 0.3], [0.271, 0.5], [0.336, 0.7], [0.37, 0.8], [0.413, 0.9], [0.462, 0.95], [0.595, 0.98], [0.8, 1]] as const;
+
 /** One pixel of the crop belonging to the field with this id, whose own point is (sx, sy). */
 function cropPixel(seed: number, id: number, x: number, y: number, d: number, sx: number, sy: number): RGB {
   const crop = cropOf(id);
-  const [a, b] = colours(crop);
+  const [a, b] = colours(seed, crop, id);
   const dir = Math.floor(hash(seed + 34, Math.floor(id * 1e6), 0) * 4);
   const s = dir === 0 ? x : dir === 1 ? y : dir === 2 ? x + y : x - y;
   switch (crop.pattern) {
     case 'furrows':
       return stripe(s, 3) ? a : b;
-    case 'rows': // colza only shows yellow where it's in flower, else it's still green; decided once per field (at its own point), so a field is never split
-      if (crop === COLZA && bloom(seed, sx, sy, BLOOM.colza) < 0.3) return stripe(s, 3) ? colours(CROPS[1])[0] : colours(CROPS[1])[1];
-      return stripe(s, 3) ? a : b;
+    case 'rows': {
+      // Colza comes into flower, and goes over, gradually: yellow by how far the field (at its own point, so it is never split) is in bloom.
+      if (crop !== COLZA) return stripe(s, 3) ? a : b;
+      const fl = smooth(bloom(seed, sx, sy, BLOOM.colza) / 0.6);
+      return stripe(s, 3) ? tone(a, COLZA_FLOWER[0], fl) : tone(b, COLZA_FLOWER[1], fl);
+    }
     case 'hay':
       return stripe(s, 5) && hash(seed + 35, x, y) > 0.25 ? b : a;
     case 'flowerheads': // a green crop dotted with flower heads (red clover), more of them where it's in bloom
@@ -463,6 +621,21 @@ export const HEIGHT_STEPS = 8;
 export type GroundStamp = (x: number, y: number) => readonly [RGB, number] | null;
 
 /**
+ * How sheltered a pixel (tile-local x, y, height h) is from the west-south-west wind, 0-1: something standing upwind
+ * (a hedge, a tree, a wall, a parapet) shelters the ground behind it for a few pixels per unit of its height, so
+ * snow drifts in against it on the lee side.
+ */
+function shelterAt(heightAt: (x: number, y: number) => number, x: number, y: number, h: number): number {
+  let best = 0;
+  for (let k = 1; k <= 8; k++) {
+    const up = heightAt(x - Math.round(0.92 * k), y + Math.round(0.38 * k));
+    const s = (up - h - 0.5 * k) / 1.5;
+    if (s > best) best = s >= 1 ? 1 : s;
+  }
+  return best;
+}
+
+/**
  * CHUNK×CHUNK world pixels starting at (cx·CHUNK, cy·CHUNK). `stamp` lays buildings, trenches and damage
  * over the landscape (see world/generate.ts); where it covers a pixel, the ground there isn't computed.
  */
@@ -470,13 +643,43 @@ export function groundChunk(seed: number, cx: number, cy: number, stamp?: Ground
   const rgba = new Uint8ClampedArray(CHUNK * CHUNK * 4);
   const heights = new Uint8Array(CHUNK * CHUNK);
   const glints: number[] = [];
+  const x0 = cx * CHUNK;
+  const y0 = cy * CHUNK;
+  // First every pixel's own colour and height; then the ground states, which need the neighbours' heights (snow
+  // drifts in the lee of whatever stands upwind) when there is snow or frost.
+  const cols: RGB[] = new Array(CHUNK * CHUNK);
+  const hs = new Float32Array(CHUNK * CHUNK);
+  const veg = new Uint8Array(CHUNK * CHUNK);
+  const isStamped = new Uint8Array(CHUNK * CHUNK);
   for (let y = 0, i = 0; y < CHUNK; y++) {
     for (let x = 0; x < CHUNK; x++, i++) {
-      const wx = cx * CHUNK + x;
-      const wy = cy * CHUNK + y;
-      const stamped = stamp?.(wx, wy);
-      const [ground, h] = stamped ?? groundAt(seed, wx, wy);
-      const c = overlay(seed, wx, wy, ground, h); // snow, mud, flooding and ice: the very same colour at May
+      const stamped = stamp?.(x0 + x, y0 + y);
+      const [c, h] = stamped ?? groundAt(seed, x0 + x, y0 + y);
+      cols[i] = c;
+      hs[i] = h;
+      isStamped[i] = stamped ? 1 : 0;
+      veg[i] = !stamped && h > 0 ? 1 : 0; // trees, hedges, scrub, reeds (not roofs or the front's works)
+    }
+  }
+  const cold = look.s.snow > 0.05 || look.s.frost > 0.05;
+  const outside = new Map<number, number>();
+  const heightAt = (x: number, y: number) => {
+    if (x >= 0 && y >= 0 && x < CHUNK && y < CHUNK) return hs[y * CHUNK + x];
+    const k = (y + 16) * 512 + x + 16;
+    let h = outside.get(k);
+    if (h === undefined) outside.set(k, (h = groundAt(seed, x0 + x, y0 + y)[1])); // ponytail: next tile's stamps (walls, parapets) are not seen across the edge
+    return h;
+  };
+  for (let y = 0, i = 0; y < CHUNK; y++) {
+    for (let x = 0; x < CHUNK; x++, i++) {
+      const wx = x0 + x;
+      const wy = y0 + y;
+      const ground = cols[i];
+      const h = hs[i];
+      const lee = cold ? shelterAt(heightAt, x, y, h) : 0;
+      const sun = cold && isStamped[i] === 1 && h > 2 ? Math.min(1, Math.max(0, (heightAt(x, y - 1) - heightAt(x, y + 1)) * 4)) : 0; // a roof slope falling away to the south (+y)
+      const c = overlay(seed, wx, wy, ground, h, undefined, lee, veg[i] === 1, sun); // snow, mud, flooding and ice: the very same colour at May
+      const stamped = isStamped[i] === 1;
       const [r, g, b] = c;
       // Ice sparkles at a quarter of open water's rate; turbid water (no longer WATER.deep) still counts as water.
       const rate = isIce(c) ? ICE_GLINT : c === WATER.pool[0] || c === WATER.pool[1] ? POOL_GLINT : !stamped && (ground === WATER.deep || ground === WATER.shallow) ? GLINT : 0;
