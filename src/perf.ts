@@ -7,7 +7,8 @@ import { engineSound } from './audio/audio.ts';
 import { cellular } from './core/noise.ts';
 import { gradeFor, gradePixels, skyFor } from './render/grade.ts';
 import { createSmoke, updateSmoke } from './render/smoke.ts';
-import { REFERENCE } from './sim/calendar.ts';
+import { dateOf, REFERENCE } from './sim/calendar.ts';
+import { seasonAt } from './sim/seasons.ts';
 import { advanceClock, createClock, sunAt } from './sim/daylight.ts';
 import { sunDay } from './sim/sun.ts';
 import { createPlane, updatePlane } from './sim/flight.ts';
@@ -57,6 +58,10 @@ const farmSite = structuresNear(1915, -6000, -6000, 6000, 6000).find((s) => s.ki
 const farmTile = { cx: Math.floor(farmSite.x / CHUNK), cy: Math.floor(farmSite.y / CHUNK) };
 bench('groundFront', 'ground tile at the front', 7, (run) => generateTile({ kind: 'ground', seed: 1915, cx: frontTile.cx, cy: frontTile.cy + run, features: { structures: true, military: true } }).rgba[run]);
 bench('groundFarm', 'ground tile with a farm', 7, (run) => generateTile({ kind: 'ground', seed: 1915, cx: farmTile.cx, cy: farmTile.cy }).rgba[run + 1]);
+// Deep winter (21 January 1916, snow 0.54): snow lies by the pixel, and at a front it follows the works.
+const winter = seasonAt(dateOf(256), 1915);
+bench('groundSnow', 'ground tile in snow', 7, (run) => generateTile({ kind: 'ground', seed: 1915, cx: run + 20, cy: -11, season: winter }).rgba[run]);
+bench('frontSnow', 'front tile in snow', 7, (run) => generateTile({ kind: 'ground', seed: 1915, cx: frontTile.cx, cy: frontTile.cy + run, features: { structures: true, military: true }, season: winter }).rgba[run]);
 bench('clouds', 'cloud tile 128²', 7, (run) => cloudChunk(1915, run + 20, -11)[run]);
 
 const heights = new Uint8Array(9 * CHUNK * CHUNK);

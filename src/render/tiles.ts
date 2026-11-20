@@ -65,6 +65,19 @@ export function createTileLayer(
   let dirty = true; // a tile arrived or changed since the composite was drawn
   let lastRange = '';
   let lastFadeDraw = -Infinity;
+  // Tile canvases no longer drawn (replaced, faded out, evicted) are reused: making a canvas costs as much
+  // as filling it. Every reuse is overwritten whole (putImageData) or cleared first.
+  const spare: HTMLCanvasElement[] = [];
+  const take = () => {
+    const c = spare.pop();
+    if (c) return c;
+    const fresh = document.createElement('canvas');
+    fresh.width = fresh.height = tile;
+    return fresh;
+  };
+  const free = (c: HTMLCanvasElement | undefined) => {
+    if (c && spare.length < 16) spare.push(c);
+  };
 
   function fetch(key: number, cx: number, cy: number) {
     if (pending.has(key) || pending.size >= maxInFlight) return;
@@ -88,30 +101,39 @@ export function createTileLayer(
       },
     );
     const arrive = (data: TileData, now: number) => {
-        const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = tile;
+        const canvas = take();
         canvas.getContext('2d')!.putImageData(new ImageData(data.rgba, tile, tile), 0, 0);
         const old = cache.get(key);
         let prev = opts.fadeMs ? old?.canvas : undefined;
+        if (old && !opts.fadeMs) free(old.canvas);
         // A new sun bake can arrive before the previous cross-fade finishes. Preserve the exact image
         // currently on screen, rather than jumping back to the last completed bake before fading again.
         if (old?.prev && opts.fadeMs) {
           const k = fadeProgress(old.at, now, opts.fadeMs);
           if (k < 1) {
-            prev = document.createElement('canvas');
-            prev.width = prev.height = tile;
+            prev = take();
             const pctx = prev.getContext('2d')!;
+            pctx.clearRect(0, 0, tile, tile);
             pctx.globalAlpha = 1 - k;
             pctx.drawImage(old.prev, 0, 0);
             pctx.globalAlpha = k;
             pctx.drawImage(old.canvas, 0, 0);
+            pctx.globalAlpha = 1;
+            free(old.canvas);
           }
+          free(old.prev);
         }
         cache.delete(key);
         cache.set(key, { canvas, heights: data.heights, glints: data.glints, version: v, prev, at: now });
         dirty = true;
         failedAt.delete(key);
-        while (cache.size > maxCached) cache.delete(cache.keys().next().value!);
+        while (cache.size > maxCached) {
+          const k = cache.keys().next().value!;
+          const e = cache.get(k)!;
+          cache.delete(k);
+          free(e.canvas);
+          free(e.prev);
+        }
     };
   }
 
@@ -191,6 +213,7 @@ export function createTileLayer(
               lctx.drawImage(e.prev!, (cx - cx0) * tile, (cy - cy0) * tile);
               lctx.globalAlpha = k;
             } else if (e.prev) {
+              free(e.prev);
               e.prev = undefined;
               dirty = true; // one more redraw, now fully the new version
             }

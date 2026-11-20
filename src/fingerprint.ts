@@ -16,6 +16,8 @@ import { frontPoint, frontsNear } from './world/fronts.ts';
 import { generateTile, type Features } from './world/generate.ts';
 import { CHUNK } from './world/ground.ts';
 import { DEV } from './world/settings.ts';
+import { dateOf } from './sim/calendar.ts';
+import { seasonAt, type SeasonState } from './sim/seasons.ts';
 
 const SEED = 1915;
 const FILE = 'debug/fingerprint.json';
@@ -26,6 +28,11 @@ const CONFIGS: Record<string, Features> = {
   'front (traversed, everything)': { structures: true, military: true, density: 10, onlyTrenches: false, trenchStyle: 'traversed', atStart: true },
   'front (production density)': { structures: true, military: true, density: 2.5, onlyTrenches: false, atStart: true },
 };
+
+// The year, sampled: days after the 10 May 1915 start (the same sweep as ?day= in docs/AGENT_TOOLS.md),
+// each in the production front configuration, so seasonal looks (snow, frost, mud, autumn) are covered too.
+const SEASON_DAYS = [0, 42, 72, 103, 134, 164, 195, 225, 256, 271, 287, 316, 347];
+const SEASONS: Record<string, SeasonState> = Object.fromEntries(SEASON_DAYS.map((d) => [`season day ${d}`, seasonAt(dateOf(d), SEED)]));
 
 /** The tiles to hash: across the start's front at several points along it, plus farmland and far country. */
 function places(ft: Features): [number, number][] {
@@ -41,13 +48,15 @@ function places(ft: Features): [number, number][] {
 }
 
 const result: Record<string, Record<string, string>> = {};
-for (const [name, ft] of Object.entries(CONFIGS)) {
+const hashAll = (name: string, ft: Features, season?: SeasonState) => {
   result[name] = {};
   for (const [cx, cy] of places(ft)) {
-    const t = generateTile({ kind: 'ground', seed: SEED, cx, cy, features: ft });
+    const t = generateTile({ kind: 'ground', seed: SEED, cx, cy, features: ft, season });
     result[name][`${cx},${cy}`] = createHash('sha1').update(t.rgba).update(t.heights!).digest('hex').slice(0, 16);
   }
-}
+};
+for (const [name, ft] of Object.entries(CONFIGS)) hashAll(name, ft);
+for (const [name, s] of Object.entries(SEASONS)) hashAll(name, CONFIGS['front (production density)'], s);
 
 if (process.argv.includes('--save')) {
   mkdirSync('debug', { recursive: true });

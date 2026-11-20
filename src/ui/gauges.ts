@@ -148,9 +148,11 @@ export function createDial(opts: { r: number; marks: number[]; red?: [number, nu
 export function createCompass(r: number, bearing: () => number | null = () => null): Instrument {
   const size = 2 * r + 1;
   const c = r;
+  const face = createPx(size, size); // the bezel and the bare card: painted once, copied each frame
+  bezel(face, c, r);
+  disc(face, c, c, r - 3, () => C.card);
   return instrument(size, (px, heading) => {
-    bezel(px, c, r);
-    disc(px, c, c, r - 3, () => C.card);
+    px.data.set(face.data);
     for (let deg = 0; deg < 360; deg += 30) {
       const a = (deg * Math.PI) / 180 - heading; // bearing on the card → angle on screen
       const major = deg % 90 === 0;
@@ -236,14 +238,16 @@ export function label(s: string, ink: RGBA, pad = 0, plate?: RGBA): HTMLCanvasEl
 
 /** A simple spirit clinometer, rather than a later gyroscopic attitude indicator. */
 export function createClinometer(r: number): Instrument {
+  const face = createPx(2 * r + 1, 2 * r + 1); // the bezel, the curved tube and its marks: painted once
+  bezel(face, r, r);
+  for (let x = r - 9; x <= r + 9; x++) {
+    const y = r - 1 + Math.round((x - r) ** 2 / 35);
+    plot(face, x, y - 2, C.dim);
+    plot(face, x, y + 2, C.dim);
+  }
+  for (const x of [r - 3, r + 3]) line(face, x, r - 4, x, r + 3, C.ink);
   return instrument(2 * r + 1, (px, reading) => {
-    bezel(px, r, r);
-    for (let x = r - 9; x <= r + 9; x++) {
-      const y = r - 1 + Math.round((x - r) ** 2 / 35);
-      plot(px, x, y - 2, C.dim);
-      plot(px, x, y + 2, C.dim);
-    }
-    for (const x of [r - 3, r + 3]) line(px, x, r - 4, x, r + 3, C.ink);
+    px.data.set(face.data);
     const x = r + Math.round((Math.max(0, Math.min(1, reading)) - 0.5) * 16);
     disc(px, x, r - 1 + Math.round((x - r) ** 2 / 35), 1.5, () => C.metalLit);
   });

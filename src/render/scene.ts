@@ -165,14 +165,9 @@ export function createScene(seed: number, density = 1): Scene {
     if (!sun || sun.elevation <= 0.5 * RAD) return null;
     // All nine ground tiles must be ready (checked before allocating anything: this is asked often).
     for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) if (!scene.ground.heights(cx + i, cy + j) || !scene.ground.isCurrent(cx + i, cy + j)) return null; // try again once the ground is ready
-    const heights = new Uint8Array(9 * CHUNK * CHUNK);
-    for (let j = 0; j < 3; j++) {
-      for (let i = 0; i < 3; i++) {
-        const h = scene.ground.heights(cx + i - 1, cy + j - 1)!;
-        for (let row = 0; row < CHUNK; row++) heights.set(h.subarray(row * CHUNK, row * CHUNK + CHUNK), (j * CHUNK + row) * 3 * CHUNK + i * CHUNK);
-      }
-    }
-    return gen({ kind: 'shade', cx, cy, heights, sun: { tx: sun.toward.x, ty: sun.toward.y, elevation: sun.elevation } });
+    const tiles: Uint8Array[] = [];
+    for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) tiles.push(scene.ground.heights(cx + i, cy + j)!);
+    return gen({ kind: 'shade', cx, cy, tiles, sun: { tx: sun.toward.x, ty: sun.toward.y, elevation: sun.elevation } }); // joined in the worker
   }
   return scene;
 }

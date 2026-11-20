@@ -79,7 +79,17 @@ export function territoryAt(seed: number, x: number, y: number): { id: number; e
  * territory's own point.
  */
 const SEG = 64;
-type Curve = { x: Float64Array; y: Float64Array; nx: Float64Array; ny: Float64Array; box: [number, number, number, number] };
+const BLOCK = 32; // segments per bounding box in onCurve's search
+const SUPER = 4; // blocks per outer bounding box
+type Curve = {
+  x: Float64Array; y: Float64Array; nx: Float64Array; ny: Float64Array; box: [number, number, number, number];
+  /** Bounding box of each run of BLOCK segments (x0, y0, x1, y1 per block), so onCurve can skip far runs,
+   *  and of each run of SUPER blocks (supers), to skip a far stretch with one test. */
+  blocks: Float64Array;
+  supers: Float64Array;
+  /** The segment the last onCurve search ended on: the next pixel's nearest is nearly always there too. */
+  hint: number;
+};
 const curves = new WeakMap<Front, Curve>();
 const DEG = Math.PI / 180;
 function curveOf(seed: number, f: Front): Curve {
@@ -154,7 +164,18 @@ function curveOf(seed: number, f: Front): Curve {
     box[2] = Math.max(box[2], x[k]);
     box[3] = Math.max(box[3], y[k]);
   }
-  const c = { x, y, nx, ny, box };
+  const boxes = (size: number) => {
+    const out = new Float64Array(Math.ceil((n - 1) / size) * 4);
+    for (let b = 0; b * 4 < out.length; b++) {
+      let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+      for (let k = b * size; k <= Math.min(n - 1, (b + 1) * size); k++) {
+        bx0 = Math.min(bx0, x[k]); by0 = Math.min(by0, y[k]); bx1 = Math.max(bx1, x[k]); by1 = Math.max(by1, y[k]);
+      }
+      out.set([bx0, by0, bx1, by1], b * 4);
+    }
+    return out;
+  };
+  const c = { x, y, nx, ny, box, blocks: boxes(BLOCK), supers: boxes(BLOCK * SUPER), hint: 0 };
   curves.set(f, c);
   return c;
 }
@@ -162,21 +183,54 @@ function curveOf(seed: number, f: Front): Curve {
 /** The point on a front's curve nearest to (x, y), as s (along, from −half) and u (across: + German side),
  *  searching segments [k0, k1). */
 function onCurve(c: Curve, f: Front, x: number, y: number, k0 = 0, k1 = c.x.length - 1) {
+  // The exact nearest segment (the first one, on a tie), found fast: start from the last search's segment,
+  // then skip every run of BLOCK segments whose bounding box is already farther than the best so far.
   let best = Infinity;
   let bk = 0;
   let bt = 0;
-  for (let k = k0; k < k1; k++) {
-    const ax = c.x[k];
-    const ay = c.y[k];
-    const dx = c.x[k + 1] - ax;
-    const dy = c.y[k + 1] - ay;
-    const len2 = dx * dx + dy * dy;
-    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / len2));
-    const ex = x - ax - dx * t;
-    const ey = y - ay - dy * t;
+  const X = c.x;
+  const Y = c.y;
+  const h = c.hint;
+  if (h >= k0 && h < k1) {
+    const dx = X[h + 1] - X[h];
+    const dy = Y[h + 1] - Y[h];
+    const t = Math.max(0, Math.min(1, ((x - X[h]) * dx + (y - Y[h]) * dy) / (dx * dx + dy * dy)));
+    const ex = x - X[h] - dx * t;
+    const ey = y - Y[h] - dy * t;
     const d = ex * ex + ey * ey;
-    if (d < best) (best = d), (bk = k), (bt = t);
+    if (d === d) (best = d), (bk = h), (bt = t); // (not NaN)
   }
+  const B = c.blocks;
+  const S = c.supers;
+  // Farther than the best so far: nothing in that box can win or tie (with rounding to spare).
+  const far = (A: Float64Array, b: number) => {
+    const gx = Math.max(A[b * 4] - x, 0, x - A[b * 4 + 2]);
+    const gy = Math.max(A[b * 4 + 1] - y, 0, y - A[b * 4 + 3]);
+    return gx * gx + gy * gy > best * (1 + 1e-9) + 1e-9;
+  };
+  for (let b = Math.floor(k0 / BLOCK); b * BLOCK < k1; b++) {
+    if (b % SUPER === 0 || b === Math.floor(k0 / BLOCK)) {
+      if (far(S, Math.floor(b / SUPER))) {
+        b = (Math.floor(b / SUPER) + 1) * SUPER - 1; // skip to the next outer box
+        continue;
+      }
+    }
+    if (far(B, b)) continue;
+    const end = Math.min(k1, (b + 1) * BLOCK);
+    for (let k = Math.max(k0, b * BLOCK); k < end; k++) {
+      const ax = X[k];
+      const ay = Y[k];
+      const dx = X[k + 1] - ax;
+      const dy = Y[k + 1] - ay;
+      const len2 = dx * dx + dy * dy;
+      const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / len2));
+      const ex = x - ax - dx * t;
+      const ey = y - ay - dy * t;
+      const d = ex * ex + ey * ey;
+      if (d < best || (d === best && k < bk)) (best = d), (bk = k), (bt = t);
+    }
+  }
+  c.hint = bk;
   const qx = c.x[bk] + (c.x[bk + 1] - c.x[bk]) * bt;
   const qy = c.y[bk] + (c.y[bk + 1] - c.y[bk]) * bt;
   const nx = c.nx[bk] + (c.nx[bk + 1] - c.nx[bk]) * bt;
@@ -184,11 +238,18 @@ function onCurve(c: Curve, f: Front, x: number, y: number, k0 = 0, k1 = c.x.leng
   return { s: -f.half + (bk + bt) * SEG, u: (x - qx) * nx + (y - qy) * ny };
 }
 
-const frontCache = new Map<string, Front | null>();
+/** Fronts by region, for the world they were made in (another seed or setting starts a fresh cache). */
+const frontWorld = { seed: NaN, density: NaN, atStart: false };
+let frontCache = new Map<number, Front | null>();
 
 function frontInRegion(seed: number, i: number, j: number): Front | null {
-  const key = `${seed},${DEV.density},${DEV.atStart},${i},${j}`;
-  if (frontCache.has(key)) return frontCache.get(key)!;
+  if (seed !== frontWorld.seed || DEV.density !== frontWorld.density || DEV.atStart !== frontWorld.atStart) {
+    Object.assign(frontWorld, { seed, density: DEV.density, atStart: DEV.atStart });
+    frontCache = new Map();
+  }
+  const key = (i + 2 ** 20) * 2 ** 21 + (j + 2 ** 20); // exact for |i|, |j| < 2^20
+  const hit = frontCache.get(key);
+  if (hit !== undefined) return hit;
   if (frontCache.size > 5000) frontCache.clear();
   let f: Front | null = null;
   const territory = hash(seed + TERRITORY_SEED + 2, i, j); // cell (i, j)'s id, as cellular gives it

@@ -9,7 +9,7 @@ performance. Commands run from the repo root.
 | You changed… | Look with | Time |
 |---|---|---|
 | World generation (landscape, farms, front, colours, stamps) | `npm run snap` → open the PNG | ~1 s |
-| Anything that must **not** change the look (refactor, optimisation) | `npm run fingerprint -- --save` before, `npm run fingerprint` after | ~5 s |
+| Anything that must **not** change the look (refactor, optimisation) | `npm run fingerprint -- --save` before, `npm run fingerprint` after | ~25 s |
 | Where fronts go, their trenches, over lakes and woods | `npm run frontmap` | ~10–60 s |
 | Rendering, lighting, clouds, grade, HUD, frame timings | the running game + the `archie` console API | live |
 | Logic | `npm run check` (types + tests) | ~30 s |
@@ -45,9 +45,11 @@ npm run snap -- --out=debug/before.png        choose the file (compare before/af
 
 ### `npm run fingerprint`: prove the output didn't change
 
-It hashes about 400 ground tiles (pixels and heights) in five configurations: landscape only, farms,
-the front (hasty, dev), the front (traversed, everything) and the front at production density. The
-tiles cover the start's front, farmland and far countryside.
+It hashes about 1,400 ground tiles (pixels and heights) in five configurations: landscape only, farms,
+the front (hasty, dev), the front (traversed, everything) and the front at production density. Then
+the production front again on each of the 13 sample days of the season sweep (`?day=0` … `347`, below),
+so snow, frost, mud and autumn are covered too. The tiles cover the start's front, farmland and far
+countryside.
 
 ```
 npm run fingerprint -- --save   BEFORE the change: record (debug/fingerprint.json)

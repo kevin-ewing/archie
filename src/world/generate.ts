@@ -36,7 +36,9 @@ export const ALL_FEATURES: Features = { structures: true, military: true };
 export type TileRequest =
   | { kind: 'ground'; seed: number; cx: number; cy: number; features?: Features; damage?: readonly DamageMark[]; season?: SeasonState }
   | { kind: 'clouds' | 'cloudShadow'; seed: number; cx: number; cy: number }
-  | { kind: 'shade'; cx: number; cy: number; heights: Uint8Array<ArrayBuffer>; sun: ShadeSun };
+  // `tiles`: the heights of the tile and its 8 neighbours, row by row (dy −1…1, dx −1…1). Sent as they are and
+  // joined here, in the worker: joining them on the main thread cost more than the request itself.
+  | { kind: 'shade'; cx: number; cy: number; tiles: readonly Uint8Array[]; sun: ShadeSun };
 
 /** Apply a request's features to the shared world settings (read by every layer). */
 function applySettings(features: Features) {
@@ -102,9 +104,18 @@ export function generateTile(req: TileRequest): TileData {
     case 'cloudShadow':
       return { rgba: cloudShadowChunk(req.seed, req.cx, req.cy) };
     case 'shade':
-      return { rgba: shadeTile(req.heights, req.sun, req.cx, req.cy) };
+      return { rgba: shadeTile(joinHeights(req.tiles), req.sun, req.cx, req.cy) };
   }
 }
 
-/** Buffers to hand over (not copy) when sending this request to a worker. */
-export const requestTransfer = (req: TileRequest): Transferable[] => (req.kind === 'shade' ? [req.heights.buffer] : []);
+/** Nine tiles' heights (row by row, 3 × 3) as one (3·CHUNK)² grid, for shadeTile. */
+export function joinHeights(tiles: readonly Uint8Array[]): Uint8Array {
+  const out = new Uint8Array(9 * CHUNK * CHUNK);
+  for (let j = 0; j < 3; j++) {
+    for (let i = 0; i < 3; i++) {
+      const h = tiles[j * 3 + i];
+      for (let row = 0; row < CHUNK; row++) out.set(h.subarray(row * CHUNK, row * CHUNK + CHUNK), (j * CHUNK + row) * 3 * CHUNK + i * CHUNK);
+    }
+  }
+  return out;
+}

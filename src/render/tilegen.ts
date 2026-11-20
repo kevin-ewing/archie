@@ -2,7 +2,7 @@
 // (very old browsers, strict sandboxes). Either way each tile arrives as a promise.
 
 import type { TileData } from '../world/ground.ts';
-import { generateTile, requestTransfer, type TileRequest } from '../world/generate.ts';
+import { generateTile, type TileRequest } from '../world/generate.ts';
 import type { TileJob, TileResult } from '../world/worker.ts';
 
 export type TileGen = (req: TileRequest) => Promise<TileData>;
@@ -79,7 +79,7 @@ export function createTileGen(): TileGen {
     return new Promise((resolve, reject) => {
       const id = next++;
       waiting.set(id, { resolve, reject, kind: req.kind });
-      workers[id % count].postMessage({ id, req } satisfies TileJob, requestTransfer(req));
+      workers[id % count].postMessage({ id, req } satisfies TileJob);
     });
   };
 }
