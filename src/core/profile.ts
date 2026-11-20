@@ -21,7 +21,7 @@ export type Profiler = {
   history: () => readonly FrameTimes[];
 };
 // Fixed slots keep intermittent work from moving every row beneath it.
-const STAGES = ['simulation', 'menu view', 'desk layout', 'desk paint', 'tiles in', 'ground', 'sunlight', 'plane', 'clouds', 'grade', 'hud', 'frame'];
+const STAGES = ['simulation', 'menu view', 'desk layout', 'desk paint', 'tiles in', 'ground', 'sunlight', 'plane', 'clouds', 'grade', 'hud', 'weather', 'frame'];
 const HISTORY = 600; // ~5–10 s of frames
 
 export function createProfiler(enabled: boolean, show: (text: string) => void): Profiler {

@@ -17,6 +17,10 @@ import { sunNow } from './sim/daylight.ts';
 import { legalHours, sunDay } from './sim/sun.ts';
 import { applyOverrides, parseOverrides, seasonAt, seasonKey, SEASON_DATES, type Overrides } from './sim/seasons.ts';
 import { createPlane, FLIGHT, updatePlane } from './sim/flight.ts';
+import { parseWeatherOverrides, resolveWeather, type WeatherOverride } from './sim/weatherset.ts';
+import type { WeatherState } from './sim/weather.ts';
+import { weatherSeedOf } from './game/state.ts';
+import { createPrecipLayer } from './render/precip.ts';
 import { createClockFace, drawClock } from './ui/clock.ts';
 import { label } from './ui/gauges.ts';
 import { createHud, drawHud, gradeMatrix, radiumGlow } from './ui/hud.ts';
@@ -56,6 +60,13 @@ if (IS_DEV || new URLSearchParams(location.search).has('debug')) {
   const parsed = parseOverrides(location.search);
   for (const p of parsed.problems) console.warn(`Season override ignored: ${p}`);
   overrides = parsed.overrides;
+}
+// Weather overrides (`?weather= ?precip= ?cloud= ?weatherSeed=`): the same development and `?debug` rule.
+let weatherOverride: WeatherOverride = {};
+if (IS_DEV || new URLSearchParams(location.search).has('debug')) {
+  const parsed = parseWeatherOverrides(location.search);
+  for (const p of parsed.problems) console.warn(`Weather override ignored: ${p}`);
+  weatherOverride = parsed.overrides;
 }
 const overrideDate = (o: Overrides): CalDate | undefined => o.date ?? (o.season ? SEASON_DATES[o.season] : undefined);
 const startFor = (o: Overrides, atDay: number): CalDate => {
@@ -209,7 +220,7 @@ const pauseUi = createPauseUi({
     syncSession();
   },
   settings,
-  hideForPhoto: () => [voices.el, display.hud.canvas, display.glow.canvas, holdButton, document.getElementById('map-bearing'), document.getElementById('debug')],
+  hideForPhoto: () => [voices.el, display.hud.canvas, display.glow.canvas, display.precip?.canvas ?? null, holdButton, document.getElementById('map-bearing'), document.getElementById('debug')],
   photo: () => {
     // The frame at device resolution, with a small Archie mark and the game's address, bottom-right.
     const view = display.view();
@@ -219,6 +230,7 @@ const pauseUi = createPauseUi({
     const ctx = out.getContext('2d')!;
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(display.ctx.canvas, 0, 0);
+    if (display.precip && !display.precip.canvas.hidden) ctx.drawImage(display.precip.canvas, 0, 0); // rain and snow, over the world
     const k = view.uiScale;
     const name = label('ARCHIE', [0xe8, 0xdf, 0xc4, 255]);
     const link = label(GAME_URL.replace('https://', '').replace(/\/$/, '').toUpperCase(), [0xb8, 0xb5, 0xa6, 255]);
@@ -287,6 +299,30 @@ const scene = createScene(state.seed, state.world.density); // farms 2.5× the b
 // Keep front placement consistent on the main thread and in tile workers.
 DEV.atStart = state.world.frontAtStart;
 Object.assign(scene.features, worldFeatures(state.world));
+
+// The weather of this moment: override, then the game's setting, then generated (sim/weatherset.ts). If it
+// throws (a campaign day beyond 2100), the previous state stays and one warning is logged per message.
+const precip = createPrecipLayer(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
+let weatherNow: WeatherState = scene.weather;
+const weatherWarned = new Set<string>();
+const currentWeather = () => {
+  try {
+    weatherNow = resolveWeather({
+      worldSeed: state.seed, weatherSeed: state.weatherSeed, setting: state.weather, override: weatherOverride,
+      day: dayNumber(dateOf(state.clock.day)), hours: state.clock.hours,
+    }).state;
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    if (!weatherWarned.has(message)) {
+      weatherWarned.add(message);
+      console.warn(`Weather unavailable, keeping the last state: ${message}`);
+    }
+  }
+  scene.weather = weatherNow;
+};
+// The instrument board's rects in game px (hud.ts lays out in UI px); reused each frame.
+const weatherSeedFor = () => weatherOverride.seed ?? weatherSeedOf(state);
+const boardRects: { x: number; y: number; w: number; h: number }[] = [];
 
 /** The date's look: recomputed only when the calendar day changes, then handed to the scene (tiles, grade). */
 let seasonDay = NaN;
@@ -497,7 +533,7 @@ if (IS_DEV || debugRequested) {
     toggles: toggles.items,
     onToggle,
     complete: () => lastComplete,
-    canvases: [canvas, display.hud.canvas, display.glow.canvas],
+    canvases: [canvas, display.hud.canvas, display.glow.canvas, ...(display.precip ? [display.precip.canvas] : [])],
     prof,
   });
 }
@@ -694,6 +730,10 @@ function drawLanding(c: HTMLCanvasElement, at: number) {
   const y = plane.y - ((at - landingT0) / 1000) * LANDING_DRIFT;
   // The bare landscape: no farms or buildings of any kind, no front (the game's own render sets these back).
   currentSeason();
+  // The day's clouds, no rain or snow (nothing falls on the landing page).
+  currentWeather();
+  const { coverKey } = scene.weather;
+  scene.weather = { ...scene.weather, precipitation: 'none', intensity: 0, kind: coverKey <= 1 ? 'clear' : coverKey === 7 ? 'overcast' : 'cloudy' };
   scene.features.structures = false;
   scene.features.military = false;
   scene.features.frontLine = false;
@@ -707,12 +747,14 @@ function render(alpha: number, timing: RenderTiming) {
     // through `prof.add`); on the main menu it's the terrain window.
     if (barn?.isOpen()) {
       pauseUi.layout(display.view()); // the UI pixel size, for the settings panel over the desk (cheap: only on a change)
+      precip.hide();
       prof.start(timing);
       prof.end();
       return;
     }
     const terrain = landing.terrain();
     if (terrain) {
+      precip.hide();
       prof.start(timing);
       drawLanding(terrain, timing.at);
       prof.mark('menu view');
@@ -727,6 +769,7 @@ function render(alpha: number, timing: RenderTiming) {
     const warning = engineWarning(plane);
     const sun = sunNow(state.clock);
     currentSeason();
+    currentWeather();
     for (const toggle of worldToggles) toggle.on = state.world[worldToggleKeys[toggle.id as keyof typeof worldToggleKeys]];
     scene.features.structures = state.world.farms;
     scene.features.military = state.world.fronts;
@@ -804,6 +847,25 @@ function render(alpha: number, timing: RenderTiming) {
       if (holdButton) holdButton.style.filter = instrumentLight ? 'url(#hud-grade)' : 'none';
     }
     prof.mark('hud');
+    // Rain and snow, on their own canvas over the HUD. Any failure here must not stop the frame.
+    try {
+      if (state.phase === 'loading') precip.hide();
+      else {
+        const k = view.uiScale / view.scale;
+        board.slots.forEach((s, i) => (boardRects[i] = { x: s.x * k, y: s.y * k, w: s.w * k, h: s.h * k }));
+        boardRects.length = board.slots.length;
+        precip.draw({
+          ctx: display.precip, view, weather: scene.weather, seed: weatherSeedFor(), grade: scene.hourLight, sunScreen: scene.sunScreen,
+          heading: p.heading, bank: p.bank, camAngle: c.angle, t: state.elapsedSeconds - STEP * (1 - alpha), boardRects,
+        });
+      }
+    } catch (e) {
+      if (!weatherWarned.has('precip')) {
+        weatherWarned.add('precip');
+        console.warn('Rain and snow could not be drawn.', e);
+      }
+    }
+    prof.mark('weather');
     prof.end();
     if (complete && !shown && chosen) show(); // take-off once the world is ready and a mode is chosen
 }

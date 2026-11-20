@@ -18,6 +18,7 @@ import { DEV, type TrenchStyle } from './settings.ts';
 import { shadeTile, type ShadeSun } from './shading.ts';
 import { structureAt, structuresNear, trackAt, tracksNear } from './structures.ts';
 import { MAY_LOOK, type SeasonState } from '../sim/seasons.ts';
+import { coverOfKey, NEUTRAL_KEY } from '../sim/weather.ts';
 import { setLook } from './season.ts';
 
 /** Which additions to stamp into ground tiles (development toggles; both on in play). `density` > 1
@@ -35,7 +36,7 @@ export const ALL_FEATURES: Features = { structures: true, military: true };
 
 export type TileRequest =
   | { kind: 'ground'; seed: number; cx: number; cy: number; features?: Features; damage?: readonly DamageMark[]; season?: SeasonState }
-  | { kind: 'clouds' | 'cloudShadow'; seed: number; cx: number; cy: number }
+  | { kind: 'clouds' | 'cloudShadow'; seed: number; cx: number; cy: number; coverKey?: number } // coverKey: the cloud cover bucket 0..7 (default NEUTRAL_KEY)
   // `tiles`: the heights of the tile and its 8 neighbours, row by row (dy −1…1, dx −1…1). Sent as they are and
   // joined here, in the worker: joining them on the main thread cost more than the request itself.
   | { kind: 'shade'; cx: number; cy: number; tiles: readonly Uint8Array[]; sun: ShadeSun };
@@ -100,9 +101,9 @@ export function generateTile(req: TileRequest): TileData {
       // Layer 2 (the landscape) is drawn by groundChunk under the stamp, only where nothing covers it.
       return groundChunk(req.seed, req.cx, req.cy, tileStamp(req.seed, req.cx, req.cy, req.features ?? ALL_FEATURES, req.damage ?? []));
     case 'clouds':
-      return { rgba: cloudChunk(req.seed, req.cx, req.cy) };
+      return { rgba: cloudChunk(req.seed, req.cx, req.cy, coverOfKey(req.coverKey ?? NEUTRAL_KEY)) };
     case 'cloudShadow':
-      return { rgba: cloudShadowChunk(req.seed, req.cx, req.cy) };
+      return { rgba: cloudShadowChunk(req.seed, req.cx, req.cy, coverOfKey(req.coverKey ?? NEUTRAL_KEY)) };
     case 'shade':
       return { rgba: shadeTile(joinHeights(req.tiles), req.sun, req.cx, req.cy) };
   }

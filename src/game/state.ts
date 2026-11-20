@@ -3,6 +3,7 @@
 import { TRENCH_STYLES, type TrenchStyle } from '../world/settings.ts';
 import type { Features } from '../world/generate.ts';
 import { dateOf, formatISO } from '../sim/calendar.ts';
+import { readWeatherSeed, readWeatherSetting, type WeatherSetting } from '../sim/weatherset.ts';
 import { advanceClock, DAYLIGHT, type Clock } from '../sim/daylight.ts';
 
 export const GAME_MODES = ['free-play'] as const;
@@ -13,7 +14,7 @@ export type WorldConfig = {
 };
 export const DEFAULT_WORLD: Readonly<WorldConfig> = Object.freeze({ fronts: true, farms: true, frontLines: false, frontAtStart: false, onlyTrenches: true, density: 2.5, trenchStyle: 'hasty' });
 type LevelProgress = { id: string | null; objectives: { id: string; completed: boolean }[] };
-export type SortieSetup = { day: number; startHour: number; level: number; seed?: number; world?: Partial<WorldConfig>; levelId?: string; objectives?: readonly string[] };
+export type SortieSetup = { day: number; startHour: number; level: number; seed?: number; weatherSeed?: number | null; weather?: WeatherSetting | null; world?: Partial<WorldConfig>; levelId?: string; objectives?: readonly string[] };
 
 /** Adapt game terminology to the existing renderer/worker contract in one place. */
 export function worldFeatures(world: Readonly<WorldConfig>): Features {
@@ -33,6 +34,8 @@ type Data = {
   world: WorldConfig;
   levelProgress: LevelProgress;
   seed: number;
+  weatherSeed: number | null; // null = follow the world seed
+  weather: WeatherSetting | null; // null = generated weather
   level: number;
   phase: GamePhase;
   resumePhase: RunPhase | null;
@@ -102,17 +105,19 @@ export function campaignDate(day: number): string {
   return formatISO(dateOf(day));
 }
 
-export function createGame(options: { mode?: GameMode; seed?: number; startHour?: number; day?: number; level?: number; world?: Partial<WorldConfig>; levelId?: string; objectives?: readonly string[] } = {}) {
+export function createGame(options: { mode?: GameMode; seed?: number; weatherSeed?: number | null; weather?: WeatherSetting | null; startHour?: number; day?: number; level?: number; world?: Partial<WorldConfig>; levelId?: string; objectives?: readonly string[] } = {}) {
   const mode = readMode(options.mode ?? 'free-play');
   const seed = options.seed ?? Math.floor(Math.random() * 2 ** 31);
   const world = readWorld({ ...DEFAULT_WORLD, ...options.world });
   const levelProgress = readLevel({ id: options.levelId ?? null, objectives: (options.objectives ?? []).map((id) => ({ id, completed: false })) });
+  const weatherSeed = options.weatherSeed == null ? null : readWeatherSeed(options.weatherSeed);
+  const weather = options.weather == null ? null : readWeatherSetting(options.weather);
   const clock = readClock({ day: options.day ?? 0, hours: options.startHour ?? DAYLIGHT.startHour });
   requireValue(natural(seed) && seed < 2 ** 31, 'Invalid world seed.');
   const level = options.level ?? 1;
   requireValue(natural(level) && level > 0, 'Level must be a positive integer.');
   campaignDate(clock.day);
-  return manage({ version: 2, mode, world, levelProgress, seed, level, phase: 'loading', resumePhase: null, pauseReasons: [], clock,
+  return manage({ version: 2, mode, world, levelProgress, seed, weatherSeed, weather, level, phase: 'loading', resumePhase: null, pauseReasons: [], clock,
     sortie: { number: 1, startedAt: { ...clock }, elapsedSeconds: 0 }, mission: null, missionHistory: [], elapsedSeconds: 0 });
 }
 
@@ -196,12 +201,16 @@ function manage(data: Data) {
       requireValue(natural(options.level) && options.level > 0, 'Level must be a positive integer.');
       const nextSeed = options.seed ?? data.seed;
       requireValue(natural(nextSeed) && nextSeed < 2 ** 31, 'Invalid world seed.');
+      const nextWeatherSeed = options.weatherSeed === undefined ? data.weatherSeed : options.weatherSeed === null ? null : readWeatherSeed(options.weatherSeed);
+      const nextWeather = options.weather === undefined ? data.weather : options.weather === null ? null : readWeatherSetting(options.weather);
       const nextWorld = readWorld({ ...data.world, ...options.world });
       if (options.level !== data.level) requireValue(data.levelProgress.objectives.every((o) => o.completed), 'Complete the current level objectives before advancing.');
       const nextLevel = options.level === data.level && options.levelId === undefined && options.objectives === undefined ? data.levelProgress :
         readLevel({ id: options.levelId ?? null, objectives: (options.objectives ?? []).map((id) => ({ id, completed: false })) });
       transition('loading');
       data.seed = nextSeed;
+      data.weatherSeed = nextWeatherSeed;
+      data.weather = nextWeather;
       data.world = nextWorld;
       data.levelProgress = nextLevel;
       data.level = options.level;
@@ -214,6 +223,9 @@ function manage(data: Data) {
   };
 }
 export type Game = ReturnType<typeof createGame>;
+
+/** The seed the weather uses: its own when set, otherwise the world seed. */
+export const weatherSeedOf = (s: Pick<GameState, 'seed' | 'weatherSeed'>): number => s.weatherSeed ?? s.seed;
 
 /** Read untrusted JSON after parsing, validating it before creating a session. No storage is touched. */
 export function restoreGame(value: unknown): Game {
@@ -229,6 +241,8 @@ export function restoreGame(value: unknown): Game {
   const paused = s.phase === 'paused';
   const reasons = s.pauseReasons as PauseReason[];
   requireValue(paused ? RUN_PHASES.includes(s.resumePhase as RunPhase) && reasons.length > 0 : s.resumePhase === null && reasons.length === 0, 'Inconsistent pause state.');
+  const weatherSeed = s.weatherSeed == null ? null : readWeatherSeed(s.weatherSeed);
+  const weather = s.weather == null ? null : readWeatherSetting(s.weather);
   const clock = readClock(s.clock);
   campaignDate(clock.day);
   const sortie = record(s.sortie);
@@ -254,7 +268,7 @@ export function restoreGame(value: unknown): Game {
   });
   const phase = (paused ? s.resumePhase : s.phase) as RunPhase;
   requireValue(mission?.status !== 'active' || phase === 'playing', 'An active mission requires a flight in progress.');
-  const game = manage({ version: 2, mode, world, levelProgress, seed: s.seed as number, level: s.level as number, phase, resumePhase: null, pauseReasons: [], clock,
+  const game = manage({ version: 2, mode, world, levelProgress, seed: s.seed as number, weatherSeed, weather, level: s.level as number, phase, resumePhase: null, pauseReasons: [], clock,
     sortie: { number: sortie.number as number, startedAt, elapsedSeconds: sortie.elapsedSeconds as number }, mission, missionHistory, elapsedSeconds: s.elapsedSeconds as number });
   // Visibility belongs to the new browser tab. A restored active flight waits for explicit resumption.
   if (reasons.includes('user') || phase === 'playing' || phase === 'handoff') game.pause();

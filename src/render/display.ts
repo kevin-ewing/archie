@@ -41,7 +41,7 @@ export function fitView(viewW: number, viewH: number, dpr: number, mobile: Mobil
 }
 
 /** `ctx` draws the world; `hud` is a transparent canvas of the same size stacked over it, for the HUD. */
-export type Display = { ctx: CanvasRenderingContext2D; hud: CanvasRenderingContext2D; glow: CanvasRenderingContext2D; view: () => View };
+export type Display = { ctx: CanvasRenderingContext2D; hud: CanvasRenderingContext2D; glow: CanvasRenderingContext2D; precip: CanvasRenderingContext2D | null; view: () => View };
 
 export function createDisplay(canvas: HTMLCanvasElement): Display {
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -59,13 +59,24 @@ export function createDisplay(canvas: HTMLCanvasElement): Display {
   glowCanvas.setAttribute('aria-hidden', 'true');
   hudCanvas.after(glowCanvas);
   const glow = glowCanvas.getContext('2d')!;
+  // Rain and snow (render/precip.ts): a third overlay, null if the canvas or its context is unavailable.
+  let precip: CanvasRenderingContext2D | null = null;
+  try {
+    const weatherCanvas = document.createElement('canvas');
+    weatherCanvas.id = 'weather';
+    weatherCanvas.setAttribute('aria-hidden', 'true');
+    precip = weatherCanvas.getContext('2d');
+    if (precip) glowCanvas.after(weatherCanvas);
+  } catch {
+    precip = null;
+  }
   const mobile = mobilePlatform(navigator.userAgent, navigator.platform, navigator.maxTouchPoints);
   let view = fitView(1, 1, 1, mobile);
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     view = fitView(window.innerWidth, window.innerHeight, dpr, mobile);
-    for (const c of [canvas, hudCanvas, glowCanvas]) {
+    for (const c of [canvas, hudCanvas, glowCanvas, ...(precip ? [precip.canvas] : [])]) {
       const width = view.devW;
       const height = view.devH;
       if (c.width !== width) c.width = width;
@@ -77,6 +88,7 @@ export function createDisplay(canvas: HTMLCanvasElement): Display {
     ctx!.imageSmoothingEnabled = false; // resizing resets context state
     hud.imageSmoothingEnabled = false;
     glow.imageSmoothingEnabled = false;
+    if (precip) precip.imageSmoothingEnabled = false;
   }
 
   resize();
@@ -93,5 +105,5 @@ export function createDisplay(canvas: HTMLCanvasElement): Display {
       { once: true },
     );
   watchDpr();
-  return { ctx, hud, glow, view: () => view };
+  return { ctx, hud, glow, precip, view: () => view };
 }

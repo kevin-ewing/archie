@@ -99,8 +99,20 @@ const hazing = (g: Grade) => g.haze > 0.02;
 const COLD_TINT: RGB = [0.93, 0.96, 1];
 const WARM_TINT: RGB = [1, 0.98, 0.92];
 
-/** The grade for this sun and sky. Pure. `season` (skyBias, haze) is neutral when omitted. */
-export function gradeFor(sun: Sun, sky: Sky, season?: { skyBias: number; haze: number }): Grade {
+/** Precipitation particle base colours: pale grey-blue rain (next to HAZE_COLOUR), near-white warm grey snow. */
+export const RAIN_COLOUR: RGB = hex(0xa4b0bd);
+export const SNOW_COLOUR: RGB = hex(0xe0ded9);
+
+/** The weather the grade reacts to: cloud cover (0…1) and precipitation intensity (0…1). */
+export type GradeWeather = { cover: number; intensity: number };
+const NEUTRAL_COVER = 9 / 16; // same as sim/weather.ts; local so grade.ts has no import-order dependency
+
+/** Where a pixel sits between away from the sun (0) and toward it (1): the band position gradePixels uses.
+ * `dx`, `dy` are the pixel's offset from the screen centre, `dir` the on-screen sun direction, `R` the gradient radius. */
+export const sunSide = (dx: number, dy: number, dir: { x: number; y: number }, R: number): number => clamp01(0.5 + (dx * dir.x + dy * dir.y) / (2 * R));
+
+/** The grade for this sun and sky. Pure. `season` (skyBias, haze) and `weather` are neutral when omitted. */
+export function gradeFor(sun: Sun, sky: Sky, season?: { skyBias: number; haze: number }, weather?: GradeWeather): Grade {
   const el = (sun.elevation * 180) / Math.PI;
   const p = sky.palette;
   const b = sky.beauty;
@@ -155,7 +167,16 @@ export function gradeFor(sun: Sun, sky: Sky, season?: { skyBias: number; haze: n
   const byDay = clamp01(0.1 * golden + 0.58 * blaze * blaze) * (0.75 + 0.25 * b);
   const duskCloudAmount = byDay + (0.5 - byDay) * dusk;
   const cloudAmount = duskCloudAmount + (0.65 - duskCloudAmount) * night;
-  const haze = season?.haze ?? 0;
+  let haze = season?.haze ?? 0;
+  let glowOut = glowAlpha;
+  let raysOut = blaze * b * 0.9 * rayWindow;
+  if (weather) {
+    // Overcast and rain dim the sun's glow and shafts and add haze; the tint, night and clouds are untouched.
+    const scale = 1 - 0.75 * clamp01(clamp01((weather.cover - NEUTRAL_COVER) / (1 - NEUTRAL_COVER)) + weather.intensity);
+    glowOut *= scale;
+    raysOut *= scale;
+    haze = Math.min(0.6, Math.max(0, haze + 0.35 * weather.intensity));
+  }
   return {
     near,
     far,
@@ -163,10 +184,10 @@ export function gradeFor(sun: Sun, sky: Sky, season?: { skyBias: number; haze: n
     cloud: { near: cloudNear, far: cloudFar, amount: cloudAmount },
     tintAlpha,
     glow: rayColour,
-    glowAlpha,
-    rays: blaze * b * 0.9 * rayWindow,
+    glowAlpha: glowOut,
+    rays: raysOut,
     haze,
-    active: tintAlpha > 0.004 || glowAlpha > 0.004 || haze > 0.02,
+    active: tintAlpha > 0.004 || glowOut > 0.004 || haze > 0.02,
   };
 }
 

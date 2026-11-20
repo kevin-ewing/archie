@@ -21,6 +21,7 @@ import { cloudLevel } from '../world/clouds.ts';
 import { createTileLayer, type TileLayer } from './tiles.ts';
 import { createDamage, damageVersion, marksFor, type Damage } from '../world/damage.ts';
 import type { Features } from '../world/generate.ts';
+import { NEUTRAL_COVER, NEUTRAL_KEY, coverOfKey, type WeatherState } from '../sim/weather.ts';
 import { MAY_LOOK, seasonKey, type SeasonState } from '../sim/seasons.ts';
 import { LIGHTS } from '../world/lights.ts';
 import { createLampSprite, drawLamps } from './lamps.ts';
@@ -40,6 +41,7 @@ const HIGH_WIND_SCALE = 0.5; // the high deck creeps slower than the low one
 const PLANE_SHADOW_ALPHA = 0.26;
 const SHADOW_MARGIN = 48; // room around the plane-shadow buffer for pixels shifted toward the plane (≤ 14 px tall × 3 length)
 const CLOUD_SHADOW_ALPHA = 0.42; // darkening under a dense cloud (its silhouette is near-opaque)
+const COVER_FADE_MS = 3000; // a new cloud cover cross-fades in over this long
 const WIND = { x: 1, y: 0.5 }; // the clouds' (and their shadows') creep, px / s
 const BASE = `rgb(${GROUND_BASE.join(',')})`; // shown only where a tile hasn't been generated yet
 const RAD = Math.PI / 180;
@@ -49,6 +51,8 @@ export type Scene = {
   features: Features; // which additions are stamped into the ground (development toggles)
   damage: Damage; // live damage marks, stamped into the tiles they touch
   season: { state: SeasonState; key: number }; // the date's look; `key` is its bucketed hash (tiles regenerate when it changes)
+  weather: WeatherState; // this frame's weather (set by the caller; the cloud layers and the grade read it)
+  sunScreen: { x: number; y: number }; // unit vector toward the sun on screen, set each drawScene
   ground: TileLayer;
   sunlight: TileLayer; // cast shadows + relief, re-baked as the sun moves
   cloudShadows: TileLayer;
@@ -91,11 +95,14 @@ export function createScene(seed: number, density = 1): Scene {
   let sharedSun = '';
   let sharedGround = NaN;
   const groundVersion = (cx: number, cy: number) => (scene.features.structures ? 1 : 0) + (scene.features.military ? 2 : 0) + (scene.features.frontLine ? 4 : 0) + 8 * damageVersion(scene.damage, cx, cy) + 2 ** 6 * scene.season.key;
+  const coverVersion = () => String(scene.weather.coverKey);
   const scene: Scene = {
     seed,
     features: { structures: false, military: true, density },
     damage: createDamage(),
     season: { state: MAY_LOOK, key: seasonKey(MAY_LOOK) },
+    weather: { kind: 'cloudy', precipitation: 'none', intensity: 0, cloudCover: NEUTRAL_COVER, coverKey: NEUTRAL_KEY },
+    sunScreen: { x: 0, y: -1 },
     ground: createTileLayer(
       (cx, cy) => gen({ kind: 'ground', seed, cx, cy, features: { ...scene.features }, damage: marksFor(scene.damage, cx, cy), season: scene.season.state }),
       CHUNK,
@@ -124,10 +131,10 @@ export function createScene(seed: number, density = 1): Scene {
       },
       fadeMs: SUNLIGHT_FADE_MS,
     }),
-    cloudShadows: createTileLayer((cx, cy) => gen({ kind: 'cloudShadow', seed, cx, cy }), CHUNK),
-    clouds: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed, cx, cy }), CHUNK),
-    wisps: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed: seed + 5, cx, cy }), CHUNK, { prefetchTiles: 3, maxInFlight: 8 }),
-    highClouds: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed: seed + 13, cx, cy }), CHUNK, { prefetchTiles: 2 }),
+    cloudShadows: createTileLayer((cx, cy) => gen({ kind: 'cloudShadow', seed, cx, cy, coverKey: scene.weather.coverKey }), CHUNK, { version: coverVersion, fadeMs: COVER_FADE_MS }),
+    clouds: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed, cx, cy, coverKey: scene.weather.coverKey }), CHUNK, { version: coverVersion, fadeMs: COVER_FADE_MS }),
+    wisps: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed: seed + 5, cx, cy, coverKey: scene.weather.coverKey }), CHUNK, { prefetchTiles: 3, maxInFlight: 8, version: coverVersion, fadeMs: COVER_FADE_MS }),
+    highClouds: createTileLayer((cx, cy) => gen({ kind: 'clouds', seed: seed + 13, cx, cy, coverKey: scene.weather.coverKey }), CHUNK, { prefetchTiles: 2, version: coverVersion, fadeMs: COVER_FADE_MS }),
     cloudBuf: (() => {
       const canvas = document.createElement('canvas');
       return { canvas, ctx: canvas.getContext('2d')! };
@@ -317,11 +324,12 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   f.prof.mark('plane');
 
   // The light of the hour, and the sun's direction on screen (it turns with the camera).
-  const grade = gradeFor(sun, skyFor(scene.seed, f.day, sun.evening, scene.season.state.skyBias), scene.season.state);
+  const grade = gradeFor(sun, skyFor(scene.seed, f.day, sun.evening, scene.season.state.skyBias), scene.season.state, { cover: scene.weather.cloudCover, intensity: scene.weather.intensity });
   scene.hourLight = grade; // for the HUD, which takes the same light (see ui/hud.ts gradeMatrix)
   const sa = -cam.angle;
   const toward = { x: sun.toward.x * Math.cos(sa) - sun.toward.y * Math.sin(sa), y: sun.toward.x * Math.sin(sa) + sun.toward.y * Math.cos(sa) };
 
+  scene.sunScreen = toward;
   // All the clouds go into their own screen-size buffer first, so the light of the hour can colour them
   // (far more strongly than the ground): pink and gold at sunrise and sunset, then dusk blue.
   const CB = scene.cloudBuf;
@@ -342,7 +350,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   // field of wisps streaks past close to the camera, so passing through cloud feels fast.
   const pa = cam.angle;
   const pq = { x: qx + off.x * Math.cos(pa) - off.y * Math.sin(pa), y: qy + off.x * Math.sin(pa) + off.y * Math.cos(pa) };
-  const cloudDepth = (cloudLevel(scene.seed, Math.round(pq.x), Math.round(pq.y)) + 1) / 6;
+  const cloudDepth = (cloudLevel(scene.seed, Math.round(pq.x), Math.round(pq.y), coverOfKey(scene.weather.coverKey)) + 1) / 6;
   scene.inCloud += (cloudDepth - scene.inCloud) * (1 - Math.exp(-dt / 0.4));
   const preloadWisps = t === 0 && cloudDepth > 0.02;
   const wx = c.x * WISP_PARALLAX - WIND.x * t;
@@ -476,7 +484,7 @@ export function drawTerrain(ctx: CanvasRenderingContext2D, view: View, scene: Sc
   }
 
   // The clouds (both decks), coloured by the light of the hour, then the light of the hour over everything.
-  const grade = gradeFor(sun, skyFor(scene.seed, day, sun.evening, scene.season.state.skyBias), scene.season.state);
+  const grade = gradeFor(sun, skyFor(scene.seed, day, sun.evening, scene.season.state.skyBias), scene.season.state, { cover: scene.weather.cloudCover, intensity: scene.weather.intensity });
   const CB = scene.cloudBuf;
   if (CB.canvas.width !== width || CB.canvas.height !== height) {
     CB.canvas.width = width;

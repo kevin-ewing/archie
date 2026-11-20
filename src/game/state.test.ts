@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { campaignDate, createGame, restoreGame, worldFeatures, DEFAULT_WORLD } from './state.ts';
+import fc from 'fast-check';
+import { campaignDate, createGame, restoreGame, worldFeatures, weatherSeedOf, DEFAULT_WORLD, type Game } from './state.ts';
+import { resolveWeather, type WeatherSetting } from '../sim/weatherset.ts';
 
 function airborne(game = createGame({ seed: 1915, startHour: 7 })) {
   game.transition('handoff');
@@ -238,4 +240,87 @@ test('version 1 checkpoints migrate to free play; new checkpoints reject malform
   for (const bad of [{ ...s, mode: 'unknown' }, { ...s, world: { ...s.world, fronts: 'false' } }, { ...s, world: null },
     { ...s, levelProgress: { id: 'intro', objectives: [{ id: 'x', completed: false }, { id: 'x', completed: true }] } },
     { ...s, levelProgress: { id: 'intro', objectives: [{ id: 'x', completed: 'false' }] } }]) assert.throws(() => restoreGame(bad));
+});
+
+// Property 20: Game state accepts good weather fields, rejects bad ones, restores exactly.
+// **Validates: Requirements 13.1, 13.2, 13.5, 13.6, 13.7**
+const wSeed = fc.integer({ min: 0, max: 2 ** 31 - 1 });
+const wUnit = fc.double({ min: 0, max: 1, noNaN: true });
+const wSetting = fc.record({ kind: fc.constantFrom('clear', 'cloudy', 'overcast', 'rain', 'snow'), intensity: fc.option(wUnit, { nil: undefined }), cloudCover: fc.option(wUnit, { nil: undefined }) }, { requiredKeys: ['kind'] })
+  .map((s) => JSON.parse(JSON.stringify(s)) as WeatherSetting); // drop undefined keys
+const resolved = (g: Game, day: number, hours: number) => {
+  const s = g.state;
+  return resolveWeather({ worldSeed: s.seed, weatherSeed: s.weatherSeed, setting: s.weather, override: null, day, hours }).state;
+};
+const debrief = (g: Game) => { airborne(g).endSortie(); return g; };
+
+test('Property 20: good weather fields round-trip through createGame, beginSortie, snapshot and restoreGame', () => {
+  fc.assert(
+    fc.property(wSeed, fc.option(wSeed, { nil: null }), fc.option(wSetting, { nil: null }), wSeed, fc.option(wSetting, { nil: null }), fc.integer({ min: 0, max: 300 }), fc.double({ min: 0, max: 23.99, noNaN: true }), (world, ws, set, ws2, set2, day, hours) => {
+      const g = createGame({ seed: world, weatherSeed: ws, weather: set });
+      assert.equal(g.state.weatherSeed, ws);
+      assert.deepEqual(g.state.weather, set);
+      const r = restoreGame(JSON.parse(JSON.stringify(g.snapshot())));
+      assert.equal(r.state.weatherSeed, ws);
+      assert.deepEqual(r.state.weather, set);
+      assert.deepEqual(resolved(r, day, hours), resolved(g, day, hours));
+      assert.equal(weatherSeedOf(r.state), ws ?? world);
+
+      debrief(g);
+      g.beginSortie({ day: 1, startHour: 8, level: 1, weatherSeed: ws2, weather: set2 });
+      assert.equal(g.state.weatherSeed, ws2);
+      assert.deepEqual(g.state.weather, set2);
+      const r2 = restoreGame(JSON.parse(JSON.stringify(g.snapshot())));
+      assert.deepEqual(resolved(r2, day, hours), resolved(g, day, hours));
+    }),
+    { numRuns: 100, seed: 20 },
+  );
+});
+
+test('Property 20: beginSortie leaves weather alone when the fields are undefined and clears it on null', () => {
+  fc.assert(
+    fc.property(wSeed, wSetting, (ws, set) => {
+      const g = debrief(createGame({ seed: 1, weatherSeed: ws, weather: set }));
+      g.beginSortie({ day: 1, startHour: 8, level: 1 });
+      assert.equal(g.state.weatherSeed, ws);
+      assert.deepEqual(g.state.weather, set);
+      debrief(g).beginSortie({ day: 2, startHour: 8, level: 1, weatherSeed: null, weather: null });
+      assert.equal(g.state.weatherSeed, null);
+      assert.equal(g.state.weather, null);
+    }),
+    { numRuns: 50, seed: 20 },
+  );
+});
+
+test('Property 20: bad weather fields throw naming the field and leave the game unchanged', () => {
+  const badSeed = fc.oneof(fc.constantFrom(-1, 2 ** 31, 1.5, NaN, Infinity, '7', {}), fc.integer({ min: -1000, max: -1 }), fc.double({ min: 0.01, max: 1000, noInteger: true } as never));
+  const badNum = fc.constantFrom(-0.01, 1.01, NaN, Infinity, -Infinity, '0.5', null);
+  const badSetting = fc.oneof(
+    fc.constantFrom('rain', null, [], { kind: 'hail' }, { kind: 7 }, {}).map((s) => [s, /kind|value/] as const),
+    fc.tuple(fc.constantFrom('clear', 'rain', 'snow'), badNum).map(([kind, intensity]) => [{ kind, intensity }, /intensity/] as const),
+    fc.tuple(fc.constantFrom('clear', 'rain', 'snow'), badNum).map(([kind, cloudCover]) => [{ kind, cloudCover }, /cloudCover/] as const),
+  );
+  fc.assert(
+    fc.property(wSeed, wSetting, badSeed, badSetting, (ws, set, bs, [bad, field]) => {
+      assert.throws(() => createGame({ weatherSeed: bs as never }), /weather seed/);
+      if (bad !== null) assert.throws(() => createGame({ weather: bad as never }), field);
+      const g = debrief(createGame({ seed: 5, weatherSeed: ws, weather: set }));
+      const before = g.snapshot();
+      assert.throws(() => g.beginSortie({ day: 1, startHour: 8, level: 1, weatherSeed: bs as never }), /weather seed/);
+      assert.throws(() => g.beginSortie({ day: 1, startHour: 8, level: 1, weather: (bad ?? 'rain') as never }), bad === null ? /value/ : field);
+      assert.deepEqual(g.snapshot(), before);
+      const s = g.snapshot();
+      assert.throws(() => restoreGame({ ...s, weatherSeed: bs }), /weather seed/);
+      assert.throws(() => restoreGame({ ...s, weather: bad === null ? 'rain' : bad }), bad === null ? /value/ : field);
+    }),
+    { numRuns: 100, seed: 20 },
+  );
+});
+
+test('a snapshot without weather fields restores with no setting and the world seed', () => {
+  const { weatherSeed: _a, weather: _b, ...old } = createGame({ seed: 1915, weatherSeed: 4, weather: { kind: 'snow' } }).snapshot();
+  const r = restoreGame(old);
+  assert.equal(r.state.weatherSeed, null);
+  assert.equal(r.state.weather, null);
+  assert.equal(weatherSeedOf(r.state), 1915);
 });

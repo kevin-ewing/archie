@@ -7,7 +7,9 @@ import { engineSound } from './audio/audio.ts';
 import { cellular } from './core/noise.ts';
 import { gradeFor, gradePixels, skyFor } from './render/grade.ts';
 import { createSmoke, updateSmoke } from './render/smoke.ts';
-import { dateOf, REFERENCE } from './sim/calendar.ts';
+import { createPrecipModel, stepPrecip } from './render/precipmodel.ts';
+import { coverOfKey, weatherAtDay } from './sim/weather.ts';
+import { dateOf, dayNumber, REFERENCE } from './sim/calendar.ts';
 import { seasonAt } from './sim/seasons.ts';
 import { advanceClock, createClock, sunAt } from './sim/daylight.ts';
 import { sunDay } from './sim/sun.ts';
@@ -29,18 +31,30 @@ const args = new Set(process.argv.slice(2));
 const results: Record<string, Timing> = {};
 let sink = 0;
 
-function bench(id: string, label: string, runs: number, work: (run: number) => number): void {
-  work(-1); // warm the JIT and caches without including startup cost
-  const samples: number[] = [];
+type Entry = [id: string, label: string, work: (run: number) => number];
+
+// Times each entry for `runs` runs. Entries run in turn within every run, so a group of entries
+// compared with each other sees the same machine load.
+function benchGroup(runs: number, entries: Entry[]): void {
+  const samples = entries.map(() => [] as number[]);
+  for (const [, , work] of entries) work(-1); // warm the JIT and caches without including startup cost
   for (let run = 0; run < runs; run++) {
-    const start = performance.now();
-    sink += work(run);
-    samples.push(performance.now() - start);
+    entries.forEach(([, , work], i) => {
+      const start = performance.now();
+      sink += work(run);
+      samples[i].push(performance.now() - start);
+    });
   }
-  samples.sort((a, b) => a - b);
-  const timing = { median: samples[Math.floor(samples.length / 2)], p95: samples[Math.floor(samples.length * 0.95)] };
-  results[id] = timing;
-  if (!args.has('--json')) console.log(`${label.padEnd(27)} ${timing.median.toFixed(2).padStart(8)} ms median  ${timing.p95.toFixed(2).padStart(8)} ms p95`);
+  entries.forEach(([id, label], i) => {
+    const s = samples[i].sort((a, b) => a - b);
+    const timing = { median: s[Math.floor(s.length / 2)], p95: s[Math.floor(s.length * 0.95)] };
+    results[id] = timing;
+    if (!args.has('--json')) console.log(`${label.padEnd(27)} ${timing.median.toFixed(2).padStart(8)} ms median  ${timing.p95.toFixed(2).padStart(8)} ms p95`);
+  });
+}
+
+function bench(id: string, label: string, runs: number, work: (run: number) => number): void {
+  benchGroup(runs, [[id, label, work]]);
 }
 
 bench('noise', 'noise / cellular × 50k', 9, (run) => {
@@ -62,7 +76,31 @@ bench('groundFarm', 'ground tile with a farm', 7, (run) => generateTile({ kind: 
 const winter = seasonAt(dateOf(256), 1915);
 bench('groundSnow', 'ground tile in snow', 7, (run) => generateTile({ kind: 'ground', seed: 1915, cx: run + 20, cy: -11, season: winter }).rgba[run]);
 bench('frontSnow', 'front tile in snow', 7, (run) => generateTile({ kind: 'ground', seed: 1915, cx: frontTile.cx, cy: frontTile.cy + run, features: { structures: true, military: true }, season: winter }).rgba[run]);
-bench('clouds', 'cloud tile 128²', 7, (run) => cloudChunk(1915, run + 20, -11)[run]);
+// Neutral, dense (key 7) and sparse (key 0) cover, interleaved so --check can compare them in one run.
+benchGroup(15, [
+  ['clouds', 'cloud tile 128²', (run) => cloudChunk(1915, run + 20, -11)[run]],
+  ['cloudDense', 'cloud tile, dense cover', (run) => cloudChunk(1915, run + 20, -11, coverOfKey(7))[run]],
+  ['cloudSparse', 'cloud tile, sparse cover', (run) => cloudChunk(1915, run + 20, -11, coverOfKey(0))[run]],
+]);
+
+// A year of weather from cold caches: each run uses a fresh seed.
+const firstDay = dayNumber({ year: 1915, month: 1, day: 1 });
+bench('weather', 'weather × 365 days', 9, (run) => {
+  let total = 0;
+  for (let d = 0; d < 365; d++) total += weatherAtDay(7000 + run, firstDay + d, 12).intensity;
+  return total;
+});
+
+// 600 frames of the particle model at full intensity: rain, then snow.
+bench('precip', 'precip model × 600 frames', 9, (run) => {
+  const m = createPrecipModel();
+  let total = 0;
+  for (let f = 0; f < 600; f++) {
+    stepPrecip(m, { seed: 1915 + run, width: 720, height: 450, precipitation: f < 300 ? 'rain' : 'snow', intensity: 1, heading: f * 0.01, bank: Math.sin(f * 0.05), camAngle: 0, t: f / 60 });
+    total += m.n;
+  }
+  return total;
+});
 
 const heights = new Uint8Array(9 * CHUNK * CHUNK);
 for (let y = 0; y < 3 * CHUNK; y++) {
@@ -141,6 +179,12 @@ if (args.has('--record')) {
     console.log(`${id.padEnd(12)} ${delta.padStart(5)}%  (${before.median.toFixed(2)} → ${timing.median.toFixed(2)} ms)`);
     // Require both the typical and slow sample to regress substantially, avoiding one noisy run.
     if (ratio > 1.5 && timing.p95 / before.p95 > 1.5) failures.push(`${id}: median +${delta}%, p95 +${(((timing.p95 / before.p95) - 1) * 100).toFixed(0)}%`);
+  }
+  // Cover must not cost more than the Neutral tile does in this same run (design: 110%).
+  for (const id of ['cloudDense', 'cloudSparse']) {
+    const ratio = results[id].median / results.clouds.median;
+    console.log(`${id.padEnd(12)} ${(ratio * 100).toFixed(0).padStart(4)}% of clouds in this run`);
+    if (ratio > 1.1) failures.push(`${id}: median is ${(ratio * 100).toFixed(0)}% of clouds, limit 110%`);
   }
   if (failures.length) throw new Error(`Performance regression:\n${failures.join('\n')}`);
   console.log('Performance is within the 50% regression budget.');
