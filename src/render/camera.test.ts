@@ -41,3 +41,15 @@ test('turns swing the plane out and the camera lags the heading; everything sett
   const home = planeOffset(cam, plane);
   assert.ok(Math.hypot(home.x, home.y) < 0.5, 'plane back home');
 });
+
+test('onDevicePixels: the camera lands on whole device pixels of the rotated screen, never more than half one away', async () => {
+  const { onDevicePixels } = await import('./camera.ts');
+  for (let i = 0; i < 2000; i++) {
+    const angle = i * 0.0137 - 7, scale = 1 + (i % 4), x = i * 3.71 - 4000, y = i * -2.29 + 1500;
+    const c = onDevicePixels(scale, angle, x, y);
+    const cs = Math.cos(angle), sn = Math.sin(angle);
+    const u = (cs * c.x + sn * c.y) * scale, v = (cs * c.y - sn * c.x) * scale; // in device pixels across and down
+    assert.ok(Math.abs(u - Math.round(u)) < 1e-6 && Math.abs(v - Math.round(v)) < 1e-6, `whole pixels at ${i}`);
+    assert.ok(Math.hypot(c.x - x, c.y - y) * scale <= Math.SQRT1_2 + 1e-9, `moved at most half a pixel each way at ${i}`);
+  }
+});

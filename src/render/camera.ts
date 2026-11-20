@@ -65,3 +65,17 @@ export function planeOffset(cam: Camera, plane: Plane): { x: number; y: number }
   const sin = Math.sin(cam.angle);
   return { x: ex * cos + ey * sin, y: -ex * sin + ey * cos };
 }
+
+/**
+ * A world offset moved (by under half a device pixel) so that, seen on the rotated screen, it is a whole number of
+ * device pixels across and down. Every world layer's camera goes through this: in straight flight each frame is
+ * then an exact pixel shift of the last. Otherwise the slightly rotated ground, moved a fraction of a pixel each
+ * frame, is sampled afresh, and rows of pixels hop a pixel sideways as they scroll down the screen.
+ */
+export function onDevicePixels(scale: number, angle: number, x: number, y: number): { x: number; y: number } {
+  const cs = Math.cos(angle);
+  const sn = Math.sin(angle);
+  const u = Math.round((cs * x + sn * y) * scale) / scale; // across the screen
+  const v = Math.round((cs * y - sn * x) * scale) / scale; // down the screen
+  return { x: cs * u - sn * v, y: sn * u + cs * v };
+}

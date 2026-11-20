@@ -7,7 +7,7 @@
 import { BASE as GROUND_BASE, CHUNK } from '../world/ground.ts';
 import type { Plane } from '../sim/flight.ts';
 import type { Sun } from '../sim/daylight.ts';
-import { planeOffset, type Camera } from './camera.ts';
+import { onDevicePixels, planeOffset, type Camera } from './camera.ts';
 import type { View } from './display.ts';
 import { hash } from '../core/noise.ts';
 import type { Profiler } from '../core/profile.ts';
@@ -275,10 +275,11 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
     lc.restore();
 
     // Cloud shadows, on the ground (ground transform): the clouds' shapes, down-sun, drifting with the
-    // wind and moving with the ground. The shift is fractional, so as the sun and wind move they glide
-    // rather than hop a whole pixel at a time (the tiles are fetched at the nearest whole pixel).
-    const dx = sun.shadow.x * CLOUD_HEIGHT + WIND.x * t;
-    const dy = sun.shadow.y * CLOUD_HEIGHT + WIND.y * t;
+    // wind and moving with the ground. The shift moves a device pixel at a time on the rotated screen (as the
+    // camera does: see onDevicePixels), so as the sun and wind move they glide without shimmering.
+    const shift = onDevicePixels(scale, cam.angle, sun.shadow.x * CLOUD_HEIGHT + WIND.x * t, sun.shadow.y * CLOUD_HEIGHT + WIND.y * t);
+    const dx = shift.x;
+    const dy = shift.y;
     const cs = scene.cloudShadows.compose(gx - Math.round(dx), gy - Math.round(dy), side);
     lightingComplete &&= cs.complete;
     lc.globalAlpha = shade;
@@ -523,10 +524,11 @@ function tintClouds(cc: CanvasRenderingContext2D, devW: number, devH: number, ti
 }
 
 function worldTransform(ctx: CanvasRenderingContext2D, scale: number, ax: number, ay: number, angle: number, cx: number, cy: number) {
+  const c = onDevicePixels(scale, angle, cx, cy);
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   ctx.translate(ax, ay);
   ctx.rotate(-angle);
-  ctx.translate(-cx, -cy);
+  ctx.translate(-c.x, -c.y);
 }
 
 function drawSprite(ctx: CanvasRenderingContext2D, scale: number, img: HTMLCanvasElement, x: number, y: number, angle: number) {
