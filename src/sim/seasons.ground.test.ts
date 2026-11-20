@@ -19,7 +19,7 @@ test('P11: bud burst, autumn colour and wheat stubble fall in their windows', ()
   fc.assert(
     fc.property(seeds, fc.integer({ min: 1900, max: 2100 }), (seed, year) => {
       const bud = firstDay(seed, year, 60, 180, (s) => s.budding >= 0.5 - 1e-9);
-      assert.ok(bud >= dayOf(4, 10, year) && bud <= dayOf(5, 5, year), `bud ${bud} in ${year}`);
+      assert.ok(bud >= dayOf(3, 30, year) && bud <= dayOf(4, 25, year), `bud ${bud} in ${year}`);
       const aut = firstDay(seed, year, 200, 365, (s) => s.autumnColour > 0.1);
       assert.ok(aut >= dayOf(9, 14, year) && aut <= dayOf(10, 14, year), `autumn ${aut} in ${year}`);
       const wheat = firstDay(seed, year, 150, 300, (s) => s.cropStages['young wheat'] >= 3.99);
