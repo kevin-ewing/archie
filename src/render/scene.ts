@@ -61,7 +61,7 @@ export type Scene = {
   sprites: PlaneSprites;
   smoke: SmokeSprites;
   sparkle: SparkleSprites;
-  shadows: HTMLCanvasElement[][]; // [softness][bank frame] soft silhouettes
+  shadows: { w: number; h: number; alpha: Uint8ClampedArray }[][]; // [softness][bank frame] soft silhouettes
   shadowGround: Float32Array; // eased ground height under each pixel of the plane's shadow
   shadowBuf: { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; data: ImageData }; // plane-aligned scratch for the projected shadow
   light: { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D }; // direct-sunlight buffer (screen size)
@@ -137,7 +137,10 @@ export function createScene(seed: number, density = 1): Scene {
     sprites: planeSprites,
     smoke: createSmokeSprites(),
     sparkle: createSparkleSprites(),
-    shadows: [1, 2].map((blur) => planeSprites.masks.map((m) => toCanvas(softSilhouette(m, blur, SHADOW_SCALE)))), // smaller: see SHADOW_SCALE
+    shadows: [1, 2].map((blur) => planeSprites.masks.map((m) => {
+      const { w, h, rgba } = softSilhouette(m, blur, SHADOW_SCALE);
+      return { w, h, alpha: rgba.filter((_, i) => i % 4 === 3) }; // Keep CPU pixels: no canvas upload/readback on a new bank angle.
+    })), // smaller: see SHADOW_SCALE
     shadowGround: new Float32Array(64 * 64), // indexed by silhouette pixel (the silhouettes are well under 64 px)
     shadowBuf: (() => {
       const canvas = document.createElement('canvas');
@@ -247,17 +250,17 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
     // It's assembled in a small buffer, then drawn once, rotated, at the flat-ground shadow spot.
     const img = scene.shadows[Math.hypot(sun.shadow.x, sun.shadow.y) > 1.2 ? 1 : 0][frame]; // longer shadow, softer edge
     const B = scene.shadowBuf;
-    const bw = img.width + 2 * SHADOW_MARGIN;
-    const bh = img.height + 2 * SHADOW_MARGIN;
+    const bw = img.w + 2 * SHADOW_MARGIN;
+    const bh = img.h + 2 * SHADOW_MARGIN;
     if (B.canvas.width !== bw || B.canvas.height !== bh) {
       B.canvas.width = bw;
       B.canvas.height = bh;
       B.data = new ImageData(bw, bh);
     } else B.data.data.fill(0);
     projectShadow({
-      alpha: alphaOf(img),
-      iw: img.width,
-      ih: img.height,
+      alpha: img.alpha,
+      iw: img.w,
+      ih: img.h,
       plane,
       shadow: sun.shadow,
       heightAt: scene.ground.heightAt,
@@ -529,27 +532,6 @@ function worldTransform(ctx: CanvasRenderingContext2D, scale: number, ax: number
   ctx.translate(ax, ay);
   ctx.rotate(-angle);
   ctx.translate(-cx, -cy);
-}
-
-const alphas = new WeakMap<HTMLCanvasElement, Uint8ClampedArray>();
-/** A silhouette canvas's alpha channel, read once and kept. */
-function alphaOf(c: HTMLCanvasElement): Uint8ClampedArray {
-  let a = alphas.get(c);
-  if (!a) {
-    const d = c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data;
-    a = new Uint8ClampedArray(c.width * c.height);
-    for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3];
-    alphas.set(c, a);
-  }
-  return a;
-}
-
-function toCanvas(px: { w: number; h: number; rgba: Uint8ClampedArray<ArrayBuffer> }): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = px.w;
-  c.height = px.h;
-  c.getContext('2d')!.putImageData(new ImageData(px.rgba, px.w, px.h), 0, 0);
-  return c;
 }
 
 function drawSprite(ctx: CanvasRenderingContext2D, scale: number, img: HTMLCanvasElement, x: number, y: number, angle: number) {

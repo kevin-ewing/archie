@@ -109,7 +109,7 @@ export function checkAnchors(list: readonly Anchor[]): string[] {
 
 /** Day-of-year windows [from, to] and centres. Every value [VERIFY]. */
 export const PHENOLOGY = {
-  budDay: { centre: 107, spread: 7 }, // oak/beech bud burst, about 17 April
+  budDay: { centre: 97, spread: 7 }, // bud burst about 7 April; full foliage ten days earlier
   autumnDay: { centre: 270, spread: 6 }, // autumn colour starts, about 27 September
   harvest: { from: 206, to: 227 }, // winter cereal harvest, late July to mid August
   harvestShift: 5,

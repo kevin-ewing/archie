@@ -8,15 +8,34 @@ import { createPx, plot, text, textWidth, type RGBA } from '../core/pixels.ts';
 import type { View } from '../render/display.ts';
 import { C, plaque } from './gauges.ts';
 
-export type Toggle = { id: string; text: string; on: boolean };
+export type Toggle = { id: string; text: string; on: boolean; disabled?: boolean };
 type Rect = { x: number; y: number; w: number; h: number }; // game px
-export type Toggles = { items: Toggle[]; rects: Rect[]; plates: Map<string, HTMLCanvasElement> };
+export type Toggles = { items: Toggle[]; rects: Rect[]; plates: Map<string, HTMLCanvasElement>; saved?: Map<string, boolean> };
 
 const PAD = 2;
 const HEIGHT = 5 + 2 * PAD + 2; // text + padding + the brass border
 const GAP = 2;
 
 export const createToggles = (items: Toggle[]): Toggles => ({ items, rects: [], plates: new Map() });
+
+
+/** Production preset owns the other debug switches until released. */
+export function setToggle(tg: Toggles, id: string, on: boolean): boolean {
+  const t = tg.items.find((item) => item.id === id);
+  if (!t || t.disabled) return false;
+  if (t.on === on) return true;
+  t.on = on;
+  if (id === 'production') {
+    if (on) tg.saved = new Map(tg.items.filter((item) => item !== t).map((item) => [item.id, item.on]));
+    for (const item of tg.items) {
+      if (item === t) continue;
+      item.on = on ? item.id === 'structures' || item.id === 'military' : tg.saved!.get(item.id)!;
+      item.disabled = on;
+    }
+    if (!on) tg.saved = undefined;
+  }
+  return true;
+}
 
 
 /**
@@ -95,7 +114,12 @@ export function drawToggles(ctx: CanvasRenderingContext2D, view: View, tg: Toggl
     let img = tg.plates.get(key);
     if (!img) tg.plates.set(key, (img = plate(t)));
     const x = centreX === undefined ? right - img.width : Math.round(centreX - img.width / 2);
-    if (visible) ctx.drawImage(img, x, y);
+    if (visible) {
+      ctx.save();
+      if (t.disabled) ctx.globalAlpha = 0.4;
+      ctx.drawImage(img, x, y);
+      ctx.restore();
+    }
     const r = { x, y, w: img.width, h: HEIGHT };
     y -= HEIGHT + GAP;
     return r;

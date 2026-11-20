@@ -20,7 +20,7 @@ import { createPlane, FLIGHT, updatePlane } from './sim/flight.ts';
 import { createClockFace, drawClock } from './ui/clock.ts';
 import { label } from './ui/gauges.ts';
 import { createHud, drawHud, gradeMatrix, radiumGlow } from './ui/hud.ts';
-import { controlsAnchor, createToggles, drawToggles, drawTumbler, toggleAt } from './ui/toggles.ts';
+import { controlsAnchor, createToggles, drawToggles, drawTumbler, setToggle, toggleAt } from './ui/toggles.ts';
 import { createInstruments, engineWarning, updateInstruments } from './ui/instruments.ts';
 import { createSmoke, updateSmoke } from './render/smoke.ts';
 import { trenchBearing } from './world/military.ts';
@@ -64,12 +64,12 @@ const startFor = (o: Overrides, atDay: number): CalDate => {
 };
 setCampaignStart(startFor(overrides, 0));
 const SEED = numberFromUrl('seed', (n) => Number.isInteger(n) && n >= 0 && n < 2 ** 31) ?? save.data.story?.seed ?? Math.floor(Math.random() * 2 ** 31); // which world: `?seed=`, else the story's world (so its tiles load behind the landing page), else random
-// Solar time to start at: `?time=19.5`; else a random time before sunset (drawn through the seeded hash, fed
-// with the session's start time, so each visit differs).
-const randomStart = hash(SEED, Math.floor(Date.now() / 1000), 77);
+// Free-flight defaults span the whole day and a full year's campaign-day offsets.
+// Explicit date/season overrides stay on day 0 so they retain their requested calendar date.
 const TIME_PARAM = numberFromUrl('time', (n) => n >= 0 && n < 24);
-const RANDOM_HOUR = sunsetHour(sunDay(dateOf(0))) - (1.75 + randomStart * 0.5); // 1h45–2h15 before sunset (sun ~15–20° up), just before the golden light builds
-const START_HOUR = TIME_PARAM ?? RANDOM_HOUR;
+const DAY_PARAM = numberFromUrl('day', (n) => Number.isInteger(n) && n >= 0 && n < 4000);
+const START_HOUR = TIME_PARAM ?? Math.random() * 24;
+const START_DAY = DAY_PARAM ?? (overrideDate(overrides) ? 0 : Math.floor(Math.random() * 366));
 
 const trenchParam = new URLSearchParams(location.search).get('trench');
 const TRENCH_STYLE: TrenchStyle = (TRENCH_STYLES as readonly string[]).includes(trenchParam ?? '') ? (trenchParam as TrenchStyle) : 'hasty';
@@ -80,28 +80,31 @@ const TRENCH_STYLE: TrenchStyle = (TRENCH_STYLES as readonly string[]).includes(
 const toggles = createToggles([
   { id: 'fastPlane', text: 'FAST PLANE', on: IS_DEV }, // twice the speed, to cover ground faster (bottom of the stack: under FAST TIME)
   { id: 'fastTime', text: 'FAST TIME', on: IS_DEV },
+  ...(IS_DEV ? [{ id: 'unlimitedBoost', text: 'UNLIMITED BOOST', on: true }] : []),
   { id: 'structures', text: 'BUILDINGS', on: true },
   { id: 'military', text: 'FRONT', on: true },
-  { id: 'frontLines', text: 'FRONT LINES', on: IS_DEV }, // the front's own line (red) and each side's (blue British, yellow German)
+  { id: 'frontLines', text: 'FRONT LINES', on: false }, // the front's own line (red) and each side's (blue British, yellow German)
+  ...(IS_DEV ? [{ id: 'production', text: 'PRODUCTION SETTINGS', on: false }] : []),
 ]);
 // Scenario from the URL (development and tools): `?off=structures,frontLines` / `?on=…` set toggles.
 for (const [param, on] of [['off', false], ['on', true]] as const) {
   for (const id of new URLSearchParams(location.search).get(param)?.split(',') ?? []) {
-    const t = toggles.items.find((g) => g.id === id);
-    if (t) t.on = on;
+    if (id !== 'production') setToggle(toggles, id, on);
   }
 }
+if (IS_DEV && new URLSearchParams(location.search).get('on')?.split(',').includes('production')) setToggle(toggles, 'production', true);
 const toggleOn = (id: string) => toggles.items.find((t) => t.id === id)?.on ?? true;
-const game = createGame({ mode: 'free-play', seed: SEED, startHour: START_HOUR, world: {
+const game = createGame({ mode: 'free-play', seed: SEED, startHour: START_HOUR, day: START_DAY, world: {
   farms: toggleOn('structures'), fronts: toggleOn('military'), frontLines: toggleOn('frontLines'),
-  frontAtStart: IS_DEV, density: IS_DEV ? 10 : 2.5, onlyTrenches: true, trenchStyle: TRENCH_STYLE,
+  frontAtStart: false, density: IS_DEV ? 10 : 2.5, onlyTrenches: true, trenchStyle: TRENCH_STYLE,
 } });
 const state = game.state;
 const worldToggleKeys = { structures: 'farms', military: 'fronts', frontLines: 'frontLines' } as const;
 const worldToggles = toggles.items.filter((t) => t.id in worldToggleKeys);
 const onToggle = (id: string, on: boolean) => {
-  const key = worldToggleKeys[id as keyof typeof worldToggleKeys];
-  if (key) game.setWorldFeatures({ [key]: on });
+  if (!setToggle(toggles, id, on)) return false;
+  game.setWorldFeatures({ farms: toggleOn('structures'), fronts: toggleOn('military'), frontLines: toggleOn('frontLines') });
+  return true;
 };
 const FAST_TIME = 3;
 const FAST_FORWARD = 40;
@@ -111,7 +114,7 @@ window.addEventListener('keyup', (e) => e.code === 'BracketRight' && (forward = 
 window.addEventListener('blur', () => (forward = false));
 // `?speed=` or archie.speed() override the clock speed (0 freezes time), for looking at one moment.
 let speedOverride: number | null = numberFromUrl('speed', (n) => n >= 0 && n <= 1000) ?? null;
-const timeSpeed = () => speedOverride ?? (IS_DEV ? (forward ? FAST_FORWARD : toggleOn('fastTime') ? FAST_TIME : 1) : 1);
+const timeSpeed = () => IS_DEV && toggleOn('production') ? 1 : speedOverride ?? (IS_DEV ? (forward ? FAST_FORWARD : toggleOn('fastTime') ? FAST_TIME : 1) : 1);
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 function dateText(day: number): string {
@@ -241,8 +244,7 @@ window.addEventListener(
     if (!IS_DEV || state.phase !== 'playing') return;
     const hit = toggleAt(toggles, display.view(), e.clientX, e.clientY);
     if (!hit) return;
-    hit.on = !hit.on;
-    onToggle(hit.id, hit.on);
+    onToggle(hit.id, !hit.on);
     e.stopPropagation();
     e.preventDefault();
   },
@@ -282,8 +284,7 @@ const STEP = 1 / 60;
 startGradeWorker(); // the light of the hour is repainted off the main thread
 if (IS_DEV || new URLSearchParams(location.search).has('debug')) setTileArrivalHook((ms) => prof.add('tiles in', ms)); // each tile's main-thread cost as it arrives, in the debug panel
 const scene = createScene(state.seed, state.world.density); // farms 2.5× the base rate in play; development packs them 4× closer still
-// Development only: a front always runs through the plane's start. In production fronts fall where they fall.
-// (Set here for the main thread, which places lamps from the farms, and in every tile request for the workers.)
+// Keep front placement consistent on the main thread and in tile workers.
 DEV.atStart = state.world.frontAtStart;
 Object.assign(scene.features, worldFeatures(state.world));
 
@@ -388,17 +389,25 @@ mapButton?.addEventListener('click', () => {
 });
 const clockFace = createClockFace();
 const smoke = createSmoke();
-// Development always shows the full diagnostic panel; `?debug` exposes performance timings in a production build.
+// Development starts with the full diagnostic panel; `?debug` exposes performance timings in a production build.
 const debugPanel = document.getElementById('debug');
 const debugSong = `song      ${progression.id}`;
 const debugRequested = new URLSearchParams(location.search).has('debug');
+let debugVisible = true;
+if (IS_DEV) window.addEventListener('keydown', (e) => {
+  if (e.code !== 'KeyO' || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target instanceof HTMLElement && (e.target.isContentEditable || e.target.matches('input, textarea, select'))) return;
+  debugVisible = !debugVisible;
+  if (debugPanel) {
+    debugPanel.hidden = !debugVisible;
+    if (debugVisible) debugPanelBottom = debugPanel.getBoundingClientRect().bottom;
+  }
+});
 let screen = 'loading'; // which screen is up, for the debug panel (set each frame, in render)
 const debugDetails = () => {
   const view = display.view();
   const sun = sunNow(state.clock);
-  if (view.mobile) return `seed      ${state.seed}\nposition  x ${plane.x.toFixed(1)}  y ${plane.y.toFixed(1)}`;
   const heading = ((plane.heading * 180) / Math.PI + 360) % 360;
-  if (!screen.startsWith('flight')) return `screen    ${screen}\nviewport  ${innerWidth}x${innerHeight} css  dpr ${devicePixelRatio || 1}`;
   return [
     `screen    ${screen}`,
     ...(IS_DEV ? [debugSong] : []),
@@ -424,26 +433,24 @@ let tilesSince = performance.now();
 const prof = createProfiler(IS_DEV || debugRequested, (text) => {
   if (!debugPanel) return;
   const now = performance.now();
-  debugPanel.hidden = false;
+  debugPanel.hidden = !debugVisible;
   const view = display.view();
   const mobile = view.mobile;
   debugPanel.style.fontSize = mobile ? '9px' : '';
-  // Bottom-left on an upright phone, and off the flight (the menu's and the desk's plates are top-right).
-  const portrait = (mobile && view.uiH > view.uiW) || !screen.startsWith('flight');
-  debugPanel.style.top = portrait ? 'auto' : '';
-  debugPanel.style.bottom = portrait ? '8px' : '';
-  debugPanel.style.left = portrait ? '8px' : '';
-  debugPanel.style.right = portrait ? 'auto' : '';
-  const timings = mobile ? text.split('\n').filter((s, i) => i === 0 || s.startsWith('frame ')).map((s) => s.split(' (')[0]).join('\n') : text;
   // Tiles made since the last update (in the workers: they don't count against the frame, but show what the
   // terrain and its seasons cost): per kind, the time per tile and how many a second.
-  const made = [...takeTileStats()].map(([k, m]) => `${k} ${(m.ms / m.n).toFixed(1)}ms x${(m.n * (1000 / Math.max(1, now - tilesSince))).toFixed(0)}/s`);
+  const stats = takeTileStats();
+  const made = ['ground', 'shade', 'clouds', 'cloudShadow'].map((kind) => {
+    const m = stats.get(kind);
+    return `tile ${kind.padEnd(11)} ${m ? (m.ms / m.n).toFixed(1).padStart(7) : '    0.0'} ms  ${((m?.n ?? 0) * 1000 / Math.max(1, now - tilesSince)).toFixed(0).padStart(5)}/s`;
+  });
   tilesSince = now;
-  debugPanel.textContent = `${debugDetails()}\n${timings}${mobile ? '' : `\ntiles     ${made.join('  ') || 'none'}`}`;
-  debugPanelBottom = debugPanel.getBoundingClientRect().bottom;
+  debugPanel.textContent = `${debugDetails()}\n${text}\n${made.join('\n')}`;
+  if (!debugPanel.hidden) debugPanelBottom = debugPanel.getBoundingClientRect().bottom;
 });
 
 let controlsLayoutKey = '';
+let pauseBottom = 0;
 let hudLightNow = '';
 const hudGrade = document.getElementById('hud-grade-matrix');
 if (holdButton) holdButton.style.filter = 'url(#hud-grade)'; // the HUD's DOM control takes the light of the hour (the volume sliders, in the settings panel, don't)
@@ -601,8 +608,6 @@ const logStoryFlight = () => {
     save.log({ sortie: save.data.log.length + 1, date: dateText(state.clock.day), minutes });
   }
 };
-const DAY_PARAM = numberFromUrl('day', (n) => Number.isInteger(n) && n >= 0 && n < 4000);
-if (DAY_PARAM !== undefined) game.setTime(state.clock.hours, DAY_PARAM);
 /** The desk as the story stands: the date, the next sortie, the log book (its rank and number as he
  * arrived, for now; it wears with every flight logged). */
 const storyInfo = (): BarnInfo => {
@@ -761,8 +766,9 @@ function render(alpha: number, timing: RenderTiming) {
       mapButton.style.width = mapButton.style.height = `${target}px`;
       mapButton.style.visibility = 'visible';
     }
-    // Development toggles: just below the debug panel, top-right.
-    const panel = debugPanel && !debugPanel.hidden ? debugPanelBottom : 0;
+    // Stay below Pause even when the diagnostic panel is hidden.
+    if (layoutChanged) pauseBottom = document.getElementById('pause-button')?.getBoundingClientRect().bottom ?? 0;
+    const panel = Math.max(pauseBottom, debugPanel && !debugPanel.hidden ? debugPanelBottom : 0);
     drawToggles(hudCtx, view, toggles, IS_DEV, undefined, undefined, Math.ceil((panel * view.devW) / window.innerWidth / view.uiScale) + 4);
     const fastTime = controlsAnchor(board.banks[1], 'engine'); // the volume plates above the engine clump; Hold above the flight clump
     if (fastTime) {
@@ -819,7 +825,7 @@ startLoop(
     Object.assign(prevPlane, plane);
     Object.assign(prevCam, cam);
     applyFastPlane();
-    updatePlane(plane, applyAids(aids, plane, controls.read()), dt);
+    updatePlane(plane, applyAids(aids, plane, controls.read()), dt, IS_DEV && toggleOn('unlimitedBoost'));
     const holding = String(aids.mode === 'hold');
     if (holdButton && holdButton.getAttribute('aria-pressed') !== holding) holdButton.setAttribute('aria-pressed', holding);
     updateCamera(cam, plane, dt);

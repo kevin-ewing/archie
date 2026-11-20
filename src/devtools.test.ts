@@ -30,13 +30,14 @@ test('the console delegates session controls and rejects bad speeds before the s
   const saved = Object.getOwnPropertyDescriptor(globalThis, 'window');
   const speeds: (number | null)[] = [];
   let pauses = 0, resumes = 0;
+  let locked = false;
   const worldChanges: [string, boolean][] = [];
   Object.assign(globalThis, { window: {} });
   try {
     installDevApi({
       state: () => ({}), overrides: () => ({}), setOverrides: () => {}, date: () => '1915-05-10', setHours: () => {}, setSpeed: (k) => speeds.push(k), goto: () => {},
       pause: () => { pauses++; }, resume: () => { resumes++; }, session: () => ({ version: 1 }),
-      toggles: [{ id: 'military', on: true }], onToggle: (id, on) => worldChanges.push([id, on]), complete: () => true, canvases: [],
+      toggles: [{ id: 'military', on: true }], onToggle: (id, on) => { if (locked) return false; worldChanges.push([id, on]); }, complete: () => true, canvases: [],
       prof: { start() {}, mark() {}, end() {}, add() {}, history: () => [] },
     });
     const api = (globalThis.window as unknown as { archie: { pause(): void; resume(): void; session(): unknown; speed(k: number | null): void; toggle(id: string, on?: boolean): boolean } }).archie;
@@ -47,6 +48,9 @@ test('the console delegates session controls and rejects bad speeds before the s
     for (const k of [-1, NaN, Infinity, 1001]) assert.throws(() => api.speed(k));
     assert.deepEqual(speeds, [0, null]);
     assert.equal(api.toggle('military', false), false);
+    assert.deepEqual(worldChanges, [['military', false]]);
+    locked = true;
+    assert.equal(api.toggle('military', true), false, 'locked controls cannot be changed through the console');
     assert.deepEqual(worldChanges, [['military', false]]);
     assert.throws(() => api.toggle('military', 'false' as never));
   } finally {

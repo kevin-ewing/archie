@@ -38,6 +38,8 @@ make preview
 
 Vite opens the selected route in your default browser on the port it actually starts on. Use `make dev BROWSER=none` to keep the browser closed. Use `OPEN` for a custom route and `ARGS` for extra Vite flags. For example, `make dev OPEN='/story.html?boxes' ARGS='--port 5174'`. Use `make clean` to remove the production build.
 
+Open `/?play` to skip the menu and start Free Fly (`make dev MODE=flight`). Each new session starts at a random solar hour in [0, 24) and a random campaign day from 0 through 365, counted from May 10, 1915. Pin either with `/?play&time=12&day=0`. Explicit development date/season overrides keep their requested date unless `day` is also supplied.
+
 Run `make patch`, `make minor`, or `make major` to bump the version in both npm manifests without creating a commit or tag. `make version` prints the current version.
 
 Performance checks:

@@ -2,7 +2,8 @@
 // Off by default, and then free (every call is a no-op).
 //
 // It also says why frames drop. A dropped frame took over 1.5× the display's frame time (the median gap
-// lately, with at least a 60 Hz target so sustained slow delivery is not learned away). If the game's own work in that frame was most of the gap, the cause is its slowest stage
+// lately, with at least a 60 Hz target so sustained slow delivery is not learned away). A RAF gap follows
+// the previous render and intervening work. If that work was most of the gap, report its slowest stage
 // ("js: clouds"); if not, the time went elsewhere: the GPU / compositor, garbage collection, or another
 // thread ("external"). Keep measurements in the bounded history instead of logging every dropped frame.
 
@@ -19,6 +20,8 @@ export type Profiler = {
   /** The last few hundred frames, oldest first (for tools: see src/devtools.ts). Empty when disabled. */
   history: () => readonly FrameTimes[];
 };
+// Fixed slots keep intermittent work from moving every row beneath it.
+const STAGES = ['simulation', 'menu view', 'desk layout', 'desk paint', 'tiles in', 'ground', 'sunlight', 'plane', 'clouds', 'grade', 'hud', 'frame'];
 const HISTORY = 600; // ~5–10 s of frames
 
 export function createProfiler(enabled: boolean, show: (text: string) => void): Profiler {
@@ -32,6 +35,7 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
   let frameStart = 0;
   let timing: RenderTiming | undefined;
   let prevEnd = 0;
+  let previous = { work: 0, stages: new Map<string, number>() };
   let period = 1000 / 60; // the display's frame time: median gap of the previous window
   let drops = 0;
   let allDrops = 0;
@@ -46,7 +50,7 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
       last = performance.now();
       frameStart = last - (timing?.simulationMs ?? 0);
       cur = new Map();
-      for (const [k, v] of outside) { cur.set(k, v); totals.set(k, (totals.get(k) ?? 0) + v); }
+      for (const [k, v] of outside) totals.set(k, (totals.get(k) ?? 0) + v);
       if (timing) {
         cur.set('simulation', timing.simulationMs);
         totals.set('simulation', (totals.get('simulation') ?? 0) + timing.simulationMs);
@@ -61,9 +65,10 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
     },
     end() {
       const now = performance.now();
+      const rendered = { work: now - frameStart, stages: cur };
       let away = 0;
-      for (const v of outside.values()) away += v;
-      outside.clear();
+      if (outside.size) cur = new Map(cur);
+      for (const [k, v] of outside) { away += v; cur.set(k, (cur.get(k) ?? 0) + v); }
       const work = now - frameStart + away;
       totals.set('frame', (totals.get('frame') ?? 0) + work);
       frames++;
@@ -77,17 +82,22 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
         if (gap > Math.min(period, 1000 / 60) * 1.5) {
           allDrops++;
           drops++;
-          const top = [...cur].sort((a, b) => b[1] - a[1])[0];
-          const cause = work > gap * 0.6 && top ? `js: ${top[0]}` : 'external';
+          const stages = timing ? new Map(previous.stages) : cur;
+          if (timing) for (const [k, v] of outside) stages.set(k, (stages.get(k) ?? 0) + v);
+          const responsibleWork = timing ? previous.work + away : work;
+          const top = [...stages].sort((a, b) => b[1] - a[1])[0];
+          const cause = responsibleWork > gap * 0.6 && top ? `js: ${top[0]}` : 'external';
           causes.set(cause, (causes.get(cause) ?? 0) + 1);
         }
       }
+      previous = rendered;
+      outside.clear();
       history.push({ at: now, work, gap: frameGap, stages: cur });
       if (history.length > HISTORY) history.shift();
       prevEnd = now;
       if (now - windowStart < 500) return;
       const fps = (frames * 1000) / (now - windowStart);
-      const rows = [...totals].map(([k, v]) => `${k.padEnd(9)} ${(v / frames).toFixed(2)} ms`);
+      const rows = STAGES.map((k) => `${k.padEnd(11)} ${((totals.get(k) ?? 0) / frames).toFixed(2).padStart(8)} ms`);
       const sorted = [...gaps].sort((a, b) => a - b);
       period = sorted[sorted.length >> 1] ?? period;
       const p95 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))] ?? 0;
@@ -96,7 +106,7 @@ export function createProfiler(enabled: boolean, show: (text: string) => void): 
       show(
         `${fps.toFixed(0)} fps | interval p95 ${p95.toFixed(1)} ms | JS ${avgWork.toFixed(2)} ms\n${rows.join('\n')}\n` +
           `drops     ${drops} now, ${allDrops}/${allFrames} total (${((100 * allDrops) / Math.max(1, allFrames)).toFixed(1)}%)\nworst     ${worst.toFixed(1)} ms` +
-          (why ? `\ncauses    ${why}` : ''),
+          `\ncauses    ${why || 'none'}`,
       );
       totals.clear();
       gaps.length = 0;

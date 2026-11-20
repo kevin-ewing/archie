@@ -32,3 +32,16 @@ test('full power is faster, burns more fuel, and overheating locks it out until 
   fly(full, 0, true, 5);
   assert.ok(1 - full.fuel > 2 * (1 - cruise.fuel), 'full power burns faster');
 });
+
+test('unlimited boost recovers a hot empty engine, sustains full power, and restores limits when disabled', () => {
+  const p = createPlane();
+  Object.assign(p, { heat: 1, overheated: true, fuel: 0 });
+  for (let i = 0; i < 60 * 800; i++) {
+    updatePlane(p, { steer: 0, boost: true }, 1 / 60, true);
+    assert.ok(p.boosting && !p.overheated && p.heat === 0 && p.fuel === 1);
+  }
+  updatePlane(p, { steer: 0, boost: false }, 1 / 60, true);
+  assert.equal(p.boosting, false, 'the toggle permits boost without forcing it');
+  fly(p, 0, true, 10);
+  assert.ok(p.overheated && !p.boosting && p.fuel < 1);
+});

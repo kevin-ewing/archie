@@ -39,19 +39,21 @@ export function createPlane(x = 0, y = 0, heading = 0): Plane {
   return { x, y, heading, bank: 0, speed: FLIGHT.cruise, heat: 0, fuel: 1, overheated: false, boosting: false };
 }
 
-export function updatePlane(p: Plane, c: Controls, dt: number): void {
+export function updatePlane(p: Plane, c: Controls, dt: number, unlimitedBoost = false): void {
   const f = FLIGHT;
   p.bank += clamp(clamp(c.steer, -1, 1) - p.bank, -f.rollRate * dt, f.rollRate * dt);
   const turn = p.bank * f.maxTurn;
   p.heading = wrapAngle(p.heading + turn * dt);
 
   // Engine: full power heats it; at max heat it's locked to cruise until it has cooled to recoverAt.
+  // The caller enables this development aid; ordinary flight keeps the default limits.
+  if (unlimitedBoost) { p.heat = 0; p.overheated = false; p.fuel = 1; }
   p.boosting = c.boost && !p.overheated && p.fuel > 0;
-  p.heat = clamp(p.heat + (p.boosting ? f.heatUp : -f.coolDown) * dt, 0, 1);
+  p.heat = unlimitedBoost ? 0 : clamp(p.heat + (p.boosting ? f.heatUp : -f.coolDown) * dt, 0, 1);
   if (p.heat >= 1) p.overheated = true;
   else if (p.overheated && p.heat <= f.recoverAt) p.overheated = false;
   // ponytail: an empty tank only disables full power for now; engine-out / glide comes with the day loop.
-  p.fuel = Math.max(0, p.fuel - (p.boosting ? f.burnFull : f.burnCruise) * dt);
+  p.fuel = unlimitedBoost ? 1 : Math.max(0, p.fuel - (p.boosting ? f.burnFull : f.burnCruise) * dt);
 
   const dv = clamp((p.boosting ? f.full : f.cruise) - p.speed, -f.accel * dt, f.accel * dt);
   p.speed += dv;

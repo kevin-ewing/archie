@@ -37,7 +37,7 @@
       #loading-plane, #loading-text { display: block; image-rendering: pixelated; }
       #loading-text { position: absolute; left: 50%; bottom: calc(100% + 18px); transform: translateX(-50%); opacity: 1; transition: opacity 0.9s ease-in-out; }
       #loading.settling #loading-text { opacity: 0; }
-      #debug { position: fixed; z-index: 140; right: 8px; top: calc(25 * var(--ui-px, 2px)); margin: 0; padding: 6px 8px; font: 11px/1.35 ui-monospace, Menlo, monospace; color: #e8e2cf; background: rgb(20 19 15 / 0.75); pointer-events: none; white-space: pre; }
+      #debug { position: fixed; z-index: 140; right: 8px; top: calc(25 * var(--ui-px, 2px)); box-sizing: border-box; width: 480px; max-width: calc(100vw - 16px); margin: 0; padding: 6px 8px; font: 11px/1.35 ui-monospace, Menlo, monospace; color: #e8e2cf; background: rgb(20 19 15 / 0.75); pointer-events: none; white-space: pre; overflow: hidden; }
       .volume-control {
         position: fixed; z-index: 20; visibility: hidden; cursor: pointer;
       }

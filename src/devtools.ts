@@ -36,7 +36,7 @@ export type DevHooks = {
   /** Pop up an offscreen voice's line (game/voices.ts): speaker id, the words, and optionally the scene. */
   say?: (speaker: string, text: string, scene?: 'flight' | 'base') => void;
   toggles: { id: string; on: boolean }[];
-  onToggle?: (id: string, on: boolean) => void;
+  onToggle?: (id: string, on: boolean) => boolean | void;
   /** Whether the last frame had every visible tile. */
   complete: () => boolean;
   canvases: readonly HTMLCanvasElement[];
@@ -76,6 +76,7 @@ export function installDevApi(h: DevHooks): void {
     pause: h.pause,
     resume: h.resume,
     session: h.session,
+    frames: (since = -Infinity) => h.prof.history().filter((f) => f.at > since).map((f) => ({ ...f, stages: Object.fromEntries(f.stages) })),
     async stats(ms = 1000) {
       const from = performance.now();
       await sleep(ms);
@@ -120,7 +121,7 @@ export function installDevApi(h: DevHooks): void {
       if (!t) throw new Error(`No toggle '${id}': ${h.toggles.map((g) => g.id).join(', ')}`);
       const next = on ?? !t.on;
       if (typeof next !== 'boolean') throw new Error('Toggle state must be boolean.');
-      h.onToggle?.(id, next);
+      if (h.onToggle?.(id, next) === false) return t.on;
       t.on = next;
       return t.on;
     },
@@ -157,6 +158,7 @@ export function installDevApi(h: DevHooks): void {
 
 const HELP = `archie: development console API
   archie.state()               seed, phase, time, plane, sun, features, toggles
+  archie.frames()             recent raw frame timings and stage costs
   await archie.stats(ms)       frame timings over the next ms: fps, work mean/p95/max, per-stage means, drops
   archie.pause() / resume()    pause/resume explicitly (returning to a tab never clears a user pause)
   archie.session()             detached, versioned campaign/session metadata (not a full aircraft/world save)

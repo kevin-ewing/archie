@@ -199,7 +199,8 @@ export const toCanvas = (px: Px) => {
   const c = document.createElement('canvas');
   c.width = px.w;
   c.height = px.h;
-  c.getContext('2d')!.putImageData(new ImageData(px.data, px.w, px.h), 0, 0);
+  // These small static rasters are read by litCanvas; avoid a GPU readback when tinting them.
+  c.getContext('2d', { willReadFrequently: true })!.putImageData(new ImageData(px.data, px.w, px.h), 0, 0);
   return c;
 };
 
@@ -230,11 +231,7 @@ export function label(s: string, ink: RGBA, pad = 0, plate?: RGBA): HTMLCanvasEl
   const px = createPx(textWidth(s) + 2 * pad, 5 + 2 * pad);
   if (plate) px.data.forEach((_, i) => (px.data[i] = plate[i % 4]));
   text(px, pad, pad, s, ink);
-  const canvas = document.createElement('canvas');
-  canvas.width = px.w;
-  canvas.height = px.h;
-  canvas.getContext('2d')!.putImageData(new ImageData(px.data, px.w, px.h), 0, 0);
-  return canvas;
+  return toCanvas(px);
 }
 
 /** A simple spirit clinometer, rather than a later gyroscopic attitude indicator. */
