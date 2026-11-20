@@ -100,7 +100,7 @@ const ABOUT: Record<I.ItemId, string> = {
   clockcode: 'HOW TO TELL THE GUNS WHERE THEIR SHELLS FELL.',
   calendar: 'THE DAY. IT ONLY MOVES WHEN YOU FLY.',
   mug: 'MESS COFFEE. COLD.',
-  watch: 'THE TIME. THE RED MARK IS SUNSET.',
+  watch: 'THE TIME.',
   goggles: 'YOUR FLYING GOGGLES. PICK THEM UP TO TAKE OFF.',
   pad: 'NOTES FROM THE LAST SHOOT.',
   coin: 'A SIXPENCE ON A CORD. FOR LUCK.',
@@ -383,7 +383,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     goggles: () => ({ art: drawing('goggles', I.gogglesArt), body: ['FLYING GOGGLES: LEATHER AND NICKEL, THE GLASS CLEAR BUT DUSTY.'], actions: [takeOff] }),
     coin: () => ({ art: drawing('coin', I.coinArt), body: ['A SIXPENCE, DRILLED THROUGH FOR A CORD. FOR LUCK.'], actions: [] }),
     mug: () => ({ art: drawing('coffee', I.coffeeArt), body: ['COFFEE FROM THE MESS. GONE COLD.'], actions: [] }),
-    watch: () => ({ art: I.watchArt(clock(), o.info.sunset ?? 19.5), body: ['THE RED MARK ON THE RIM IS SUNSET. BE DOWN BEFORE IT.'], actions: [] }),
+    watch: () => ({ art: I.watchArt(clock()), body: ['BE DOWN BEFORE SUNSET.'], actions: [] }),
     calendar: () => { const big = innerWidth / o.gamePx() >= 480 && innerHeight / o.gamePx() >= 300; return { art: drawing(`calendar:${o.info.day}:${o.info.month}:${o.info.year}:${big}`, () => I.calendarArt(o.info, big)), body: ['THE CALENDAR ONLY MOVES WHEN YOU FLY.'], actions: [] }; },
   };
   // Make every close-up's drawing while the browser is idle, so picking something up never waits on one.
@@ -447,7 +447,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     ctx.imageSmoothingEnabled = false;
     const now = clock();
     for (const d of above) {
-      const face = d.live ? I.watchArt(now, o.info.sunset ?? 19.5) : d.art;
+      const face = d.live ? I.watchArt(now) : d.art;
       for (const [img, off] of [[d.shadow, d.depth], [face, 0]] as const) {
         place(ctx, d, off, off);
         ctx.drawImage(d.live && img === face ? faceBitmap(img) : mapOf(img, 1), -img.w / 2 - 1, -img.h / 2 - 1);
@@ -479,7 +479,7 @@ export function openBarn(o: BarnOptions): { close: () => void; isOpen: () => boo
     shownMinute = Math.floor(now * 60);
     for (const d of scene.drawn) {
       if (d.id && d.id === heldId) continue; // it's in your hands, not on the desk
-      const face = d.live ? I.watchArt(now, o.info.sunset ?? 19.5) : d.art;
+      const face = d.live ? I.watchArt(now) : d.art;
       const up = liftOf(d.id); // lifted: it rises, and its shadow falls further away
       for (const [img, off] of [[d.shadow, d.depth + up], [face, -up]] as const) {
         place(ctx, d, img === face ? 0 : off, off);

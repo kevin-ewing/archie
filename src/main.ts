@@ -13,7 +13,7 @@ import { setTileArrivalHook } from './render/tiles.ts';
 import { takeTileStats } from './render/tilegen.ts';
 import { applyAids, createAids } from './sim/aids.ts';
 import { dateOf, dayNumber, fromDayNumber, formatISO, REFERENCE, setCampaignStart, type CalDate } from './sim/calendar.ts';
-import { sunNow, sunsetHour } from './sim/daylight.ts';
+import { sunNow } from './sim/daylight.ts';
 import { legalHours, sunDay } from './sim/sun.ts';
 import { applyOverrides, parseOverrides, seasonAt, seasonKey, SEASON_DATES, type Overrides } from './sim/seasons.ts';
 import { createPlane, FLIGHT, updatePlane } from './sim/flight.ts';
@@ -616,7 +616,7 @@ const storyInfo = (): BarnInfo => {
   const now = new Date();
   return {
     day: date, month: MONTHS[month - 1], year, sortie: save.data.log.length + 1, date: dateText(day),
-    hours: now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600, sunset: sunsetHour(sunDay(dateOf(day))),
+    hours: now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600,
     logbook: { ...LOGBOOK_START, wear: Math.min(1, LOGBOOK_START.wear + save.data.log.length * 0.02) },
   };
 };
@@ -795,7 +795,6 @@ function render(alpha: number, timing: RenderTiming) {
     drawClock(hudCtx, view, clockFace, {
       hours: legalHours(today, state.clock.hours),
       day: state.clock.day,
-      sunset: legalHours(today, sunsetHour(today)),
       dateText: dateText(state.clock.day),
     }, glow, instrumentLight);
     // The HUD takes the light of the hour: the world's own grade, as a colour matrix the browser applies.

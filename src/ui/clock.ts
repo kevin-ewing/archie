@@ -1,4 +1,4 @@
-// The cockpit watch, top-left: the time of day at a glance (hands, AM / PM aperture, sunset mark), with a
+// The cockpit watch, top-left: the time of day at a glance (hands, AM / PM aperture), with a
 // digital readout and the date beneath. Its own module: reads the time, draws itself, nothing else.
 
 import { createPx, disc, line, plot, polar, text, textWidth, type Px, type RGBA } from '../core/pixels.ts';
@@ -7,7 +7,7 @@ import type { View } from '../render/display.ts';
 import { C, label, RADIUM, radiumOf, type Instrument } from './gauges.ts';
 
 /** What the clock shows. */
-export type TimeOfDay = { hours: number; day: number; sunset: number; dateText: string };
+export type TimeOfDay = { hours: number; day: number; dateText: string };
 
 /** 12-hour clock text, e.g. hours 14.5 → { clock: '2:30', ampm: 'PM' }. Pure. */
 export function clockText(hours: number): { clock: string; ampm: string } {
@@ -32,7 +32,6 @@ export const createClockFace = (): ClockFace => ({ watch: createWatch(27), digit
 /** Draw in the top-left corner, on whole game pixels. Phones get extra margin (notch, rounded corners). */
 export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: ClockFace, time: TimeOfDay, glow?: CanvasRenderingContext2D, light?: HudLight): void {
   ctx.setTransform(view.uiScale, 0, 0, view.uiScale, 0, 0);
-  face.watch.sunset = time.sunset;
   face.watch.draw(time.hours, 0, !!glow, light);
   face.digital = cached(face.digital, clockText(time.hours).clock);
   face.date = cached(face.date, time.dateText);
@@ -53,8 +52,8 @@ export function drawClock(ctx: CanvasRenderingContext2D, view: View, face: Clock
 
 const STEM = 9;
 
-/** The watch's drawing, free of any canvas: its fixed face, and `paint` for the moving parts (sunset mark,
- * AM / PM aperture, hands). The cockpit and the desk in the barn both draw from it, so they are one watch. */
+/** The watch's drawing, free of any canvas: its fixed face, and `paint` for the moving parts (AM / PM
+ * aperture, hands). The cockpit and the desk in the barn both draw from it, so they are one watch. */
 function watchFace(r: number) {
   const size = 2 * r + 1;
   const c = r;
@@ -79,9 +78,7 @@ function watchFace(r: number) {
     const p = polar(c, cy, r - 8, angle(hr)); // set well in from the minute track, so the figures stand clear
     text(staticFace, Math.round(p.x - textWidth(s) / 2), Math.round(p.y - 2), s, C.ink);
   }
-  const paint = (px: Px, hours: number, sunset: number) => {
-    const mark = polar(c, cy, r - 1, angle(sunset));
-    plot(px, mark.x, mark.y, C.red);
+  const paint = (px: Px, hours: number) => {
     // Readable day/night aperture where the reference's small seconds dial sits.
     const tag = clockText(hours).ampm;
     const tw = textWidth(tag);
@@ -102,31 +99,30 @@ function watchFace(r: number) {
   };
   /** Everything `paint` depends on, as it lands on whole pixels (every line and dot rounds its ends): the
    * same key, the same picture. The watch repaints only when it changes (the hands move a pixel). */
-  const key = (hours: number, sunset: number) => {
-    const mark = polar(c, cy, r - 1, angle(sunset));
+  const key = (hours: number) => {
     const minute = polar(c, cy, r - 7, (hours % 1) * 2 * Math.PI);
     const hour = polar(c, cy, r - 13, angle(hours));
-    return `${Math.round(mark.x)},${Math.round(mark.y)},${clockText(hours).ampm},${Math.round(minute.x)},${Math.round(minute.y)},${Math.round(hour.x)},${Math.round(hour.y)}`;
+    return `${clockText(hours).ampm},${Math.round(minute.x)},${Math.round(minute.y)},${Math.round(hour.x)},${Math.round(hour.y)}`;
   };
   return { size, c, cy, staticFace, paint, key };
 }
 
 /** The watch as a plain raster at a given time, for the desk in the barn. Pure. */
 /** The key the watch repaints on (see watchFace `key`): for tests. */
-export const watchKey = (r: number, hours: number, sunset: number): string => watchFace(r).key(hours, sunset);
+export const watchKey = (r: number, hours: number): string => watchFace(r).key(hours);
 
-export function watchPx(r: number, hours: number, sunset: number): Px {
+export function watchPx(r: number, hours: number): Px {
   const f = watchFace(r);
   const px = createPx(f.size, f.size + STEM);
   px.data.set(f.staticFace.data);
-  f.paint(px, hours, sunset);
+  f.paint(px, hours);
   return px;
 }
 
 
 /** Mark V-inspired cockpit watch; the user's reference has a long stem and no bow.
  * The AM / PM aperture replaces its subsidiary seconds dial as a deliberate game aid; no seconds hand. */
-export function createWatch(r: number): Instrument & { sunset: number; cx: number } {
+export function createWatch(r: number): Instrument & { cx: number } {
   const { size, c, cy, staticFace, paint, key } = watchFace(r);
   let shown = '';
   const px = createPx(size, size + STEM);
@@ -141,13 +137,13 @@ export function createWatch(r: number): Instrument & { sunset: number; cx: numbe
   glow.width = size;
   glow.height = size + STEM;
   const watch = {
-    canvas, glow, size, cx: c, sunset: 19.5,
+    canvas, glow, size, cx: c,
     draw(hours: number, _alert = 0, luminous = false, light?: HudLight) {
-      const k = `${key(hours, watch.sunset)}|${luminous}|${light?.key ?? ''}`;
+      const k = `${key(hours)}|${luminous}|${light?.key ?? ''}`;
       if (k === shown) return; // the same picture as last frame
       shown = k;
       px.data.set(staticFace.data);
-      const { minute, hour } = paint(px, hours, watch.sunset);
+      const { minute, hour } = paint(px, hours);
       if (luminous) {
         // Extract luminous paint before tinting the visible metal and face.
         radiumOf(px, glowPx);

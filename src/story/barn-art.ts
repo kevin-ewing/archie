@@ -15,8 +15,7 @@ export type Spot = { id: SpotId; x: number; y: number; w: number; h: number; box
 export type BarnInfo = I.DateInfo & {
   sortie: number;
   date: string;
-  hours?: number; // the watch's time of day …
-  sunset?: number; // … and its sunset mark
+  hours?: number; // the watch's time of day
   logbook?: Readonly<I.LogbookCover>; // the log book as the story has it (rank, number, wear); default: as he arrives
   orders?: Readonly<I.OrdersText>; // what today's orders say, filled in as the story unlocks them; default: the first sortie's
   mail?: boolean; // a letter from home has come: it lies on the desk, sealed, until the story moves on
@@ -82,7 +81,7 @@ function things(info: BarnInfo, W: number, H: number, pixel: number): { usable: 
       ...(SHOWN.includes('pad') ? [t('pad', drawing('pad', messagePad), 10)] : []), // the message pad: a thing you can pick up (the last of the papers, after the goggles, which need the room most)
       t('mug', drawing('coffee', I.coffeeArt), 12),
       ...(SHOWN.includes('coin') ? [((turn) => ({ ...t('coin', drawing(`coin:${turn.toFixed(3)}`, () => I.coinArt(turn)), 21), turn }))(hash(SEED, 21, 9) * Math.PI * 2)] : []), // the sixpence: the one bit of clutter you can pick up, dropped any way round (and lit for it)
-      { ...t('watch', drawing(`watch:${info.hours ?? 8}:${info.sunset ?? 19.5}`, () => I.watchArt(info.hours ?? 8, info.sunset ?? 19.5)), 20), live: true }, // redrawn as time passes
+      { ...t('watch', drawing(`watch:${info.hours ?? 8}`, () => I.watchArt(info.hours ?? 8)), 20), live: true }, // redrawn as time passes
     ],
     // The clutter (story/clutter.ts), at the size of the things you use, each turned any way at all.
     loose: CLUTTER.flatMap((c, n) => (CLUTTER_SHOWN.includes(c.name) ? [{ ...t(null, drawing(`clutter:${c.name}`, c.art), 60 + n), turn: c.turn ?? hash(SEED, 60 + n, 9) * Math.PI * 2, z: c.z, depth: c.depth, spin: c.spin, bears: c.bears, name: c.name, relit: c.spin ? (turn: number) => drawing(`clutter:${c.name}:${turn.toFixed(3)}`, () => c.art(turn)) : undefined }] : [])),

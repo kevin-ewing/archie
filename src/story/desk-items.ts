@@ -594,7 +594,7 @@ export function calendarArt(d: DateInfo, big = false): Px {
 }
 
 /** The cockpit watch, laid on the desk showing the time of day (the same drawing, ui/clock.ts). */
-export const watchArt = (hours: number, sunset: number): Px => watchPx(27, hours, sunset);
+export const watchArt = (hours: number): Px => watchPx(27, hours);
 
 /** The lucky sixpence, as hangs under the altimeter (the same drawing, ui/luck.ts), still on its cord: the cord
  * runs from the drilled hole in a loose curve across the desk to the knot it's tied off with (the cockpit's own
