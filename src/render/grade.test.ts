@@ -152,3 +152,18 @@ test('the winter tint cools and the summer tint warms daylight; both fade by nig
   const night = sunAt(D, 23.5);
   assert.deepEqual(gradeFor(night, sky, { skyBias: -1, haze: 0 }).near, gradeFor(night, sky).near);
 });
+
+test('cloud tint: dithered bands on the pixel grid, far colour away from the sun to near toward it, at the cloud amount', async () => {
+  const { cloudPixels } = await import('./grade.ts');
+  const c = { near: [250, 200, 120] as const, far: [90, 70, 140] as const, amount: 0.4 };
+  const w = 120, h = 80;
+  const px = cloudPixels(w, h, c, { x: 1, y: 0 }, w / 2); // (a radius of half the width: the ends fall on the screen's edges)
+  const at = (x: number, y: number) => [...px.slice((y * w + x) * 4, (y * w + x) * 4 + 4)];
+  assert.deepEqual(at(0, 40), [90, 70, 140, 102], 'away from the sun: the far colour');
+  assert.deepEqual(at(w - 1, 40), [250, 200, 120, 102], 'toward the sun: the near colour');
+  const colours = new Set<string>();
+  for (let i = 0; i < w * h; i++) colours.add(px.slice(i * 4, i * 4 + 3).join(','));
+  assert.ok(colours.size <= 9, `only the band colours (${colours.size})`);
+  const column = (x: number) => { let r = 0; for (let y = 0; y < h; y++) r += px[(y * w + x) * 4]; return r / h; };
+  for (let x = 4; x < w; x += 4) assert.ok(column(x) >= column(x - 4), `brightens toward the sun (column ${x})`);
+});

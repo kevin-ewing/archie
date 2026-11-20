@@ -227,7 +227,7 @@ Measured live with `?debug` (Chrome, MacBook, 1024×768 window @2×), on the mai
 What keeps it cheap:
 - **Tile composites are cached.** They're tile-aligned and only redrawn when the tiles under them change (a new tile arrives, a fade is running, or the view crosses a tile edge).
 - **The plane shadow is a sprite**, not a per-pixel cast (it used to be ~250k ray tests a frame, and it shimmered).
-- **The light overlay** is painted once, sun-aligned, and just **rotated** each frame (so turning is smooth, with no repaint steps). It's only repainted when the light itself changes.
+- **The light overlay and the cloud tint** are painted on the screen's own pixel grid, already facing the sun, and drawn unrotated (`keepPainted` in `render/grade.ts`). They're repainted in a worker (`render/gradeworker.ts`, handed back as ready-to-draw bitmaps) when the light changes or the sun's direction on screen turns by a quarter degree, so the frame pays nothing for it. (They used to be painted once and rotated: a rotated dither resamples into stripes that swim in a turn. The clouds' tint used to be a smooth canvas gradient, off the pixel grid.)
 - **Tile generation and sunlight baking** run in workers.
 
 Biggest remaining cost: the sunlight layer's cross-fades (~0.4–0.8 ms), since a fade keeps that composite redrawing.

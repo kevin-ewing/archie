@@ -174,18 +174,6 @@ export function gradeFor(sun: Sun, sky: Sky, season?: { skyBias: number; haze: n
 
 const BANDS = 9; // colour bands across the screen; dithered at their edges
 
-export type GradeLayer = {
-  tint: HTMLCanvasElement;
-  glow: HTMLCanvasElement;
-  key: string;
-  px?: { tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> };
-  size?: number; // the size the canvases were last painted at
-  glowOn?: boolean; // whether that painting has a glow to draw
-  busy?: boolean; // a repaint is being made off the main thread
-};
-
-export const createGradeLayer = (): GradeLayer => ({ tint: document.createElement('canvas'), glow: document.createElement('canvas'), key: '' });
-
 /** Light shafts: a 1-D noise across the sun direction, banded so the shafts have crisp pixel edges (0…4). */
 const shaftLevel = (u: number) => Math.round(valueNoise(977, u / 28, 0) * 4);
 const SHAFT_LEVELS = 5;
@@ -316,29 +304,66 @@ function hazeVeil(glow: Uint8ClampedArray<ArrayBuffer>, G: Uint32Array, w: numbe
 }
 
 /** Put a painting into the layer's canvases. */
-function show(layer: GradeLayer, size: number, g: Grade, px: { tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> }) {
-  for (const c of [layer.tint, layer.glow]) if (c.width !== size || c.height !== size) (c.width = size), (c.height = size);
-  layer.tint.getContext('2d')!.putImageData(new ImageData(px.tint, size, size), 0, 0);
-  layer.glowOn = g.glowAlpha > 0.004 || hazing(g);
-  if (layer.glowOn) layer.glow.getContext('2d')!.putImageData(new ImageData(px.glow, size, size), 0, 0); // else drawGrade doesn't draw it
-  layer.size = size;
-}
-function repaint(layer: GradeLayer, size: number, g: Grade, radius: number) {
-  // Painted with the sun along +x; drawGrade rotates it to the sun's direction on screen every frame.
-  const px = gradePixels(size, size, g, { x: 1, y: 0 }, layer.px, radius);
-  layer.px = px;
-  show(layer, size, g, px);
+/** The cloud tint (RGBA, w×h game px): far colour away from the sun to near toward it, in the overlay's dithered
+ * bands (so it sits on the pixel grid like everything else), at the grade's cloud amount. Pure. */
+export function cloudPixels(w: number, h: number, c: Grade['cloud'], dir: { x: number; y: number }, R = Math.hypot(w, h) / 2): Uint8ClampedArray<ArrayBuffer> {
+  const out = new Uint8ClampedArray(w * h * 4);
+  const O = new Uint32Array(out.buffer);
+  const a = Math.round(clamp01(c.amount) * 255);
+  const packs = Uint32Array.from({ length: BANDS }, (_, i) => {
+    const m = mix(c.far, c.near, i / (BANDS - 1));
+    return ((a << 24) | (Math.round(m[2]) << 16) | (Math.round(m[1]) << 8) | Math.round(m[0])) >>> 0;
+  });
+  const cx = w / 2;
+  const cy = h / 2;
+  const k = (BANDS - 1) / (2 * R); // bands per px along the sun direction
+  for (let y = 0, i = 0; y < h; y++) {
+    const row = (y & 3) << 2;
+    let f = 0.5 * (BANDS - 1) + ((0 - cx) * dir.x + (y - cy) * dir.y) * k + 0.5;
+    for (let x = 0; x < w; x++, i++, f += dir.x * k) {
+      let band = (f + DITHER[row | (x & 3)]) | 0;
+      band = band < 0 ? 0 : band >= BANDS ? BANDS - 1 : band;
+      O[i] = packs[band];
+    }
+  }
+  return out;
 }
 
-/** Paints a grade off the main thread (render/gradeworker.ts); null where workers can't start (Node, tools). */
-type Painter = (job: { size: number; g: Grade; radius: number }) => Promise<{ tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> }>;
+/** One painting of the light of the hour, for a screen of w×h game px with the sun toward `dir` on screen. */
+export type GradeJob = { w: number; h: number; g: Grade; dir: { x: number; y: number } };
+export type GradePaint = { tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> | null; cloud: Uint8ClampedArray<ArrayBuffer> | null };
+/** The overlay (tint, glow) and the cloud tint, painted on the screen's own pixel grid. Pure; the worker runs it. */
+export function paintGrade({ w, h, g, dir }: GradeJob): GradePaint {
+  const R = Math.hypot(w, h) / 2;
+  const { tint, glow } = gradePixels(w, h, g, dir, undefined, R);
+  return { tint, glow: g.glowAlpha > 0.004 || hazing(g) ? glow : null, cloud: g.cloud.amount > 0.01 ? cloudPixels(w, h, g.cloud, dir, R) : null };
+}
+
+type Drawn = HTMLCanvasElement | ImageBitmap;
+type Shown = { tint: Drawn; glow: Drawn | null; cloud: Drawn | null };
+export type GradeLayer = { key: string; shown?: Shown; busy?: boolean };
+export const createGradeLayer = (): GradeLayer => ({ key: '' });
+
+const asCanvas = (px: Uint8ClampedArray<ArrayBuffer>, w: number, h: number) => {
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  c.getContext('2d')!.putImageData(new ImageData(px, w, h), 0, 0);
+  return c;
+};
+const close = (s?: Shown) => {
+  for (const im of s ? [s.tint, s.glow, s.cloud] : []) if (im && 'close' in im) im.close();
+};
+
+/** Paints a grade off the main thread (render/gradeworker.ts), as images ready to draw; null where workers can't start (Node, tools). */
+type Painter = (job: GradeJob) => Promise<Shown>;
 let painter: Painter | null = null;
-/** Start the grade's worker (call once, in the browser). Until it answers, and without it, repaints are made in the frame. */
+/** Start the grade's worker (call once, in the browser). Until it answers, and without it, paintings are made in the frame. */
 export function startGradeWorker(): void {
   if (painter || typeof Worker === 'undefined') return;
   try {
     const w = new Worker(new URL('./gradeworker.ts', import.meta.url), { type: 'module' });
-    let next: ((px: { tint: Uint8ClampedArray<ArrayBuffer>; glow: Uint8ClampedArray<ArrayBuffer> }) => void) | null = null;
+    let next: ((s: Shown) => void) | null = null;
     w.onmessage = (e) => { const done = next; next = null; done?.(e.data); };
     w.onerror = () => { painter = null; };
     painter = (job) => new Promise((resolve) => { next = resolve; w.postMessage(job); });
@@ -347,44 +372,68 @@ export function startGradeWorker(): void {
   }
 }
 
+/** The sun's on-screen direction is painted in steps this small (radians): at the screen's edge a step moves a
+ * band edge about a pixel, so a turn reads as the light turning with the world, not as steps. */
+const DIR_STEP = (0.25 * Math.PI) / 180;
+
 /**
- * Draw the grade over the world (call after the world, before the HUD). `sunScreen` is the direction
- * toward the sun on screen (it turns with the camera). The overlay is painted once, sun-aligned, and
- * simply rotated each frame, so turning is perfectly smooth (no repaint steps, no jumping shafts); it's
- * only repainted when the light itself changes.
+ * Keep the painting current for this light, screen and sun direction. The overlay is painted on the screen's
+ * own pixel grid, already facing the sun (never rotated or scaled afterwards), so its dither stays put on the
+ * screen: drawing a dithered image rotated would resample it into swimming stripes as the view turns. A new
+ * painting is made off the main thread; the frame keeps the one it has until it lands (a frame or two).
+ */
+function keepPainted(layer: GradeLayer, view: View, g: Grade, sunScreen: { x: number; y: number }) {
+  const w = Math.ceil(view.w);
+  const h = Math.ceil(view.h);
+  const a = Math.round(Math.atan2(sunScreen.y, sunScreen.x) / DIR_STEP);
+  const q = (v: number, step: number) => Math.round(v / step);
+  const rgb = (c: RGB) => q(c[0] + c[1] * 3 + c[2] * 7, 6);
+  const key = [w, h, a, g.active ? 1 : 0, q(g.tintAlpha, 0.01), q(g.glowAlpha, 0.01), q(g.rays, 0.02), rgb(g.near), rgb(g.far), rgb(g.glow), q(g.haze, 0.02), q(g.cloud.amount, 0.01), rgb(g.cloud.near), rgb(g.cloud.far)].join(',');
+  if (key === layer.key) return;
+  const job: GradeJob = { w, h, g, dir: { x: Math.cos(a * DIR_STEP), y: Math.sin(a * DIR_STEP) } };
+  if (!painter || !layer.shown) {
+    // The first painting (behind the loading screen), or no worker: made here and now.
+    const p = paintGrade(job);
+    close(layer.shown);
+    layer.key = key;
+    layer.shown = { tint: asCanvas(p.tint, w, h), glow: p.glow && asCanvas(p.glow, w, h), cloud: p.cloud && asCanvas(p.cloud, w, h) };
+    return;
+  }
+  if (layer.busy) return; // one at a time; the latest light is asked for once this one lands
+  layer.busy = true;
+  painter(job).then((shown) => {
+    layer.busy = false;
+    close(layer.shown);
+    layer.key = key;
+    layer.shown = shown;
+  });
+}
+
+/** Colour the clouds (their buffer `cc`, device px, before it is drawn) with the light of the hour: lit from the sun's side. */
+export function drawCloudTint(cc: CanvasRenderingContext2D, view: View, layer: GradeLayer, g: Grade, sunScreen: { x: number; y: number }): void {
+  keepPainted(layer, view, g, sunScreen);
+  const cloud = layer.shown?.cloud;
+  if (!cloud) return;
+  cc.setTransform(view.scale, 0, 0, view.scale, 0, 0);
+  cc.globalCompositeOperation = 'source-atop'; // colour only where there is cloud
+  cc.drawImage(cloud, 0, 0);
+  cc.globalCompositeOperation = 'source-over';
+}
+
+/**
+ * Draw the grade over the world (call after the world, before the HUD). `sunScreen` is the direction toward
+ * the sun on screen (it turns with the camera). Drawn unrotated, pixel for pixel (see keepPainted).
  */
 export function drawGrade(ctx: CanvasRenderingContext2D, view: View, layer: GradeLayer, g: Grade, sunScreen: { x: number; y: number }): void {
-  if (!g.active) return;
-  const radius = Math.hypot(view.w, view.h) / 2;
-  const size = Math.ceil(radius * 2) + 2; // covers the screen at any rotation
-  const q = (v: number, step: number) => Math.round(v / step);
-  const key = [size, q(g.tintAlpha, 0.01), q(g.glowAlpha, 0.01), q(g.rays, 0.02), q(g.near[0] + g.near[1] * 3 + g.near[2] * 7, 6), q(g.far[0] + g.far[1] * 3 + g.far[2] * 7, 6), q(g.glow[0] + g.glow[1] * 3 + g.glow[2] * 7, 6), q(g.haze, 0.02)].join(',');
-  if (key !== layer.key) {
-    if (!painter || !layer.size) {
-      // The first painting (behind the loading screen), or no worker: made here and now.
-      layer.key = key;
-      repaint(layer, size, g, radius);
-    } else if (!layer.busy) {
-      // Made off the main thread: the frame keeps the painting it has until the new one is ready (a frame or
-      // two). One at a time; a later light is painted once this one lands.
-      layer.busy = true;
-      const want = key;
-      painter({ size, g, radius }).then((px) => {
-        layer.busy = false;
-        layer.key = want;
-        show(layer, size, g, px);
-      });
-    }
-  }
-  const drawn = layer.size ?? size;
+  keepPainted(layer, view, g, sunScreen);
+  const s = layer.shown;
+  if (!g.active || !s) return;
   ctx.setTransform(view.scale, 0, 0, view.scale, 0, 0);
-  ctx.translate(view.w / 2, view.h / 2);
-  ctx.rotate(Math.atan2(sunScreen.y, sunScreen.x));
   ctx.globalCompositeOperation = 'multiply';
-  ctx.drawImage(layer.tint, -drawn / 2, -drawn / 2);
-  if (layer.glowOn) {
+  ctx.drawImage(s.tint, 0, 0);
+  if (s.glow) {
     ctx.globalCompositeOperation = 'screen';
-    ctx.drawImage(layer.glow, -drawn / 2, -drawn / 2);
+    ctx.drawImage(s.glow, 0, 0);
   }
   ctx.globalCompositeOperation = 'source-over';
 }

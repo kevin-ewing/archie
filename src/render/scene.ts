@@ -11,7 +11,7 @@ import { onDevicePixels, planeOffset, type Camera } from './camera.ts';
 import type { View } from './display.ts';
 import { hash } from '../core/noise.ts';
 import type { Profiler } from '../core/profile.ts';
-import { createGradeLayer, drawGrade, gradeFor, skyFor, type Grade, type GradeLayer } from './grade.ts';
+import { createGradeLayer, drawCloudTint, drawGrade, gradeFor, skyFor, type Grade, type GradeLayer } from './grade.ts';
 import { bankFrame, createPlaneSprites, prewarmSelfShadow, PROP, propWidth, selfShadowed, SPRITE_H, type PlaneSprites } from './plane.ts';
 import { projectShadow, SHADOW_SCALE, shadowCentre, softSilhouette } from './shadow.ts';
 import { createSparkleSprites, drawSparkle, type SparkleSprites } from './sparkle.ts';
@@ -368,7 +368,7 @@ export function drawScene(ctx: CanvasRenderingContext2D, view: View, scene: Scen
   cc.globalAlpha = HIGH_CLOUD_ALPHA;
   cc.drawImage(high.canvas, high.x, high.y);
   cc.globalAlpha = 1;
-  tintClouds(cc, view.devW, view.devH, grade.cloud, toward); // the sun's direction turns with the camera
+  drawCloudTint(cc, view, scene.grade, grade, toward); // the sun's direction turns with the camera
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.drawImage(CB.canvas, 0, 0);
   f.prof.mark('clouds');
@@ -498,7 +498,7 @@ export function drawTerrain(ctx: CanvasRenderingContext2D, view: View, scene: Sc
   cc.globalAlpha = HIGH_CLOUD_ALPHA;
   cc.drawImage(high.canvas, high.x, high.y);
   cc.globalAlpha = 1;
-  tintClouds(cc, width, height, grade.cloud, sun.toward);
+  drawCloudTint(cc, { ...view, devW: width, devH: height, w, h }, scene.grade, grade, sun.toward);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.drawImage(CB.canvas, 0, 0);
   drawGrade(ctx, { ...view, devW: width, devH: height, w, h }, scene.grade, grade, sun.toward); // north up: the sun's direction needs no turning
@@ -506,23 +506,6 @@ export function drawTerrain(ctx: CanvasRenderingContext2D, view: View, scene: Sc
 }
 
 /** Colour the clouds in `cc` with the light of the hour: sunlit side toward the sun (`toward`, on screen). */
-function tintClouds(cc: CanvasRenderingContext2D, devW: number, devH: number, tint: Grade['cloud'], toward: { x: number; y: number }) {
-  if (tint.amount <= 0.01) return;
-  cc.setTransform(1, 0, 0, 1, 0, 0);
-  const R = Math.hypot(devW, devH) / 2;
-  const mx = devW / 2;
-  const my = devH / 2;
-  const gr = cc.createLinearGradient(mx - toward.x * R, my - toward.y * R, mx + toward.x * R, my + toward.y * R);
-  gr.addColorStop(0, `rgb(${tint.far.map(Math.round).join(',')})`);
-  gr.addColorStop(1, `rgb(${tint.near.map(Math.round).join(',')})`);
-  cc.globalCompositeOperation = 'source-atop'; // colour only where there is cloud
-  cc.globalAlpha = tint.amount;
-  cc.fillStyle = gr;
-  cc.fillRect(0, 0, devW, devH);
-  cc.globalAlpha = 1;
-  cc.globalCompositeOperation = 'source-over';
-}
-
 function worldTransform(ctx: CanvasRenderingContext2D, scale: number, ax: number, ay: number, angle: number, cx: number, cy: number) {
   const c = onDevicePixels(scale, angle, cx, cy);
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
