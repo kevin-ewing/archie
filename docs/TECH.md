@@ -240,6 +240,14 @@ Biggest remaining cost: the sunlight layer's cross-fades (~0.4–0.8 ms), since 
 
 At development speed the sun's shading tiles are re-baked at about 80–170 a second (1–4 ms each, in the workers), which is the sunlight layer's remaining cost. That's unchanged from before the seasons.
 
+**Year sweep** (20 November 2026): the 13 sample days, each at midday frozen, midday with the clock running (3×), dusk and night, plus the Node benchmarks and a seasonal fingerprint (`npm run fingerprint` now covers all 13 days). The look stays pixel for pixel the same throughout. Found and fixed:
+- **Snow at a front cost 69 ms a ground tile** (13 ms in summer): `snowLie` asks for each pixel's exact place across the front, and that searched every segment of the front's curve. `onCurve` (`world/fronts.ts`) now starts from the last pixel's segment and skips whole runs of segments by their bounding boxes, in two levels. Same answer, ties included (`fronts.nearest.test.ts` holds it to a full search): **29 ms**. The region cache's string keys became numbers.
+- **Shade-tile requests joined nine tiles' heights on the main thread** (84 µs each, ~5 a frame with the clock running). The nine arrays now go to the worker as they are and are joined there (`joinHeights`): 29 µs.
+- **Every arriving tile made a new canvas.** Tile layers now reuse the canvases they stop drawing (`tiles.ts`), halving a tile's arrival cost (`tiles.test.ts` checks that no reused canvas ever shows the wrong tile).
+- **The compass and clinometer repainted their bezel and card every frame**: they now copy a cached face, as the dials do (164 → 27 µs and 55 → 7 µs a frame; `drawHud` 0.36 → 0.18 ms).
+
+What's left, by stage (main thread, per frame): sunlight 0.3–0.5 ms and `tiles in` 0.15–0.3 ms while the clock runs (the sun's re-bakes, every 0.5° with a 1.5 s cross-fade: kept as they are, for the look), HUD ~0.2–0.3 ms, clouds 0.1–0.2 ms. Winter tiles still cost about twice summer's in the workers (snow lies by the pixel); that's behind the loading screen and off the main thread.
+
 ## 7. Checks & testing
 
 - **`npm run check`**: TypeScript type-check plus small runnable checks (`*.test.ts`) using Node's built-in test runner. No test framework.
